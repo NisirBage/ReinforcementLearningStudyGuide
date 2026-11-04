@@ -1,0 +1,36 @@
+[
+  {
+    "id": "eq.ch03.bellman-v",
+    "unit": "ch03",
+    "concept": "ch03.bellman-equation-v",
+    "name": "Bellman equation for v_π",
+    "bookLabel": "(3.12)",
+    "tex": "v_\\pi(s) = \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\Big[r + \\gamma v_\\pi(s')\\Big]",
+    "symbols": [
+      { "tex": "\\pi(a|s)", "meaning": "chance that policy π selects action a when in state s" },
+      { "tex": "p(s',r|s,a)", "meaning": "probability of next state s′ and reward r after action a in state s" },
+      { "tex": "\\gamma", "meaning": "discount rate" },
+      { "tex": "v_\\pi(s')", "meaning": "value of the successor state under π" }
+    ],
+    "intuition": "Look one step ahead: the value of s is the probability-weighted average, over every action, next state and reward, of the reward plus the discounted value of where you land.",
+    "assumptions": [
+      "Actions range over A(s); next states over S (or S+ for episodic tasks); rewards over R.",
+      "The environment has the Markov property, so p(s′, r | s, a) describes the dynamics completely."
+    ],
+    "derivation": [
+      { "tex": "v_\\pi(s) = \\mathbb{E}_\\pi[G_t \\mid S_t = s]", "why": "Definition (3.10)." },
+      { "tex": "= \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} \\,\\Big|\\, S_t = s\\Big]", "why": "Write the return as the discounted sum of rewards." },
+      { "tex": "= \\mathbb{E}_\\pi\\Big[R_{t+1} + \\gamma \\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_t = s\\Big]", "why": "Separate the first reward and factor γ out of the rest." },
+      { "tex": "= \\sum_a \\pi(a|s) \\sum_{s'} \\sum_r p(s',r|s,a)\\Big[r + \\gamma \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_{t+1} = s'\\Big]\\Big]", "why": "Expand the expectation over the first action, next state and reward; by the Markov property the rest depends only on S_{t+1} = s′." },
+      { "tex": "= \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\Big[r + \\gamma v_\\pi(s')\\Big]", "why": "The inner expectation is v_π(s′); merge the two sums over s′ and r." }
+    ],
+    "example": "In Example 4.1 (γ = 1, reward −1 everywhere, four equally likely moves) state 1 (left: terminal, up: stays in 1, right: 2, down: 5) satisfies $v_\\pi(1) = -1 + \\tfrac14\\big(v_\\pi(T) + v_\\pi(1) + v_\\pi(2) + v_\\pi(5)\\big) = -1 + \\tfrac14(0 - 14 - 20 - 18) = -14$.",
+    "significance": "Turned into an assignment it becomes the update of iterative policy evaluation (4.5).",
+    "pitfalls": [
+      "The terminal state has value 0; forgetting this breaks episodic examples.",
+      "Every (s′, r) pair is weighted by π(a|s)·p(s′, r|s, a), not by p alone."
+    ],
+    "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.7", "printedPages": [71, 71], "pdfPages": [85, 85] }],
+    "verification": { "method": "page-image", "on": "2026-11-04", "note": "The worked example is checked by ch03.bellman-example-state-1." }
+  }
+]

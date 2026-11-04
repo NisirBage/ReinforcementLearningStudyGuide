@@ -1,0 +1,15 @@
+# Never commit the source PDFs or anything extracted from them verbatim (D-002)
+*.pdf
+sources/
+content/_extracted/
+
+# Tooling / OS noise
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.env
+.env.*
+Thumbs.db
+.DS_Store
+backups/

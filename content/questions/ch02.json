@@ -1,0 +1,167 @@
+{
+  "unit": "ch02",
+  "questions": [
+    {
+      "id": "ch02-q001",
+      "unit": "ch02",
+      "concepts": ["ch02.incremental-update"],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 3,
+      "stem": "An action starts with estimate $Q_1 = 0$ and then receives rewards $R_1 = 6$, $R_2 = 2$, $R_3 = 4$. Using the incremental rule $Q_{k+1} = Q_k + \\frac{1}{k}[R_k - Q_k]$, find $Q_2$, $Q_3$ and $Q_4$.",
+      "parts": [
+        { "label": "Q_2", "answer": 6, "tolerance": 0.001 },
+        { "label": "Q_3", "answer": 4, "tolerance": 0.001 },
+        { "label": "Q_4", "answer": 4, "tolerance": 0.001 }
+      ],
+      "solution": [
+        "$k = 1$: $Q_2 = 0 + \\tfrac11(6 - 0) = 6$. The step size 1 discards the initial estimate.",
+        "$k = 2$: $Q_3 = 6 + \\tfrac12(2 - 6) = 4$.",
+        "$k = 3$: $Q_4 = 4 + \\tfrac13(4 - 4) = 4$.",
+        "Check: the plain average of $6, 2, 4$ is $12/3 = 4$, as (2.1) requires."
+      ],
+      "explanation": "With step size 1/k the incremental rule reproduces the sample average exactly, whatever Q_1 was.",
+      "misconceptions": [{ "wrong": "Q_2 = 3 (averaging Q_1 with R_1)", "why": "Q_1 is not a reward; with k = 1 the step size is 1, so Q_2 = R_1." }],
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [37, 37], "pdfPages": [51, 51] }],
+      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q001" },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q002",
+      "unit": "ch02",
+      "concepts": ["ch02.constant-step-size"],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "With a constant step size $\\alpha = 0.5$ and initial estimate $Q_1 = 4$, an action receives rewards $10$ and then $0$. What is $Q_3$?",
+      "parts": [{ "label": "Q_3", "answer": 3.5, "tolerance": 0.001 }],
+      "solution": ["$Q_2 = 4 + 0.5(10 - 4) = 7$.", "$Q_3 = 7 + 0.5(0 - 7) = 3.5$."],
+      "explanation": "Rule (2.5) applied twice. Equivalently, by (2.6): $0.25 \\cdot 4 + 0.25 \\cdot 10 + 0.5 \\cdot 0 = 3.5$.",
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 38], "pdfPages": [52, 52] }],
+      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q002" },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q003",
+      "unit": "ch02",
+      "concepts": ["ch02.recency-weighted-average"],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 4,
+      "stem": "For $k = 3$ rewards and constant $\\alpha = 0.5$, write $Q_4$ as a weighted average of $Q_1, R_1, R_2, R_3$ using (2.6). Give the four weights.",
+      "parts": [
+        { "label": "weight on Q_1", "answer": 0.125, "tolerance": 0.0001 },
+        { "label": "weight on R_1", "answer": 0.125, "tolerance": 0.0001 },
+        { "label": "weight on R_2", "answer": 0.25, "tolerance": 0.0001 },
+        { "label": "weight on R_3", "answer": 0.5, "tolerance": 0.0001 }
+      ],
+      "solution": [
+        "Weight on $Q_1$: $(1-\\alpha)^k = 0.5^3 = 0.125$.",
+        "Weight on $R_i$: $\\alpha(1-\\alpha)^{k-i}$, giving $0.5 \\cdot 0.5^2 = 0.125$, $0.5 \\cdot 0.5 = 0.25$ and $0.5 \\cdot 1 = 0.5$.",
+        "Check: $0.125 + 0.125 + 0.25 + 0.5 = 1$."
+      ],
+      "explanation": "The most recent reward gets the largest weight; each older reward gets a factor (1 − α) less.",
+      "misconceptions": [{ "wrong": "Weights 0.5, 0.25, 0.125 on R_1, R_2, R_3", "why": "The exponent is k − i, the number of rewards since R_i, so the oldest reward has the smallest weight." }],
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }],
+      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q003" },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q004",
+      "unit": "ch02",
+      "concepts": ["ch02.ucb"],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 4,
+      "stem": "A 3-armed bandit at time step $t = 17$ has estimates $Q = (1.0, 1.5, 0.8)$ and counts $N = (5, 10, 2)$. With $c = 2$, compute each arm's UCB score $Q_t(a) + c\\sqrt{\\ln t / N_t(a)}$ (to 3 decimals) and the arm UCB selects (1, 2 or 3).",
+      "parts": [
+        { "label": "score of arm 1", "answer": 2.506, "tolerance": 0.002 },
+        { "label": "score of arm 2", "answer": 2.565, "tolerance": 0.002 },
+        { "label": "score of arm 3", "answer": 3.18, "tolerance": 0.002 },
+        { "label": "selected arm", "answer": 3, "tolerance": 0 }
+      ],
+      "solution": [
+        "$\\ln 17 \\approx 2.8332$.",
+        "Arm 1: $1.0 + 2\\sqrt{2.8332/5} = 1.0 + 2(0.7528) \\approx 2.506$.",
+        "Arm 2: $1.5 + 2\\sqrt{2.8332/10} = 1.5 + 2(0.5323) \\approx 2.565$.",
+        "Arm 3: $0.8 + 2\\sqrt{2.8332/2} = 0.8 + 2(1.1902) \\approx 3.180$.",
+        "The maximum is arm 3."
+      ],
+      "explanation": "Arm 3 has the lowest estimate but has been tried only twice, so its uncertainty bonus dominates.",
+      "misconceptions": [{ "wrong": "Using log base 10", "why": "(2.8) uses the natural logarithm ln t." }],
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.6", "printedPages": [41, 41], "pdfPages": [55, 55] }],
+      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q004" },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q005",
+      "unit": "ch02",
+      "concepts": ["ch02.step-size-conditions"],
+      "type": "multi",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Which step-size sequences $\\alpha_k$ satisfy both conditions in (2.7), $\\sum_k \\alpha_k = \\infty$ and $\\sum_k \\alpha_k^2 < \\infty$? Select all that apply.",
+      "options": ["$\\alpha_k = 1/k$", "$\\alpha_k = 0.1$ (constant)", "$\\alpha_k = 1/k^2$", "$\\alpha_k = 1/\\sqrt{k}$", "$\\alpha_k = 1/(k + 10)$"],
+      "answer": [0, 4],
+      "solution": [
+        "$1/k$: the harmonic series diverges and $\\sum 1/k^2 = \\pi^2/6$ converges. Both hold.",
+        "Constant $0.1$: $\\sum 0.01$ diverges, so the second condition fails.",
+        "$1/k^2$: $\\sum 1/k^2$ is finite, so the first condition fails.",
+        "$1/\\sqrt{k}$: $\\sum \\alpha_k^2 = \\sum 1/k$ diverges, so the second condition fails.",
+        "$1/(k+10)$: a shifted harmonic series still diverges, and $\\sum 1/(k+10)^2 < \\sum 1/k^2$ converges. Both hold."
+      ],
+      "explanation": "The steps must shrink, but not too fast: their sum must still be infinite.",
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [39, 39], "pdfPages": [53, 53] }],
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q006",
+      "unit": "ch02",
+      "concepts": ["ch02.epsilon-greedy"],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 4,
+      "stem": "Four arms have estimates $Q = (0.2, 0.9, 0.9, 0.1)$. An $\\varepsilon$-greedy agent with $\\varepsilon = 0.1$ explores uniformly over all four arms with probability $\\varepsilon$, and otherwise picks a greedy arm, breaking ties uniformly at random. Give the probability of choosing each arm.",
+      "parts": [
+        { "label": "P(arm 1)", "answer": 0.025, "tolerance": 0.0001 },
+        { "label": "P(arm 2)", "answer": 0.475, "tolerance": 0.0001 },
+        { "label": "P(arm 3)", "answer": 0.475, "tolerance": 0.0001 },
+        { "label": "P(arm 4)", "answer": 0.025, "tolerance": 0.0001 }
+      ],
+      "solution": [
+        "Exploration gives every arm $\\varepsilon/4 = 0.025$.",
+        "Arms 2 and 3 tie for the maximum, so each also gets half of $1 - \\varepsilon = 0.9$, that is $0.45$.",
+        "Arms 2 and 3: $0.025 + 0.45 = 0.475$. Arms 1 and 4: $0.025$. The total is 1."
+      ],
+      "explanation": "A greedy arm can also be picked during exploration, so its probability exceeds (1 − ε)/(number of greedy arms).",
+      "misconceptions": [{ "wrong": "P(arm 2) = 0.45", "why": "This forgets that random exploration can also select arm 2." }],
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [34, 34], "pdfPages": [48, 48] }],
+      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q006" },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q007",
+      "unit": "ch02",
+      "concepts": ["ch02.recency-weighted-average"],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: in the constant-α average (2.6), the weights on the rewards $R_1, \\ldots, R_k$ alone sum to 1.",
+      "answer": false,
+      "solution": [
+        "The reward weights sum to $\\sum_{i=1}^k \\alpha(1-\\alpha)^{k-i} = 1 - (1-\\alpha)^k$.",
+        "Only after adding the weight $(1-\\alpha)^k$ on $Q_1$ is the total exactly 1."
+      ],
+      "explanation": "The initial estimate keeps a small, geometrically shrinking share of the weight. The estimate is biased by Q_1, as Section 2.5 discusses.",
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }],
+      "reviewed": true
+    }
+  ]
+}

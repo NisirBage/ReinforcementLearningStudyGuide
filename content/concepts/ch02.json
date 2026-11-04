@@ -1,0 +1,101 @@
+[
+  {
+    "id": "ch02.action-value-estimate",
+    "unit": "ch02",
+    "title": "Action-value estimate by sample averaging",
+    "kind": "definition",
+    "summary": "The true value q(a) of an action is its mean reward; the sample-average method estimates it at step t by averaging the rewards actually received each time the action was chosen, Q_t(a), with a default (such as 0) before the first selection.",
+    "prereqs": [],
+    "related": ["ch02.greedy-action-selection", "ch02.incremental-update"],
+    "keywords": ["sample-average method", "Q_t(a)", "N_t(a)", "law of large numbers", "true value q(a)"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [33, 34], "pdfPages": [47, 48] }]
+  },
+  {
+    "id": "ch02.greedy-action-selection",
+    "unit": "ch02",
+    "title": "Greedy action selection",
+    "kind": "definition",
+    "summary": "Choose an action whose current estimate is largest, A_t = argmax_a Q_t(a), breaking ties arbitrarily. It exploits current knowledge and never deliberately samples actions that look worse.",
+    "prereqs": ["ch02.action-value-estimate"],
+    "related": ["ch02.epsilon-greedy"],
+    "keywords": ["argmax", "exploitation", "greedy"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [34, 34], "pdfPages": [48, 48] }]
+  },
+  {
+    "id": "ch02.epsilon-greedy",
+    "unit": "ch02",
+    "title": "ε-greedy action selection",
+    "kind": "definition",
+    "summary": "Act greedily most of the time, but with a small probability ε pick an action uniformly at random, regardless of the estimates. In the limit every action is tried infinitely often, so every estimate converges to its true value.",
+    "prereqs": ["ch02.greedy-action-selection"],
+    "related": ["ch02.ucb"],
+    "keywords": ["epsilon greedy", "exploration", "near-greedy", "10-armed testbed"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [34, 36], "pdfPages": [48, 50] }]
+  },
+  {
+    "id": "ch02.incremental-update",
+    "unit": "ch02",
+    "title": "Incremental computation of sample averages",
+    "kind": "procedure",
+    "summary": "The average of the first k rewards can be obtained from the previous average and the newest reward alone, Q_{k+1} = Q_k + (1/k)[R_k − Q_k], so memory and computation per step stay constant.",
+    "prereqs": ["ch02.action-value-estimate"],
+    "related": ["ch02.general-update-rule", "ch02.constant-step-size"],
+    "keywords": ["incremental implementation", "running average", "constant memory"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [36, 38], "pdfPages": [50, 52] }]
+  },
+  {
+    "id": "ch02.general-update-rule",
+    "unit": "ch02",
+    "title": "NewEstimate ← OldEstimate + StepSize [Target − OldEstimate]",
+    "kind": "idea",
+    "summary": "The bracketed difference is an error in the estimate; the update moves the estimate a fraction (the step size) of the way toward a possibly noisy target. This form recurs throughout the book.",
+    "prereqs": ["ch02.incremental-update"],
+    "related": ["ch02.constant-step-size"],
+    "keywords": ["update rule", "error", "target", "step size", "alpha"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [37, 38], "pdfPages": [51, 52] }]
+  },
+  {
+    "id": "ch02.constant-step-size",
+    "unit": "ch02",
+    "title": "Constant step size for nonstationary problems",
+    "kind": "procedure",
+    "summary": "When the true action values drift over time, recent rewards should count more. Replacing 1/k by a constant α in (0, 1] does exactly that.",
+    "prereqs": ["ch02.general-update-rule"],
+    "related": ["ch02.recency-weighted-average", "ch02.step-size-conditions"],
+    "keywords": ["nonstationary", "tracking", "constant alpha"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 38], "pdfPages": [52, 52] }]
+  },
+  {
+    "id": "ch02.recency-weighted-average",
+    "unit": "ch02",
+    "title": "Exponential, recency-weighted average",
+    "kind": "idea",
+    "summary": "With a constant step size, Q_{k+1} is a weighted average of the initial estimate and all past rewards; the weight on a reward decays geometrically with how many rewards ago it arrived, and all weights sum to 1.",
+    "prereqs": ["ch02.constant-step-size"],
+    "related": ["ch02.step-size-conditions"],
+    "keywords": ["exponential recency-weighted average", "weighted average", "geometric decay"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }]
+  },
+  {
+    "id": "ch02.step-size-conditions",
+    "unit": "ch02",
+    "title": "Step-size conditions for convergence",
+    "kind": "theorem",
+    "summary": "A result from stochastic approximation: estimates converge with probability 1 if the step sizes sum to infinity (steps large enough to overcome initial conditions and noise) while their squares have a finite sum (steps eventually small enough). 1/k meets both; a constant α fails the second.",
+    "prereqs": ["ch02.recency-weighted-average"],
+    "related": ["ch02.incremental-update"],
+    "keywords": ["convergence with probability 1", "stochastic approximation", "Robbins-Monro conditions", "sum of alpha"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [39, 39], "pdfPages": [53, 53] }]
+  },
+  {
+    "id": "ch02.ucb",
+    "unit": "ch02",
+    "title": "Upper-confidence-bound (UCB) action selection",
+    "kind": "procedure",
+    "summary": "Prefer actions whose estimates are high or still uncertain: maximise Q_t(a) plus an uncertainty bonus c·sqrt(ln t / N_t(a)), treating untried actions as maximising. The bonus shrinks when an action is chosen and grows slowly while it is not.",
+    "prereqs": ["ch02.epsilon-greedy"],
+    "related": ["ch02.epsilon-greedy"],
+    "keywords": ["UCB", "upper confidence bound", "uncertainty", "exploration bonus", "natural logarithm"],
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.6", "printedPages": [41, 42], "pdfPages": [55, 56] }]
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "eq.ch04.policy-evaluation-update",
+    "unit": "ch04",
+    "concept": "ch04.iterative-policy-evaluation",
+    "name": "Iterative policy evaluation update",
+    "bookLabel": "(4.5)",
+    "tex": "v_{k+1}(s) = \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\Big[r + \\gamma v_k(s')\\Big]",
+    "symbols": [
+      { "tex": "v_k", "meaning": "the k-th approximation of v_π" },
+      { "tex": "v_{k+1}(s)", "meaning": "new value of s, computed from the old values of its successors" }
+    ],
+    "intuition": "Use the Bellman equation as an assignment: replace each state's value by the one-step lookahead computed from the current approximation, and repeat.",
+    "assumptions": [
+      "v_0 is arbitrary except that the terminal state, if any, has value 0.",
+      "The sequence v_k approaches v_π in the limit whenever v_π itself is guaranteed to exist (γ < 1, or termination from every state)."
+    ],
+    "example": "In Example 4.1, one sweep from $v_0 = 0$ gives $v_1(s) = -1$ for every nonterminal state; the second gives $v_2(1) = -1 + \\tfrac14(0 - 1 - 1 - 1) = -1.75$.",
+    "significance": "Each sweep backs up every state once (a full backup). Two arrays implement (4.5) exactly; the in-place variant also converges and usually faster.",
+    "pitfalls": [
+      "Written with v_k on the right, the update is the two-array version; an in-place sweep can use some new values in the same sweep.",
+      "Convergence is only in the limit; in practice the loop stops when the largest change falls below θ."
+    ],
+    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [91, 91], "pdfPages": [105, 105] }],
+    "verification": { "method": "page-image", "on": "2026-11-04", "note": "The example values are checked by ch04-q002 and ch04.fig4-2-two-array-iterates." }
+  }
+]

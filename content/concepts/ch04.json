@@ -1,0 +1,35 @@
+[
+  {
+    "id": "ch04.policy-evaluation",
+    "unit": "ch04",
+    "title": "Policy evaluation (the prediction problem)",
+    "kind": "definition",
+    "summary": "Computing v_π for a given policy π. With known dynamics, the Bellman equation is a system of |S| linear equations in |S| unknowns; v_π exists and is unique if γ < 1 or every state eventually terminates under π.",
+    "prereqs": ["ch03.bellman-equation-v"],
+    "related": ["ch04.iterative-policy-evaluation"],
+    "keywords": ["prediction", "linear system", "existence and uniqueness"],
+    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [90, 90], "pdfPages": [104, 104] }]
+  },
+  {
+    "id": "ch04.iterative-policy-evaluation",
+    "unit": "ch04",
+    "title": "Iterative policy evaluation",
+    "kind": "algorithm",
+    "summary": "Start from an arbitrary v_0 (terminal value 0) and repeatedly apply the Bellman equation as an update to every state (a full backup) until the largest change in a sweep falls below a small threshold θ. The in-place version overwrites values as it goes and usually converges faster.",
+    "prereqs": ["ch04.policy-evaluation"],
+    "related": ["ch04.gridworld-4x4"],
+    "keywords": ["full backup", "sweep", "in-place", "two arrays", "theta", "stopping condition", "fixed point"],
+    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [90, 92], "pdfPages": [104, 106] }]
+  },
+  {
+    "id": "ch04.gridworld-4x4",
+    "unit": "ch04",
+    "title": "4×4 gridworld under the equiprobable random policy",
+    "kind": "example",
+    "summary": "Fourteen nonterminal states, one terminal state drawn in two corners, deterministic moves that stay put at the edge, reward −1 per step, undiscounted. Iterative policy evaluation converges to v_π, the negated expected number of steps to termination.",
+    "prereqs": ["ch04.iterative-policy-evaluation"],
+    "related": [],
+    "keywords": ["gridworld", "Example 4.1", "Figure 4.2", "equiprobable random policy", "expected steps to termination"],
+    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 93], "pdfPages": [106, 107] }]
+  }
+]

@@ -1,0 +1,25 @@
+[
+  {
+    "id": "eq.sup-zhao-06.rm-update",
+    "unit": "sup-zhao-06",
+    "concept": "sup-zhao-06.robbins-monro",
+    "name": "Robbins–Monro iteration",
+    "bookLabel": "Zhao (6.5)",
+    "tex": "w_{k+1} = w_k - a_k \\tilde{g}(w_k, \\eta_k), \\qquad k = 1, 2, 3, \\ldots",
+    "symbols": [
+      { "tex": "w_k", "meaning": "k-th estimate of the root of g(w) = 0" },
+      { "tex": "\\tilde{g}(w_k, \\eta_k) = g(w_k) + \\eta_k", "meaning": "k-th noisy observation of g" },
+      { "tex": "a_k > 0", "meaning": "coefficient (step size)" }
+    ],
+    "intuition": "Treat g as a black box: when the observed value is positive, step left; when negative, step right; shrinking steps average out the noise.",
+    "assumptions": ["Zhao's convergence theorem (Theorem 6.1) adds conditions on ∇g, on the coefficients (the same two sums as the core text's (2.7)) and on the noise."],
+    "example": "Noise-free $g(w) = w - 10$, $w_1 = 20$, $a_k = 0.5$: $w_2 = 15$, $w_3 = 12.5$, $w_4 = 11.25$, approaching the root 10.",
+    "significance": "With g̃(w, x) = w − x and a_k = 1/k it is exactly the incremental average (2.3) of the core text.",
+    "pitfalls": ["Zhao's sign convention steps against g̃ (minus sign), whereas the core text writes updates as + α[Target − Old]; the two agree once g̃ = Old − Target."],
+    "sources": [
+      { "kind": "zhao", "chapter": "6", "section": "6.2", "printedPages": [104, 104], "pdfPages": [4, 4] },
+      { "kind": "lecture", "lecture": "L6", "slides": [18, 21] }
+    ],
+    "verification": { "method": "page-image", "on": "2026-11-04", "note": "Zhao Chapter 6 PDF page 4 (printed 104); numeric example checked by sup-zhao-06-q001." }
+  }
+]

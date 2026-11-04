@@ -1,0 +1,64 @@
+[
+  { "id": "s", "tex": "s", "meaning": "state", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "a", "tex": "a", "meaning": "action", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "S", "tex": "\\mathcal{S}", "meaning": "set of all nonterminal states", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "S-plus", "tex": "\\mathcal{S}^+", "meaning": "set of all states, including the terminal state", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "A-s", "tex": "\\mathcal{A}(s)", "meaning": "set of actions possible in state s", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "R-t", "tex": "R_t", "meaning": "reward at t, dependent, like S_t, on A_{t−1} and S_{t−1}", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "G-t", "tex": "G_t", "meaning": "return (cumulative discounted reward) following t", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  {
+    "id": "G-n",
+    "tex": "G^{(n)}_t",
+    "meaning": "n-step return (Section 7.1)",
+    "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }],
+    "tex2018": "G_{t:t+n}",
+    "note2018": "The published edition indexes n-step returns by their start and end time.",
+    "flags": [{ "type": "notation-unverified", "note": "From general knowledge of the 2018 edition; not checked against a copy." }]
+  },
+  { "id": "pi-a-s", "tex": "\\pi(a|s)", "meaning": "chance that stochastic policy π picks action a in state s", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "p-dyn", "tex": "p(s',r|s,a)", "meaning": "chance of next state s′ and reward r, given state s and action a", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "v-pi", "tex": "v_\\pi(s)", "meaning": "value of state s under policy π (expected return)", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "q-pi", "tex": "q_\\pi(s,a)", "meaning": "expected return from choosing a in s, then following π", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "V-t", "tex": "V_t(s)", "meaning": "estimated value of s (itself random), approximating v_π(s) or v_*(s)", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiii", "xiii"], "pdfPages": [13, 13] }] },
+  { "id": "delta-t", "tex": "\\delta_t", "meaning": "temporal-difference error at t (a random variable, though not upper case)", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiv", "xiv"], "pdfPages": [14, 14] }] },
+  {
+    "id": "E-t",
+    "tex": "E_t(s)",
+    "meaning": "eligibility trace for state s at t",
+    "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiv", "xiv"], "pdfPages": [14, 14] }],
+    "tex2018": "\\mathbf{z}_t",
+    "note2018": "The published edition uses an eligibility trace vector z_t; tabular per-state traces are its components.",
+    "flags": [{ "type": "notation-unverified", "note": "From general knowledge of the 2018 edition; not checked against a copy." }]
+  },
+  {
+    "id": "e-t",
+    "tex": "\\mathbf{e}_t",
+    "meaning": "eligibility trace vector at t",
+    "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiv", "xiv"], "pdfPages": [14, 14] }],
+    "tex2018": "\\mathbf{z}_t",
+    "note2018": "Renamed z_t in the published edition.",
+    "flags": [{ "type": "notation-unverified", "note": "From general knowledge of the 2018 edition; not checked against a copy." }]
+  },
+  { "id": "gamma", "tex": "\\gamma", "meaning": "discount-rate parameter", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiv", "xiv"], "pdfPages": [14, 14] }] },
+  { "id": "epsilon", "tex": "\\varepsilon", "meaning": "probability of random action in ε-greedy policy", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiv", "xiv"], "pdfPages": [14, 14] }] },
+  { "id": "alpha-beta", "tex": "\\alpha, \\beta", "meaning": "step-size parameters", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiv", "xiv"], "pdfPages": [14, 14] }] },
+  { "id": "lambda", "tex": "\\lambda", "meaning": "decay-rate parameter for eligibility traces", "sources": [{ "kind": "textbook-matter", "matter": "Summary of Notation", "printedPages": ["xiv", "xiv"], "pdfPages": [14, 14] }] },
+  {
+    "id": "n-arms",
+    "tex": "n",
+    "meaning": "number of arms (actions) of a bandit, as in “n-armed bandit” (Chapter 2; not listed in the Summary of Notation)",
+    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.1", "printedPages": [32, 32], "pdfPages": [46, 46] }],
+    "tex2018": "k",
+    "note2018": "The published edition speaks of the k-armed bandit.",
+    "flags": [{ "type": "notation-unverified", "note": "From general knowledge of the 2018 edition; not checked against a copy." }]
+  },
+  {
+    "id": "mu-behaviour",
+    "tex": "\\mu",
+    "meaning": "behavior policy in off-policy learning (Section 5.5; not listed in the Summary of Notation)",
+    "sources": [{ "kind": "textbook", "chapter": "5", "section": "5.5", "printedPages": [127, 128], "pdfPages": [141, 142] }],
+    "tex2018": "b",
+    "note2018": "The published edition writes the behavior policy as b and uses μ for the on-policy state distribution. Beware this clash when reading both editions.",
+    "flags": [{ "type": "notation-unverified", "note": "From general knowledge of the 2018 edition; not checked against a copy." }]
+  }
+]

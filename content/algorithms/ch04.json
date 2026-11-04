@@ -1,0 +1,24 @@
+[
+  {
+    "id": "alg.ch04.iterative-policy-evaluation",
+    "unit": "ch04",
+    "concept": "ch04.iterative-policy-evaluation",
+    "name": "Iterative policy evaluation (in-place)",
+    "bookLabel": "Figure 4.1",
+    "inputs": ["policy $\\pi$ to evaluate", "small threshold $\\theta > 0$"],
+    "lines": [
+      { "indent": 0, "text": "Set $V(s) = 0$ for every $s \\in \\mathcal{S}^+$" },
+      { "indent": 0, "text": "repeat" },
+      { "indent": 1, "text": "$\\Delta \\leftarrow 0$" },
+      { "indent": 1, "text": "for each $s \\in \\mathcal{S}$:" },
+      { "indent": 2, "text": "$v \\leftarrow V(s)$" },
+      { "indent": 2, "text": "$V(s) \\leftarrow \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\big[r + \\gamma V(s')\\big]$" },
+      { "indent": 2, "text": "$\\Delta \\leftarrow \\max(\\Delta, |v - V(s)|)$" },
+      { "indent": 0, "text": "until $\\Delta < \\theta$" }
+    ],
+    "output": "$V \\approx v_\\pi$",
+    "implementation": "dp.iterativePolicyEvaluation",
+    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 92], "pdfPages": [106, 106] }],
+    "verification": { "method": "computed", "on": "2026-11-04", "check": "ch04.in-place-converges-to-same-v", "note": "Pseudocode compared with the page image; the implementation reproduces Figure 4.2 (ch04.fig4-2-v-pi)." }
+  }
+]

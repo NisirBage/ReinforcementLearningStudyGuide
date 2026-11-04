@@ -1,0 +1,35 @@
+[
+  {
+    "id": "ch03.return",
+    "unit": "ch03",
+    "title": "Return and discounting",
+    "kind": "definition",
+    "summary": "The return G_t is the quantity the agent seeks to maximise in expectation: in the simplest case the sum of the rewards after t; for continuing tasks the discounted sum Σ γ^k R_{t+k+1} with discount rate 0 ≤ γ ≤ 1 (γ < 1 when the sum is infinite).",
+    "prereqs": [],
+    "related": ["ch03.state-value-function"],
+    "keywords": ["G_t", "discount rate", "gamma", "discounted return", "episodic", "continuing"],
+    "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.3", "printedPages": [59, 60], "pdfPages": [73, 74] }]
+  },
+  {
+    "id": "ch03.state-value-function",
+    "unit": "ch03",
+    "title": "State-value function v_π",
+    "kind": "definition",
+    "summary": "v_π(s) is the return you can expect, on average, if you begin in state s and then act according to π. A terminal state is worth zero.",
+    "prereqs": ["ch03.return"],
+    "related": ["ch03.bellman-equation-v"],
+    "keywords": ["value function", "expected return", "v_pi", "policy"],
+    "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.7", "printedPages": [70, 70], "pdfPages": [84, 84] }]
+  },
+  {
+    "id": "ch03.bellman-equation-v",
+    "unit": "ch03",
+    "title": "Bellman equation for v_π",
+    "kind": "equation",
+    "summary": "A consistency condition that links a state's value to its successors' values: v_π(s) equals the expected immediate reward plus the discounted value of the next state, averaged over actions, next states and rewards.",
+    "prereqs": ["ch03.state-value-function"],
+    "related": ["ch04.policy-evaluation"],
+    "keywords": ["Bellman expectation equation", "consistency condition", "backup diagram", "recursive relationship"],
+    "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.7", "printedPages": [71, 72], "pdfPages": [85, 86] }]
+  }
+]

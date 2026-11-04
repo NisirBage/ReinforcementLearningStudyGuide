@@ -1,0 +1,29 @@
+{
+  "unit": "sup-zhao-06",
+  "questions": [
+    {
+      "id": "sup-zhao-06-q001",
+      "unit": "sup-zhao-06",
+      "concepts": ["sup-zhao-06.robbins-monro"],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 3,
+      "stem": "Supplementary (Zhao, Ch. 6). Apply the Robbins–Monro iteration $w_{k+1} = w_k - a_k\\tilde g(w_k)$ to $g(w) = w - 10$ with no noise, $w_1 = 20$ and $a_k = 0.5$. Find $w_2$, $w_3$ and $w_4$.",
+      "parts": [
+        { "label": "w_2", "answer": 15, "tolerance": 0.001 },
+        { "label": "w_3", "answer": 12.5, "tolerance": 0.001 },
+        { "label": "w_4", "answer": 11.25, "tolerance": 0.001 }
+      ],
+      "solution": [
+        "$w_2 = 20 - 0.5(20 - 10) = 15$.",
+        "$w_3 = 15 - 0.5(15 - 10) = 12.5$.",
+        "$w_4 = 12.5 - 0.5(12.5 - 10) = 11.25$."
+      ],
+      "explanation": "Each step halves the distance to the root $w^* = 10$.",
+      "sources": [{ "kind": "lecture", "lecture": "L6", "slides": [21, 21] }],
+      "verification": { "method": "computed", "on": "2026-11-04", "check": "sup-zhao-06-q001" },
+      "reviewed": true
+    }
+  ]
+}

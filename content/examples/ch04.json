@@ -1,0 +1,26 @@
+[
+  {
+    "id": "ex.ch04.gridworld-4x4",
+    "unit": "ch04",
+    "concepts": ["ch04.gridworld-4x4", "ch04.iterative-policy-evaluation"],
+    "title": "Policy evaluation on the 4×4 gridworld",
+    "bookLabel": "Example 4.1, Figure 4.2",
+    "summary": "Evaluating the equiprobable random policy on a 4×4 grid with reward −1 per move. The value function converges to the negated expected number of steps to the terminal corner; the greedy policy with respect to the estimates is already optimal from the third sweep.",
+    "facts": [
+      { "claim": "The printed v_k for k = 1, 2, 3 and 10 are the two-array iterates of (4.5), shown to one decimal.", "check": "ch04.fig4-2-two-array-iterates" },
+      { "claim": "The k = ∞ grid is v_π, whose values are the integers −14, −18, −20 and −22.", "check": "ch04.fig4-2-v-pi" },
+      { "claim": "v_π satisfies the Bellman equation (4.4) at every state.", "check": "ch04.v-pi-satisfies-bellman" },
+      { "claim": "The greedy policies from the third iteration on are optimal (they equal the greedy policy for v_π).", "check": "ch04.greedy-optimal-from-k3" },
+      { "claim": "The in-place algorithm of Figure 4.1 converges to the same v_π, in fewer sweeps than the two-array version.", "check": "ch04.in-place-converges-to-same-v" }
+    ],
+    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 93], "pdfPages": [106, 107] }],
+    "verification": { "method": "computed", "on": "2026-11-04", "check": "ch04.fig4-2-two-array-iterates", "note": "Every cell of Figure 4.2 was transcribed from the page image and compared." },
+    "flags": [
+      {
+        "type": "figure-rounding",
+        "note": "Figure 4.2 prints values to one decimal with an unusual tie rule: −2.875 appears as −2.9 and −8.352 as −8.4 (so not truncation), but the exact value −1.75 at k = 2 appears as −1.7. The only simple rule matching every cell is 'nearest, exact halves toward zero'. The values themselves are correct; only the display rounding is unusual.",
+        "suggestion": "Read −1.7 at k = 2 as −1.75 exactly."
+      }
+    ]
+  }
+]

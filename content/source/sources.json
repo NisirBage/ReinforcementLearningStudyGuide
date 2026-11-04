@@ -1,0 +1,2064 @@
+{
+  "sb": {
+    "key": "sb",
+    "role": "core",
+    "title": "Reinforcement Learning: An Introduction (2nd ed., draft in progress)",
+    "authors": "Richard S. Sutton and Andrew G. Barto",
+    "edition": "Draft of April 2015 (PDF built 12 April 2015, 352 pages)",
+    "pdfPageOffset": 14,
+    "parts": [
+      {
+        "label": "I",
+        "title": "Tabular Solution Methods",
+        "page": 27
+      },
+      {
+        "label": "II",
+        "title": "Approximate Solution Methods",
+        "page": 223
+      },
+      {
+        "label": "III",
+        "title": "Frontiers",
+        "page": 265
+      }
+    ],
+    "chapters": [
+      {
+        "id": "1",
+        "title": "The Reinforcement Learning Problem",
+        "part": null,
+        "startPage": 1,
+        "sections": [
+          {
+            "id": "1.1",
+            "title": "Reinforcement Learning",
+            "page": 2,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.2",
+            "title": "Examples",
+            "page": 5,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.3",
+            "title": "Elements of Reinforcement Learning",
+            "page": 7,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.4",
+            "title": "Limitations and Scope",
+            "page": 9,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.5",
+            "title": "An Extended Example: Tic-Tac-Toe",
+            "page": 10,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.6",
+            "title": "Summary",
+            "page": 15,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.7",
+            "title": "History of Reinforcement Learning",
+            "page": 16,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.8",
+            "title": "Bibliographical Remarks",
+            "page": 25,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 26
+      },
+      {
+        "id": "2",
+        "title": "Multi-arm Bandits",
+        "part": "Tabular Solution Methods",
+        "startPage": 31,
+        "sections": [
+          {
+            "id": "2.1",
+            "title": "An n-Armed Bandit Problem",
+            "page": 32,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.2",
+            "title": "Action-Value Methods",
+            "page": 33,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.3",
+            "title": "Incremental Implementation",
+            "page": 36,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.4",
+            "title": "Tracking a Nonstationary Problem",
+            "page": 38,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.5",
+            "title": "Optimistic Initial Values",
+            "page": 39,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.6",
+            "title": "Upper-Confidence-Bound Action Selection",
+            "page": 41,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.7",
+            "title": "Gradient Bandits",
+            "page": 42,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.8",
+            "title": "Associative Search (Contextual Bandits)",
+            "page": 46,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.9",
+            "title": "Summary",
+            "page": 47,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 52
+      },
+      {
+        "id": "3",
+        "title": "Finite Markov Decision Processes",
+        "part": "Tabular Solution Methods",
+        "startPage": 53,
+        "sections": [
+          {
+            "id": "3.1",
+            "title": "The Agent–Environment Interface",
+            "page": 53,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.2",
+            "title": "Goals and Rewards",
+            "page": 57,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.3",
+            "title": "Returns",
+            "page": 59,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.4",
+            "title": "Unified Notation for Episodic and Continuing Tasks",
+            "page": 61,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.5",
+            "title": "The Markov Property",
+            "page": 62,
+            "level": "section",
+            "optional": true
+          },
+          {
+            "id": "3.6",
+            "title": "Markov Decision Processes",
+            "page": 67,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.7",
+            "title": "Value Functions",
+            "page": 70,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.8",
+            "title": "Optimal Value Functions",
+            "page": 75,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.9",
+            "title": "Optimality and Approximation",
+            "page": 79,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.10",
+            "title": "Summary",
+            "page": 80,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 88
+      },
+      {
+        "id": "4",
+        "title": "Dynamic Programming",
+        "part": "Tabular Solution Methods",
+        "startPage": 89,
+        "sections": [
+          {
+            "id": "4.1",
+            "title": "Policy Evaluation",
+            "page": 90,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.2",
+            "title": "Policy Improvement",
+            "page": 94,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.3",
+            "title": "Policy Iteration",
+            "page": 96,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.4",
+            "title": "Value Iteration",
+            "page": 98,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.5",
+            "title": "Asynchronous Dynamic Programming",
+            "page": 101,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.6",
+            "title": "Generalized Policy Iteration",
+            "page": 104,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.7",
+            "title": "Efficiency of Dynamic Programming",
+            "page": 106,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.8",
+            "title": "Summary",
+            "page": 107,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 112
+      },
+      {
+        "id": "5",
+        "title": "Monte Carlo Methods",
+        "part": "Tabular Solution Methods",
+        "startPage": 113,
+        "sections": [
+          {
+            "id": "5.1",
+            "title": "Monte Carlo Prediction",
+            "page": 114,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.2",
+            "title": "Monte Carlo Estimation of Action Values",
+            "page": 119,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.3",
+            "title": "Monte Carlo Control",
+            "page": 120,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.4",
+            "title": "Monte Carlo Control without Exploring Starts",
+            "page": 124,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.5",
+            "title": "Off-policy Prediction via Importance Sampling",
+            "page": 127,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.6",
+            "title": "Incremental Implementation",
+            "page": 133,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.7",
+            "title": "Off-Policy Monte Carlo Control",
+            "page": 135,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.8",
+            "title": "Importance Sampling on Truncated Returns",
+            "page": 136,
+            "level": "section",
+            "optional": true
+          },
+          {
+            "id": "5.9",
+            "title": "Summary",
+            "page": 138,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 142
+      },
+      {
+        "id": "6",
+        "title": "Temporal-Difference Learning",
+        "part": "Tabular Solution Methods",
+        "startPage": 143,
+        "sections": [
+          {
+            "id": "6.1",
+            "title": "TD Prediction",
+            "page": 143,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.2",
+            "title": "Advantages of TD Prediction Methods",
+            "page": 148,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.3",
+            "title": "Optimality of TD(0)",
+            "page": 151,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.4",
+            "title": "Sarsa: On-Policy TD Control",
+            "page": 154,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.5",
+            "title": "Q-Learning: Off-Policy TD Control",
+            "page": 157,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.6",
+            "title": "Games, Afterstates, and Other Special Cases",
+            "page": 160,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.7",
+            "title": "Summary",
+            "page": 161,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 166
+      },
+      {
+        "id": "7",
+        "title": "Eligibility Traces",
+        "part": "Tabular Solution Methods",
+        "startPage": 167,
+        "sections": [
+          {
+            "id": "7.1",
+            "title": "n-Step TD Prediction",
+            "page": 168,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.2",
+            "title": "The Forward View of TD(λ)",
+            "page": 172,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.3",
+            "title": "The Backward View of TD(λ)",
+            "page": 177,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.4",
+            "title": "Equivalences of Forward and Backward Views",
+            "page": 181,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.5",
+            "title": "Sarsa(λ)",
+            "page": 183,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.6",
+            "title": "Watkins's Q(λ)",
+            "page": 186,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.7",
+            "title": "Off-policy Eligibility Traces using Importance Sampling",
+            "page": 188,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.8",
+            "title": "Implementation Issues",
+            "page": 189,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.9",
+            "title": "Variable λ",
+            "page": 190,
+            "level": "section",
+            "optional": true
+          },
+          {
+            "id": "7.10",
+            "title": "Conclusions",
+            "page": 190,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 194
+      },
+      {
+        "id": "8",
+        "title": "Planning and Learning with Tabular Methods",
+        "part": "Tabular Solution Methods",
+        "startPage": 195,
+        "sections": [
+          {
+            "id": "8.1",
+            "title": "Models and Planning",
+            "page": 195,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.2",
+            "title": "Integrating Planning, Acting, and Learning",
+            "page": 198,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.3",
+            "title": "When the Model Is Wrong",
+            "page": 203,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.4",
+            "title": "Prioritized Sweeping",
+            "page": 206,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.5",
+            "title": "Full vs. Sample Backups",
+            "page": 210,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.6",
+            "title": "Trajectory Sampling",
+            "page": 213,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.7",
+            "title": "Heuristic Search",
+            "page": 217,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.8",
+            "title": "Monte Carlo Tree Search",
+            "page": 220,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.9",
+            "title": "Summary",
+            "page": 220,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 222
+      },
+      {
+        "id": "9",
+        "title": "On-policy Approximation of Action Values",
+        "part": "Approximate Solution Methods",
+        "startPage": 225,
+        "sections": [
+          {
+            "id": "9.1",
+            "title": "Value Prediction with Function Approximation",
+            "page": 226,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.2",
+            "title": "Gradient-Descent Methods",
+            "page": 229,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.3",
+            "title": "Linear Methods",
+            "page": 232,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.4",
+            "title": "Control with Function Approximation",
+            "page": 241,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.5",
+            "title": "Should We Bootstrap?",
+            "page": 247,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.6",
+            "title": "Summary",
+            "page": 249,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 254
+      },
+      {
+        "id": "10",
+        "title": "Off-policy Approximation of Action Values",
+        "part": "Approximate Solution Methods",
+        "startPage": 255,
+        "sections": [],
+        "endPage": 256
+      },
+      {
+        "id": "11",
+        "title": "Policy Approximation",
+        "part": "Approximate Solution Methods",
+        "startPage": 257,
+        "sections": [
+          {
+            "id": "11.1",
+            "title": "Actor–Critic Methods",
+            "page": 257,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "11.2",
+            "title": "Eligibility Traces for Actor–Critic Methods",
+            "page": 259,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "11.3",
+            "title": "R-Learning and the Average-Reward Setting",
+            "page": 260,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 264
+      },
+      {
+        "id": "12",
+        "title": "Psychology",
+        "part": "Frontiers",
+        "startPage": 269,
+        "sections": [],
+        "endPage": 270
+      },
+      {
+        "id": "13",
+        "title": "Neuroscience",
+        "part": "Frontiers",
+        "startPage": 271,
+        "sections": [],
+        "endPage": 272
+      },
+      {
+        "id": "14",
+        "title": "Applications and Case Studies",
+        "part": "Frontiers",
+        "startPage": 273,
+        "sections": [
+          {
+            "id": "14.1",
+            "title": "TD-Gammon",
+            "page": 273,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "14.2",
+            "title": "Samuel's Checkers Player",
+            "page": 279,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "14.3",
+            "title": "The Acrobot",
+            "page": 282,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "14.4",
+            "title": "Elevator Dispatching",
+            "page": 286,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "14.5",
+            "title": "Dynamic Channel Allocation",
+            "page": 291,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "14.6",
+            "title": "Job-Shop Scheduling",
+            "page": 295,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 302
+      },
+      {
+        "id": "15",
+        "title": "Prospects",
+        "part": "Frontiers",
+        "startPage": 303,
+        "sections": [
+          {
+            "id": "15.1",
+            "title": "The Unified View",
+            "page": 303,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "15.2",
+            "title": "State Estimation",
+            "page": 306,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "15.3",
+            "title": "Temporal Abstraction",
+            "page": 306,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "15.4",
+            "title": "Predictive Representations",
+            "page": 306,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "15.5",
+            "title": "Other Frontier Dimensions",
+            "page": 306,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 310
+      }
+    ],
+    "matter": [
+      {
+        "title": "Preface",
+        "page": "viii",
+        "pdfPage": 8
+      },
+      {
+        "title": "Series Forward",
+        "page": "xii",
+        "pdfPage": 12
+      },
+      {
+        "title": "Summary of Notation",
+        "page": "xiii",
+        "pdfPage": 13
+      },
+      {
+        "title": "References",
+        "page": "311",
+        "pdfPage": 325
+      },
+      {
+        "title": "Index",
+        "page": "338",
+        "pdfPage": 352
+      }
+    ]
+  },
+  "zhao": {
+    "key": "zhao",
+    "role": "supplementary",
+    "title": "Mathematical Foundations of Reinforcement Learning",
+    "authors": "Shiyu Zhao",
+    "edition": "GitHub PDF incorporating the July 2025 errata to the Springer edition; one PDF per chapter",
+    "pdfPageOffset": null,
+    "parts": [],
+    "chapters": [
+      {
+        "id": "1",
+        "title": "Basic Concepts",
+        "part": null,
+        "startPage": 1,
+        "sections": [
+          {
+            "id": "1.1",
+            "title": "A grid world example",
+            "page": 1,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.2",
+            "title": "State and action",
+            "page": 2,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.3",
+            "title": "State transition",
+            "page": 3,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.4",
+            "title": "Policy",
+            "page": 4,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.5",
+            "title": "Reward",
+            "page": 6,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.6",
+            "title": "Trajectories, returns, and episodes",
+            "page": 8,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.7",
+            "title": "Markov decision processes",
+            "page": 11,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.8",
+            "title": "Summary",
+            "page": 12,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "1.9",
+            "title": "Q&A",
+            "page": 12,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 13,
+        "pdf": {
+          "file": "3 - Chapter 1 Basic Concepts.pdf",
+          "offset": 0,
+          "pages": 13
+        }
+      },
+      {
+        "id": "2",
+        "title": "State Values and Bellman Equation",
+        "part": null,
+        "startPage": 15,
+        "sections": [
+          {
+            "id": "2.1",
+            "title": "Motivating example 1: Why are returns important?",
+            "page": 16,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.2",
+            "title": "Motivating example 2: How to calculate returns?",
+            "page": 17,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.3",
+            "title": "State values",
+            "page": 19,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.4",
+            "title": "Bellman equation",
+            "page": 20,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.5",
+            "title": "Examples for illustrating the Bellman equation",
+            "page": 22,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.6",
+            "title": "Matrix-vector form of the Bellman equation",
+            "page": 25,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.7",
+            "title": "Solving state values from the Bellman equation",
+            "page": 27,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.7.1",
+            "title": "Closed-form solution",
+            "page": 27,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "2.7.2",
+            "title": "Iterative solution",
+            "page": 28,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "2.7.3",
+            "title": "Illustrative examples",
+            "page": 28,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "2.8",
+            "title": "From state value to action value",
+            "page": 30,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.8.1",
+            "title": "Illustrative examples",
+            "page": 31,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "2.8.2",
+            "title": "The Bellman equation in terms of action values",
+            "page": 32,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "2.9",
+            "title": "Summary",
+            "page": 33,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "2.10",
+            "title": "Q&A",
+            "page": 33,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 34,
+        "pdf": {
+          "file": "3 - Chapter 2 State Values and Bellman Equation.pdf",
+          "offset": 14,
+          "pages": 20
+        }
+      },
+      {
+        "id": "3",
+        "title": "Optimal State Values and Bellman Optimality Equation",
+        "part": null,
+        "startPage": 35,
+        "sections": [
+          {
+            "id": "3.1",
+            "title": "Motivating example: How to improve policies?",
+            "page": 36,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.2",
+            "title": "Optimal state values and optimal policies",
+            "page": 37,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.3",
+            "title": "Bellman optimality equation",
+            "page": 38,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.3.1",
+            "title": "Maximization of the right-hand side of the BOE",
+            "page": 39,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "3.3.2",
+            "title": "Matrix-vector form of the BOE",
+            "page": 40,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "3.3.3",
+            "title": "Contraction mapping theorem",
+            "page": 40,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "3.3.4",
+            "title": "Contraction property of the right-hand side of the BOE",
+            "page": 44,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "3.4",
+            "title": "Solving an optimal policy from the BOE",
+            "page": 46,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.5",
+            "title": "Factors that influence optimal policies",
+            "page": 49,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.6",
+            "title": "Summary",
+            "page": 53,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "3.7",
+            "title": "Q&A",
+            "page": 54,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 55,
+        "pdf": {
+          "file": "3 - Chapter 3 Optimal State Values and Bellman Optimality Equation.pdf",
+          "offset": 34,
+          "pages": 21
+        }
+      },
+      {
+        "id": "4",
+        "title": "Value Iteration and Policy Iteration",
+        "part": null,
+        "startPage": 57,
+        "sections": [
+          {
+            "id": "4.1",
+            "title": "Value iteration",
+            "page": 58,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.1.1",
+            "title": "Elementwise form and implementation",
+            "page": 58,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "4.1.2",
+            "title": "Illustrative examples",
+            "page": 59,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "4.2",
+            "title": "Policy iteration",
+            "page": 62,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.2.1",
+            "title": "Algorithm analysis",
+            "page": 62,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "4.2.2",
+            "title": "Elementwise form and implementation",
+            "page": 65,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "4.2.3",
+            "title": "Illustrative examples",
+            "page": 67,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "4.3",
+            "title": "Truncated policy iteration",
+            "page": 70,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.3.1",
+            "title": "Comparing value iteration and policy iteration",
+            "page": 70,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "4.3.2",
+            "title": "Truncated policy iteration algorithm",
+            "page": 72,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "4.4",
+            "title": "Summary",
+            "page": 74,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "4.5",
+            "title": "Q&A",
+            "page": 74,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 76,
+        "pdf": {
+          "file": "3 - Chapter 4 Value Iteration and Policy Iteration.pdf",
+          "offset": 56,
+          "pages": 20
+        }
+      },
+      {
+        "id": "5",
+        "title": "Monte Carlo Methods",
+        "part": null,
+        "startPage": 77,
+        "sections": [
+          {
+            "id": "5.1",
+            "title": "Motivating example: Mean estimation",
+            "page": 78,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.2",
+            "title": "MC Basic: The simplest MC-based algorithm",
+            "page": 80,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.2.1",
+            "title": "Converting policy iteration to be model-free",
+            "page": 80,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.2.2",
+            "title": "The MC Basic algorithm",
+            "page": 81,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.2.3",
+            "title": "Illustrative examples",
+            "page": 83,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.3",
+            "title": "MC Exploring Starts",
+            "page": 86,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.3.1",
+            "title": "Utilizing samples more efficiently",
+            "page": 86,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.3.2",
+            "title": "Updating policies more efficiently",
+            "page": 87,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.3.3",
+            "title": "Algorithm description",
+            "page": 88,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.4",
+            "title": "MC ϵ-Greedy: Learning without exploring starts",
+            "page": 89,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.4.1",
+            "title": "ϵ-greedy policies",
+            "page": 89,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.4.2",
+            "title": "Algorithm description",
+            "page": 90,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.4.3",
+            "title": "Illustrative examples",
+            "page": 91,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "5.5",
+            "title": "Exploration and exploitation of ϵ-greedy policies",
+            "page": 92,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.6",
+            "title": "Summary",
+            "page": 97,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "5.7",
+            "title": "Q&A",
+            "page": 97,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 99,
+        "pdf": {
+          "file": "3 - Chapter 5 Monte Carlo Methods.pdf",
+          "offset": 76,
+          "pages": 23
+        }
+      },
+      {
+        "id": "6",
+        "title": "Stochastic Approximation",
+        "part": null,
+        "startPage": 101,
+        "sections": [
+          {
+            "id": "6.1",
+            "title": "Motivating example: Mean estimation",
+            "page": 102,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.2",
+            "title": "Robbins-Monro algorithm",
+            "page": 103,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.2.1",
+            "title": "Convergence properties",
+            "page": 105,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.2.2",
+            "title": "Application to mean estimation",
+            "page": 108,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.3",
+            "title": "Dvoretzky's convergence theorem",
+            "page": 109,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.3.1",
+            "title": "Proof of Dvoretzky's theorem",
+            "page": 110,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.3.2",
+            "title": "Application to mean estimation",
+            "page": 112,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.3.3",
+            "title": "Application to the Robbins-Monro theorem",
+            "page": 112,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.3.4",
+            "title": "An extension of Dvoretzky's theorem",
+            "page": 113,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.4",
+            "title": "Stochastic gradient descent",
+            "page": 114,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.4.1",
+            "title": "Application to mean estimation",
+            "page": 116,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.4.2",
+            "title": "Convergence pattern of SGD",
+            "page": 116,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.4.3",
+            "title": "A deterministic formulation of SGD",
+            "page": 118,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.4.4",
+            "title": "BGD, SGD, and mini-batch GD",
+            "page": 119,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.4.5",
+            "title": "Convergence of SGD",
+            "page": 121,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "6.5",
+            "title": "Summary",
+            "page": 123,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "6.6",
+            "title": "Q&A",
+            "page": 123,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 124,
+        "pdf": {
+          "file": "3 - Chapter 6 Stochastic Approximation.pdf",
+          "offset": 100,
+          "pages": 24
+        }
+      },
+      {
+        "id": "7",
+        "title": "Temporal-Difference Methods",
+        "part": null,
+        "startPage": 125,
+        "sections": [
+          {
+            "id": "7.1",
+            "title": "TD learning of state values",
+            "page": 126,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.1.1",
+            "title": "Algorithm description",
+            "page": 126,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.1.2",
+            "title": "Property analysis",
+            "page": 128,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.1.3",
+            "title": "Convergence analysis",
+            "page": 130,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.2",
+            "title": "TD learning of action values: Sarsa",
+            "page": 133,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.2.1",
+            "title": "Algorithm description",
+            "page": 133,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.2.2",
+            "title": "Optimal policy learning via Sarsa",
+            "page": 134,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.3",
+            "title": "TD learning of action values: n-step Sarsa",
+            "page": 138,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.4",
+            "title": "TD learning of optimal action values: Q-learning",
+            "page": 140,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.4.1",
+            "title": "Algorithm description",
+            "page": 140,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.4.2",
+            "title": "Off-policy vs on-policy",
+            "page": 141,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.4.3",
+            "title": "Implementation",
+            "page": 144,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.4.4",
+            "title": "Illustrative examples",
+            "page": 144,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "7.5",
+            "title": "A unified viewpoint",
+            "page": 145,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.6",
+            "title": "Summary",
+            "page": 148,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "7.7",
+            "title": "Q&A",
+            "page": 149,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 150,
+        "pdf": {
+          "file": "3 - Chapter 7 Temporal-Difference Methods.pdf",
+          "offset": 124,
+          "pages": 26
+        }
+      },
+      {
+        "id": "8",
+        "title": "Value Function Methods",
+        "part": null,
+        "startPage": 151,
+        "sections": [
+          {
+            "id": "8.1",
+            "title": "Value representation: From table to function",
+            "page": 152,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.2",
+            "title": "TD learning of state values based on function approximation",
+            "page": 155,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.2.1",
+            "title": "Objective function",
+            "page": 156,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.2.2",
+            "title": "Optimization algorithms",
+            "page": 161,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.2.3",
+            "title": "Selection of function approximators",
+            "page": 162,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.2.4",
+            "title": "Illustrative examples",
+            "page": 164,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.2.5",
+            "title": "Theoretical analysis",
+            "page": 167,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.3",
+            "title": "TD learning of action values based on function approximation",
+            "page": 179,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.3.1",
+            "title": "Sarsa with function approximation",
+            "page": 179,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.3.2",
+            "title": "Q-learning with function approximation",
+            "page": 180,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.4",
+            "title": "Deep Q-learning",
+            "page": 181,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.4.1",
+            "title": "Algorithm description",
+            "page": 182,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.4.2",
+            "title": "Illustrative examples",
+            "page": 184,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "8.5",
+            "title": "Summary",
+            "page": 186,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "8.6",
+            "title": "Q&A",
+            "page": 187,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 189,
+        "pdf": {
+          "file": "3 - Chapter 8 Value Function Methods.pdf",
+          "offset": 150,
+          "pages": 39
+        }
+      },
+      {
+        "id": "9",
+        "title": "Policy Gradient Methods",
+        "part": null,
+        "startPage": 191,
+        "sections": [
+          {
+            "id": "9.1",
+            "title": "Policy representation: From table to function",
+            "page": 192,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.2",
+            "title": "Metrics for defining optimal policies",
+            "page": 193,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.3",
+            "title": "Gradients of the metrics",
+            "page": 198,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.3.1",
+            "title": "Derivation of the gradients in the discounted case",
+            "page": 200,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "9.3.2",
+            "title": "Derivation of the gradients in the undiscounted case",
+            "page": 205,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "9.4",
+            "title": "Monte Carlo policy gradient (REINFORCE)",
+            "page": 210,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.5",
+            "title": "Summary",
+            "page": 213,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "9.6",
+            "title": "Q&A",
+            "page": 213,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 214,
+        "pdf": {
+          "file": "3 - Chapter 9 Policy Gradient Methods.pdf",
+          "offset": 190,
+          "pages": 24
+        }
+      },
+      {
+        "id": "10",
+        "title": "Actor-Critic Methods",
+        "part": null,
+        "startPage": 215,
+        "sections": [
+          {
+            "id": "10.1",
+            "title": "The simplest actor-critic algorithm (QAC)",
+            "page": 216,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "10.2",
+            "title": "Advantage actor-critic (A2C)",
+            "page": 217,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "10.2.1",
+            "title": "Baseline invariance",
+            "page": 217,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "10.2.2",
+            "title": "Algorithm description",
+            "page": 220,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "10.3",
+            "title": "Off-policy actor-critic",
+            "page": 221,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "10.3.1",
+            "title": "Importance sampling",
+            "page": 221,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "10.3.2",
+            "title": "The off-policy policy gradient theorem",
+            "page": 224,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "10.3.3",
+            "title": "Algorithm description",
+            "page": 226,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "10.4",
+            "title": "Deterministic actor-critic",
+            "page": 227,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "10.4.1",
+            "title": "The deterministic policy gradient theorem",
+            "page": 227,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "10.4.2",
+            "title": "Algorithm description",
+            "page": 234,
+            "level": "subsection",
+            "optional": false
+          },
+          {
+            "id": "10.5",
+            "title": "Summary",
+            "page": 235,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "10.6",
+            "title": "Q&A",
+            "page": 236,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 236,
+        "pdf": {
+          "file": "3 - Chapter 10 Actor-Critic Methods.pdf",
+          "offset": 214,
+          "pages": 22
+        }
+      },
+      {
+        "id": "A",
+        "title": "Preliminaries for Probability Theory",
+        "part": null,
+        "startPage": 237,
+        "sections": [],
+        "endPage": 242,
+        "pdf": {
+          "file": "4 - Appendix.pdf",
+          "offset": 236,
+          "pages": 39
+        }
+      },
+      {
+        "id": "B",
+        "title": "Measure-Theoretic Probability Theory",
+        "part": null,
+        "startPage": 243,
+        "sections": [],
+        "endPage": 250,
+        "pdf": {
+          "file": "4 - Appendix.pdf",
+          "offset": 236,
+          "pages": 39
+        }
+      },
+      {
+        "id": "C",
+        "title": "Convergence of Sequences",
+        "part": null,
+        "startPage": 251,
+        "sections": [
+          {
+            "id": "C.1",
+            "title": "Convergence of deterministic sequences",
+            "page": 251,
+            "level": "section",
+            "optional": false
+          },
+          {
+            "id": "C.2",
+            "title": "Convergence of stochastic sequences",
+            "page": 254,
+            "level": "section",
+            "optional": false
+          }
+        ],
+        "endPage": 258,
+        "pdf": {
+          "file": "4 - Appendix.pdf",
+          "offset": 236,
+          "pages": 39
+        }
+      },
+      {
+        "id": "D",
+        "title": "Preliminaries for Gradient Descent",
+        "part": null,
+        "startPage": 259,
+        "sections": [],
+        "endPage": 269,
+        "pdf": {
+          "file": "4 - Appendix.pdf",
+          "offset": 236,
+          "pages": 39
+        }
+      }
+    ],
+    "matter": [
+      {
+        "title": "Mathematical Foundations of Reinforcement Learning Shiyu Zhao",
+        "page": "v"
+      },
+      {
+        "title": "Preface",
+        "page": "vii"
+      },
+      {
+        "title": "Overview of this Book",
+        "page": "ix"
+      },
+      {
+        "title": "Bibliography",
+        "page": "270"
+      },
+      {
+        "title": "Symbols",
+        "page": "271"
+      },
+      {
+        "title": "Index",
+        "page": "273"
+      }
+    ]
+  },
+  "lectures": {
+    "key": "lectures",
+    "role": "supplementary",
+    "title": "Lecture slides L1–L10 (Zhao)",
+    "authors": "Shiyu Zhao",
+    "items": [
+      {
+        "id": "L1",
+        "number": 1,
+        "title": "Basic Concepts",
+        "slides": 28,
+        "zhaoChapter": "1"
+      },
+      {
+        "id": "L2",
+        "number": 2,
+        "title": "Bellman Equation",
+        "slides": 54,
+        "zhaoChapter": "2"
+      },
+      {
+        "id": "L3",
+        "number": 3,
+        "title": "Bellman Optimality Equation",
+        "slides": 46,
+        "zhaoChapter": "3"
+      },
+      {
+        "id": "L4",
+        "number": 4,
+        "title": "Value Iteration and Policy Iteration",
+        "slides": 38,
+        "zhaoChapter": "4"
+      },
+      {
+        "id": "L5",
+        "number": 5,
+        "title": "Monte Carlo Methods",
+        "slides": 48,
+        "zhaoChapter": "5"
+      },
+      {
+        "id": "L6",
+        "number": 6,
+        "title": "Stochastic Approximation and Stochastic Gradient Descent",
+        "slides": 62,
+        "zhaoChapter": "6"
+      },
+      {
+        "id": "L7",
+        "number": 7,
+        "title": "Temporal-Difference Learning",
+        "slides": 56,
+        "zhaoChapter": "7"
+      },
+      {
+        "id": "L8",
+        "number": 8,
+        "title": "Value Function Methods",
+        "slides": 227,
+        "zhaoChapter": "8"
+      },
+      {
+        "id": "L9",
+        "number": 9,
+        "title": "Policy Gradient Methods",
+        "slides": 43,
+        "zhaoChapter": "9"
+      },
+      {
+        "id": "L10",
+        "number": 10,
+        "title": "Actor-Critic Methods",
+        "slides": 56,
+        "zhaoChapter": "10"
+      }
+    ]
+  }
+}

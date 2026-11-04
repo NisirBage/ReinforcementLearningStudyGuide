@@ -1,0 +1,68 @@
+{
+  "unit": "ch02",
+  "sections": [
+    {
+      "id": "ch02.s2-3",
+      "section": "2.3",
+      "title": "Incremental implementation",
+      "concepts": ["ch02.incremental-update", "ch02.general-update-rule"],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Keeping every reward just to recompute an average is wasteful. If you already know the mean of the first $k-1$ rewards, one new reward tells you exactly how to correct it: shift the mean toward the new reward by a share that gets smaller as more rewards have been averaged."
+        },
+        {
+          "layer": "formal",
+          "body": "For one action, let $Q_k$ be the estimate before its $k$-th reward $R_k$ arrives, i.e. the mean of the $k-1$ rewards seen so far. The incremental rule computes $Q_{k+1}$ from $Q_k$, $R_k$ and $k$ alone.",
+          "refs": ["eq.ch02.incremental-update"]
+        },
+        {
+          "layer": "derivation",
+          "body": "Expand the average of $k$ rewards, separate the newest one, and rewrite the sum of the first $k-1$ rewards as $(k-1)Q_k$. The step-by-step derivation is shown with the equation.",
+          "refs": ["eq.ch02.incremental-update"]
+        },
+        {
+          "layer": "example",
+          "body": "Rewards $6, 2, 4$ with $Q_1 = 0$: $Q_2 = 6$, $Q_3 = 6 + \\tfrac12(2 - 6) = 4$, $Q_4 = 4 + \\tfrac13(4 - 4) = 4$. Notice that $Q_2 = R_1$: the arbitrary starting value is forgotten after the first reward."
+        },
+        {
+          "layer": "computation",
+          "body": "Store two numbers per action, $Q$ and the count $k$. Each update costs one subtraction, one division and one addition, regardless of how many rewards came before.",
+          "refs": ["eq.ch02.general-update"]
+        },
+        {
+          "layer": "connections",
+          "body": "The pattern *new estimate = old estimate + step size × (target − old estimate)* returns in Monte Carlo methods (Chapter 5), TD learning (Chapter 6) and function approximation (Chapter 9); only the target and the step size change."
+        }
+      ],
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [36, 38], "pdfPages": [50, 52] }]
+    },
+    {
+      "id": "ch02.s2-4",
+      "section": "2.4",
+      "title": "Tracking a nonstationary problem",
+      "concepts": ["ch02.constant-step-size", "ch02.recency-weighted-average", "ch02.step-size-conditions"],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "If the arms' true values drift, an average that weighs a reward from long ago as much as yesterday's will lag behind. A constant step size gives recent rewards more say."
+        },
+        {
+          "layer": "math",
+          "body": "With constant $\\alpha$, unrolling the update shows the estimate is a weighted average of $Q_1$ and every past reward, with weights that shrink by a factor $(1-\\alpha)$ for each newer reward and that add up to 1.",
+          "refs": ["eq.ch02.constant-step", "eq.ch02.recency-weighted"]
+        },
+        {
+          "layer": "example",
+          "body": "With $k = 3$ and $\\alpha = 0.5$: weight $0.125$ on $Q_1$, then $0.125, 0.25, 0.5$ on $R_1, R_2, R_3$. The newest reward carries as much weight as all the older information together."
+        },
+        {
+          "layer": "formal",
+          "body": "Two conditions on the step sizes are sufficient for convergence with probability 1. The sample-average choice $1/k$ meets both; a constant $\\alpha$ fails the second, which is exactly why it keeps tracking change.",
+          "refs": ["eq.ch02.step-size-conditions"]
+        }
+      ],
+      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }]
+    }
+  ]
+}

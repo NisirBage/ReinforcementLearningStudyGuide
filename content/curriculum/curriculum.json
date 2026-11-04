@@ -1,0 +1,322 @@
+{
+  "$comment": "Core syllabus = the April 2015 Sutton & Barto draft, chapter for chapter (D-021). Supplementary units attach to a core location but are never part of the core syllabus. Checked by tools/validate_content.ts.",
+  "core": [
+    {
+      "id": "ch01",
+      "chapter": "1",
+      "title": "The Reinforcement Learning Problem",
+      "status": "core"
+    },
+    {
+      "id": "ch02",
+      "chapter": "2",
+      "title": "Multi-arm Bandits",
+      "status": "core"
+    },
+    {
+      "id": "ch03",
+      "chapter": "3",
+      "title": "Finite Markov Decision Processes",
+      "status": "core"
+    },
+    {
+      "id": "ch04",
+      "chapter": "4",
+      "title": "Dynamic Programming",
+      "status": "core"
+    },
+    {
+      "id": "ch05",
+      "chapter": "5",
+      "title": "Monte Carlo Methods",
+      "status": "core"
+    },
+    {
+      "id": "ch06",
+      "chapter": "6",
+      "title": "Temporal-Difference Learning",
+      "status": "core"
+    },
+    {
+      "id": "ch07",
+      "chapter": "7",
+      "title": "Eligibility Traces",
+      "status": "core"
+    },
+    {
+      "id": "ch08",
+      "chapter": "8",
+      "title": "Planning and Learning with Tabular Methods",
+      "status": "core"
+    },
+    {
+      "id": "ch09",
+      "chapter": "9",
+      "title": "On-policy Approximation of Action Values",
+      "status": "core"
+    },
+    {
+      "id": "ch10",
+      "chapter": "10",
+      "title": "Off-policy Approximation of Action Values",
+      "status": "empty-in-draft"
+    },
+    {
+      "id": "ch11",
+      "chapter": "11",
+      "title": "Policy Approximation",
+      "status": "core"
+    },
+    {
+      "id": "ch12",
+      "chapter": "12",
+      "title": "Psychology",
+      "status": "empty-in-draft"
+    },
+    {
+      "id": "ch13",
+      "chapter": "13",
+      "title": "Neuroscience",
+      "status": "empty-in-draft"
+    },
+    {
+      "id": "ch14",
+      "chapter": "14",
+      "title": "Applications and Case Studies",
+      "status": "core"
+    },
+    {
+      "id": "ch15",
+      "chapter": "15",
+      "title": "Prospects",
+      "status": "core"
+    }
+  ],
+  "supplementary": [
+    {
+      "id": "sup-zhao-01",
+      "title": "Zhao: basic concepts and the grid-world formulation",
+      "attachTo": {
+        "chapter": "3",
+        "section": "3.6"
+      },
+      "zhao": [
+        "1"
+      ],
+      "lectures": [
+        "L1"
+      ]
+    },
+    {
+      "id": "sup-zhao-02",
+      "title": "Zhao: matrix-vector Bellman equation, closed-form and iterative solutions",
+      "attachTo": {
+        "chapter": "3",
+        "section": "3.7"
+      },
+      "zhao": [
+        "2"
+      ],
+      "lectures": [
+        "L2"
+      ]
+    },
+    {
+      "id": "sup-zhao-03",
+      "title": "Zhao: contraction mapping and the Bellman optimality equation",
+      "attachTo": {
+        "chapter": "3",
+        "section": "3.8"
+      },
+      "zhao": [
+        "3"
+      ],
+      "lectures": [
+        "L3"
+      ]
+    },
+    {
+      "id": "sup-zhao-04",
+      "title": "Zhao: truncated policy iteration and convergence proofs",
+      "attachTo": {
+        "chapter": "4",
+        "section": "4.6"
+      },
+      "zhao": [
+        "4"
+      ],
+      "lectures": [
+        "L4"
+      ]
+    },
+    {
+      "id": "sup-zhao-05",
+      "title": "Zhao: MC Basic, MC Exploring Starts, MC ε-Greedy",
+      "attachTo": {
+        "chapter": "5",
+        "section": "5.3"
+      },
+      "zhao": [
+        "5"
+      ],
+      "lectures": [
+        "L5"
+      ]
+    },
+    {
+      "id": "sup-zhao-06",
+      "title": "Zhao: stochastic approximation, Robbins–Monro and SGD",
+      "attachTo": {
+        "chapter": "2",
+        "section": "2.4"
+      },
+      "zhao": [
+        "6"
+      ],
+      "lectures": [
+        "L6"
+      ]
+    },
+    {
+      "id": "sup-zhao-07",
+      "title": "Zhao: TD as stochastic approximation; n-step and Expected Sarsa",
+      "attachTo": {
+        "chapter": "6",
+        "section": "6.1"
+      },
+      "zhao": [
+        "7"
+      ],
+      "lectures": [
+        "L7"
+      ]
+    },
+    {
+      "id": "sup-zhao-08",
+      "title": "Zhao: value-function approximation theory and deep Q-learning",
+      "attachTo": {
+        "chapter": "9",
+        "section": "9.2"
+      },
+      "zhao": [
+        "8"
+      ],
+      "lectures": [
+        "L8"
+      ]
+    },
+    {
+      "id": "sup-zhao-09",
+      "title": "Zhao: policy gradient theorem and REINFORCE",
+      "attachTo": {
+        "chapter": "11"
+      },
+      "zhao": [
+        "9"
+      ],
+      "lectures": [
+        "L9"
+      ]
+    },
+    {
+      "id": "sup-zhao-10",
+      "title": "Zhao: A2C, off-policy and deterministic actor–critic",
+      "attachTo": {
+        "chapter": "11",
+        "section": "11.1"
+      },
+      "zhao": [
+        "10"
+      ],
+      "lectures": [
+        "L10"
+      ]
+    },
+    {
+      "id": "sup-zhao-math",
+      "title": "Zhao appendices: probability, convergence of sequences, gradient descent",
+      "attachTo": {
+        "chapter": "2",
+        "section": "2.4"
+      },
+      "zhao": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "lectures": []
+    },
+    {
+      "id": "sup-regret",
+      "title": "Regret in bandit problems",
+      "attachTo": {
+        "chapter": "2",
+        "section": "2.6"
+      },
+      "papers": [
+        "Lai & Robbins (1985)",
+        "Auer, Cesa-Bianchi & Fischer (2002)"
+      ]
+    },
+    {
+      "id": "sup-double-q",
+      "title": "Maximization bias and Double Q-learning",
+      "attachTo": {
+        "chapter": "6",
+        "section": "6.5"
+      },
+      "papers": [
+        "van Hasselt (2010)"
+      ]
+    },
+    {
+      "id": "sup-ppo",
+      "title": "Trust-region and clipped policy optimisation (TRPO, PPO)",
+      "attachTo": {
+        "chapter": "11"
+      },
+      "papers": [
+        "Schulman et al. (2015)",
+        "Schulman et al. (2017)"
+      ]
+    }
+  ],
+  "emptyInSource": [
+    {
+      "chapter": "8",
+      "section": "8.8",
+      "note": "Heading only in the April 2015 draft."
+    },
+    {
+      "chapter": "10",
+      "section": null,
+      "note": "Chapter title page only in the April 2015 draft."
+    },
+    {
+      "chapter": "12",
+      "section": null,
+      "note": "Chapter title page only in the April 2015 draft."
+    },
+    {
+      "chapter": "13",
+      "section": null,
+      "note": "Chapter title page only in the April 2015 draft."
+    },
+    {
+      "chapter": "15",
+      "section": "15.2",
+      "note": "Heading only in the April 2015 draft."
+    },
+    {
+      "chapter": "15",
+      "section": "15.3",
+      "note": "Heading only in the April 2015 draft."
+    },
+    {
+      "chapter": "15",
+      "section": "15.4",
+      "note": "Heading only in the April 2015 draft."
+    }
+  ]
+}

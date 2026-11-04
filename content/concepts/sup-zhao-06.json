@@ -1,0 +1,16 @@
+[
+  {
+    "id": "sup-zhao-06.robbins-monro",
+    "unit": "sup-zhao-06",
+    "title": "Robbins–Monro algorithm",
+    "kind": "algorithm",
+    "summary": "An iterative method for finding a root of g(w) = 0 when only noisy evaluations g̃(w, η) = g(w) + η are available: step against the observation with positive coefficients a_k. Zhao uses it to explain why incremental averages and TD updates converge.",
+    "prereqs": [],
+    "related": [],
+    "keywords": ["stochastic approximation", "root finding", "noisy observation", "RM algorithm"],
+    "sources": [
+      { "kind": "zhao", "chapter": "6", "section": "6.2", "printedPages": [103, 104], "pdfPages": [3, 4] },
+      { "kind": "lecture", "lecture": "L6", "slides": [15, 19] }
+    ]
+  }
+]
