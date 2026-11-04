@@ -3,7 +3,7 @@
 // one-typo matching for longer words, RL abbreviation expansion, and one hop of cross-references
 // ("related") so a hit on "Bellman equation" also surfaces the concepts it links to.
 
-export type DocType = "chapter" | "section" | "unit" | "concept" | "equation" | "algorithm" | "example" | "definition" | "notation";
+export type DocType = "chapter" | "section" | "unit" | "concept" | "equation" | "algorithm" | "example" | "definition" | "notation" | "figure";
 
 export interface SearchDoc {
   id: string;

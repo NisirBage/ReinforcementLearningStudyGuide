@@ -56,3 +56,27 @@ A flag can carry a `suggestion`, which is shown separately from the source text.
   - −2.875 prints as −2.9 and −8.352 as −8.4, so the rule is not truncation;
   - the exact −1.75 at k = 2 prints as −1.7, so it is not ordinary rounding either.
 - The values are correct. Recorded as a `figure-rounding` flag on Example 4.1 and backed by the checks `ch04.fig4-2-two-array-iterates` and `ch04.fig4-2-rounding-quirk`.
+
+## D-028: IndexedDB is the browser store; the envelope logic is shared (Accepted, 2026-11-04)
+- Progress is kept in IndexedDB (`app/src/store/idb.ts`), as in the NLP Study Lab.
+- The versioned envelope, the migration and the corrupt-data backup are the same code as the localStorage path: `decodeSaved` and `encodeSaved` were extracted from `persistence.ts`. The saved format is unchanged.
+- A profile saved earlier in localStorage is moved in once.
+- The store sits behind a small key-value interface, so its logic is unit-tested with an in-memory store. The real IndexedDB path was verified in the browser: a status was set, the page reloaded, and the status was read back.
+
+## D-029: Figures are redrawn from structured data (Accepted, 2026-11-04)
+- New content type `Figure` (`content/figures/`), in two kinds:
+  - `value-grids`: printed grids such as Figure 4.2;
+  - `backup-diagram`: diagrams such as Figure 3.4(a).
+- No image is copied from either PDF. Figures cite printed and PDF pages, and need a page-image or computed verification like every other textbook item.
+- The Figure 4.2 transcription now lives only in `content/figures/ch04.json`; `checks.ts` reads it from there, so the UI and the checks share one copy.
+- "Show exact values" computes the iterates with the tested `dp.iterativePolicyEvaluation`.
+
+## D-030: Interface rules (Accepted, 2026-11-04)
+- React components only render content and call pure functions:
+  - grading: `domain/grade.ts`;
+  - lookups: `content/indexes.ts`;
+  - progress: `domain/progress.ts`;
+  - search: `domain/search.ts`.
+- Search results link to real routes, not `#anchors`, because routing uses the URL hash.
+- Any `console.error` during a UI test fails it (`tests/setup.ts`).
+- Supplementary material is linked from core pages ("Go further"), never rendered inside them.

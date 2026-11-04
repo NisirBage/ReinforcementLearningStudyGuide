@@ -1,0 +1,47 @@
+[
+  {
+    "id": "fig.ch03.backup-diagram-v",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.bellman-equation-v"
+    ],
+    "title": "Backup diagram for v_π",
+    "bookLabel": "Figure 3.4(a)",
+    "spec": {
+      "kind": "backup-diagram",
+      "root": "state",
+      "branching": [
+        3,
+        2
+      ],
+      "labels": {
+        "root": "s",
+        "edge": "π",
+        "mid": "a",
+        "reward": "r",
+        "leaf": "s′"
+      }
+    },
+    "caption": "Open circles are states, solid circles are state–action pairs. From the state s at the top, the policy chooses among actions; the environment answers each with a reward r and a next state s′. The Bellman equation averages over every path in this tree.",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          72,
+          72
+        ],
+        "pdfPages": [
+          86,
+          86
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04",
+      "note": "Branching (three actions, two outcomes each) and labels as drawn on printed p. 72; the drawing is our own."
+    }
+  }
+]

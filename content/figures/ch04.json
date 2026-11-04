@@ -1,0 +1,178 @@
+[
+  {
+    "id": "fig.ch04.policy-evaluation-grids",
+    "unit": "ch04",
+    "concepts": [
+      "ch04.gridworld-4x4",
+      "ch04.iterative-policy-evaluation"
+    ],
+    "title": "Value estimates v_k for the random policy on the 4×4 gridworld",
+    "bookLabel": "Figure 4.2",
+    "spec": {
+      "kind": "value-grids",
+      "rows": 4,
+      "cols": 4,
+      "terminal": [
+        0,
+        15
+      ],
+      "grids": [
+        {
+          "label": "k = 0",
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "label": "k = 1",
+          "values": [
+            0,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            0
+          ]
+        },
+        {
+          "label": "k = 2",
+          "values": [
+            0,
+            -1.7,
+            -2.0,
+            -2.0,
+            -1.7,
+            -2.0,
+            -2.0,
+            -2.0,
+            -2.0,
+            -2.0,
+            -2.0,
+            -1.7,
+            -2.0,
+            -2.0,
+            -1.7,
+            0
+          ]
+        },
+        {
+          "label": "k = 3",
+          "values": [
+            0,
+            -2.4,
+            -2.9,
+            -3.0,
+            -2.4,
+            -2.9,
+            -3.0,
+            -2.9,
+            -2.9,
+            -3.0,
+            -2.9,
+            -2.4,
+            -3.0,
+            -2.9,
+            -2.4,
+            0
+          ]
+        },
+        {
+          "label": "k = 10",
+          "values": [
+            0,
+            -6.1,
+            -8.4,
+            -9.0,
+            -6.1,
+            -7.7,
+            -8.4,
+            -8.4,
+            -8.4,
+            -8.4,
+            -7.7,
+            -6.1,
+            -9.0,
+            -8.4,
+            -6.1,
+            0
+          ]
+        },
+        {
+          "label": "k = ∞",
+          "values": [
+            0,
+            -14,
+            -20,
+            -22,
+            -14,
+            -18,
+            -20,
+            -20,
+            -20,
+            -20,
+            -18,
+            -14,
+            -22,
+            -20,
+            -14,
+            0
+          ]
+        }
+      ],
+      "env": "gridworld4x4"
+    },
+    "caption": "Successive approximations v_k produced by iterative policy evaluation for the equiprobable random policy. The shaded corners are the single terminal state. Values are the printed one-decimal figures; the exact iterates can be shown beside them.",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          93,
+          93
+        ],
+        "pdfPages": [
+          107,
+          107
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04",
+      "note": "All 96 cells transcribed from the page image; compared with computed iterates by ch04.fig4-2-two-array-iterates."
+    },
+    "flags": [
+      {
+        "type": "figure-rounding",
+        "note": "Printed one-decimal values follow 'nearest, exact halves toward zero': the exact −1.75 at k = 2 is printed as −1.7.",
+        "suggestion": "Read −1.7 at k = 2 as −1.75."
+      }
+    ]
+  }
+]

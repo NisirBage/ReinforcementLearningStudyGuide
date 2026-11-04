@@ -48,7 +48,7 @@ export function buildSearchDocs(b: ContentBundle): SearchDoc[] {
         title: `${s.id} ${s.title}`,
         body: empty(c.id, s.id) ?? (s.optional ? "Marked ∗ (optional on first reading)." : undefined),
         ref: pages ? `S&B 2015 §${s.id} · ${span(...pages)} (${pdfSpan([pages[0] + off, pages[1] + off])})` : `S&B 2015 §${s.id}`,
-        href: `/learn/${unit}#s-${s.id}`,
+        href: `/learn/${unit}/${s.id}`,
         related: [`sb:${c.id}`],
         tier: "core",
       });
@@ -74,7 +74,7 @@ export function buildSearchDocs(b: ContentBundle): SearchDoc[] {
       body: c.summary,
       keywords: c.keywords,
       ref: where(c.sources, c.unit),
-      href: `/learn/${c.unit}#${c.id}`,
+      href: `/concept/${c.id}`,
       related: [...c.related, ...c.prereqs].map(conceptDoc),
       tier: tierOf(c.unit),
     });
@@ -93,7 +93,7 @@ export function buildSearchDocs(b: ContentBundle): SearchDoc[] {
       body: e.intuition,
       keywords: [...e.symbols.map((s) => s.meaning), ...(e.bookLabel ? [e.bookLabel.replace(/[()]/g, ""), "eq " + e.bookLabel] : [])],
       ref: where(e.sources, e.unit),
-      href: `/revision/equations#${e.id}`,
+      href: `/equation/${e.id}`,
       related: [conceptDoc(e.concept)],
       tier: tierOf(e.unit),
     });
@@ -104,7 +104,7 @@ export function buildSearchDocs(b: ContentBundle): SearchDoc[] {
       title: `${a.name}${a.bookLabel ? " (" + a.bookLabel + ")" : ""}`,
       keywords: [a.bookLabel ?? "", "pseudocode"],
       ref: where(a.sources, a.unit),
-      href: `/revision/algorithms#${a.id}`,
+      href: `/algorithm/${a.id}`,
       related: [conceptDoc(a.concept)],
       tier: tierOf(a.unit),
     });
@@ -116,9 +116,21 @@ export function buildSearchDocs(b: ContentBundle): SearchDoc[] {
       body: x.summary,
       keywords: [x.bookLabel ?? "", "worked example"],
       ref: where(x.sources, x.unit),
-      href: `/learn/${x.unit}#${x.id}`,
+      href: `/example/${x.id}`,
       related: x.concepts.map(conceptDoc),
       tier: tierOf(x.unit),
+    });
+  for (const f of b.figures)
+    docs.push({
+      id: `figure:${f.id}`,
+      type: "figure",
+      title: `${f.title}${f.bookLabel ? " (" + f.bookLabel + ")" : ""}`,
+      body: f.caption,
+      keywords: [f.bookLabel ?? "", "figure", "diagram"],
+      ref: where(f.sources, f.unit),
+      href: `/figure/${f.id}`,
+      related: f.concepts.map(conceptDoc),
+      tier: tierOf(f.unit),
     });
   for (const n of b.notation)
     docs.push({
@@ -128,12 +140,12 @@ export function buildSearchDocs(b: ContentBundle): SearchDoc[] {
       body: n.note2018,
       keywords: ["notation", "symbol"],
       ref: n.sources.map(describeSource).join(" · "),
-      href: `/revision/notation#${n.id}`,
+      href: `/revision/notation?focus=${encodeURIComponent(n.id)}`,
       tier: "core",
     });
   // Concepts link to their equations, algorithms and examples, so a concept hit surfaces them as cross-references.
   for (const d of docs)
-    if (d.type === "equation" || d.type === "algorithm" || d.type === "example")
+    if (d.type === "equation" || d.type === "algorithm" || d.type === "example" || d.type === "figure")
       for (const r of d.related ?? []) {
         const c = byId.get(r);
         if (c && !c.related!.includes(d.id)) c.related!.push(d.id);

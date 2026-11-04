@@ -162,3 +162,13 @@ export function completion(p: ProgressData, concepts: string[]): number {
   const done = concepts.filter((c) => ["understood", "mastered"].includes(statusOf(p, c))).length;
   return done / concepts.length;
 }
+
+/**
+ * Today's review queue: cards due by `now` (most overdue first), then up to `newLimit` cards never reviewed,
+ * in the order given. Cards reviewed but not yet due are left out.
+ */
+export function reviewQueue(p: ProgressData, cardIds: string[], now: number, newLimit = 10): { id: string; isNew: boolean }[] {
+  const due = dueCards(p, now).filter((id) => cardIds.includes(id));
+  const fresh = cardIds.filter((id) => !p.cards[id]).slice(0, newLimit);
+  return [...due.map((id) => ({ id, isNew: false })), ...fresh.map((id) => ({ id, isNew: true }))];
+}

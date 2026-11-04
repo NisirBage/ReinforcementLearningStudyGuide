@@ -190,6 +190,28 @@ export interface Example {
   flags?: Flag[];
 }
 
+/**
+ * A figure redrawn from structured data (never a copied image). Kinds:
+ *  - "value-grids": state-value grids as printed (e.g. Figure 4.2); cells row-major, `terminal` cell indices shaded.
+ *  - "backup-diagram": a backup diagram (Figure 3.4) drawn from its branching structure.
+ */
+export type FigureSpec =
+  | { kind: "value-grids"; rows: number; cols: number; terminal: number[]; grids: { label: string; values: number[] }[]; env?: "gridworld4x4" }
+  | { kind: "backup-diagram"; root: "state" | "action"; branching: [number, number]; labels: { root: string; edge?: string; mid: string; reward: string; leaf: string } };
+
+export interface Figure {
+  id: string; // "fig.ch04.policy-evaluation-grids"
+  unit: string;
+  concepts: string[];
+  title: string;
+  bookLabel?: string; // "Figure 4.2"
+  spec: FigureSpec;
+  caption: string; // original wording
+  sources: SourceRef[];
+  verification: Verification;
+  flags?: Flag[];
+}
+
 export const LAYERS = ["intuition", "formal", "math", "derivation", "example", "computation", "connections", "practice"] as const;
 export type Layer = (typeof LAYERS)[number];
 
@@ -269,6 +291,7 @@ export interface ContentBundle {
   examples: Example[];
   lessons: Lesson[];
   questionFiles: QuestionFile[];
+  figures: Figure[];
 }
 
 // ---------- Validation helpers ----------
@@ -581,7 +604,32 @@ export function validateBundle(b: ContentBundle, ctx: ValidationContext): string
     errs.push(...validateSourceList(x.sources, `${at}.sources`, src, x.unit), ...validateFlags(x.flags, at), ...validateVerification(x.verification, at, ctx.checks, true));
   });
 
-  const refIds = ids; // equations, algorithms and examples that lesson layers may show
+  b.figures.forEach((f, i) => {
+    const at = `figure ${f?.id ?? i}`;
+    if (!isStr(f.id) || !itemId("fig").test(f.id)) errs.push(`${at}: id must look like fig.<unit>.<slug>`);
+    else claim(f.id, at);
+    errs.push(...unitOk(f.unit, at));
+    if (!strArr(f.concepts) || f.concepts.length === 0 || !f.concepts.every((c) => conceptIds.has(c) && sameSide(f.unit, c))) errs.push(`${at}: concepts must exist on the same side of the core/supplementary line`);
+    if (!isStr(f.title) || !isStr(f.caption)) errs.push(`${at}: title and caption required`);
+    const s = f.spec as unknown;
+    if (!isObj(s)) errs.push(`${at}: spec missing`);
+    else if (s.kind === "value-grids") {
+      const n = isInt(s.rows) && isInt(s.cols) ? s.rows * s.cols : -1;
+      if (n < 1) errs.push(`${at}: rows and cols must be positive integers`);
+      if (!Array.isArray(s.terminal) || !s.terminal.every((x) => isInt(x) && x >= 0 && x < n)) errs.push(`${at}: terminal cells must be cell indices`);
+      if (!Array.isArray(s.grids) || s.grids.length === 0 || !s.grids.every((g) => isObj(g) && isStr(g.label) && Array.isArray(g.values) && g.values.length === n && g.values.every(isNum)))
+        errs.push(`${at}: every grid needs a label and rows × cols numbers`);
+      if (s.env !== undefined && s.env !== "gridworld4x4") errs.push(`${at}: unknown env`);
+    } else if (s.kind === "backup-diagram") {
+      if (s.root !== "state" && s.root !== "action") errs.push(`${at}: root must be state or action`);
+      if (!Array.isArray(s.branching) || s.branching.length !== 2 || !s.branching.every((x) => isInt(x) && x >= 1 && x <= 5)) errs.push(`${at}: branching must be two integers 1–5`);
+      if (!isObj(s.labels) || !isStr(s.labels.root) || !isStr(s.labels.mid) || !isStr(s.labels.reward) || !isStr(s.labels.leaf)) errs.push(`${at}: labels need root, mid, reward and leaf`);
+    } else errs.push(`${at}: unknown figure kind`);
+    if (!isSupplementaryUnit(f.unit) && f.verification?.method !== "page-image" && f.verification?.method !== "computed") errs.push(`${at}: textbook figures must be checked against the page image or by computation`);
+    errs.push(...validateSourceList(f.sources, `${at}.sources`, src, f.unit), ...validateFlags(f.flags, at), ...validateVerification(f.verification, at, ctx.checks, true));
+  });
+
+  const refIds = ids; // equations, algorithms, examples and figures that lesson layers may show
   b.lessons.forEach((l, i) => {
     const at = `lesson ${l?.unit ?? i}`;
     errs.push(...unitOk(l.unit, at));

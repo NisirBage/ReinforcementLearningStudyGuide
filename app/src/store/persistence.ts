@@ -76,28 +76,35 @@ export interface LoadResult {
   message?: string;
 }
 
+/** Parses a saved envelope. Throws a readable Error for anything that is not a profile this version can read. */
+export function decodeSaved(text: string): ProgressData {
+  const env = JSON.parse(text) as Partial<Envelope>;
+  if (typeof env !== "object" || env === null || !("data" in env)) throw new Error("not a saved profile");
+  if ((env.schema ?? 0) > SCHEMA_VERSION) throw new Error(`saved by a newer version of the app (schema ${env.schema})`);
+  return migrate(env.data);
+}
+
+export const encodeSaved = (data: ProgressData, now = Date.now()): string => JSON.stringify({ schema: SCHEMA_VERSION, savedAt: now, data } satisfies Envelope);
+
+export const backupKeyFor = (now: number) => `rlsl:backup:${now}`;
+export const recoveredMessage = (e: unknown, backupKey: string) =>
+  `Saved progress could not be read (${(e as Error).message}). A copy was kept under "${backupKey}" and a fresh profile was started.`;
+
 export function loadProgress(key: string = STORAGE_KEY, now = Date.now()): LoadResult {
   const ls = storage();
   if (!ls) return { data: emptyProgress(), status: "fresh", message: "Browser storage is unavailable; progress will not be saved." };
   const text = ls.getItem(key);
   if (!text) return { data: emptyProgress(), status: "fresh" };
   try {
-    const env = JSON.parse(text) as Partial<Envelope>;
-    if (typeof env !== "object" || env === null || !("data" in env)) throw new Error("not a saved profile");
-    if ((env.schema ?? 0) > SCHEMA_VERSION) throw new Error(`saved by a newer version of the app (schema ${env.schema})`);
-    return { data: migrate(env.data), status: "loaded" };
+    return { data: decodeSaved(text), status: "loaded" };
   } catch (e) {
-    const backupKey = `rlsl:backup:${now}`;
+    const backupKey = backupKeyFor(now);
     try {
       ls.setItem(backupKey, text);
     } catch {
       /* storage full: the unreadable copy cannot be kept */
     }
-    return {
-      data: emptyProgress(),
-      status: "recovered",
-      message: `Saved progress could not be read (${(e as Error).message}). A copy was kept under "${backupKey}" and a fresh profile was started.`,
-    };
+    return { data: emptyProgress(), status: "recovered", message: recoveredMessage(e, backupKey) };
   }
 }
 
@@ -105,8 +112,7 @@ export function saveProgress(data: ProgressData, key: string = STORAGE_KEY, now 
   const ls = storage();
   if (!ls) return false;
   try {
-    const env: Envelope = { schema: SCHEMA_VERSION, savedAt: now, data };
-    ls.setItem(key, JSON.stringify(env));
+    ls.setItem(key, encodeSaved(data, now));
     return true;
   } catch {
     return false;

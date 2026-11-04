@@ -29,5 +29,6 @@ export function loadBundle(): ContentBundle {
     examples: flat("examples"),
     lessons: jsonFiles("lessons").map((f) => f.data as ContentBundle["lessons"][number]),
     questionFiles: jsonFiles("questions").map((f) => f.data as ContentBundle["questionFiles"][number]),
+    figures: flat("figures"),
   };
 }

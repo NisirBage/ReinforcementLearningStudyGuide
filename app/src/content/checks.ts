@@ -7,17 +7,16 @@ import { iterativePolicyEvaluation } from "../lib/rl/dp";
 import { actionValue, bellmanResidual, equiprobablePolicy, greedyActions } from "../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../lib/rl/envs/gridworld4x4";
 import { robbinsMonro } from "../lib/rl/sa";
+import figuresCh04 from "../../../content/figures/ch04.json";
 
 export type Check = { kind: "fact"; run: () => boolean } | { kind: "answer"; run: () => number[] };
 
-/** Figure 4.2 (printed p. 93, PDF p. 107): v_k for the equiprobable random policy, cells row-major. */
-export const FIG_4_2: Record<string, number[]> = {
-  "1": [0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0],
-  "2": [0, -1.7, -2.0, -2.0, -1.7, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.7, -2.0, -2.0, -1.7, 0],
-  "3": [0, -2.4, -2.9, -3.0, -2.4, -2.9, -3.0, -2.9, -2.9, -3.0, -2.9, -2.4, -3.0, -2.9, -2.4, 0],
-  "10": [0, -6.1, -8.4, -9.0, -6.1, -7.7, -8.4, -8.4, -8.4, -8.4, -7.7, -6.1, -9.0, -8.4, -6.1, 0],
-  inf: [0, -14, -20, -22, -14, -18, -20, -20, -20, -20, -18, -14, -22, -20, -14, 0],
-};
+
+/** Figure 4.2 (printed p. 93, PDF p. 107), as transcribed in content/figures/ch04.json, keyed "1", "2", "3", "10", "inf". */
+const fig42 = figuresCh04.find((f) => f.id === "fig.ch04.policy-evaluation-grids")!.spec.grids;
+export const FIG_4_2: Record<string, number[]> = Object.fromEntries(
+  fig42.filter((g) => g.label !== "k = 0").map((g) => [g.label.replace("k = ", "").replace("∞", "inf"), g.values]),
+);
 
 /**
  * One decimal, nearest value, exact halves toward zero. This is the only simple rule we found that reproduces every
