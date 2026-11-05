@@ -97,6 +97,12 @@ export function fetchIndexes(units: string[], withNotation = false): Promise<Ind
   );
 }
 
+/** The indexes for these units if they are already in memory, else null (lets a click act at once). */
+export function peekIndexes(units: string[]): Indexes | null {
+  const p = fetchIndexes(units);
+  return isDone(p) ? (p as Tracked<Indexes>).value! : null;
+}
+
 /** Every unit with content: core units, and supplementary ones only when asked for. */
 export const allUnits = (supplementary: boolean) => catalog.contentUnits.filter((u) => supplementary || !u.startsWith("sup-"));
 

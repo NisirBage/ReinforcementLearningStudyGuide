@@ -26,6 +26,67 @@
       "sources": [{ "kind": "lecture", "lecture": "L6", "slides": [21, 21] }],
       "verification": { "method": "computed", "on": "2026-11-04", "check": "sup-zhao-06-q001" },
       "reviewed": true
+    },
+    {
+      "id": "sup-zhao-06-q002",
+      "unit": "sup-zhao-06",
+      "section": "6.2.1",
+      "provenance": {
+        "kind": "supplementary",
+        "basis": [
+          "eq.sup-zhao-06.rm-update"
+        ]
+      },
+      "concepts": [
+        "sup-zhao-06.robbins-monro"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Supplementary (Zhao, Ch. 6). In Zhao's Robbins–Monro theorem (Theorem 6.1), which condition is placed on the observation error $\\eta_k$?",
+      "options": [
+        "$\\mathbb{E}[\\eta_k \\mid \\mathcal{H}_k] = 0$ and $\\mathbb{E}[\\eta_k^2 \\mid \\mathcal{H}_k] < \\infty$",
+        "$\\eta_k$ must be Gaussian",
+        "$\\eta_k = 0$ for every $k$",
+        "$|\\eta_k| \\le c_2$ for every $k$"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: this is condition (c) of Theorem 6.1.",
+        "Zhao notes explicitly that the condition does not require the error to be Gaussian.",
+        "Zero error is only the simple illustrative example before the theorem. The theorem is about noisy observations.",
+        "$c_2$ bounds the gradient of $g$ in condition (a). It is not a bound on the noise."
+      ],
+      "solution": [
+        "Theorem 6.1 has three conditions: (a) bounds on the gradient of $g$, (b) the step sizes satisfy $\\sum a_k = \\infty$ and $\\sum a_k^2 < \\infty$, and (c) the error has zero conditional mean and finite conditional variance.",
+        "An i.i.d. error with zero mean and finite variance satisfies (c)."
+      ],
+      "explanation": "Condition (b) has the same form as the step-size conditions (2.7) of the core text, §2.4.",
+      "related": [
+        "sup-zhao-06-q001"
+      ],
+      "sources": [
+        {
+          "kind": "zhao",
+          "chapter": "6",
+          "section": "6.2.1",
+          "printedPages": [
+            106,
+            107
+          ],
+          "pdfPages": [
+            6,
+            7
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Theorem 6.1 and its discussion, Zhao printed pp. 106–107."
+      },
+      "reviewed": true
     }
   ]
 }

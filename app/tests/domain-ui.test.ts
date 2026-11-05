@@ -46,11 +46,15 @@ describe("content indexes", () => {
     const s = ix.sectionContent("ch02", "2.3");
     expect(s.lesson?.title).toBe("Incremental implementation");
     expect(s.equations.map((e) => e.bookLabel)).toEqual(["(2.3)", "(2.4)"]);
-    expect(s.questions.map((x) => x.id)).toEqual(["ch02-q001"]);
+    // Questions are placed by their declared section (D-033), in file order.
+    expect(s.questions.map((x) => x.id)).toEqual(["ch02-q001", "ch02-q012", "ch02-q013"]);
+    expect(ix.sectionContent("ch04", "4.1").questions.map((x) => x.id)).toEqual(["ch04-q001", "ch04-q002", "ch04-q003", "ch04-q004", "ch04-q005", "ch04-q006", "ch04-q007", "ch04-q008"]);
     expect(ix.sectionContent("ch04", "4.1").figures.map((f) => f.bookLabel)).toEqual(["Figure 4.2"]);
   });
-  test("end-of-chapter exercises are chapter-level", () => {
-    expect(ix.chapterLevel("ch04").questions.map((x) => x.id)).toEqual(["ch04-q001"]);
+  test("questions with no section are chapter-level; questions with a section are not", () => {
+    // Exercise 4.1 (ch04-q001) cites the chapter's exercise page but declares section 4.1, so it is shown there.
+    expect(ix.chapterLevel("ch04").questions.map((x) => x.id)).toEqual([]);
+    expect(ix.chapterLevel("sup-zhao-06").questions.map((x) => x.id)).toEqual(["sup-zhao-06-q001"]);
   });
   test("prerequisite chains and dependents", () => {
     expect(ix.prereqChain("ch04.iterative-policy-evaluation").map((c) => c.id)).toEqual([

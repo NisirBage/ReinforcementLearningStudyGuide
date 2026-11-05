@@ -217,3 +217,41 @@ export function reviewQueue(p: ProgressData, cardIds: string[], now: number, new
   const fresh = cardIds.filter((id) => !p.cards[id]).slice(0, newLimit);
   return [...due.map((id) => ({ id, isNew: false })), ...fresh.map((id) => ({ id, isNew: true }))];
 }
+
+// ---------- Per-question history (Milestone 3B) ----------
+
+export interface QuestionStats {
+  attempts: number;
+  correct: number; // attempts with full marks
+  wrong: number; // attempts below full marks
+  last: Attempt; // most recent attempt
+  ms: number; // measured time over all attempts
+}
+
+/** History of every attempted question, from the attempt log (nothing is stored twice). */
+export function questionStats(attempts: Attempt[]): Map<string, QuestionStats> {
+  const m = new Map<string, QuestionStats>();
+  for (const a of [...attempts].sort((x, y) => x.at - y.at)) {
+    const s = m.get(a.qid) ?? { attempts: 0, correct: 0, wrong: 0, last: a, ms: 0 };
+    const full = a.score >= a.max;
+    m.set(a.qid, { attempts: s.attempts + 1, correct: s.correct + (full ? 1 : 0), wrong: s.wrong + (full ? 0 : 1), last: a, ms: s.ms + (a.ms ?? 0) });
+  }
+  return m;
+}
+
+/** Questions whose most recent attempt fell short of full marks: the "re-attempt incorrect" set. */
+export const incorrectQids = (attempts: Attempt[]): string[] =>
+  [...questionStats(attempts).entries()].filter(([, s]) => s.last.score < s.last.max).map(([id]) => id).sort();
+
+/** Questions answered wrongly at least `min` times, most often first. */
+export const repeatedMistakes = (attempts: Attempt[], min = 2): { qid: string; wrong: number; attempts: number }[] =>
+  [...questionStats(attempts).entries()]
+    .filter(([, s]) => s.wrong >= min)
+    .map(([qid, s]) => ({ qid, wrong: s.wrong, attempts: s.attempts }))
+    .sort((a, b) => b.wrong - a.wrong || a.qid.localeCompare(b.qid));
+
+/** Measured time on questions (attempts made before timing existed count as 0). */
+export const timeSpentMs = (attempts: Attempt[]): number => attempts.reduce((t, a) => t + (a.ms ?? 0), 0);
+
+/** Records several attempts at once (end of a practice session), each validated like a single attempt. */
+export const recordAttempts = (p: ProgressData, list: Attempt[]): ProgressData => list.reduce(recordAttempt, p);

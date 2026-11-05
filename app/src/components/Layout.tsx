@@ -6,6 +6,7 @@ import { RouteBoundary } from "./Boundary";
 export const NAV = [
   ["/", "Home", "⌂"],
   ["/learn", "Learn", "☰"],
+  ["/practice", "Practice", "✎"],
   ["/search", "Search", "⌕"],
   ["/revision", "Revise", "↻"],
   ["/progress", "Progress", "◔"],

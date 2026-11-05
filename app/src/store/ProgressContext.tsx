@@ -2,7 +2,7 @@
 // domain/progress.ts or store/persistence.ts; this file only wires them to state and to IndexedDB.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  emptyProgress, logActivity, recordAttempt, review, setConceptStatus, toggleBookmark, toggleMarked, visit,
+  emptyProgress, logActivity, recordAttempt, recordAttempts, review, setConceptStatus, toggleBookmark, toggleMarked, visit,
   type Attempt, type ConceptStatus, type ProgressData, type Settings,
 } from "../domain/progress";
 import { STORAGE_KEY, mergeProgress, parseImport } from "./persistence";
@@ -15,6 +15,13 @@ interface Ctx {
   saveFailed: boolean;
   setStatus: (concept: string, status: ConceptStatus) => void;
   attempt: (a: Omit<Attempt, "at">) => void;
+  /** Attempts that carry their own time (practice sessions); validated like single attempts. */
+  recordAttempts: (list: Attempt[]) => void;
+  /**
+   * A saved slot for work in progress (an open practice session, later an exam), kept in the same database
+   * as progress but outside the progress record, so a refresh resumes it and export files never carry it.
+   */
+  slot: { load: (key: string) => Promise<unknown>; save: (key: string, value: unknown) => Promise<void>; clear: (key: string) => Promise<void> };
   toggleMark: (qid: string) => void; // flag for revision
   toggleBookmark: (qid: string) => void;
   reviewCard: (cardId: string, grade: 0 | 1 | 2 | 3) => void;
@@ -25,6 +32,7 @@ interface Ctx {
 }
 
 const ProgressCtx = createContext<Ctx | null>(null);
+export const SLOT_PREFIX = "rlsl:slot:";
 
 const legacyLocalStorage = () => {
   try {
@@ -70,6 +78,19 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
     saveToStore(kv, data, now()).then((ok) => setSaveFailed(!ok));
   }, [data, kv, ready, now]);
 
+  const slot = useMemo(
+    () => ({
+      load: (key: string) =>
+        kv
+          .get(SLOT_PREFIX + key)
+          .then((text) => (text === undefined ? undefined : JSON.parse(text)))
+          .catch(() => undefined), // an unreadable slot is treated as empty
+      save: (key: string, value: unknown) => kv.set(SLOT_PREFIX + key, JSON.stringify(value)).catch(() => setSaveFailed(true)),
+      clear: (key: string) => kv.del(SLOT_PREFIX + key).catch(() => undefined),
+    }),
+    [kv],
+  );
+
   const apply = useCallback((fn: (d: ProgressData) => ProgressData) => setData((d) => fn(d)), []);
 
   const value = useMemo<Ctx>(
@@ -80,6 +101,8 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
       saveFailed,
       setStatus: (c, s) => apply((d) => setConceptStatus(d, c, s, now())),
       attempt: (a) => apply((d) => recordAttempt(d, { ...a, at: now() })),
+      recordAttempts: (list) => apply((d) => recordAttempts(d, list)),
+      slot,
       toggleMark: (q) => apply((d) => toggleMarked(d, q)),
       toggleBookmark: (q) => apply((d) => toggleBookmark(d, q)),
       reviewCard: (id, g) => apply((d) => review(d, id, g, now())),
@@ -92,7 +115,7 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
       },
       resetAll: () => apply(() => emptyProgress()),
     }),
-    [data, ready, message, saveFailed, apply, now],
+    [data, ready, message, saveFailed, apply, now, slot],
   );
   return <ProgressCtx.Provider value={value}>{children}</ProgressCtx.Provider>;
 }

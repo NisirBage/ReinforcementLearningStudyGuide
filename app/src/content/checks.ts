@@ -4,7 +4,8 @@
 // Printed values below are transcribed from page images of the April 2015 draft and cite their page.
 import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages, recencyWeightedAverage, recencyWeights, ucbScores, argmaxAll } from "../lib/rl/bandit";
 import { iterativePolicyEvaluation } from "../lib/rl/dp";
-import { actionValue, bellmanResidual, equiprobablePolicy, greedyActions } from "../lib/rl/mdp";
+import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
+import { actionValue, bellmanExpectationBackup, bellmanResidual, equiprobablePolicy, greedyActions, type FiniteMDP } from "../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../lib/rl/envs/gridworld4x4";
 import { robbinsMonro } from "../lib/rl/sa";
 import figuresCh04 from "../../../content/figures/ch04.json";
@@ -90,6 +91,44 @@ export const CHECKS: Record<string, Check> = {
     },
   },
   "ch02-q006": { kind: "answer", run: () => epsilonGreedyProbabilities([0.2, 0.9, 0.9, 0.1], 0.1) },
+  "ch02-q009": {
+    kind: "answer", // 10 arms, ε = 0.1, one strictly greedy arm: 0.9 + 0.1/10. The draft states the 91% ceiling (p. 36).
+    run: () => [epsilonGreedyProbabilities([0, 0, 0, 0.7, 0, 0, 0, 0, 0, 0], 0.1)[3]],
+  },
+  "ch02-q012": {
+    kind: "answer", // arm 1 receives 1, 2, 0 and arm 2 receives 3; estimates by (2.3) from Q_1 = 0; greedy arm (1-based)
+    run: () => {
+      const q = [incrementalAverages([1, 2, 0], 0).at(-1)!, incrementalAverages([3], 0).at(-1)!];
+      const best = argmaxAll(q);
+      return [...q, best.length === 1 ? best[0] + 1 : NaN];
+    },
+  },
+  "ch02-q013.programs": {
+    kind: "fact", // program A (increment N, then update) equals the sample average; program B (update, then increment) divides by zero first
+    run: () => {
+      const r = [4, -2, 7, 1, 0];
+      let qa = 0, na = 0, qb = 0, nb = 0;
+      const outA: number[] = [];
+      const outB: number[] = [];
+      for (const x of r) {
+        na += 1;
+        qa += (x - qa) / na;
+        outA.push(qa);
+        qb += (x - qb) / nb;
+        nb += 1;
+        outB.push(qb);
+      }
+      const avg = r.map((_, k) => r.slice(0, k + 1).reduce((s, v) => s + v, 0) / (k + 1));
+      return outA.every((v, i) => close(v, avg[i], 1e-12)) && !Number.isFinite(outB[0]);
+    },
+  },
+  "ch02-q016": {
+    kind: "answer", // weights in (2.6) for k = 10, α = 0.1: on R_1, α(1−α)^9; on Q_1, (1−α)^10
+    run: () => {
+      const w = recencyWeights(10, 0.1);
+      return [w.rewards[0], w.initial];
+    },
+  },
 
   // ----- Chapter 3 -----
   "ch03.bellman-example-state-1": {
@@ -98,6 +137,58 @@ export const CHECKS: Record<string, Check> = {
       const v = vPi();
       const succ = grid.actions.map((_, a) => grid.dynamics[1][a][0].next).sort((x, y) => x - y);
       return JSON.stringify(succ) === "[0,1,2,5]" && close(v[1], -14, 1e-6) && close(v[2], -20, 1e-6) && close(v[5], -18, 1e-6) && close(-1 + (0 - 14 - 20 - 18) / 4, -14);
+    },
+  },
+
+  "ch03-q001": { kind: "answer", run: () => returnsOfEpisode([1, 0, 2], 0.9).slice(0, 2) }, // G_t, G_{t+1}
+  "ch03-q002": {
+    kind: "answer", // +1 forever with γ = 0.9: the closed form, cross-checked against a long partial sum
+    run: () => {
+      const closed = constantRewardReturn(1, 0.9);
+      const partial = discountedReturn(new Array(2000).fill(1), 0.9);
+      return Math.abs(closed - partial) < 1e-9 ? [closed] : [NaN];
+    },
+  },
+  "ch03-q004": {
+    kind: "answer", // Exercise 3.9: right-hand side of (3.12) at the centre state of Figure 3.5b from its printed neighbour values
+    run: () => {
+      // States: 0 = centre, 1–4 = the four neighbours (values from the figure); four deterministic moves, reward 0, γ = 0.9.
+      const mdp: FiniteMDP = {
+        states: ["centre", "n1", "n2", "n3", "n4"],
+        terminal: [false, true, true, true, true], // only the centre is backed up here
+        actions: ["north", "south", "east", "west"],
+        dynamics: [[1, 2, 3, 4].map((next) => [{ next, reward: 0, prob: 1 }]), [], [], [], []],
+      };
+      const v = [0.7, 2.3, 0.4, -0.4, 0.7];
+      return [bellmanExpectationBackup(mdp, v, equiprobablePolicy(mdp), 0, 0.9)];
+    },
+  },
+  "ch03-q005.constant-shift": {
+    kind: "fact", // Exercise 3.10: adding c to every reward of a continuing task adds c/(1−γ) to every state's value
+    run: () => {
+      // A two-state continuing task with stochastic moves and an arbitrary policy.
+      const make = (c: number): FiniteMDP => ({
+        states: ["a", "b"],
+        terminal: [false, false],
+        actions: ["stay", "switch"],
+        dynamics: [
+          [[{ next: 0, reward: 1 + c, prob: 0.7 }, { next: 1, reward: -2 + c, prob: 0.3 }], [{ next: 1, reward: 0.5 + c, prob: 1 }]],
+          [[{ next: 1, reward: 3 + c, prob: 1 }], [{ next: 0, reward: -1 + c, prob: 0.4 }, { next: 1, reward: 2 + c, prob: 0.6 }]],
+        ],
+      });
+      const pi = [[0.25, 0.75], [0.6, 0.4]];
+      const gamma = 0.9;
+      const c = 2.5;
+      const v = iterativePolicyEvaluation(make(0), pi, gamma, { theta: 1e-13 }).v;
+      const vc = iterativePolicyEvaluation(make(c), pi, gamma, { theta: 1e-13 }).v;
+      return v.every((x, s) => close(vc[s] - x, c / (1 - gamma), 1e-8));
+    },
+  },
+  "ch03-q006.v-from-q": {
+    kind: "fact", // Exercise 3.12: v_π(s) = Σ_a π(a|s) q_π(s, a), checked at every state of the 4×4 gridworld
+    run: () => {
+      const v = vPi();
+      return grid.states.every((_, s) => grid.terminal[s] || close(v[s], grid.actions.reduce((t, _, a) => t + random[s][a] * actionValue(grid, v, s, a, 1), 0), 1e-9));
     },
   },
 
@@ -146,6 +237,24 @@ export const CHECKS: Record<string, Check> = {
     },
   },
   "ch04-q002": { kind: "answer", run: () => [vk(2)[1], vk(2)[6]] }, // exact v_2(1), v_2(6)
+  "ch04-q004": {
+    kind: "answer", // Exercise 4.2: v_π(15) for the extended gridworld, (i) with state 13 unchanged, (ii) with 13's down move going to 15
+    run: () => {
+      const extended = (thirteenDownTo15: boolean): FiniteMDP => {
+        const base = gridworld4x4();
+        const down = base.actions.indexOf("down");
+        const dynamics = base.dynamics.map((row, s) =>
+          row.map((outs, a) => (thirteenDownTo15 && s === 13 && a === down ? [{ next: 15, reward: -1, prob: 1 }] : outs)),
+        );
+        const to = { up: 13, down: 15, right: 14, left: 12 } as Record<string, number>;
+        dynamics.push(base.actions.map((a) => [{ next: to[a], reward: -1, prob: 1 }]));
+        return { states: [...base.states, "15"], terminal: [...base.terminal, false], actions: base.actions, dynamics };
+      };
+      const solve = (m: FiniteMDP) => iterativePolicyEvaluation(m, equiprobablePolicy(m), 1, { theta: 1e-12 }).v[15];
+      return [solve(extended(false)), solve(extended(true))];
+    },
+  },
+  "ch04-q005": { kind: "answer", run: () => [vk(3)[1], vk(3)[5]] }, // exact v_3(1), v_3(5); Figure 4.2 prints −2.4 and −2.9
 
   // ----- Supplementary: Zhao Chapter 6 (stochastic approximation) -----
   "sup-zhao-06.mean-estimation-is-rm": {

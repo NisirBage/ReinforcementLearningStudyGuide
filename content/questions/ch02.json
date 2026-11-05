@@ -187,6 +187,654 @@
       "related": ["ch02-q003"],
       "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }],
       "reviewed": true
+    },
+    {
+      "id": "ch02-q008",
+      "unit": "ch02",
+      "section": "2.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.greedy"
+        ]
+      },
+      "concepts": [
+        "ch02.greedy-action-selection"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Which description matches greedy action selection (2.2) at time step $t$?",
+      "options": [
+        "It picks an action whose current estimate $Q_t(a)$ is largest, breaking ties arbitrarily",
+        "It picks an action whose true value $q(a)$ is largest",
+        "It picks every action equally often",
+        "It picks the action that has been tried the fewest times so far"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: the rule is $A_t = \\operatorname{argmax}_a Q_t(a)$, which uses the estimates the agent has, with ties broken arbitrarily.",
+        "The true values $q(a)$ are unknown to the agent. Greedy selection can only use its estimates.",
+        "That is uniform random selection, the opposite of exploiting current estimates.",
+        "That rule only explores. Greedy selection spends no time on actions that currently look inferior."
+      ],
+      "solution": [
+        "Greedy selection maximises the estimated value: $A_t = \\operatorname{argmax}_a Q_t(a)$.",
+        "It always exploits what is currently known and never samples actions that look worse."
+      ],
+      "explanation": "Greedy selection exploits current estimates. Because it never tries apparently inferior actions, it can lock onto a suboptimal action whose first rewards happened to be good.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.2",
+          "printedPages": [
+            34,
+            34
+          ],
+          "pdfPages": [
+            48,
+            48
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Statement of (2.2) and its description, printed p. 34, checked against the text layer."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q009",
+      "unit": "ch02",
+      "section": "2.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.2"
+        ]
+      },
+      "concepts": [
+        "ch02.epsilon-greedy"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "A 10-armed bandit agent uses $\\varepsilon$-greedy selection with $\\varepsilon = 0.1$: with probability $\\varepsilon$ it picks uniformly among all 10 arms (the greedy arm included), otherwise it picks the greedy arm. Exactly one arm has the largest estimate. What is the probability that this arm is chosen on a step?",
+      "parts": [
+        {
+          "label": "P(greedy arm)",
+          "answer": 0.91,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "The greedy arm can be chosen in two ways: by the greedy branch, probability $1 - \\varepsilon = 0.9$, or by the random branch, probability $\\varepsilon \\cdot \\tfrac{1}{10} = 0.01$.",
+        "Adding them: $0.9 + 0.01 = 0.91$."
+      ],
+      "explanation": "This is why the draft notes that the $\\varepsilon = 0.1$ method on the 10-armed testbed never selects the optimal action more than 91% of the time, even once its estimates are right.",
+      "misconceptions": [
+        {
+          "wrong": "0.9",
+          "why": "The random branch also picks the greedy arm one time in ten, which adds $\\varepsilon / n$."
+        }
+      ],
+      "related": [
+        "ch02-q006"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.2",
+          "printedPages": [
+            34,
+            36
+          ],
+          "pdfPages": [
+            48,
+            50
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch02-q009"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q010",
+      "unit": "ch02",
+      "section": "2.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.recency-weighted",
+          "eq.ch02.step-size-conditions"
+        ]
+      },
+      "concepts": [
+        "ch02.constant-step-size",
+        "ch02.recency-weighted-average"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "In a few sentences, explain why a constant step size $\\alpha$ is better suited to a nonstationary bandit than the sample-average step size $1/k$.",
+      "answer": "With a constant $\\alpha$, (2.6) gives reward $R_i$ the weight $\\alpha(1-\\alpha)^{k-i}$, which shrinks exponentially with its age, so recent rewards count most. The sample average gives every past reward the same weight $1/k$, and its step $1/k$ keeps shrinking, so after many rewards the estimate hardly moves. With a constant $\\alpha$ the second condition in (2.7) fails, so the estimate never settles and keeps following the most recent rewards. That is what is wanted when the true values change over time.",
+      "rubric": [
+        {
+          "point": "Says that a constant $\\alpha$ weights recent rewards more, with weights decaying exponentially with age",
+          "marks": 1
+        },
+        {
+          "point": "Says that the sample average weights all past rewards equally, so its step $1/k$ makes later rewards matter less and less",
+          "marks": 1
+        },
+        {
+          "point": "Says that with a constant $\\alpha$ the estimate never fully converges (the second condition of (2.7) fails) and keeps tracking changes, which suits drifting values",
+          "marks": 1
+        }
+      ],
+      "solution": [
+        "Write the constant-$\\alpha$ estimate as the weighted average (2.6): the weight on $R_i$ is $\\alpha(1-\\alpha)^{k-i}$.",
+        "Compare with $\\alpha_k = 1/k$: every reward gets weight $1/k$, and each new reward moves the estimate by only a $1/k$ fraction of its error.",
+        "Relate to (2.7): a constant $\\alpha$ has $\\sum \\alpha^2 = \\infty$, so the estimates keep responding to recent rewards instead of converging."
+      ],
+      "explanation": "In a stationary problem, converging is good. In a nonstationary one, the ability to keep adjusting matters more.",
+      "related": [
+        "ch02-q003",
+        "ch02-q015"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            39
+          ],
+          "pdfPages": [
+            52,
+            53
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Claims checked against §2.4, printed pp. 38–39."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q011",
+      "unit": "ch02",
+      "section": "2.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.recency-weighted"
+        ]
+      },
+      "concepts": [
+        "ch02.recency-weighted-average"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "Starting from the constant step-size update (2.5), $Q_{k+1} = Q_k + \\alpha[R_k - Q_k]$, derive the weighted-average form (2.6): $Q_{k+1} = (1-\\alpha)^k Q_1 + \\sum_{i=1}^{k} \\alpha (1-\\alpha)^{k-i} R_i$.",
+      "answer": "$Q_{k+1} = \\alpha R_k + (1-\\alpha) Q_k$. Substitute the same rule for $Q_k$: $Q_{k+1} = \\alpha R_k + (1-\\alpha)\\alpha R_{k-1} + (1-\\alpha)^2 Q_{k-1}$. Keep substituting down to $Q_1$. Each step back multiplies by one more factor $(1-\\alpha)$: $Q_{k+1} = \\alpha R_k + (1-\\alpha)\\alpha R_{k-1} + \\dots + (1-\\alpha)^{k-1}\\alpha R_1 + (1-\\alpha)^k Q_1$. Collecting terms gives $(1-\\alpha)^k Q_1 + \\sum_{i=1}^{k} \\alpha(1-\\alpha)^{k-i} R_i$.",
+      "rubric": [
+        {
+          "point": "Rewrites (2.5) as $Q_{k+1} = \\alpha R_k + (1-\\alpha) Q_k$",
+          "marks": 1
+        },
+        {
+          "point": "Substitutes the same rule for $Q_k$ (and $Q_{k-1}$, …) correctly",
+          "marks": 1
+        },
+        {
+          "point": "Continues the substitution to $Q_1$, obtaining the factor $(1-\\alpha)^k$ on $Q_1$",
+          "marks": 1
+        },
+        {
+          "point": "Collects the reward terms into $\\sum_i \\alpha(1-\\alpha)^{k-i} R_i$ with the correct exponent",
+          "marks": 1
+        }
+      ],
+      "solution": [
+        "Expand: $Q_{k+1} = \\alpha R_k + (1-\\alpha) Q_k$.",
+        "Substitute $Q_k = \\alpha R_{k-1} + (1-\\alpha) Q_{k-1}$: $Q_{k+1} = \\alpha R_k + (1-\\alpha)\\alpha R_{k-1} + (1-\\alpha)^2 Q_{k-1}$.",
+        "Repeat until $Q_1$ appears. The reward received $k-i$ steps before the last one carries the factor $(1-\\alpha)^{k-i}$.",
+        "Collect: $Q_{k+1} = (1-\\alpha)^k Q_1 + \\sum_{i=1}^{k} \\alpha(1-\\alpha)^{k-i} R_i$."
+      ],
+      "explanation": "The app checks this identity numerically against the recursion (check ch02.recursion-matches-closed-form). The weights add up to 1, which is why (2.6) is called a weighted average.",
+      "related": [
+        "ch02-q003",
+        "ch02-q016"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            38
+          ],
+          "pdfPages": [
+            52,
+            52
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch02.recursion-matches-closed-form"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q012",
+      "unit": "ch02",
+      "section": "2.3",
+      "provenance": {
+        "kind": "generated",
+        "basis": [
+          "eq.ch02.incremental-update",
+          "eq.ch02.greedy"
+        ]
+      },
+      "concepts": [
+        "ch02.incremental-update",
+        "ch02.greedy-action-selection"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "A 2-armed bandit keeps sample-average estimates with the incremental rule (2.3), starting from $Q_1 = 0$ for both arms. It plays: $t=1$: arm 1, reward 1. $t=2$: arm 2, reward 3. $t=3$: arm 1, reward 2. $t=4$: arm 1, reward 0. Give both estimates after these four steps, and the arm a greedy agent chooses at $t = 5$.",
+      "parts": [
+        {
+          "label": "estimate of arm 1",
+          "answer": 1,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "estimate of arm 2",
+          "answer": 3,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "greedy arm at t = 5 (1 or 2)",
+          "answer": 2,
+          "tolerance": 0
+        }
+      ],
+      "solution": [
+        "Arm 1 receives rewards 1, 2, 0. With (2.3): $Q_2 = 0 + \\tfrac11(1-0) = 1$, then $Q_3 = 1 + \\tfrac12(2-1) = 1.5$, then $Q_4 = 1.5 + \\tfrac13(0-1.5) = 1$.",
+        "Arm 2 receives one reward: $Q_2 = 0 + \\tfrac11(3-0) = 3$.",
+        "Arm 2 has the larger estimate, so greedy selection picks arm 2."
+      ],
+      "explanation": "Each arm keeps its own count $k$: the step size is $1/k$ for that arm's $k$-th reward, not $1/t$.",
+      "misconceptions": [
+        {
+          "wrong": "Using step $1/t$ with the global time step",
+          "why": "The step size counts this arm's own rewards. Using $t$ would make each update too small."
+        }
+      ],
+      "related": [
+        "ch02-q001"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.2",
+          "printedPages": [
+            34,
+            34
+          ],
+          "pdfPages": [
+            48,
+            48
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.3",
+          "printedPages": [
+            37,
+            37
+          ],
+          "pdfPages": [
+            51,
+            51
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch02-q012"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q013",
+      "unit": "ch02",
+      "section": "2.3",
+      "provenance": {
+        "kind": "generated",
+        "basis": [
+          "eq.ch02.incremental-update"
+        ]
+      },
+      "concepts": [
+        "ch02.incremental-update"
+      ],
+      "type": "mcq",
+      "category": "code-interpretation",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "Two programs update the estimate for action $a$ after a reward $R$. Both start with $N(a) = 0$ and $Q(a) = 0$.\n\nProgram A:\n```\nN[a] = N[a] + 1\nQ[a] = Q[a] + (R - Q[a]) / N[a]\n```\nProgram B has the same two lines in the opposite order. Which statement is true?",
+      "options": [
+        "A computes the sample average of $a$'s rewards; B divides by zero on $a$'s first reward",
+        "Both compute the sample average, because the order of the two lines does not matter",
+        "B computes the sample average, while A uses the step $1/(k+1)$ for the $k$-th reward",
+        "Both compute an exponential recency-weighted average with $\\alpha = 1/N$"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct. In A, $N(a)$ equals $k$ when the $k$-th reward is processed, which is exactly (2.3). B divides by the old count, which is 0 for the first reward.",
+        "The order matters: the step must be $1/k$ for the $k$-th reward, so the count has to be updated first.",
+        "It is the other way round. A increments first, so it divides by $k$, as (2.3) requires.",
+        "A step size of $1/k$ gives every reward the same weight (the sample average). Exponential recency weighting needs a constant $\\alpha$."
+      ],
+      "solution": [
+        "(2.3) processes the $k$-th reward with step size $1/k$.",
+        "Program A sets $N(a) \\leftarrow k$ before dividing, so its step is $1/k$: it reproduces the sample average (check ch02-q013.programs).",
+        "Program B divides by $N(a)$ before incrementing it. On the first reward that is $1/0$."
+      ],
+      "explanation": "The first update must give $Q_2 = R_1$ whatever $Q_1$ was, which needs a step of exactly 1 for the first reward.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.3",
+          "printedPages": [
+            37,
+            38
+          ],
+          "pdfPages": [
+            51,
+            52
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch02-q013.programs"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q014",
+      "unit": "ch02",
+      "section": "2.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.ucb",
+          "§2.6"
+        ]
+      },
+      "concepts": [
+        "ch02.ucb",
+        "ch02.epsilon-greedy"
+      ],
+      "type": "multi",
+      "category": "compare-contrast",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Which statements about UCB selection (2.8), compared with $\\varepsilon$-greedy, are supported by §2.6? Select all that apply.",
+      "options": [
+        "$\\varepsilon$-greedy tries non-greedy actions indiscriminately, while UCB favours those that are nearly greedy or whose estimates are uncertain",
+        "An action with $N_t(a) = 0$ is treated as a maximizing action",
+        "The exploration bonus of an action that is not being selected stays the same as time passes",
+        "UCB extends to large state spaces with function approximation as easily as $\\varepsilon$-greedy",
+        "A larger $c$ means more exploration"
+      ],
+      "answer": [
+        0,
+        1,
+        4
+      ],
+      "optionNotes": [
+        "Supported: this is the motivation for UCB at the start of §2.6.",
+        "Supported: the draft states this convention just after (2.8).",
+        "Not supported: $t$ is in the numerator under the square root, so the bonus of an unselected action grows (slowly, through $\\ln t$).",
+        "Not supported: the draft says UCB is harder to extend, and that no practical way of using it with large state spaces is currently known.",
+        "Supported: $c > 0$ controls the degree of exploration."
+      ],
+      "solution": [
+        "Read (2.8): $A_t = \\operatorname{argmax}_a [Q_t(a) + c\\sqrt{\\ln t / N_t(a)}]$.",
+        "The bonus shrinks as $N_t(a)$ grows when $a$ is chosen, and grows with $\\ln t$ when it is not.",
+        "The parameter $c$ scales the bonus, so it sets how much the agent explores."
+      ],
+      "explanation": "UCB directs exploration using uncertainty, but §2.6 notes its limits: nonstationary problems and large state spaces.",
+      "related": [
+        "ch02-q004"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.6",
+          "printedPages": [
+            41,
+            42
+          ],
+          "pdfPages": [
+            55,
+            56
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Each option checked against §2.6, printed pp. 41–42."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q015",
+      "unit": "ch02",
+      "section": "2.4",
+      "provenance": {
+        "kind": "generated",
+        "basis": [
+          "§2.4"
+        ]
+      },
+      "concepts": [
+        "ch02.constant-step-size"
+      ],
+      "type": "mcq",
+      "category": "scenario",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "A website treats its headline variants as the arms of a bandit, with reward 1 for a click. Readers' tastes drift over the weeks, and the estimates are currently sample averages. Following §2.4, which change makes the estimates track the drift?",
+      "options": [
+        "Replace the step size $1/k$ with a constant step size $\\alpha$",
+        "Keep the sample averages but start every estimate at a high value",
+        "Use a step-size sequence that satisfies both conditions in (2.7)",
+        "Stop updating each estimate once it has stopped changing much"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: a constant $\\alpha$ weights recent rewards more heavily, which is the remedy §2.4 gives for nonstationary problems.",
+        "The initial value only matters at the start: with sample averages it is forgotten after the first reward ($Q_2 = R_1$), so it cannot follow later drift.",
+        "Sequences meeting (2.7) make the estimates converge. Under drift the estimates should keep responding instead.",
+        "Freezing the estimates guarantees they will be out of date once tastes change."
+      ],
+      "solution": [
+        "Drifting click rates make the problem nonstationary.",
+        "Sample averages give equal weight to old and new rewards, and respond less and less over time.",
+        "A constant step size weights recent rewards more heavily, so the estimates follow the drift."
+      ],
+      "explanation": "This is an application question: the scenario is new, and the principle is that of §2.4.",
+      "related": [
+        "ch02-q010"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            39
+          ],
+          "pdfPages": [
+            52,
+            53
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Principle as stated in §2.4, printed pp. 38–39."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q016",
+      "unit": "ch02",
+      "section": "2.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.recency-weighted"
+        ]
+      },
+      "concepts": [
+        "ch02.recency-weighted-average"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "With a constant step size $\\alpha = 0.1$, after $k = 10$ rewards, what weight does (2.6) put on the first reward $R_1$, and what weight on the initial estimate $Q_1$? Give 4 decimal places.",
+      "parts": [
+        {
+          "label": "weight on R_1",
+          "answer": 0.0387,
+          "tolerance": 5e-05
+        },
+        {
+          "label": "weight on Q_1",
+          "answer": 0.3487,
+          "tolerance": 5e-05
+        }
+      ],
+      "solution": [
+        "In (2.6), $R_i$ has weight $\\alpha(1-\\alpha)^{k-i}$ and $Q_1$ has weight $(1-\\alpha)^k$.",
+        "For $R_1$: $0.1 \\times 0.9^{9} = 0.1 \\times 0.387420489 = 0.0387420489 \\approx 0.0387$.",
+        "For $Q_1$: $0.9^{10} = 0.3486784401 \\approx 0.3487$."
+      ],
+      "explanation": "After 10 rewards the initial estimate still carries about 35% of the weight. With $\\alpha = 0.1$, the influence of $Q_1$ fades only slowly.",
+      "misconceptions": [
+        {
+          "wrong": "Weight on R_1 = 0.1 × 0.9^10",
+          "why": "The exponent is $k - i = 10 - 1 = 9$. The power 10 belongs to $Q_1$."
+        }
+      ],
+      "related": [
+        "ch02-q003",
+        "ch02-q011"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            39
+          ],
+          "pdfPages": [
+            52,
+            53
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch02-q016"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q017",
+      "unit": "ch02",
+      "section": "2.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.2"
+        ]
+      },
+      "concepts": [
+        "ch02.epsilon-greedy"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: with $\\varepsilon > 0$ and sample-average estimates, $\\varepsilon$-greedy selection samples every action infinitely often in the limit, so all the estimates converge to the true values.",
+      "answer": true,
+      "solution": [
+        "Each step, every action has probability at least $\\varepsilon / n > 0$ of being chosen.",
+        "So in the limit every $N_t(a) \\to \\infty$, and by the law of large numbers every sample average $Q_t(a) \\to q(a)$."
+      ],
+      "explanation": "The draft adds that this is only an asymptotic guarantee: it says little about how well the method does in practice.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.2",
+          "printedPages": [
+            34,
+            34
+          ],
+          "pdfPages": [
+            48,
+            48
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Statement on printed p. 34."
+      },
+      "reviewed": true
     }
   ]
 }

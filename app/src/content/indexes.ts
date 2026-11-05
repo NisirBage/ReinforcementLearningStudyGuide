@@ -136,7 +136,8 @@ export function buildIndexes(b: ContentBundle) {
       algorithms: own(b.algorithms),
       examples: own(b.examples),
       figures: own(b.figures),
-      questions: own(questions),
+      // Questions declare the section they test (D-033); their sources may also cite an exercise page.
+      questions: inUnit(questions, unitId).filter((q) => q.section === sectionId),
     };
   }
 
@@ -146,7 +147,7 @@ export function buildIndexes(b: ContentBundle) {
     const book = u?.kind === "supplementary" ? "zhao" : "textbook";
     const chapter = u?.kind === "core" ? u.core!.chapter : u?.sup?.zhao?.[0] ?? "";
     const loose = (it: Item) => citesChapterOnly(it, book, chapter) || it.sources.every((s) => s.kind === "lecture" || s.kind === "paper");
-    return { questions: inUnit(questions, unitId).filter(loose), concepts: inUnit(b.concepts, unitId).filter(loose) };
+    return { questions: inUnit(questions, unitId).filter((q) => q.section === null), concepts: inUnit(b.concepts, unitId).filter(loose) };
   }
 
   /** Concepts that list `id` as a prerequisite (what this concept unlocks). */

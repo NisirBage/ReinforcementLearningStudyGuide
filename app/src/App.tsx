@@ -16,6 +16,7 @@ const UnitPage = lazyPage(learn, (m) => m.UnitPage);
 const SectionPage = lazyPage(learn, (m) => m.SectionPage);
 const ConceptPage = lazyPage(items, (m) => m.ConceptPage);
 const ItemPage = lazyPage(items, (m) => m.ItemPage);
+const PracticePage = lazyPage(() => import("./pages/Practice"), (m) => m.PracticePage);
 const SearchPage = lazyPage(() => import("./pages/Search"), (m) => m.SearchPage);
 const RevisionHub = lazyPage(revision, (m) => m.RevisionHub);
 const ReviewPage = lazyPage(revision, (m) => m.ReviewPage);
@@ -26,7 +27,7 @@ const MarkedQuestions = lazyPage(revision, (m) => m.MarkedQuestions);
 const ProgressPage = lazyPage(progress, (m) => m.ProgressPage);
 const SettingsPage = lazyPage(progress, (m) => m.SettingsPage);
 
-const PAGES = [LearnIndex, UnitPage, SectionPage, ConceptPage, ItemPage, SearchPage, RevisionHub, ReviewPage, EquationLibrary, AlgorithmLibrary, NotationPage, MarkedQuestions, ProgressPage, SettingsPage];
+const PAGES = [PracticePage, LearnIndex, UnitPage, SectionPage, ConceptPage, ItemPage, SearchPage, RevisionHub, ReviewPage, EquationLibrary, AlgorithmLibrary, NotationPage, MarkedQuestions, ProgressPage, SettingsPage];
 /** Fetches the code of every page now (Settings → Save for offline; tests). */
 export const preloadRoutes = () => Promise.all(PAGES.map((p) => p.preload())).then(() => undefined);
 
@@ -43,6 +44,7 @@ export function App() {
         <Route path="algorithm/:id" element={<ItemPage kind="algorithm" />} />
         <Route path="example/:id" element={<ItemPage kind="example" />} />
         <Route path="figure/:id" element={<ItemPage kind="figure" />} />
+        <Route path="practice" element={<PracticePage />} />
         <Route path="search" element={<SearchPage />} />
         <Route path="revision" element={<RevisionHub />} />
         <Route path="revision/review" element={<ReviewPage />} />

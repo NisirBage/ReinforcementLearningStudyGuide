@@ -7,7 +7,8 @@ export type Response =
   | { type: "true-false"; value: boolean | null }
   | { type: "numeric"; values: (number | null)[] } // numeric and multi-numeric, one value per part
   | { type: "ordering"; order: number[] } // indices into q.options as the learner arranged them
-  | { type: "derivation"; selfScore: number | null }; // derivation and short-answer: self-marked against the model answer
+  | { type: "derivation"; selfScore: number | null } // derivation / short-answer without a rubric: one self-mark
+  | { type: "rubric"; ticks: boolean[] }; // derivation / short-answer: rubric points the learner met (self-marked)
 
 export interface Grade {
   score: number;
@@ -55,6 +56,11 @@ export function gradeQuestion(q: Question, r: Response): Grade {
     }
     case "derivation":
     case "short-answer": {
+      // Self-marked: the score is the learner's own judgement against the model answer, never the app's.
+      if (r.type === "rubric" && q.rubric?.length) {
+        const ticked = q.rubric.map((p, i) => (r.ticks[i] ? p.marks : 0));
+        return all(round2(Math.min(max, ticked.reduce((s, x) => s + x, 0))), { parts: q.rubric.map((_, i) => !!r.ticks[i]) });
+      }
       const s = r.type === "derivation" ? r.selfScore : null;
       return all(s === null ? 0 : Math.max(0, Math.min(max, s)));
     }

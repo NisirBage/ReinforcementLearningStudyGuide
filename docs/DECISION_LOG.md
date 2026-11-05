@@ -137,3 +137,27 @@ A flag can carry a `suggestion`, which is shown separately from the source text.
 - **Malformed records:** a malformed exam record is dropped whole, never kept in part.
 - **Merging** unites bookmarks and exams by id.
 - **Tests updated:** two existing tests named the schema number. The export now says `schema: 2`, and the "newer version" refusal test now uses 3.
+
+## D-035: The practice engine is pure; the screen only wires it (Accepted, 2026-11-05)
+- **`domain/answer.ts`:** what the learner has entered (a `Draft`), whether a question counts as answered, and how a draft becomes a gradeable response. Lesson cards, Practice and (3C) mock exams all use it.
+- **`domain/grade.ts`:** gains rubric self-marking. The score is the sum of the points the learner ticks. The app never grades free text.
+- **`domain/practice.ts`: selection.**
+  - Filters: chapter, section, topic (concept), difficulty, type and provenance.
+  - Pools from the learner's real history: all, not attempted, wrong last time, repeated mistakes (wrong at least twice), bookmarked, flagged.
+  - Three orders: seeded random, mixed topics (a seeded round-robin over chapter and section) and book order.
+  - The same seed and choices always give the same session, and the seed is shown.
+  - With no chapter chosen, only core questions are drawn. Supplementary modules are included only when ticked.
+- **`domain/session.ts`: a practice session as data plus pure transitions.**
+  - Transitions: start, go to a question, edit, check, reveal a solution step, self-mark, finish.
+  - Time is credited to the question on screen.
+  - Immediate feedback records an attempt when you check. Deferred feedback records at the end.
+  - Unanswered questions are never recorded, so they do not count as wrong.
+  - Self-marked questions are recorded only once the learner marks them.
+- **`domain/progress.ts`:** per-question history (`questionStats`, `incorrectQids` based on the latest attempt, `repeatedMistakes`, `timeSpentMs`), all derived from the attempt log, so nothing is stored twice.
+- **Saved slot:** an open session is kept in IndexedDB under `rlsl:slot:practice`, outside the progress record (so it is not exported), and is resumed after a refresh. A stored session is checked before use, and anything malformed is dropped.
+- **Shared parts:** `components/question.tsx` holds the answer inputs, rubric marker, verdict and step-by-step solution, and the lesson `QuestionCard` now uses them. Lesson items are called "Question n", lesson cards gain a Bookmark button, and the flag button keeps its "Mark for revision" wording.
+
+## D-036: Questions are placed by their declared section (Accepted, 2026-11-05)
+- **Placement:** section pages and chapter pages place questions by `question.section` (D-033), not by which pages their sources cite.
+- **Why:** a reworded exercise must cite its exercise page, which is usually at the end of the chapter, and may also cite the section it tests. Exercise 4.1 (ch04-q001) now appears on §4.1 instead of under "End-of-chapter exercises".
+- **Tests updated:** two exact-list tests in `tests/domain-ui.test.ts` were updated to the new content and this rule, and they still compare exact lists. Concepts and items are still placed by their source citations.

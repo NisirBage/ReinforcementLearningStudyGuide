@@ -1,0 +1,471 @@
+{
+  "unit": "ch03",
+  "questions": [
+    {
+      "id": "ch03-q001",
+      "unit": "ch03",
+      "section": "3.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.3"
+        ]
+      },
+      "concepts": [
+        "ch03.return"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "With $\\gamma = 0.9$, an agent receives $R_{t+1} = 1$, $R_{t+2} = 0$, $R_{t+3} = 2$, and then the episode ends (later rewards are 0). Using (3.2), find $G_t$ and $G_{t+1}$.",
+      "parts": [
+        {
+          "label": "G_t",
+          "answer": 2.62,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "G_{t+1}",
+          "answer": 1.8,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$G_t = R_{t+1} + \\gamma R_{t+2} + \\gamma^2 R_{t+3} = 1 + 0.9 \\cdot 0 + 0.81 \\cdot 2 = 2.62$.",
+        "$G_{t+1} = R_{t+2} + \\gamma R_{t+3} = 0 + 0.9 \\cdot 2 = 1.8$.",
+        "Check: $G_t = R_{t+1} + \\gamma G_{t+1} = 1 + 0.9 \\cdot 1.8 = 2.62$."
+      ],
+      "explanation": "The recursion $G_t = R_{t+1} + \\gamma G_{t+1}$ is the idea behind the Bellman equation (3.12).",
+      "misconceptions": [
+        {
+          "wrong": "G_t = 1 + 0.9·2 = 2.8",
+          "why": "$R_{t+3}$ is two steps after $R_{t+1}$, so its discount factor is $\\gamma^2$, not $\\gamma$."
+        }
+      ],
+      "related": [
+        "ch03-q002"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.3",
+          "printedPages": [
+            60,
+            60
+          ],
+          "pdfPages": [
+            74,
+            74
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch03-q001"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q002",
+      "unit": "ch03",
+      "section": "3.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.3"
+        ]
+      },
+      "concepts": [
+        "ch03.return"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "In a continuing task the agent receives a reward of $+1$ at every time step, for ever. What is the discounted return $G_t$ with $\\gamma = 0.9$?",
+      "parts": [
+        {
+          "label": "G_t",
+          "answer": 10,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$G_t = \\sum_{k=0}^{\\infty} \\gamma^k \\cdot 1$, a geometric series.",
+        "For $0 \\le \\gamma < 1$ it sums to $1/(1-\\gamma) = 1/0.1 = 10$."
+      ],
+      "explanation": "The draft uses this very example (+1 at each step) to show why the undiscounted sum (3.1) can be infinite in continuing tasks. With $\\gamma < 1$ the return is finite.",
+      "misconceptions": [
+        {
+          "wrong": "Infinite",
+          "why": "That is the undiscounted case $\\gamma = 1$. With $\\gamma = 0.9$ the series converges."
+        }
+      ],
+      "related": [
+        "ch03-q001",
+        "ch03-q005"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.3",
+          "printedPages": [
+            59,
+            60
+          ],
+          "pdfPages": [
+            73,
+            74
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch03-q002"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q003",
+      "unit": "ch03",
+      "section": "3.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.3"
+        ]
+      },
+      "concepts": [
+        "ch03.return"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why does the draft use the discounted return (3.2) rather than the plain sum (3.1) for continuing tasks?",
+      "options": [
+        "With no final time step the plain sum can be infinite, while with $\\gamma < 1$ the discounted sum is finite for bounded rewards",
+        "Discounting makes the agent care only about the next reward",
+        "Discounting is what makes the interaction break into episodes",
+        "With $\\gamma = 1$ the return of a continuing task is always finite"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: §3.3 points out that with $T = \\infty$ the return (3.1) could easily be infinite, and that with $\\gamma < 1$ the sum is finite for a bounded reward sequence.",
+        "Only $\\gamma = 0$ does that (a myopic agent). For $\\gamma$ near 1 the agent is farsighted.",
+        "Whether a task is episodic is a property of the task. Discounting does not change it.",
+        "With $\\gamma = 1$ a reward of $+1$ at every step gives an infinite return."
+      ],
+      "solution": [
+        "Continuing tasks have $T = \\infty$, so (3.1) can diverge.",
+        "Weighting the reward $k$ steps ahead by $\\gamma^k$ with $\\gamma < 1$ makes the sum converge whenever the rewards are bounded."
+      ],
+      "explanation": "Discounting also sets how farsighted the agent is: $\\gamma = 0$ is myopic, and $\\gamma$ near 1 is farsighted.",
+      "related": [
+        "ch03-q002"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.3",
+          "printedPages": [
+            59,
+            60
+          ],
+          "pdfPages": [
+            73,
+            74
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Checked against §3.3, printed pp. 59–60."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q004",
+      "unit": "ch03",
+      "section": "3.7",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.9"
+      },
+      "concepts": [
+        "ch03.bellman-equation-v"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "In the gridworld of Example 3.8 (equiprobable random policy, $\\gamma = 0.9$), Figure 3.5b gives the centre state a value of $+0.7$. Its four neighbours are valued $-0.4$, $+0.7$, $+0.4$ and $+2.3$, and moving from the centre to any of them earns reward 0. Evaluate the right-hand side of the Bellman equation (3.12) at the centre state using these printed values, to three decimal places. Then decide whether it agrees with $+0.7$.",
+      "parts": [
+        {
+          "label": "right-hand side of (3.12)",
+          "answer": 0.675,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "Each of the four moves has probability $\\tfrac14$, is deterministic and gives reward 0.",
+        "$v(\\text{centre}) = \\sum_a \\pi(a|s)[r + \\gamma v(s')] = \\tfrac14 \\cdot 0.9 \\cdot (-0.4 + 0.7 + 0.4 + 2.3)$.",
+        "$= 0.225 \\times 3.0 = 0.675$.",
+        "The printed values are accurate to one decimal place only, and $0.675$ rounds to $0.7$, so the equation holds to the printed precision."
+      ],
+      "explanation": "This is Exercise 3.9 of the draft, reworded. The exercise itself notes that the printed numbers are accurate only to one decimal place.",
+      "related": [
+        "ch04-q001"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            86,
+            86
+          ],
+          "pdfPages": [
+            100,
+            100
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.7",
+          "printedPages": [
+            72,
+            72
+          ],
+          "pdfPages": [
+            86,
+            86
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch03-q004"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q005",
+      "unit": "ch03",
+      "section": "3.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.10"
+      },
+      "concepts": [
+        "ch03.return",
+        "ch03.state-value-function"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 4,
+      "marks": 4,
+      "stem": "In a continuing task with $\\gamma < 1$, a constant $c$ is added to every reward. Using (3.2), show that this adds the same constant $v_c$ to the value of every state under every policy. Express $v_c$ in terms of $c$ and $\\gamma$.",
+      "answer": "The new return is $G'_t = \\sum_{k=0}^\\infty \\gamma^k (R_{t+k+1} + c) = G_t + c\\sum_{k=0}^\\infty \\gamma^k = G_t + \\dfrac{c}{1-\\gamma}$. Expectation is linear, so for every policy $\\pi$ and state $s$: $v'_\\pi(s) = \\mathbb{E}_\\pi[G'_t \\mid S_t = s] = v_\\pi(s) + \\dfrac{c}{1-\\gamma}$. Hence $v_c = c/(1-\\gamma)$. Every state shifts by the same amount, so the relative values, and which actions look better, do not change.",
+      "rubric": [
+        {
+          "point": "Writes the new return with $+c$ inside the discounted sum",
+          "marks": 1
+        },
+        {
+          "point": "Splits it into $G_t$ plus $c\\sum_k \\gamma^k$",
+          "marks": 1
+        },
+        {
+          "point": "Sums the geometric series to $1/(1-\\gamma)$, using $\\gamma < 1$",
+          "marks": 1
+        },
+        {
+          "point": "Uses linearity of expectation to conclude $v'_\\pi(s) = v_\\pi(s) + c/(1-\\gamma)$ for every state and policy",
+          "marks": 1
+        }
+      ],
+      "solution": [
+        "$G'_t = \\sum_k \\gamma^k (R_{t+k+1} + c)$.",
+        "$= \\sum_k \\gamma^k R_{t+k+1} + c \\sum_k \\gamma^k = G_t + c/(1-\\gamma)$.",
+        "Take $\\mathbb{E}_\\pi[\\cdot \\mid S_t = s]$ of both sides: $v'_\\pi(s) = v_\\pi(s) + c/(1-\\gamma)$, so $v_c = c/(1-\\gamma)$."
+      ],
+      "explanation": "This is Exercise 3.10 of the draft, reworded. The app checks the result on a small continuing task (check ch03-q005.constant-shift). Exercise 3.11 asks what changes in episodic tasks: there the number of rewards varies, so the shift is not the same everywhere.",
+      "related": [
+        "ch03-q002"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            86,
+            86
+          ],
+          "pdfPages": [
+            100,
+            100
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.3",
+          "printedPages": [
+            60,
+            60
+          ],
+          "pdfPages": [
+            74,
+            74
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch03-q005.constant-shift"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q006",
+      "unit": "ch03",
+      "section": "3.7",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.12"
+      },
+      "concepts": [
+        "ch03.state-value-function"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Write $v_\\pi(s)$ in terms of the action values $q_\\pi(s, a)$ and the policy $\\pi$. Give it first as an expectation given $S_t = s$, then as an explicit sum with no expectation sign.",
+      "answer": "$v_\\pi(s) = \\mathbb{E}_\\pi[q_\\pi(S_t, A_t) \\mid S_t = s] = \\sum_a \\pi(a|s)\\, q_\\pi(s, a)$.",
+      "rubric": [
+        {
+          "point": "Gives $v_\\pi(s) = \\mathbb{E}_\\pi[q_\\pi(S_t, A_t) \\mid S_t = s]$",
+          "marks": 1
+        },
+        {
+          "point": "Writes it out as $\\sum_a \\pi(a|s)\\, q_\\pi(s, a)$",
+          "marks": 1
+        }
+      ],
+      "solution": [
+        "From state $s$ the policy picks action $a$ with probability $\\pi(a|s)$, and the expected return after doing so is $q_\\pi(s, a)$.",
+        "Averaging over the action: $v_\\pi(s) = \\sum_a \\pi(a|s)\\, q_\\pi(s, a)$."
+      ],
+      "explanation": "This is Exercise 3.12 of the draft, reworded. The app checks the identity at every state of the 4×4 gridworld (check ch03-q006.v-from-q).",
+      "related": [
+        "ch03-q007"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            86,
+            86
+          ],
+          "pdfPages": [
+            100,
+            100
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.7",
+          "printedPages": [
+            70,
+            70
+          ],
+          "pdfPages": [
+            84,
+            84
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch03-q006.v-from-q"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q007",
+      "unit": "ch03",
+      "section": "3.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.7"
+        ]
+      },
+      "concepts": [
+        "ch03.state-value-function"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "What is $v_\\pi(s)$, the value of state $s$ under policy $\\pi$?",
+      "options": [
+        "The expected return from $s$ onward, if the agent then acts according to $\\pi$",
+        "The expected immediate reward on leaving $s$",
+        "The largest return any policy can obtain from $s$",
+        "The return observed the last time the agent passed through $s$"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: this is (3.10), $v_\\pi(s) = \\mathbb{E}_\\pi[G_t \\mid S_t = s]$.",
+        "The value counts the whole discounted future, not only the next reward.",
+        "That describes the optimal value, a different function. $v_\\pi$ belongs to one particular policy.",
+        "One observed return is a single sample. Its expected value is $v_\\pi(s)$, which Monte Carlo methods estimate by averaging many such returns."
+      ],
+      "solution": [
+        "Value functions are defined with respect to a policy.",
+        "$v_\\pi(s) = \\mathbb{E}_\\pi[G_t \\mid S_t = s] = \\mathbb{E}_\\pi[\\sum_k \\gamma^k R_{t+k+1} \\mid S_t = s]$."
+      ],
+      "explanation": "The terminal state, if any, always has value 0.",
+      "related": [
+        "ch03-q006"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.7",
+          "printedPages": [
+            70,
+            70
+          ],
+          "pdfPages": [
+            84,
+            84
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Definition (3.10), printed p. 70."
+      },
+      "reviewed": true
+    }
+  ]
+}

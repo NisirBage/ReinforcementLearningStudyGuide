@@ -81,6 +81,323 @@
       "related": ["ch04-q002"],
       "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 92], "pdfPages": [106, 106] }],
       "reviewed": true
+    },
+    {
+      "id": "ch04-q004",
+      "unit": "ch04",
+      "section": "4.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "4.2"
+      },
+      "concepts": [
+        "ch04.gridworld-4x4",
+        "ch03.bellman-equation-v"
+      ],
+      "type": "multi-numeric",
+      "category": "analytical",
+      "difficulty": 4,
+      "marks": 4,
+      "stem": "In the 4×4 gridworld of Example 4.1 (equiprobable random policy, reward $-1$ per move, $\\gamma = 1$), $v_\\pi(12) = -22$, $v_\\pi(13) = -20$ and $v_\\pi(14) = -14$. A new state 15 is added below state 13. From 15, the moves left, up, right and down lead to 12, 13, 14 and 15. (i) If all the original transitions are unchanged, what is $v_\\pi(15)$? (ii) If, in addition, moving down from 13 now leads to 15, what is $v_\\pi(15)$?",
+      "parts": [
+        {
+          "label": "(i) v_π(15)",
+          "answer": -20,
+          "tolerance": 0.001
+        },
+        {
+          "label": "(ii) v_π(15)",
+          "answer": -20,
+          "tolerance": 0.001
+        }
+      ],
+      "solution": [
+        "(i) No original state can reach 15, so their values stay as in Figure 4.2. The Bellman equation at 15: $v = -1 + \\tfrac14(-22 - 20 - 14 + v)$.",
+        "Solve: $\\tfrac34 v = -1 - 14 = -15$, so $v_\\pi(15) = -20$.",
+        "(ii) Now 13's down move leads to 15 instead of back to 13. Try the values from (i): 13's equation used to contain $v(13) = -20$ for its down move, and now contains $v(15) = -20$. These are the same number, so every equation still holds.",
+        "$v_\\pi$ is the unique solution of its Bellman equations, so the values are unchanged and $v_\\pi(15) = -20$ again."
+      ],
+      "explanation": "This is Exercise 4.2 of the draft, reworded. The app solves both versions of the extended gridworld numerically (check ch04-q004). The second part works because state 15 turns out to have exactly the value of state 13.",
+      "misconceptions": [
+        {
+          "wrong": "(ii) differs from (i) because 13's dynamics changed",
+          "why": "The change only swaps one successor value $-20$ for another $-20$, so the solution of the equations does not move."
+        }
+      ],
+      "related": [
+        "ch04-q001"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            110,
+            110
+          ],
+          "pdfPages": [
+            124,
+            124
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.1",
+          "printedPages": [
+            92,
+            93
+          ],
+          "pdfPages": [
+            106,
+            107
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch04-q004"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q005",
+      "unit": "ch04",
+      "section": "4.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "fig.ch04.policy-evaluation-grids",
+          "eq.ch04.policy-evaluation-update"
+        ]
+      },
+      "concepts": [
+        "ch04.iterative-policy-evaluation",
+        "ch04.gridworld-4x4"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "Continue two-array iterative policy evaluation (4.5) on the 4×4 gridworld. From $v_2$, where states 1, 4, 11 and 14 have $-1.75$ and every other nonterminal state has $-2$, compute the exact values $v_3(1)$ and $v_3(5)$. State 5's neighbours are 1 (up), 9 (down), 6 (right) and 4 (left).",
+      "parts": [
+        {
+          "label": "v_3(1)",
+          "answer": -2.4375,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "v_3(5)",
+          "answer": -2.875,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "$v_3(s) = -1 + \\tfrac14 \\sum_{\\text{4 moves}} v_2(s')$.",
+        "State 1: the moves lead to the terminal state (0), state 1 itself (up, off the grid: $-1.75$), state 2 ($-2$) and state 5 ($-2$). So $v_3(1) = -1 + \\tfrac14(-5.75) = -2.4375$.",
+        "State 5: the successors are 1 ($-1.75$), 9 ($-2$), 6 ($-2$) and 4 ($-1.75$). So $v_3(5) = -1 + \\tfrac14(-7.5) = -2.875$."
+      ],
+      "explanation": "Figure 4.2 prints these values as $-2.4$ and $-2.9$. Under ordinary rounding, $-2.875$ to one decimal would also be $-2.9$, and $-2.4375$ would be $-2.4$ (see the figure-rounding flag on Example 4.1).",
+      "related": [
+        "ch04-q002"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.1",
+          "printedPages": [
+            91,
+            93
+          ],
+          "pdfPages": [
+            105,
+            107
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch04-q005"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q006",
+      "unit": "ch04",
+      "section": "4.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch04.iterative-policy-evaluation"
+        ]
+      },
+      "concepts": [
+        "ch04.iterative-policy-evaluation"
+      ],
+      "type": "mcq",
+      "category": "compare-contrast",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "How does the in-place version of iterative policy evaluation (Figure 4.1) differ from the two-array version of (4.5)?",
+      "options": [
+        "Each backed-up value immediately replaces the old one, so later backups in the same sweep may use new values; it also converges to $v_\\pi$, usually faster",
+        "Only the two-array version converges to $v_\\pi$",
+        "The in-place version needs one array for old values and one for new values",
+        "In the in-place version the order in which states are backed up makes no difference to the speed of convergence"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct, as §4.1 describes. The app also checks that both versions reach the same $v_\\pi$ (check ch04.in-place-converges-to-same-v).",
+        "The draft states that the in-place algorithm also converges to $v_\\pi$.",
+        "It is the two-array version that keeps separate arrays for $v_k$ and $v_{k+1}$.",
+        "The draft says the sweep order strongly affects how quickly the in-place version converges."
+      ],
+      "solution": [
+        "Two-array: compute all of $v_{k+1}$ from $v_k$, leaving $v_k$ untouched.",
+        "In-place: one array, where each backup overwrites its state's value, so later backups can use values already updated in this sweep.",
+        "Both converge to $v_\\pi$. The in-place version usually converges faster, and its speed depends on the order of the sweep."
+      ],
+      "explanation": "The draft usually has the in-place version in mind when it discusses DP algorithms.",
+      "related": [
+        "ch04-q003",
+        "ch04-q008"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.1",
+          "printedPages": [
+            91,
+            92
+          ],
+          "pdfPages": [
+            105,
+            106
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch04.in-place-converges-to-same-v"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q007",
+      "unit": "ch04",
+      "section": "4.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch04.policy-evaluation-update"
+        ]
+      },
+      "concepts": [
+        "ch04.iterative-policy-evaluation"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: in general, iterative policy evaluation reaches $v_\\pi$ exactly after a finite number of sweeps.",
+      "answer": false,
+      "solution": [
+        "The sequence $\\{v_k\\}$ converges to $v_\\pi$ as $k \\to \\infty$: it is a limit.",
+        "In practice the algorithm is stopped once the largest change in a sweep falls below a small threshold $\\theta$, leaving $V \\approx v_\\pi$."
+      ],
+      "explanation": "This is why Figure 4.1 outputs $V \\approx v_\\pi$ rather than $v_\\pi$.",
+      "related": [
+        "ch04-q008"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.1",
+          "printedPages": [
+            91,
+            92
+          ],
+          "pdfPages": [
+            105,
+            106
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Statements on printed pp. 91–92."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q008",
+      "unit": "ch04",
+      "section": "4.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch04.iterative-policy-evaluation"
+        ]
+      },
+      "concepts": [
+        "ch04.iterative-policy-evaluation"
+      ],
+      "type": "mcq",
+      "category": "code-interpretation",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "In Figure 4.1, $\\Delta$ is set to 0 at the start of each sweep, and each backup does $\\Delta \\leftarrow \\max(\\Delta, |v - V(s)|)$. What does $\\Delta$ hold when the test $\\Delta < \\theta$ is made?",
+      "options": [
+        "The largest change made to any single state's value during the sweep just completed",
+        "The error $|V(s) - v_\\pi(s)|$ at the last state backed up",
+        "The total change summed over all states in the sweep",
+        "The change made to the last state backed up"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: $\\Delta$ is reset each sweep and takes the maximum over every backup in it.",
+        "$v_\\pi$ is unknown, which is why it is being computed. $\\Delta$ measures how much the values changed, not their distance from $v_\\pi$.",
+        "The update takes a maximum, not a sum.",
+        "$\\Delta$ keeps the largest change seen anywhere in the sweep, not only the last one."
+      ],
+      "solution": [
+        "At the start of a sweep $\\Delta = 0$.",
+        "After each state's backup, $\\Delta$ becomes the larger of itself and that state's change $|v - V(s)|$.",
+        "At the end of the sweep $\\Delta = \\max_s |\\text{change at } s|$. This is the stopping test the draft describes."
+      ],
+      "explanation": "A small $\\Delta$ means the values have nearly stopped changing. It is a practical stopping rule, not a certificate of exact equality with $v_\\pi$.",
+      "related": [
+        "ch04-q003",
+        "ch04-q007"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.1",
+          "printedPages": [
+            92,
+            92
+          ],
+          "pdfPages": [
+            106,
+            106
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Figure 4.1 and the stopping rule, printed p. 92."
+      },
+      "reviewed": true
     }
   ]
 }

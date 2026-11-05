@@ -152,4 +152,85 @@ Maths pages still need the maths renderer (KaTeX and markdown-it, 358 kB raw / 1
 - **Test-browser activity log:** the activity log of the browser pane's test profile keeps the entries from the status check above (statuses and attempts are empty).
 
 ### Next: Milestone 3B
-The question-bank engine (selection, seeded randomisation, tolerance grading, rubric self-marking) and the Practice section (filters, feedback modes, step-by-step solutions, bookmarks, revision flags, re-attempting incorrect questions), with a reviewed, verified set of new questions for the chapters that have material.
+Done, see below.
+
+## Milestone 3B: Question engine and Practice (done, 2026-11-05)
+
+**Features:**
+- **Practice** is in the main navigation (`/practice`).
+- **Choosing questions:**
+  - filter by chapter or module, section, topic, difficulty, question type, and where questions come from;
+  - draw from all questions, not attempted, wrong last time, repeated mistakes, bookmarked, or flagged; the counts shown are real;
+  - order them at random (seeded, with the seed shown), by mixed topics, or in book order;
+  - choose how many.
+- **Quick starts** from your history: re-attempt mistakes, repeated mistakes, bookmarked, flagged. Each is disabled when empty.
+- **Two feedback modes:**
+  - after each question: check answers as you go;
+  - at the end: no answers or solutions are shown until you finish.
+- **Answering:**
+  - numerical answers accept decimals, fractions and a typographic minus sign, and are graded with each part's stated tolerance;
+  - derivations and short answers are written in your own words and marked by you against a rubric of points, never by the app.
+- **During a session:**
+  - solutions can be revealed one step at a time;
+  - Bookmark and Flag for revision are separate;
+  - a question palette shows each question's state;
+  - you can move to the previous and next questions;
+  - finishing with unanswered questions asks for confirmation, and those questions are not counted as attempts.
+- **Results:** score, accuracy, correct, partly correct and not correct, unanswered, time, and a question-by-question review with solutions. You can re-attempt the ones not fully correct, re-run the same questions in a new order, or start a new practice.
+- **Saved progress:** attempts carry mode, time and session id. An open session survives a reload.
+- **New questions:** 23, bringing the bank to **34** (32 core, 2 supplementary):
+  - every question type (mcq, multi, numeric, multi-numeric, ordering, true/false, derivation, short answer), with categories including algorithm tracing, code interpretation, scenario and compare/contrast;
+  - all four difficulties and all four provenance kinds;
+  - **5 reworded textbook exercises:** 3.9, 3.10, 3.12, 4.1, 4.2. Each cites the exercise's printed and PDF page; they are reworded, with no book text.
+- **Verification of the new questions:**
+  - every numeric answer is recomputed by a named check. New checks cover Exercise 4.2 solved on the extended gridworld, the exact v₃ values, Exercise 3.9's right-hand side 0.675, and ε-greedy's 0.91;
+  - derivations are backed by numerical checks (the constant-shift result of Exercise 3.10 on a small continuing task, and v = Σπq on the gridworld);
+  - conceptual questions were checked against the draft's text: every claim and every wrong-option note cites the page it rests on;
+  - the overlap check found 3 phrases close to the book's wording, which were reworded (0 matches now).
+- **New code:**
+  - `lib/rl/returns.ts` (discounted returns, returns of an episode, constant-reward return), tested through the checks;
+  - `domain/answer.ts`, `domain/practice.ts`, `domain/session.ts`, additions to `domain/progress.ts` and `domain/grade.ts`;
+  - `components/question.tsx`, `pages/Practice.tsx`, and a saved slot in `ProgressContext`.
+
+**Tests:** `npx vitest run` runs **15 files, 810 tests, all passed** (659 before).
+- New `tests/practice-engine.test.ts` (25):
+  - the bank's coverage, and every numeric key against its check;
+  - drafts, tolerance at and beyond the edge, fractions, rubric marks;
+  - every filter and pool against real content, seeded determinism, interleaving, book order;
+  - per-question history;
+  - the session state machine (timing, check, self-mark, step reveal, deferred finish, summary, stored-session check).
+- New `tests/practice-ui.test.tsx` (7): navigation and real counts, filters, a full immediate-feedback session (with step reveal, bookmark, flag, palette, confirmation, results), re-attempting a mistake from results and from setup, deferred feedback, rubric self-marking, and resuming after a reload.
+- The KaTeX and route tests now also cover the 23 new questions.
+- Changed: two exact-list expectations in `tests/domain-ui.test.ts` (D-036).
+
+`npm run check` passes: validate (34 questions, 32 checks), typecheck, tests, overlap 0, build, privacy. `npm audit`: 0 vulnerabilities.
+
+**Bundle (raw / gzip):**
+
+| Page | Size |
+|---|---|
+| Dashboard | 316.8 / 94.7 kB (was 308.6 / 93.5: the catalogue now lists 34 questions) |
+| Practice setup | 729.5 / 227.3 kB |
+| A practice session over chapters 2–4 | 814.0 / 250.5 kB |
+| §4.1 | 763.0 / 237.7 kB |
+
+**Checked in the real browser (production build):**
+- **A Chapter 3 session:** 7 questions matched, an answer was graded "Correct: 2 / 2", the palette updated, and the step-by-step hints appeared, with 0 KaTeX errors.
+- **Reload:** the session resumed at the same question with its result.
+- **375 px:** all 7 questions of the session, the results page and the setup page (all filters open) fit, as do 16 other pages, which now show the new questions with 0 KaTeX errors. The 7 bottom-navigation items are 54 px wide each.
+- **Offline (server stopped):** after a reload, a 10-question practice session over chapters opened earlier started and ran.
+- **Clean-up:** the browser profile's test data (progress and the saved session) was then cleared.
+
+### Outstanding issues
+- **No visual review by eye yet** (screenshots still time out). Layout was checked by measurement.
+- **The Practice setup screen downloads the maths renderer** although it shows no maths, because the session view is in the same file. The renderer is needed seconds later when the session starts. Splitting it would delay the first question instead.
+- **Time per question** counts while the question is on screen, including time the tab is in the background.
+- **Navigation will run out of room:** the bottom bar has room for 7 items. Mock Tests (3C) and the Lab (3D) need a "More" menu or a different phone layout.
+- **The bank is still small** (34 questions, chapters 2–4 and one supplementary module). The engine works for any size, but mock exams in 3C will draw from this bank until more content is written.
+
+### Next: Milestone 3C
+The mock-exam engine:
+- configuration: duration, question count, chapters, difficulty;
+- during the exam: question palette, answered and unanswered markers, mark for review, previous and next, and a countdown that stays correct across navigation and reloads;
+- submission: confirmation, automatic submission at time-out, and persistent attempt records;
+- results computed from the stored record: by chapter, topic and difficulty, plus incorrect questions, unattempted questions and solutions.
