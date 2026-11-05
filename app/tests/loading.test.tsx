@@ -13,6 +13,7 @@ import { buildCatalog, unitContent } from "../src/content/catalog";
 import { cat, fetchIndexes, fetchUnit, resetContentCache, setUnitLoaderForTests } from "../src/content/load";
 import { RouteBoundary, lazyPage } from "../src/components/Boundary";
 import { allowConsoleError } from "./console";
+import { appWasUpdated, resetUpdateFlag, watchForUpdates } from "../src/store/update";
 import { renderApp } from "./helpers";
 
 const full = loadBundle();
@@ -177,5 +178,37 @@ describe("loading states and failures", () => {
     );
     expect(await screen.findByRole("alert")).toHaveTextContent("Something went wrong on this page");
     expect(screen.getByRole("alert")).toHaveTextContent("Your progress is safe");
+  });
+
+  test("after an update took over the page, a missing code file asks for a reload instead of a retry that cannot work", async () => {
+    allowConsoleError(/Failed to fetch dynamically imported module/);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const listeners: (() => void)[] = [];
+    const sw = { controller: {} as ServiceWorker, addEventListener: (_: string, f: () => void) => void listeners.push(f) };
+    watchForUpdates(sw as never);
+    expect(appWasUpdated()).toBe(false);
+    listeners.forEach((f) => f()); // the new version's worker claims the page
+    expect(appWasUpdated()).toBe(true);
+    const Page = lazyPage(() => Promise.reject(new TypeError("Failed to fetch dynamically imported module: /assets/old-abc.js")), () => () => null);
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <RouteBoundary resetKey="z">
+            <Page />
+          </RouteBoundary>
+        </MemoryRouter>,
+      );
+    });
+    expect(await screen.findByRole("alert")).toHaveTextContent("The app was updated");
+    expect(screen.getByRole("button", { name: "Reload the app" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+    resetUpdateFlag();
+  });
+
+  test("the first worker taking control of a fresh page is not an update", () => {
+    const listeners: (() => void)[] = [];
+    watchForUpdates({ controller: null, addEventListener: (_: string, f: () => void) => void listeners.push(f) } as never);
+    listeners.forEach((f) => f());
+    expect(appWasUpdated()).toBe(false);
   });
 });

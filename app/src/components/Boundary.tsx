@@ -6,6 +6,7 @@
 import { Component, Suspense, use, type ComponentType, type ErrorInfo, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { onRetry, retryFailed, tracked } from "../content/load";
+import { appWasUpdated } from "../store/update";
 
 export function Loading({ what = "page" }: { what?: string }) {
   return (
@@ -69,6 +70,18 @@ export class ErrorBoundary extends Component<BoundaryProps, BoundaryState> {
     const { error } = this.state;
     if (error === null) return this.props.children;
     const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+    if (isLoadError(error) && appWasUpdated() && !offline)
+      return (
+        <div className="error-panel" role="alert">
+          <h1 tabIndex={-1}>The app was updated</h1>
+          <p>A new version took over while this page was open, and this page needs files from the old version. Reload to use the new version. Your progress is safe.</p>
+          <div className="actions">
+            <button type="button" className="btn btn-primary" onClick={() => location.reload()}>
+              Reload the app
+            </button>
+          </div>
+        </div>
+      );
     return (
       <div className="error-panel" role="alert">
         <h1 tabIndex={-1}>{isLoadError(error) ? "This page could not be loaded" : "Something went wrong on this page"}</h1>

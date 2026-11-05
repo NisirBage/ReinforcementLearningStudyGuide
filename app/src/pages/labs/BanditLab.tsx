@@ -157,7 +157,7 @@ function StepExplain({ d, m, q }: { d: StepDetail; m: Method; q: number[] }) {
   return <pre className="calc" aria-live="polite">{lines.join("\n")}</pre>;
 }
 
-function Inspector({ testbed, methods }: { testbed: Testbed; methods: Method[] }) {
+export function Inspector({ testbed, methods }: { testbed: Testbed; methods: Method[] }) {
   const [mi, setMi] = useState(0);
   const [seed, setSeed] = useState(1);
   const [t, setT] = useState(0);

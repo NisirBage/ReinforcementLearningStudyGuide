@@ -12,17 +12,17 @@ import { LineChart } from "../../components/LineChart";
 import { NumberInput } from "../../components/NumberInput";
 import { Tex } from "../../components/math";
 
-type Env = "gridworld" | "gambler" | "recycling" | "windy";
+export type Env = "gridworld" | "gambler" | "recycling" | "windy";
 const f = (x: number, d = 2) => (Number.isFinite(x) ? x.toFixed(d) : "–");
 
-interface Model {
+export interface Model {
   mdp: FiniteMDP;
   gamma: number;
   kind: "grid4" | "grid" | "gambler" | "table";
   grid?: GridMDP["grid"];
 }
 
-function model(env: Env, ph: number): Model {
+export function model(env: Env, ph: number): Model {
   if (env === "gridworld") return { mdp: gridworld4x4(), gamma: 1, kind: "grid4" };
   if (env === "gambler") return { mdp: gamblersProblem(ph), gamma: 1, kind: "gambler" };
   if (env === "windy") {
@@ -77,7 +77,7 @@ function ValuesView({ m, v, ties, changed }: { m: Model; v: number[]; ties: numb
   );
 }
 
-function PolicyIterationPanel({ m }: { m: Model }) {
+export function PolicyIterationPanel({ m }: { m: Model }) {
   const run = useMemo(() => policyIteration(m.mdp, m.gamma, { theta: 1e-9 }), [m]);
   const phases = run.steps.length * 2 - 1;
   const [p, setP] = useState(0);
@@ -124,7 +124,7 @@ function PolicyIterationPanel({ m }: { m: Model }) {
   );
 }
 
-function ValueIterationPanel({ m }: { m: Model }) {
+export function ValueIterationPanel({ m }: { m: Model }) {
   const [mode, setMode] = useState<"in-place" | "two-array">("in-place");
   const run = useMemo(() => valueIteration(m.mdp, m.gamma, { theta: 1e-10, record: true, mode, maxSweeps: 2000 }), [m, mode]);
   const [k, setK] = useState(0);

@@ -21,7 +21,7 @@ const walkName = (s: number) => (s === 0 ? "left end" : s === 6 ? "right end" : 
 
 // ---------- Prediction ----------
 
-function TdStepper() {
+export function TdStepper() {
   const rw = useMemo(() => randomWalk(), []);
   const pi = useMemo(() => equiprobablePolicy(rw), [rw]);
   const [alpha, setAlpha] = useState(0.1);
@@ -234,9 +234,9 @@ function Explain({ d, m, alpha, gamma }: { d: ControlStepDetail; m: GridMDP; alp
   );
 }
 
-function ControlInspector() {
+export function ControlInspector({ initialMethod = "q-learning" }: { initialMethod?: ControlMethod } = {}) {
   const [task, setTask] = useState<Task>("cliff");
-  const [method, setMethod] = useState<ControlMethod>("q-learning");
+  const [method, setMethod] = useState<ControlMethod>(initialMethod);
   const [alpha, setAlpha] = useState(0.5);
   const [epsilon, setEpsilon] = useState(0.1);
   const [seed, setSeed] = useState(1);

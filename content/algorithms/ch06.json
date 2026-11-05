@@ -60,6 +60,48 @@
       "method": "page-image",
       "on": "2026-11-05",
       "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    },
+    "explainer": {
+      "problem": "Estimate $v_\\pi$ from experience, like Monte Carlo, but update after every step, using the current estimate of the next state: learning a guess from a guess.",
+      "equations": [
+        "eq.ch06.td0",
+        "eq.ch06.constant-alpha-mc"
+      ],
+      "derivation": [
+        {
+          "tex": "v_\\pi(s) = \\mathbb{E}_\\pi[G_t \\mid S_t = s] = \\mathbb{E}_\\pi[R_{t+1} + \\gamma v_\\pi(S_{t+1}) \\mid S_t = s]",
+          "why": "(6.3) is MC's target; (6.4) is the one DP and TD use."
+        },
+        {
+          "tex": "V(S_t) \\leftarrow V(S_t) + \\alpha[R_{t+1} + \\gamma V(S_{t+1}) - V(S_t)]",
+          "why": "Sample the expectation with one transition and use the current $V$ for $v_\\pi$: (6.2)."
+        }
+      ],
+      "example": {
+        "text": "Random walk with $V = 0.5$ everywhere and α = 0.1. The step from E to the right end (reward 1) gives target $1 + 0 = 1$, TD error 0.5 and $V(E) = 0.55$. Then the step from D to E gives target $0 + 0.55$, so $V(D) = 0.505$: the value propagates back one state at a time.",
+        "check": "alg.td0-example"
+      },
+      "demo": "td0",
+      "lab": "td",
+      "advantages": [
+        "Learns during an episode, and also in continuing tasks.",
+        "Converges to $v_\\pi$ for a fixed policy (in the mean for small α, with probability 1 for decreasing α).",
+        "Usually faster than constant-α MC on stochastic tasks (Figure 6.7)."
+      ],
+      "limitations": [
+        "Its target is biased by the current estimates.",
+        "Which of TD and MC learns faster in general is not settled (p. 148)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch05.first-visit-mc",
+          "point": "Monte Carlo waits for the full return $G_t$ instead of bootstrapping from $V(S_{t+1})$."
+        },
+        {
+          "with": "alg.ch04.iterative-policy-evaluation",
+          "point": "DP backs up the full expectation using a model; TD backs up one sample."
+        }
+      ]
     }
   },
   {
@@ -127,6 +169,36 @@
       "method": "page-image",
       "on": "2026-11-05",
       "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    },
+    "explainer": {
+      "problem": "Learn to act well (control) from experience, step by step, by learning the action values of the ε-greedy policy actually being followed and making it greedier over time.",
+      "equations": [
+        "eq.ch06.sarsa"
+      ],
+      "example": {
+        "text": "One transition with $Q(S_t, A_t) = -2$, $R_{t+1} = -1$, $Q(S_{t+1}, \\cdot) = (-1, -3)$, γ = 1 and α = 0.5. If the ε-greedy next action is the worse one, Sarsa's target is $-1 + (-3) = -4$, its TD error is −2, and $Q(S_t, A_t)$ becomes −3.",
+        "check": "alg.sarsa-vs-q-example"
+      },
+      "demo": "sarsa",
+      "lab": "td",
+      "advantages": [
+        "Accounts for its own exploration, so it learns the safer path on cliff walking and earns more online (Figure 6.13).",
+        "Learns during episodes, so it copes with tasks where some policies never terminate (windy gridworld, p. 157)."
+      ],
+      "limitations": [
+        "Learns the value of the exploring policy, not of the optimal one, unless ε is reduced over time.",
+        "Its convergence result needs ε to decrease, e.g. ε = 1/t (p. 155)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch06.q-learning",
+          "point": "Q-learning bootstraps from $\\max_a Q(S_{t+1}, a)$ instead of the action actually taken next."
+        },
+        {
+          "with": "alg.ch05.mc-es",
+          "point": "Monte Carlo ES learns Q from whole-episode returns with exploring starts."
+        }
+      ]
     }
   },
   {
@@ -190,6 +262,36 @@
       "method": "page-image",
       "on": "2026-11-05",
       "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    },
+    "explainer": {
+      "problem": "Learn the optimal action-value function $q_*$ directly from experience, whatever (sufficiently exploring) policy is generating it.",
+      "equations": [
+        "eq.ch06.q-learning"
+      ],
+      "example": {
+        "text": "The same transition as for Sarsa: $Q(S_t, A_t) = -2$, $R_{t+1} = -1$, $Q(S_{t+1}, \\cdot) = (-1, -3)$. Q-learning's target is $-1 + \\max(-1, -3) = -2$, its TD error is 0, and $Q(S_t, A_t)$ stays −2, even if the next action actually taken is the worse one.",
+        "check": "alg.sarsa-vs-q-example"
+      },
+      "demo": "q-learning",
+      "lab": "td",
+      "advantages": [
+        "Off-policy: learns $q_*$ while behaving exploratorily.",
+        "Simple to analyse, with convergence proofs (p. 157)."
+      ],
+      "limitations": [
+        "Its online performance can be worse than Sarsa's: on cliff walking it learns the edge path and keeps falling while exploring (Figure 6.13).",
+        "All state–action pairs must keep being updated."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch06.sarsa",
+          "point": "Sarsa's target uses the next action actually chosen, so it evaluates the exploring policy."
+        },
+        {
+          "with": "alg.ch04.value-iteration",
+          "point": "Value iteration applies the same max backup with a full model."
+        }
+      ]
     }
   }
 ]

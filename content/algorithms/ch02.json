@@ -1,0 +1,320 @@
+[
+  {
+    "id": "alg.ch02.epsilon-greedy-bandit",
+    "unit": "ch02",
+    "concept": "ch02.epsilon-greedy",
+    "name": "ε-greedy action-value method",
+    "inputs": [
+      "number of arms $n$",
+      "exploration probability ε",
+      "step size: $1/N(a)$ or a constant α",
+      "initial estimates $Q_1(a)$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Set $Q(a) \\leftarrow Q_1(a)$ and $N(a) \\leftarrow 0$ for every arm"
+      },
+      {
+        "indent": 0,
+        "text": "repeat for each step:"
+      },
+      {
+        "indent": 1,
+        "text": "with probability ε pick an arm uniformly at random; otherwise pick an arm with the largest $Q(a)$, ties at random"
+      },
+      {
+        "indent": 1,
+        "text": "pull it, see the reward $R$, and set $N(A) \\leftarrow N(A) + 1$"
+      },
+      {
+        "indent": 1,
+        "text": "$Q(A) \\leftarrow Q(A) + \\text{step} \\cdot [R - Q(A)]$, with step $1/N(A)$ (2.3) or α (2.5)"
+      }
+    ],
+    "output": "estimates $Q(a)$ and the actions taken",
+    "implementation": "banditLab.agentStep",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.2",
+        "printedPages": [
+          34,
+          34
+        ],
+        "pdfPages": [
+          48,
+          48
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.3",
+        "printedPages": [
+          37,
+          37
+        ],
+        "pdfPages": [
+          51,
+          51
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.4",
+        "printedPages": [
+          38,
+          38
+        ],
+        "pdfPages": [
+          52,
+          52
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-05",
+      "check": "lab.bandit.fig2-1",
+      "note": "The draft gives this method in equations and prose, not as a pseudocode box; the steps here are written from §2.2–2.7, and the code that runs them is checked against the draft's figures."
+    },
+    "explainer": {
+      "problem": "Choose repeatedly among $n$ actions with unknown average rewards, earning as much as possible, while still learning which action is best. Pure greedy selection can lock onto an arm whose first rewards happened to be good; ε-greedy spends a fraction ε of its choices exploring.",
+      "equations": [
+        "eq.ch02.greedy",
+        "eq.ch02.incremental-update",
+        "eq.ch02.constant-step"
+      ],
+      "derivation": [
+        {
+          "tex": "Q_{k+1} = \\tfrac1k \\sum_{i=1}^k R_i",
+          "why": "Start from the sample average of the first k rewards."
+        },
+        {
+          "tex": "= \\tfrac1k\\big(R_k + (k-1)Q_k\\big)",
+          "why": "Split off the last reward; the first k − 1 average to Q_k."
+        },
+        {
+          "tex": "= Q_k + \\tfrac1k\\big[R_k - Q_k\\big]",
+          "why": "Rearrange: the incremental update (2.3), which needs only Q_k and k."
+        }
+      ],
+      "example": {
+        "text": "Four arms with $Q = (0.2, 0.9, 0.9, 0.1)$ and ε = 0.1: each arm gets ε/4 = 0.025 from exploration, and the two tied greedy arms share 1 − ε = 0.9, so the probabilities are $(0.025, 0.475, 0.475, 0.025)$.",
+        "check": "ch02-q006"
+      },
+      "demo": "bandit-epsilon-greedy",
+      "lab": "bandit",
+      "advantages": [
+        "Simple, and works with any estimator.",
+        "Every action keeps being tried, so with sample averages every estimate converges (p. 34).",
+        "A constant step size lets it track a changing (nonstationary) problem."
+      ],
+      "limitations": [
+        "Explores blindly: it picks an obviously bad arm as often as a promising one.",
+        "Never stops exploring, so with ε = 0.1 on 10 arms it chooses the best arm at most 91% of the time.",
+        "The best ε depends on the task (noisier rewards need more exploration)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch02.ucb",
+          "point": "UCB directs exploration to uncertain arms instead of spreading it uniformly."
+        },
+        {
+          "with": "alg.ch02.gradient-bandit",
+          "point": "The gradient bandit learns preferences and chooses by soft-max, not by value estimates."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch02.ucb",
+    "unit": "ch02",
+    "concept": "ch02.ucb",
+    "name": "Upper-confidence-bound action selection",
+    "inputs": [
+      "number of arms $n$",
+      "exploration parameter $c > 0$",
+      "step size"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Set $Q(a) \\leftarrow Q_1(a)$ and $N(a) \\leftarrow 0$ for every arm"
+      },
+      {
+        "indent": 0,
+        "text": "for $t = 1, 2, \\dots$:"
+      },
+      {
+        "indent": 1,
+        "text": "if some arm has $N(a) = 0$, it counts as maximizing: pick such an arm"
+      },
+      {
+        "indent": 1,
+        "text": "otherwise pick $A_t = \\operatorname{argmax}_a [Q(a) + c\\sqrt{\\ln t / N(a)}]$"
+      },
+      {
+        "indent": 1,
+        "text": "pull it, see $R$, increment $N(A_t)$, and update $Q(A_t)$ as in the sample-average method"
+      }
+    ],
+    "output": "estimates $Q(a)$ and the actions taken",
+    "implementation": "banditLab.agentStep",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.6",
+        "printedPages": [
+          41,
+          42
+        ],
+        "pdfPages": [
+          55,
+          56
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-05",
+      "check": "lab.bandit.fig2-3",
+      "note": "The draft gives this method in equations and prose, not as a pseudocode box; the steps here are written from §2.2–2.7, and the code that runs them is checked against the draft's figures."
+    },
+    "explainer": {
+      "problem": "The same bandit problem, exploring more cleverly: prefer arms that are either nearly greedy or still uncertain, and reduce exploration of an arm as it is tried more often.",
+      "equations": [
+        "eq.ch02.ucb"
+      ],
+      "example": {
+        "text": "At $t = 17$ with $c = 2$, $Q = (1.0, 1.5, 0.8)$ and $N = (5, 10, 2)$, the scores $Q + 2\\sqrt{\\ln 17 / N}$ are about $2.506, 2.565, 3.180$: the rarely tried third arm wins despite the lowest estimate.",
+        "check": "ch02-q004"
+      },
+      "demo": "bandit-ucb",
+      "lab": "bandit",
+      "advantages": [
+        "Exploration is aimed at uncertainty, and it fades for well-known arms.",
+        "Usually beats ε-greedy on the 10-armed testbed (Figure 2.3)."
+      ],
+      "limitations": [
+        "Harder than ε-greedy to extend beyond bandits, to nonstationary problems and large state spaces (p. 42).",
+        "Starts by trying every arm once, which causes the spike at step 11 in Figure 2.3."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch02.epsilon-greedy-bandit",
+          "point": "ε-greedy explores uniformly at random; UCB explores where the estimates are least certain."
+        },
+        {
+          "with": "alg.ch02.gradient-bandit",
+          "point": "The gradient bandit explores through soft-max probabilities rather than an explicit bonus."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch02.gradient-bandit",
+    "unit": "ch02",
+    "concept": "ch02.gradient-bandit",
+    "name": "Gradient bandit",
+    "inputs": [
+      "number of arms $n$",
+      "step size α",
+      "whether to use the baseline $\\bar R_t$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Set every preference $H(a) \\leftarrow 0$ and $\\bar R \\leftarrow 0$"
+      },
+      {
+        "indent": 0,
+        "text": "for $t = 1, 2, \\dots$:"
+      },
+      {
+        "indent": 1,
+        "text": "compute $\\pi_t(a) = e^{H(a)} / \\sum_b e^{H(b)}$ (2.9) and sample $A_t$ from it"
+      },
+      {
+        "indent": 1,
+        "text": "see $R_t$; update $\\bar R$ to the mean of all rewards so far, including $R_t$ (or keep 0 without a baseline)"
+      },
+      {
+        "indent": 1,
+        "text": "$H(A_t) \\mathrel{+}= \\alpha(R_t - \\bar R)(1 - \\pi_t(A_t))$; for every other arm $H(a) \\mathrel{-}= \\alpha(R_t - \\bar R)\\pi_t(a)$ (2.10)"
+      }
+    ],
+    "output": "preferences $H(a)$ and the policy $\\pi_t$",
+    "implementation": "banditLab.agentStep",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.7",
+        "printedPages": [
+          42,
+          45
+        ],
+        "pdfPages": [
+          56,
+          59
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-05",
+      "check": "lab.bandit.fig2-4",
+      "note": "The draft gives this method in equations and prose, not as a pseudocode box; the steps here are written from §2.2–2.7, and the code that runs them is checked against the draft's figures."
+    },
+    "explainer": {
+      "problem": "Learn which action to prefer without estimating action values at all: adjust a preference for each action so that the expected reward goes up, by stochastic gradient ascent.",
+      "equations": [
+        "eq.ch02.softmax-preferences",
+        "eq.ch02.gradient-bandit-update"
+      ],
+      "derivation": [
+        {
+          "tex": "\\frac{\\partial \\mathbb{E}[R_t]}{\\partial H_t(a)} = \\sum_b \\big(q(b) - X_t\\big)\\frac{\\partial \\pi_t(b)}{\\partial H_t(a)}",
+          "why": "Differentiate the expected reward; any $X_t$ can be subtracted because the derivatives of the probabilities sum to zero."
+        },
+        {
+          "tex": "= \\mathbb{E}\\big[(R_t - \\bar R_t)(\\mathbb{1}_{a=A_t} - \\pi_t(a))\\big]",
+          "why": "Write it as an expectation over $A_t$, use $\\partial \\pi_t(b)/\\partial H_t(a) = \\pi_t(b)(\\mathbb{1}_{a=b} - \\pi_t(a))$, and choose $X_t = \\bar R_t$."
+        },
+        {
+          "tex": "H_{t+1}(a) = H_t(a) + \\alpha (R_t - \\bar R_t)(\\mathbb{1}_{a=A_t} - \\pi_t(a))",
+          "why": "Replace the expectation by its sample: this is (2.10), stochastic gradient ascent."
+        }
+      ],
+      "example": {
+        "text": "With $H = (0, 0, 0)$, α = 0.1, chosen arm 1, $R_t = 3$ and $\\bar R_t = 1$: arm 1's preference rises by $0.1 \\cdot 2 \\cdot (1 - \\tfrac13) = \\tfrac{2}{15}$ and the others fall by $0.1 \\cdot 2 \\cdot \\tfrac13 = \\tfrac{1}{15}$, so $\\pi(1)$ becomes $e^{0.2}/(e^{0.2} + 2) \\approx 0.379$.",
+        "check": "alg.gradient-bandit-example"
+      },
+      "demo": "bandit-gradient",
+      "lab": "bandit",
+      "advantages": [
+        "Only relative preferences matter, so shifting all rewards (Figure 2.4's +4) changes nothing when the baseline is used.",
+        "Its update is, in expectation, exact gradient ascent on $\\mathbb{E}[R_t]$ (§2.7)."
+      ],
+      "limitations": [
+        "Without the baseline it degrades badly when rewards are shifted (Figure 2.4).",
+        "The step size α must be tuned; preferences have no meaning in terms of reward."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch02.epsilon-greedy-bandit",
+          "point": "ε-greedy keeps value estimates; the gradient bandit keeps preferences and a soft-max policy."
+        },
+        {
+          "with": "alg.ch02.ucb",
+          "point": "UCB adds an uncertainty bonus to value estimates; the gradient bandit has no value estimates."
+        }
+      ]
+    }
+  }
+]

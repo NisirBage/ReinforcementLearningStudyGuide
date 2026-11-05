@@ -5,17 +5,36 @@
       "id": "ch02-q001",
       "unit": "ch02",
       "section": "2.3",
-      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.incremental-update"] },
-      "concepts": ["ch02.incremental-update"],
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.incremental-update"
+        ]
+      },
+      "concepts": [
+        "ch02.incremental-update"
+      ],
       "type": "multi-numeric",
       "category": "numerical",
       "difficulty": 1,
       "marks": 3,
       "stem": "An action starts with estimate $Q_1 = 0$ and then receives rewards $R_1 = 6$, $R_2 = 2$, $R_3 = 4$. Using the incremental rule $Q_{k+1} = Q_k + \\frac{1}{k}[R_k - Q_k]$, find $Q_2$, $Q_3$ and $Q_4$.",
       "parts": [
-        { "label": "Q_2", "answer": 6, "tolerance": 0.001 },
-        { "label": "Q_3", "answer": 4, "tolerance": 0.001 },
-        { "label": "Q_4", "answer": 4, "tolerance": 0.001 }
+        {
+          "label": "Q_2",
+          "answer": 6,
+          "tolerance": 0.001
+        },
+        {
+          "label": "Q_3",
+          "answer": 4,
+          "tolerance": 0.001
+        },
+        {
+          "label": "Q_4",
+          "answer": 4,
+          "tolerance": 0.001
+        }
       ],
       "solution": [
         "$k = 1$: $Q_2 = 0 + \\tfrac11(6 - 0) = 6$. The step size 1 discards the initial estimate.",
@@ -24,47 +43,132 @@
         "Check: the plain average of $6, 2, 4$ is $12/3 = 4$, as (2.1) requires."
       ],
       "explanation": "With step size 1/k the incremental rule reproduces the sample average exactly, whatever Q_1 was.",
-      "misconceptions": [{ "wrong": "Q_2 = 3 (averaging Q_1 with R_1)", "why": "Q_1 is not a reward; with k = 1 the step size is 1, so Q_2 = R_1." }],
-      "related": ["ch02-q002"],
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [37, 37], "pdfPages": [51, 51] }],
-      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q001" },
+      "misconceptions": [
+        {
+          "wrong": "Q_2 = 3 (averaging Q_1 with R_1)",
+          "why": "Q_1 is not a reward; with k = 1 the step size is 1, so Q_2 = R_1."
+        }
+      ],
+      "related": [
+        "ch02-q002"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.3",
+          "printedPages": [
+            37,
+            37
+          ],
+          "pdfPages": [
+            51,
+            51
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-04",
+        "check": "ch02-q001"
+      },
       "reviewed": true
     },
     {
       "id": "ch02-q002",
       "unit": "ch02",
       "section": "2.4",
-      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.constant-step"] },
-      "concepts": ["ch02.constant-step-size"],
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.constant-step"
+        ]
+      },
+      "concepts": [
+        "ch02.constant-step-size"
+      ],
       "type": "numeric",
       "category": "numerical",
       "difficulty": 1,
       "marks": 2,
       "stem": "With a constant step size $\\alpha = 0.5$ and initial estimate $Q_1 = 4$, an action receives rewards $10$ and then $0$. What is $Q_3$?",
-      "parts": [{ "label": "Q_3", "answer": 3.5, "tolerance": 0.001 }],
-      "solution": ["$Q_2 = 4 + 0.5(10 - 4) = 7$.", "$Q_3 = 7 + 0.5(0 - 7) = 3.5$."],
+      "parts": [
+        {
+          "label": "Q_3",
+          "answer": 3.5,
+          "tolerance": 0.001
+        }
+      ],
+      "solution": [
+        "$Q_2 = 4 + 0.5(10 - 4) = 7$.",
+        "$Q_3 = 7 + 0.5(0 - 7) = 3.5$."
+      ],
       "explanation": "Rule (2.5) applied twice. Equivalently, by (2.6): $0.25 \\cdot 4 + 0.25 \\cdot 10 + 0.5 \\cdot 0 = 3.5$.",
-      "related": ["ch02-q001", "ch02-q003"],
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 38], "pdfPages": [52, 52] }],
-      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q002" },
+      "related": [
+        "ch02-q001",
+        "ch02-q003"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            38
+          ],
+          "pdfPages": [
+            52,
+            52
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-04",
+        "check": "ch02-q002"
+      },
       "reviewed": true
     },
     {
       "id": "ch02-q003",
       "unit": "ch02",
       "section": "2.4",
-      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.recency-weighted"] },
-      "concepts": ["ch02.recency-weighted-average"],
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.recency-weighted"
+        ]
+      },
+      "concepts": [
+        "ch02.recency-weighted-average"
+      ],
       "type": "multi-numeric",
       "category": "numerical",
       "difficulty": 2,
       "marks": 4,
       "stem": "For $k = 3$ rewards and constant $\\alpha = 0.5$, write $Q_4$ as a weighted average of $Q_1, R_1, R_2, R_3$ using (2.6). Give the four weights.",
       "parts": [
-        { "label": "weight on Q_1", "answer": 0.125, "tolerance": 0.0001 },
-        { "label": "weight on R_1", "answer": 0.125, "tolerance": 0.0001 },
-        { "label": "weight on R_2", "answer": 0.25, "tolerance": 0.0001 },
-        { "label": "weight on R_3", "answer": 0.5, "tolerance": 0.0001 }
+        {
+          "label": "weight on Q_1",
+          "answer": 0.125,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "weight on R_1",
+          "answer": 0.125,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "weight on R_2",
+          "answer": 0.25,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "weight on R_3",
+          "answer": 0.5,
+          "tolerance": 0.0001
+        }
       ],
       "solution": [
         "Weight on $Q_1$: $(1-\\alpha)^k = 0.5^3 = 0.125$.",
@@ -72,28 +176,77 @@
         "Check: $0.125 + 0.125 + 0.25 + 0.5 = 1$."
       ],
       "explanation": "The most recent reward gets the largest weight; each older reward gets a factor (1 − α) less.",
-      "misconceptions": [{ "wrong": "Weights 0.5, 0.25, 0.125 on R_1, R_2, R_3", "why": "The exponent is k − i, the number of rewards since R_i, so the oldest reward has the smallest weight." }],
-      "related": ["ch02-q002", "ch02-q007"],
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }],
-      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q003" },
+      "misconceptions": [
+        {
+          "wrong": "Weights 0.5, 0.25, 0.125 on R_1, R_2, R_3",
+          "why": "The exponent is k − i, the number of rewards since R_i, so the oldest reward has the smallest weight."
+        }
+      ],
+      "related": [
+        "ch02-q002",
+        "ch02-q007"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            39
+          ],
+          "pdfPages": [
+            52,
+            53
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-04",
+        "check": "ch02-q003"
+      },
       "reviewed": true
     },
     {
       "id": "ch02-q004",
       "unit": "ch02",
       "section": "2.6",
-      "provenance": { "kind": "generated", "basis": ["eq.ch02.ucb"] },
-      "concepts": ["ch02.ucb"],
+      "provenance": {
+        "kind": "generated",
+        "basis": [
+          "eq.ch02.ucb"
+        ]
+      },
+      "concepts": [
+        "ch02.ucb"
+      ],
       "type": "multi-numeric",
       "category": "numerical",
       "difficulty": 2,
       "marks": 4,
       "stem": "A 3-armed bandit at time step $t = 17$ has estimates $Q = (1.0, 1.5, 0.8)$ and counts $N = (5, 10, 2)$. With $c = 2$, compute each arm's UCB score $Q_t(a) + c\\sqrt{\\ln t / N_t(a)}$ (to 3 decimals) and the arm UCB selects (1, 2 or 3).",
       "parts": [
-        { "label": "score of arm 1", "answer": 2.506, "tolerance": 0.002 },
-        { "label": "score of arm 2", "answer": 2.565, "tolerance": 0.002 },
-        { "label": "score of arm 3", "answer": 3.18, "tolerance": 0.002 },
-        { "label": "selected arm", "answer": 3, "tolerance": 0 }
+        {
+          "label": "score of arm 1",
+          "answer": 2.506,
+          "tolerance": 0.002
+        },
+        {
+          "label": "score of arm 2",
+          "answer": 2.565,
+          "tolerance": 0.002
+        },
+        {
+          "label": "score of arm 3",
+          "answer": 3.18,
+          "tolerance": 0.002
+        },
+        {
+          "label": "selected arm",
+          "answer": 3,
+          "tolerance": 0
+        }
       ],
       "solution": [
         "$\\ln 17 \\approx 2.8332$.",
@@ -103,24 +256,63 @@
         "The maximum is arm 3."
       ],
       "explanation": "Arm 3 has the lowest estimate but has been tried only twice, so its uncertainty bonus dominates.",
-      "misconceptions": [{ "wrong": "Using log base 10", "why": "(2.8) uses the natural logarithm ln t." }],
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.6", "printedPages": [41, 41], "pdfPages": [55, 55] }],
-      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q004" },
+      "misconceptions": [
+        {
+          "wrong": "Using log base 10",
+          "why": "(2.8) uses the natural logarithm ln t."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.6",
+          "printedPages": [
+            41,
+            41
+          ],
+          "pdfPages": [
+            55,
+            55
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-04",
+        "check": "ch02-q004"
+      },
       "reviewed": true
     },
     {
       "id": "ch02-q005",
       "unit": "ch02",
       "section": "2.4",
-      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.step-size-conditions"] },
-      "concepts": ["ch02.step-size-conditions"],
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.step-size-conditions"
+        ]
+      },
+      "concepts": [
+        "ch02.step-size-conditions"
+      ],
       "type": "multi",
       "category": "analytical",
       "difficulty": 3,
       "marks": 3,
       "stem": "Which step-size sequences $\\alpha_k$ satisfy both conditions in (2.7), $\\sum_k \\alpha_k = \\infty$ and $\\sum_k \\alpha_k^2 < \\infty$? Select all that apply.",
-      "options": ["$\\alpha_k = 1/k$", "$\\alpha_k = 0.1$ (constant)", "$\\alpha_k = 1/k^2$", "$\\alpha_k = 1/\\sqrt{k}$", "$\\alpha_k = 1/(k + 10)$"],
-      "answer": [0, 4],
+      "options": [
+        "$\\alpha_k = 1/k$",
+        "$\\alpha_k = 0.1$ (constant)",
+        "$\\alpha_k = 1/k^2$",
+        "$\\alpha_k = 1/\\sqrt{k}$",
+        "$\\alpha_k = 1/(k + 10)$"
+      ],
+      "answer": [
+        0,
+        4
+      ],
       "optionNotes": [
         "Satisfies both: the harmonic series $\\sum 1/k$ diverges, while $\\sum 1/k^2 = \\pi^2/6$ is finite.",
         "Fails the second condition: $\\sum 0.1 = \\infty$ but $\\sum 0.01 = \\infty$ too, so the estimate never settles. A constant step keeps tracking recent rewards, which is useful when the problem is nonstationary.",
@@ -136,25 +328,62 @@
         "$1/(k+10)$: a shifted harmonic series still diverges, and $\\sum 1/(k+10)^2 < \\sum 1/k^2$ converges. Both hold."
       ],
       "explanation": "The steps must shrink, but not too fast: their sum must still be infinite.",
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [39, 39], "pdfPages": [53, 53] }],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            39,
+            39
+          ],
+          "pdfPages": [
+            53,
+            53
+          ]
+        }
+      ],
       "reviewed": true
     },
     {
       "id": "ch02-q006",
       "unit": "ch02",
       "section": "2.2",
-      "provenance": { "kind": "generated", "basis": ["§2.2"] },
-      "concepts": ["ch02.epsilon-greedy"],
+      "provenance": {
+        "kind": "generated",
+        "basis": [
+          "§2.2"
+        ]
+      },
+      "concepts": [
+        "ch02.epsilon-greedy"
+      ],
       "type": "multi-numeric",
       "category": "numerical",
       "difficulty": 2,
       "marks": 4,
       "stem": "Four arms have estimates $Q = (0.2, 0.9, 0.9, 0.1)$. An $\\varepsilon$-greedy agent with $\\varepsilon = 0.1$ explores uniformly over all four arms with probability $\\varepsilon$, and otherwise picks a greedy arm, breaking ties uniformly at random. Give the probability of choosing each arm.",
       "parts": [
-        { "label": "P(arm 1)", "answer": 0.025, "tolerance": 0.0001 },
-        { "label": "P(arm 2)", "answer": 0.475, "tolerance": 0.0001 },
-        { "label": "P(arm 3)", "answer": 0.475, "tolerance": 0.0001 },
-        { "label": "P(arm 4)", "answer": 0.025, "tolerance": 0.0001 }
+        {
+          "label": "P(arm 1)",
+          "answer": 0.025,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "P(arm 2)",
+          "answer": 0.475,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "P(arm 3)",
+          "answer": 0.475,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "P(arm 4)",
+          "answer": 0.025,
+          "tolerance": 0.0001
+        }
       ],
       "solution": [
         "Exploration gives every arm $\\varepsilon/4 = 0.025$.",
@@ -162,17 +391,47 @@
         "Arms 2 and 3: $0.025 + 0.45 = 0.475$. Arms 1 and 4: $0.025$. The total is 1."
       ],
       "explanation": "A greedy arm can also be picked during exploration, so its probability exceeds (1 − ε)/(number of greedy arms).",
-      "misconceptions": [{ "wrong": "P(arm 2) = 0.45", "why": "This forgets that random exploration can also select arm 2." }],
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [34, 34], "pdfPages": [48, 48] }],
-      "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q006" },
+      "misconceptions": [
+        {
+          "wrong": "P(arm 2) = 0.45",
+          "why": "This forgets that random exploration can also select arm 2."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.2",
+          "printedPages": [
+            34,
+            34
+          ],
+          "pdfPages": [
+            48,
+            48
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-04",
+        "check": "ch02-q006"
+      },
       "reviewed": true
     },
     {
       "id": "ch02-q007",
       "unit": "ch02",
       "section": "2.4",
-      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.recency-weighted"] },
-      "concepts": ["ch02.recency-weighted-average"],
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.recency-weighted"
+        ]
+      },
+      "concepts": [
+        "ch02.recency-weighted-average"
+      ],
       "type": "true-false",
       "category": "conceptual",
       "difficulty": 1,
@@ -184,8 +443,24 @@
         "Only after adding the weight $(1-\\alpha)^k$ on $Q_1$ is the total exactly 1."
       ],
       "explanation": "The initial estimate keeps a small, geometrically shrinking share of the weight. The estimate is biased by Q_1, as Section 2.5 discusses.",
-      "related": ["ch02-q003"],
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }],
+      "related": [
+        "ch02-q003"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            39
+          ],
+          "pdfPages": [
+            52,
+            53
+          ]
+        }
+      ],
       "reviewed": true
     },
     {
@@ -833,6 +1108,142 @@
         "method": "text-layer",
         "on": "2026-11-05",
         "note": "Statement on printed p. 34."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q018",
+      "unit": "ch02",
+      "section": "2.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.gradient-bandit-update",
+          "eq.ch02.softmax-preferences"
+        ]
+      },
+      "concepts": [
+        "ch02.gradient-bandit"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "A 3-armed gradient bandit starts with preferences $H = (0, 0, 0)$ and step size $\\alpha = 0.1$. It selects arm 1 and receives $R_t = 3$; the baseline is $\\bar R_t = 1$. Apply (2.10) and give the new $H(1)$, the new $H(2)$, and the new probability $\\pi(1)$ of selecting arm 1.",
+      "parts": [
+        {
+          "label": "H(1)",
+          "answer": 0.13333333333333333,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "H(2)",
+          "answer": -0.06666666666666667,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "π(1)",
+          "answer": 0.37915,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "With equal preferences, $\\pi_t(a) = \\tfrac13$ for every arm, and $\\alpha(R_t - \\bar R_t) = 0.1 \\cdot 2 = 0.2$.",
+        "Arm 1 (selected): $H(1) = 0 + 0.2(1 - \\tfrac13) = \\tfrac{2}{15} \\approx 0.1333$.",
+        "Arms 2 and 3: $H(a) = 0 - 0.2 \\cdot \\tfrac13 = -\\tfrac1{15} \\approx -0.0667$.",
+        "Soft-max (2.9) depends only on differences: $\\pi(1) = e^{0.2}/(e^{0.2} + 2) \\approx 0.3792$."
+      ],
+      "explanation": "A reward above the baseline raises the chosen arm's preference and lowers every other arm's in proportion to its probability.",
+      "misconceptions": [
+        {
+          "wrong": "Only the chosen arm's preference changes",
+          "why": "(2.10) also lowers every unchosen arm's preference by $\\alpha(R_t - \\bar R_t)\\pi_t(a)$."
+        }
+      ],
+      "related": [
+        "ch02-q019"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.7",
+          "printedPages": [
+            42,
+            43
+          ],
+          "pdfPages": [
+            56,
+            57
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch02-q018"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q019",
+      "unit": "ch02",
+      "section": "2.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.gradient-bandit-update",
+          "§2.7"
+        ]
+      },
+      "concepts": [
+        "ch02.gradient-bandit"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "On the 10-armed testbed with every true value shifted up by 4 (Figure 2.4), what does the reward baseline $\\bar R_t$ do for the gradient bandit?",
+      "options": [
+        "It makes the updates unaffected by the shift, because the reward is compared with its running average",
+        "It makes the algorithm explore more, like a larger ε",
+        "It changes the soft-max probabilities directly, independent of the preferences",
+        "It has no effect: the shift cancels in the soft-max anyway"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: $\\bar R_t$ adapts to the new reward level, so $R_t - \\bar R_t$ and hence (2.10) behave as on the unshifted testbed.",
+        "The gradient bandit has no ε; its exploration comes from the soft-max probabilities.",
+        "The baseline enters only the preference update (2.10); the probabilities follow from the preferences by (2.9).",
+        "Soft-max ignores a shift of the preferences, but here the rewards are shifted, and without a baseline that changes every update."
+      ],
+      "solution": [
+        "The baseline tracks the average reward, so $R_t - \\bar R_t$ is unchanged by a constant shift and so is every update.",
+        "Without it ($\\bar R_t = 0$), every reward is positive and nearly every update raises the chosen arm's preference, which slows learning badly."
+      ],
+      "explanation": "The draft reports that omitting the baseline significantly degrades performance on this shifted testbed (p. 43, Figure 2.4).",
+      "related": [
+        "ch02-q018"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.7",
+          "printedPages": [
+            43,
+            44
+          ],
+          "pdfPages": [
+            57,
+            58
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Baseline discussion and Figure 2.4, printed pp. 43–44, checked against the text layer."
       },
       "reviewed": true
     }

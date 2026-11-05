@@ -5,21 +5,109 @@
     "concept": "ch04.iterative-policy-evaluation",
     "name": "Iterative policy evaluation (in-place)",
     "bookLabel": "Figure 4.1",
-    "inputs": ["policy $\\pi$ to evaluate", "small threshold $\\theta > 0$"],
+    "inputs": [
+      "policy $\\pi$ to evaluate",
+      "small threshold $\\theta > 0$"
+    ],
     "lines": [
-      { "indent": 0, "text": "Set $V(s) = 0$ for every $s \\in \\mathcal{S}^+$" },
-      { "indent": 0, "text": "repeat" },
-      { "indent": 1, "text": "$\\Delta \\leftarrow 0$" },
-      { "indent": 1, "text": "for each $s \\in \\mathcal{S}$:" },
-      { "indent": 2, "text": "$v \\leftarrow V(s)$" },
-      { "indent": 2, "text": "$V(s) \\leftarrow \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\big[r + \\gamma V(s')\\big]$" },
-      { "indent": 2, "text": "$\\Delta \\leftarrow \\max(\\Delta, |v - V(s)|)$" },
-      { "indent": 0, "text": "until $\\Delta < \\theta$" }
+      {
+        "indent": 0,
+        "text": "Set $V(s) = 0$ for every $s \\in \\mathcal{S}^+$"
+      },
+      {
+        "indent": 0,
+        "text": "repeat"
+      },
+      {
+        "indent": 1,
+        "text": "$\\Delta \\leftarrow 0$"
+      },
+      {
+        "indent": 1,
+        "text": "for each $s \\in \\mathcal{S}$:"
+      },
+      {
+        "indent": 2,
+        "text": "$v \\leftarrow V(s)$"
+      },
+      {
+        "indent": 2,
+        "text": "$V(s) \\leftarrow \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\big[r + \\gamma V(s')\\big]$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\Delta \\leftarrow \\max(\\Delta, |v - V(s)|)$"
+      },
+      {
+        "indent": 0,
+        "text": "until $\\Delta < \\theta$"
+      }
     ],
     "output": "$V \\approx v_\\pi$",
     "implementation": "dp.iterativePolicyEvaluation",
-    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 92], "pdfPages": [106, 106] }],
-    "verification": { "method": "computed", "on": "2026-11-04", "check": "ch04.in-place-converges-to-same-v", "note": "Pseudocode compared with the page image; the implementation reproduces Figure 4.2 (ch04.fig4-2-v-pi)." }
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          92,
+          92
+        ],
+        "pdfPages": [
+          106,
+          106
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-04",
+      "check": "ch04.in-place-converges-to-same-v",
+      "note": "Pseudocode compared with the page image; the implementation reproduces Figure 4.2 (ch04.fig4-2-v-pi)."
+    },
+    "explainer": {
+      "problem": "Given a policy π and a complete model $p(s', r | s, a)$, compute its value function $v_\\pi$: the expected return from every state. This is the prediction problem.",
+      "equations": [
+        "eq.ch03.bellman-v",
+        "eq.ch04.policy-evaluation-update"
+      ],
+      "derivation": [
+        {
+          "tex": "v_\\pi(s) = \\mathbb{E}_\\pi[R_{t+1} + \\gamma v_\\pi(S_{t+1}) \\mid S_t = s]",
+          "why": "The Bellman equation: one step of reward plus the discounted value of where it leads."
+        },
+        {
+          "tex": "v_{k+1}(s) = \\sum_a \\pi(a|s)\\sum_{s',r} p(s',r|s,a)[r + \\gamma v_k(s')]",
+          "why": "Turn the equation into an update; $v_\\pi$ is its fixed point (4.5)."
+        }
+      ],
+      "example": {
+        "text": "On the 4×4 gridworld from $v_0 = 0$: after one two-array sweep every nonterminal state has $v_1 = -1$; after two, state 1 has $v_2(1) = -1 + \\tfrac14(0 - 1 - 1 - 1) = -1.75$ (Figure 4.2 prints −1.7).",
+        "check": "ch04-q002"
+      },
+      "demo": "policy-evaluation",
+      "lab": "bellman",
+      "advantages": [
+        "Exact up to the stopping threshold θ; converges to $v_\\pi$ whenever $v_\\pi$ exists.",
+        "The in-place version usually converges faster than the two-array one (p. 91)."
+      ],
+      "limitations": [
+        "Needs the full model.",
+        "Sweeps the whole state set every iteration, which is expensive for large problems.",
+        "With γ = 1 and a policy that can loop for ever it does not converge (Exercise 4.4)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch04.value-iteration",
+          "point": "Value iteration adds a max over actions to the same backup, to find $v_*$ instead of $v_\\pi$."
+        },
+        {
+          "with": "alg.ch06.td0",
+          "point": "TD(0) estimates the same $v_\\pi$ from sampled transitions, without a model."
+        }
+      ]
+    }
   },
   {
     "id": "alg.ch04.policy-iteration",
@@ -80,7 +168,38 @@
         "note": "The caption says the algorithm may never stop if the policy keeps switching between equally good policies.",
         "suggestion": "The app keeps the current action whenever it is still among the maximizing actions, so the policy only changes for a strictly better action."
       }
-    ]
+    ],
+    "explainer": {
+      "problem": "Find an optimal policy of a finite MDP whose model is known, by alternating complete policy evaluation with greedy policy improvement.",
+      "equations": [
+        "eq.ch04.policy-evaluation-update",
+        "eq.ch04.greedy-improvement"
+      ],
+      "example": {
+        "text": "On the 4×4 gridworld, starting from the equiprobable random policy, $v_\\pi$ is −14, −18, −20 or −22. The greedy policy for those values already moves straight to a corner, and evaluating it gives −1, −2, −3: one improvement was enough (p. 98).",
+        "check": "lab.dp.gridworld-optimal"
+      },
+      "demo": "policy-iteration",
+      "lab": "dp",
+      "advantages": [
+        "Converges in a finite number of iterations, often very few.",
+        "Each policy is at least as good as the last (the policy improvement theorem)."
+      ],
+      "limitations": [
+        "Every iteration contains a full policy evaluation, itself many sweeps.",
+        "As printed, it may never stop if equally good policies alternate (Figure 4.3's caption); the lab keeps an action while it is still best."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch04.value-iteration",
+          "point": "Value iteration cuts each evaluation to a single sweep."
+        },
+        {
+          "with": "alg.ch05.mc-es",
+          "point": "Monte Carlo ES follows the same evaluate-and-improve pattern from sample episodes, without a model."
+        }
+      ]
+    }
   },
   {
     "id": "alg.ch04.value-iteration",
@@ -150,6 +269,46 @@
       "method": "page-image",
       "on": "2026-11-05",
       "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    },
+    "explainer": {
+      "problem": "Compute the optimal value function $v_*$ (and from it an optimal policy) of a finite MDP with a known model, without running a full policy evaluation between improvements.",
+      "equations": [
+        "eq.ch04.value-iteration"
+      ],
+      "derivation": [
+        {
+          "tex": "v_*(s) = \\max_a \\sum_{s',r} p(s',r|s,a)[r + \\gamma v_*(s')]",
+          "why": "The Bellman optimality equation (4.1)."
+        },
+        {
+          "tex": "v_{k+1}(s) = \\max_a \\sum_{s',r} p(s',r|s,a)[r + \\gamma v_k(s')]",
+          "why": "Turn it into an update rule: (4.10)."
+        }
+      ],
+      "example": {
+        "text": "Gambler's problem with $p_h = 0.4$: value iteration converges to $v_*(50) = 0.4$, $v_*(25) = 0.16$ and $v_*(75) = 0.64$, the values of bold play, and staking all 50 at capital 50 is among the best stakes.",
+        "check": "lab.dp.gambler-bold-play"
+      },
+      "demo": "value-iteration",
+      "lab": "dp",
+      "advantages": [
+        "One simple backup combines evaluation and improvement.",
+        "Converges to $v_*$ under the same conditions that guarantee $v_*$ exists."
+      ],
+      "limitations": [
+        "Still sweeps every state; impractical for huge state sets (p. 101).",
+        "Formally needs infinitely many sweeps; stops when the change Δ is small."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch04.policy-iteration",
+          "point": "Policy iteration evaluates each policy fully before improving it."
+        },
+        {
+          "with": "alg.ch06.q-learning",
+          "point": "Q-learning applies the same max backup to sampled transitions, without a model."
+        }
+      ]
     }
   }
 ]

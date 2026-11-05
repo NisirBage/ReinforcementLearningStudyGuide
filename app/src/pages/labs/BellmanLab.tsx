@@ -200,7 +200,7 @@ function SingleBackup() {
 
 type Model = "recycling" | "gridworld";
 
-function Iteration() {
+export function Iteration() {
   const [model, setModel] = useState<Model>("gridworld");
   const [gamma, setGamma] = useState(1);
   const [mode, setMode] = useState<"two-array" | "in-place">("two-array");

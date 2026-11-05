@@ -381,3 +381,75 @@ Done, see below.
 
 ### Next: Milestone 3F
 Algorithm explainers for every implemented algorithm, progress integration of the labs and questions, and final QA.
+
+## Milestone 3F: Algorithm explainers, progress integration and final QA (done, 2026-11-05)
+
+**Explainers.** Every implemented algorithm has one page at `/algorithm/<id>`, in eleven parts:
+1. the problem it solves;
+2. prerequisites, from the concept graph;
+3. the mathematics (the draft's equations as equation cards);
+4. a derivation, where one fits: the incremental average, the gradient-bandit update, the policy-evaluation, value-iteration and TD(0) updates;
+5. the pseudocode box;
+6. the exact source of the function that runs it, loaded from `lib/rl` as text;
+7. a worked example, with a button that re-runs its computed check in the browser;
+8. a live demonstration: the lab panel itself, preset for that algorithm and stepped one update at a time with every intermediate value;
+9. strengths and limitations;
+10. a comparison table linking related algorithms;
+11. practice questions on the concept, with a link that opens Practice preset to them.
+
+The eleven algorithms: ε-greedy, UCB and the gradient bandit (new boxes, because the draft gives these as equations, not pseudocode, and the page says so); iterative policy evaluation, policy iteration and value iteration; first-visit MC and Monte Carlo ES; TD(0), Sarsa and Q-learning. Sarsa's demonstration starts on Sarsa and Q-learning's on Q-learning; their worked examples use the same transition to show the two targets (−4 against −2).
+
+**Content:**
+- `Explainer` type in `schema.ts`. The validator requires one on every algorithm, with equations on the same side of the core/supplementary line, a known demonstration key and lab, non-empty strengths, limitations and comparisons, and comparisons that name real algorithms or concepts.
+- 16 new questions, all `textbook-derived` with sources, so that every algorithm's concept has at least two: Chapter 2 (2), Chapter 4 (4), Chapter 5 (4, new file) and Chapter 6 (6, new file). Numeric answers are computed by the app's own code (9 new checks); statements were checked against the text layer of the cited pages.
+- 4 worked-example checks: the gradient-bandit update, first- versus every-visit returns, two TD(0) steps, and Sarsa against Q-learning on one transition.
+- 50 questions and 64 checks in all; overlap check 0 matches.
+
+**Progress** (all computed from the stored attempts, exams, cards and activity; nothing new is stored, so the v2 format, export and import are unchanged):
+- Progress page:
+  - questions attempted, correct and incorrect (by latest attempt), marks scored and time measured;
+  - a revision backlog: cards due, questions to re-attempt, questions marked, concepts set to "Needs revision", each linked to where it is worked through;
+  - repeated mistakes and bookmarks, each with a Practice link (`/practice?pool=repeated`, `?pool=bookmarked`);
+  - mock-exam history: count, latest, best and average;
+  - topic mastery: each concept's self-set status beside the evidence (questions attempted of those available, marks on the latest attempt of each);
+  - laboratories used, from the activity log (opening a lab now logs it, once per visit).
+- Dashboard: the backlog and mock-exam tiles, a link to the full page, and activity lines in words for every kind (exam and lab entries were mislabelled "Set status of" before).
+
+**Practice deep links:** `?concept=<id>` presets the chapters and topic; `?pool=<pool>` presets the pool.
+
+**Found in final QA and fixed:**
+- After an update, a page left open can ask for code files of the old version, which the new service worker has deleted. "Try again" could never succeed there. The page now notices the change of worker and offers "Reload the app" instead (D-041).
+- The explainer route was missing from the preload list, which Settings → Save for offline and the tests use.
+- An earlier content script turned `\t` in `\tfrac` into a tab character; a test now fails if any content string holds a control character, and none remain.
+
+**Tests:** **22 files, 1129 tests, all passed**.
+- New: `explainer3f` (20), plus 2 in `loading` for the update case.
+- Changed expectations, both from the 16 new questions: the Practice match count (32 → 48) and the mock-exam counts (28 → 44 auto-marked, 32 → 48 with written answers).
+
+`npm run check` passes: validate, typecheck, tests, overlap (0 matches), build and the privacy check.
+
+**Final QA, on the production build:**
+- All 41 routes at 375 px (every page, lab and explainer, plus not-found): no error panels, no KaTeX errors, no horizontal page scroll. Every element wider than the screen sits in its own scroll box (tables, code, wide equations).
+- Desktop at 1280 px: explainers (two-column strengths and limitations, comparison table) and the Progress page checked by eye.
+- Offline: after Save for offline (105 of 105 files), the preview server was stopped and an explainer with its source code, Chapter 6, the TD lab, Progress and a Practice deep link all loaded from the service worker.
+- Console: no CSP or runtime errors, apart from the update case above, which led to the fix.
+
+**Bundle (raw / gzip):** app shell `index.js` 313.5 / 93.7 kB; maths renderer 357.9 / 119.6 kB, loaded with the first page that shows maths; explainer page 10.9 / 3.9 kB plus the lab panels it shares with the Lab page; Progress 12.7 / 4.3 kB. Build total 2.5 MB in 106 files, mostly KaTeX fonts.
+
+### Milestone 3 checklist
+- 3A performance and schemas: done (route and unit chunks, offline storage, progress v2).
+- 3B question bank and practice: done.
+- 3C mock exams: done.
+- 3D bandit, MDP and Bellman labs: done.
+- 3E DP, Monte Carlo and TD labs: done.
+- 3F explainers, progress integration and final QA: done.
+
+### Outstanding issues
+- Windy-gridworld episode length after 8000 steps is about 20 here, against the draft's "about 17" (D-039); not explained.
+- Monte Carlo ES cuts looping gridworld episodes at 50 steps, a stated departure from the draft (D-039).
+- The 2018 cross-references are still unverified (no copy of the 2018 edition was checked).
+- Not checked here: real phones, Safari and Firefox (the checks used the app's Chromium pane), and screen readers beyond the accessibility tree.
+- Explainer prerequisites show the full prerequisite chain, which is long for the Chapter 6 methods.
+
+### Next
+Textbook coverage beyond Chapters 2–6, starting with the chapters the draft builds on next (Chapter 7, eligibility traces), using the same content types, checks and explainers.

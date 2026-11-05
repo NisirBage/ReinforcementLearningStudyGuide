@@ -1,0 +1,239 @@
+{
+  "unit": "ch05",
+  "questions": [
+    {
+      "id": "ch05-q001",
+      "unit": "ch05",
+      "section": "5.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch05.first-visit-mc",
+          "§5.1"
+        ]
+      },
+      "concepts": [
+        "ch05.mc-prediction"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "On the random walk, one episode visits C, B, C, D, E and then ends on the right with reward +1 (every other reward is 0). Use γ = 0.9. After this single episode, what is $V(C)$ under first-visit MC, $V(C)$ under every-visit MC, and $V(B)$?",
+      "parts": [
+        {
+          "label": "first-visit V(C)",
+          "answer": 0.6561,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "every-visit V(C)",
+          "answer": 0.73305,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "V(B)",
+          "answer": 0.729,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "The returns from the five time steps are $0.9^4, 0.9^3, 0.9^2, 0.9, 1$, that is $0.6561, 0.729, 0.81, 0.9, 1$.",
+        "First visit to C is at $t = 0$: $V(C) = 0.6561$.",
+        "Every-visit MC averages both visits to C ($t = 0$ and $t = 2$): $V(C) = (0.6561 + 0.81)/2 = 0.73305$.",
+        "B is visited once, at $t = 1$: $V(B) = 0.729$."
+      ],
+      "explanation": "The two methods differ only for states visited more than once in an episode.",
+      "related": [
+        "ch05-q002"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.1",
+          "printedPages": [
+            114,
+            115
+          ],
+          "pdfPages": [
+            128,
+            129
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch05-q001"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q002",
+      "unit": "ch05",
+      "section": "5.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.1"
+        ]
+      },
+      "concepts": [
+        "ch05.mc-prediction"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: in Monte Carlo prediction, the estimate for one state does not build on the estimate of any other state.",
+      "answer": true,
+      "solution": [
+        "Each estimate is an average of returns actually observed from that state.",
+        "No other state's estimate enters the update: Monte Carlo methods do not bootstrap."
+      ],
+      "explanation": "This is the contrast with DP and TD, which update from estimates of successor states (p. 117).",
+      "related": [
+        "ch05-q001"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.1",
+          "printedPages": [
+            117,
+            117
+          ],
+          "pdfPages": [
+            131,
+            131
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Statement on printed p. 117 checked against the text layer."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q003",
+      "unit": "ch05",
+      "section": "5.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch05.mc-es",
+          "§5.2"
+        ]
+      },
+      "concepts": [
+        "ch05.mc-es"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why does Monte Carlo ES start each episode from a randomly chosen state–action pair?",
+      "options": [
+        "So that every state–action pair keeps being visited, even though the policy being improved is deterministic",
+        "To make the returns independent of the discount factor",
+        "Because Monte Carlo methods need a model to choose the start",
+        "To shorten the episodes"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: a greedy deterministic policy never tries the other actions, so without exploring starts their values could not be compared.",
+        "The discount factor does not depend on how episodes start.",
+        "Monte Carlo methods need no model; the start pair is just sampled.",
+        "Random starts do not shorten episodes; some may be longer."
+      ],
+      "solution": [
+        "Following a deterministic policy, only one action is ever taken in each state, so the other actions' values would never be estimated.",
+        "Exploring starts give every pair a nonzero chance of starting an episode, so all of them keep being visited."
+      ],
+      "explanation": "The draft notes that this assumption is useful but cannot be relied on in general, especially when learning from real interaction (p. 120).",
+      "related": [
+        "ch05-q004"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.2",
+          "printedPages": [
+            119,
+            120
+          ],
+          "pdfPages": [
+            133,
+            134
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "The visiting problem and the exploring-starts assumption, printed pp. 119–120, checked against the text layer."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q004",
+      "unit": "ch05",
+      "section": "5.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch05.mc-es"
+        ]
+      },
+      "concepts": [
+        "ch05.mc-es"
+      ],
+      "type": "numeric",
+      "category": "algorithm-trace",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "In Monte Carlo ES, the pair $(s, a)$ has so far received the returns $-4$ and $-6$. A new episode's first visit to $(s, a)$ is followed by a return of $-2$. What is $Q(s, a)$ after this episode?",
+      "parts": [
+        {
+          "label": "Q(s, a)",
+          "answer": -4,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "$Q(s, a)$ is the average of all returns that followed first visits to $(s, a)$.",
+        "$(-4 - 6 - 2)/3 = -4$."
+      ],
+      "explanation": "Equivalently, incrementally: $-5 + \\tfrac13(-2 - (-5)) = -4$.",
+      "related": [
+        "ch05-q003"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.3",
+          "printedPages": [
+            121,
+            122
+          ],
+          "pdfPages": [
+            135,
+            136
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch05-q004"
+      },
+      "reviewed": true
+    }
+  ]
+}

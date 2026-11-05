@@ -5,11 +5,11 @@
 import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages, recencyWeightedAverage, recencyWeights, ucbScores, argmaxAll } from "../lib/rl/bandit";
 import { iterativePolicyEvaluation, policyIteration, valueIteration } from "../lib/rl/dp";
 import { RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, randomWalk, windyGridworld } from "../lib/rl/envs/examples";
-import { esEpisode, newEs, runMcPrediction } from "../lib/rl/mc";
-import { greedyPath, rmsError, runControl, runTd0 } from "../lib/rl/td";
+import { esEpisode, mcUpdate, newEs, newPrediction, runMcPrediction } from "../lib/rl/mc";
+import { greedyPath, newControl, qLearningStep, rmsError, runControl, runTd0, sarsaStep, td0Update } from "../lib/rl/td";
 import { makeRng } from "../domain/random";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
-import { TESTBED_10, expectedMaxNormal, meanOver, recordRun, runExperiment, type Method } from "../lib/rl/banditLab";
+import { TESTBED_10, expectedMaxNormal, meanOver, recordRun, runExperiment, softmax, type Method } from "../lib/rl/banditLab";
 import { recyclingRandomPolicy, recyclingRobot } from "../lib/rl/envs/recycling";
 import { actionValue, backupTerms, bellmanExpectationBackup, bellmanResidual, equiprobablePolicy, greedyActions, solveExact, type FiniteMDP } from "../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../lib/rl/envs/gridworld4x4";
@@ -47,6 +47,25 @@ const close = (a: number, b: number, tol = 1e-9) => Math.abs(a - b) <= tol;
 const sa = { kind: "sample-average" } as const;
 const eg = (epsilon: number): Method => ({ kind: "epsilon-greedy", epsilon, q1: 0, step: sa });
 const gr = (alpha: number, baseline: boolean): Method => ({ kind: "gradient", alpha, baseline });
+
+/** One Sarsa or Q-learning update for the transition Q(S, A) = −2, R = −1, Q(S′, ·) = (−1, −3), α = 0.5, with a seed
+ *  under which the ε-greedy (ε = 1) next action is the worse one (Q = −3). */
+function oneTransition(method: "sarsa" | "q-learning", gamma: number) {
+  const m: FiniteMDP = {
+    states: ["S", "S'", "T"],
+    terminal: [false, false, true],
+    actions: ["a", "b"],
+    dynamics: [[[{ next: 1, reward: -1, prob: 1 }], [{ next: 1, reward: -1, prob: 1 }]], [[{ next: 2, reward: 0, prob: 1 }], [{ next: 2, reward: 0, prob: 1 }]], [[], []]],
+  };
+  const st = { ...newControl(m, 0), Q: [[-2, -2], [-1, -3], [0, 0]] };
+  const cfg = { method, alpha: 0.5, epsilon: 1, gamma };
+  for (let seed = 1; seed < 200; seed++) {
+    const s = sarsaStep(m, st, { ...cfg, method: "sarsa" }, makeRng(seed), 0);
+    if (s.detail.nextAction !== 1) continue;
+    return method === "sarsa" ? s.detail : qLearningStep(m, st, cfg, makeRng(seed), 0).detail;
+  }
+  throw new Error("no seed picks the worse next action");
+}
 
 export const CHECKS: Record<string, Check> = {
   // ----- Chapter 2 -----
@@ -440,6 +459,122 @@ export const CHECKS: Record<string, Check> = {
         out.sPath.push((greedyPath(c, s.Q, c.grid.start) ?? [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]).length - 1);
       }
       return mean(out.sarsa) > mean(out.q) + 10 && out.qPath.every((n) => n === 13) && out.sPath.filter((n) => n > 13).length >= 15;
+    },
+  },
+
+  // ----- Explainer worked examples (Milestone 3F) -----
+  "alg.gradient-bandit-example": {
+    kind: "fact", // (2.10) with H = (0, 0, 0), α = 0.1, A_t = arm 1, R_t = 3, R̄_t = 1: H becomes (2/15, −1/15, −1/15)
+    run: () => {
+      const pi = softmax([0, 0, 0]);
+      const d = 0.1 * (3 - 1);
+      const h = [0 + d * (1 - pi[0]), 0 - d * pi[1], 0 - d * pi[2]];
+      const after = softmax(h);
+      return close(h[0], 2 / 15) && close(h[1], -1 / 15) && close(after[0], Math.exp(0.2) / (Math.exp(0.2) + 2), 1e-12) && close(after.reduce((a, b) => a + b, 0), 1);
+    },
+  },
+  "alg.mc-example": {
+    kind: "fact", // the episode C, B, C, D, E → right with γ = 0.9: first-visit V(C) = 0.9⁴ = 0.6561; every-visit V(C) = (0.9⁴ + 0.9²)/2
+    run: () => {
+      const ep = [3, 2, 3, 4, 5].map((s, t, xs) => ({ t, s, a: 0, r: t === 4 ? 1 : 0, next: t < 4 ? xs[t + 1] : 6 }));
+      const fv = mcUpdate(newPrediction(7), ep, 0.9, true).state.V;
+      const ev = mcUpdate(newPrediction(7), ep, 0.9, false).state.V;
+      return close(fv[3], 0.6561) && close(ev[3], (0.6561 + 0.81) / 2) && close(fv[2], 0.729) && close(fv[5], 1);
+    },
+  },
+  "alg.td0-example": {
+    kind: "fact", // random walk, V = 0.5 everywhere, α = 0.1: the step E → right end (reward 1) makes V(E) = 0.55; then D → E makes V(D) = 0.505
+    run: () => {
+      const rw = randomWalk();
+      const V = [0, 0.5, 0.5, 0.5, 0.5, 0.5, 0];
+      const a = td0Update(V, rw, 5, 1, 6, 0.1, 1);
+      const b = td0Update(V, rw, 4, 0, 5, 0.1, 1);
+      return close(a.after, 0.55) && close(a.delta, 0.5) && close(b.after, 0.505) && close(b.target, 0.55);
+    },
+  },
+  "alg.sarsa-vs-q-example": {
+    kind: "fact", // one transition, two targets: Q(S, A) = −2, R = −1, Q(S′, ·) = (−1, −3), γ = 1, α = 0.5. If the ε-greedy next action is the
+    // worse one, Sarsa's target is −1 + (−3) = −4 and Q(S, A) → −3; Q-learning's target is −1 + max(−1, −3) = −2 and Q(S, A) stays −2.
+    run: () => {
+      const m: FiniteMDP = {
+        states: ["S", "S'", "T"],
+        terminal: [false, false, true],
+        actions: ["a", "b"],
+        dynamics: [[[{ next: 1, reward: -1, prob: 1 }], [{ next: 1, reward: -1, prob: 1 }]], [[{ next: 2, reward: 0, prob: 1 }], [{ next: 2, reward: 0, prob: 1 }]], [[], []]],
+      };
+      const st = { ...newControl(m, 0), Q: [[-2, -2], [-1, -3], [0, 0]] };
+      // Find a seed whose ε-random choice picks the worse next action, so the two targets differ.
+      for (let seed = 1; seed < 200; seed++) {
+        const s = sarsaStep(m, st, { method: "sarsa", alpha: 0.5, epsilon: 1, gamma: 1 }, makeRng(seed), 0);
+        if (s.detail.nextAction !== 1) continue;
+        const q = qLearningStep(m, st, { method: "q-learning", alpha: 0.5, epsilon: 1, gamma: 1 }, makeRng(seed), 0);
+        return close(s.detail.target, -4) && close(s.detail.after, -3) && close(q.detail.target, -2) && close(q.detail.after, -2);
+      }
+      return false;
+    },
+  },
+
+  // ----- Questions for the algorithm explainers (Milestone 3F) -----
+  "ch02-q018": {
+    kind: "answer", // (2.10) from H = (0, 0, 0), α = 0.1, arm 1, R = 3, R̄ = 1; then π(1) by (2.9)
+    run: () => {
+      const pi = softmax([0, 0, 0]);
+      const d = 0.1 * (3 - 1);
+      const h = pi.map((p, a) => (a === 0 ? d * (1 - p) : -d * p));
+      return [h[0], h[1], softmax(h)[0]];
+    },
+  },
+  "ch04-q012": {
+    kind: "answer", // policy iteration from the random policy: values of the first improved policy at states 1 and 6
+    run: () => {
+      const v = policyIteration(gridworld4x4(), 1).steps[1].v;
+      return [v[1], v[6]];
+    },
+  },
+  "ch04-q009": {
+    kind: "answer", // two sweeps of two-array value iteration on the gridworld from 0
+    run: () => {
+      const h = valueIteration(gridworld4x4(), 1, { theta: 0, maxSweeps: 2, record: true, mode: "two-array" }).history[2];
+      return [h[1], h[6]];
+    },
+  },
+  "ch04-q010": {
+    kind: "answer", // gambler's problem, p_h = 0.4
+    run: () => {
+      const v = valueIteration(gamblersProblem(0.4), 1, { theta: 1e-13 }).v;
+      return [v[25], v[50]];
+    },
+  },
+  "ch05-q001": {
+    kind: "answer", // the episode C, B, C, D, E → right with γ = 0.9: first-visit V(C), every-visit V(C), V(B)
+    run: () => {
+      const ep = [3, 2, 3, 4, 5].map((s, t, xs) => ({ t, s, a: 0, r: t === 4 ? 1 : 0, next: t < 4 ? xs[t + 1] : 6 }));
+      const fv = mcUpdate(newPrediction(7), ep, 0.9, true).state.V;
+      return [fv[3], mcUpdate(newPrediction(7), ep, 0.9, false).state.V[3], fv[2]];
+    },
+  },
+  "ch05-q004": { kind: "answer", run: () => [incrementalAverages([-4, -6, -2], 0).at(-1)!] }, // the average of the three returns, computed incrementally
+  "ch06-q001": {
+    kind: "answer", // TD(0) on the random walk from V = 0.5, α = 0.1: E → right end, then D → E
+    run: () => {
+      const rw = randomWalk();
+      const V = [0, 0.5, 0.5, 0.5, 0.5, 0.5, 0];
+      const a = td0Update(V, rw, 5, 1, 6, 0.1, 1);
+      return [a.delta, a.after, td0Update(V, rw, 4, 0, 5, 0.1, 1).after];
+    },
+  },
+  "ch06-q003": {
+    kind: "answer", // Sarsa, α = 0.5, γ = 1, when the ε-greedy next action is the one with Q = −3
+    run: () => {
+      const d = oneTransition("sarsa", 1);
+      return [d.target, d.delta, d.after];
+    },
+  },
+  "ch06-q005": {
+    kind: "answer", // Q-learning, α = 0.5, γ = 0.9
+    run: () => {
+      const d = oneTransition("q-learning", 0.9);
+      return [d.target, d.delta, d.after];
     },
   },
 

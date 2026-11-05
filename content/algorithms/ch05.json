@@ -55,6 +55,38 @@
       "method": "page-image",
       "on": "2026-11-05",
       "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    },
+    "explainer": {
+      "problem": "Estimate $v_\\pi$ for a given policy from complete sample episodes alone, with no model of the environment.",
+      "equations": [
+        "eq.ch02.incremental-update",
+        "eq.ch06.constant-alpha-mc"
+      ],
+      "example": {
+        "text": "The random-walk episode C, B, C, D, E → right end with γ = 0.9 has returns $0.9^4, 0.9^3, 0.9^2, 0.9, 1$. First-visit MC uses only the first visit to C: $V(C) = 0.6561$. Every-visit MC averages both visits: $V(C) = (0.6561 + 0.81)/2 = 0.733$.",
+        "check": "alg.mc-example"
+      },
+      "demo": "mc-prediction",
+      "lab": "mc",
+      "advantages": [
+        "Needs no model, only experience.",
+        "Each first-visit return is an independent, unbiased sample of $v_\\pi(s)$, so the error falls as $1/\\sqrt{n}$ (p. 115).",
+        "Does not bootstrap, so it is not misled by wrong estimates of other states."
+      ],
+      "limitations": [
+        "Must wait for the end of each episode; only works for episodic tasks.",
+        "Returns can have high variance, so learning can be slow (compare TD on the random walk, Figure 6.7)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch06.td0",
+          "point": "TD(0) updates after every step from a bootstrapped target instead of waiting for the full return."
+        },
+        {
+          "with": "alg.ch04.iterative-policy-evaluation",
+          "point": "DP computes the same $v_\\pi$ exactly from a model."
+        }
+      ]
     }
   },
   {
@@ -113,6 +145,37 @@
       "method": "page-image",
       "on": "2026-11-05",
       "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    },
+    "explainer": {
+      "problem": "Find an optimal policy from sample episodes, without a model, by generalized policy iteration on action values, assuming every state–action pair can start an episode (exploring starts).",
+      "equations": [
+        "eq.ch02.incremental-update"
+      ],
+      "example": {
+        "text": "On the 4×4 gridworld, after 20,000 episodes with random start pairs, every greedy action learned by Monte Carlo ES is one of the optimal actions (with episodes cut at 50 steps, as the lab explains).",
+        "check": "lab.mc.es-gridworld"
+      },
+      "demo": "mc-es",
+      "lab": "mc",
+      "advantages": [
+        "Needs no model: improving with $\\operatorname{argmax}_a Q(s, a)$ needs no lookahead.",
+        "Cannot settle on a suboptimal policy (p. 122)."
+      ],
+      "limitations": [
+        "Exploring starts are rarely possible with a real environment.",
+        "Assumes every episode ends; a deterministic policy that loops breaks it (the lab cuts such episodes).",
+        "Convergence has not been formally proved (p. 122)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch04.policy-iteration",
+          "point": "Policy iteration does the same evaluate-improve cycle with a model and complete evaluations."
+        },
+        {
+          "with": "alg.ch06.sarsa",
+          "point": "Sarsa also learns Q on-policy, but from single steps and with ε-greedy exploration instead of exploring starts."
+        }
+      ]
     }
   }
 ]

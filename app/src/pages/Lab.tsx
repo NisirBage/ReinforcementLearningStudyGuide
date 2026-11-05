@@ -1,6 +1,6 @@
 // The Interactive Lab: a hub listing the laboratories, and one page per laboratory. The description, guide,
 // sources, flags and verification come from content/labs/*.json; the computation is in lib/rl.
-import type { ReactElement } from "react";
+import { useEffect, type ReactElement } from "react";
 import { Link, useParams } from "react-router-dom";
 import { cat, useContent } from "../content/load";
 import type { Lab } from "../content/schema";
@@ -13,6 +13,7 @@ import { DpLab } from "./labs/DpLab";
 import { McLab } from "./labs/McLab";
 import { TdLab } from "./labs/TdLab";
 import { NotFound } from "./NotFound";
+import { useProgress } from "../store/ProgressContext";
 
 const BODIES: Record<string, () => ReactElement> = { bandit: BanditLab, mdp: MdpExplorer, bellman: BellmanLab, dp: DpLab, mc: McLab, td: TdLab };
 
@@ -47,6 +48,8 @@ function LabBody({ unit, slug }: { unit: string; slug: string }) {
   const idx = useContent([unit]);
   const lab = idx.lab(slug)!;
   const Body = BODIES[slug];
+  const { openLab } = useProgress();
+  useEffect(() => openLab(slug, lab.title), [slug]); // eslint-disable-line react-hooks/exhaustive-deps -- once per lab opened
   return (
     <>
       <p className="crumb">

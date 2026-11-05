@@ -2,13 +2,13 @@
 // or end-of-session feedback; see step-by-step solutions; bookmark, flag and re-attempt. All selection, grading and
 // timing lives in domain/practice.ts and domain/session.ts; this file wires them to the screen and to storage.
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { cat, fetchIndexes, peekIndexes, useContent } from "../content/load";
 import type { Indexes } from "../content/indexes";
 import { DIFFICULTY_LABEL, PROVENANCE_KINDS, PROVENANCE_LABEL, QUESTION_TYPES, isSupplementaryUnit, type Question } from "../content/schema";
 import { isAnswered, isSelfMarked } from "../domain/answer";
 import {
-  ORDERS, ORDER_LABEL, POOLS, POOL_LABEL, compareSections, defaultConfig, matchingQuestions, selectQuestions, type PracticeConfig,
+  ORDERS, ORDER_LABEL, POOLS, POOL_LABEL, compareSections, defaultConfig, matchingQuestions, selectQuestions, type Pool, type PracticeConfig,
 } from "../domain/practice";
 import { incorrectQids, repeatedMistakes } from "../domain/progress";
 import { makeRng, randomSeed, shuffle } from "../domain/random";
@@ -71,7 +71,16 @@ function Checks<T extends string | number>({ legend, options, value, onChange, l
 
 function Setup({ onStart }: { onStart: (s: PracticeSession) => void }) {
   const { data } = useProgress();
-  const [cfg, setCfg] = useState<PracticeConfig>(() => defaultConfig(randomSeed()));
+  const [params] = useSearchParams();
+  const [cfg, setCfg] = useState<PracticeConfig>(() => {
+    const pool = params.get("pool");
+    const base = { ...defaultConfig(randomSeed()), ...((POOLS as readonly string[]).includes(pool ?? "") ? { pool: pool as Pool } : {}) };
+    // ?concept=<id> (from an algorithm explainer) presets the chapters and the topic; ?pool= (from Progress) the pool.
+    const c = params.get("concept");
+    if (!c || !cat.concept(c)) return base;
+    const units = [...new Set(cat.catalog.questions.filter((q) => q.concepts.includes(c)).map((q) => q.unit))];
+    return units.length ? { ...base, units, concepts: [c] } : base;
+  });
   const set = (p: Partial<PracticeConfig>) => setCfg((c) => ({ ...c, ...p }));
   // The count box may be empty while the learner types; the session uses at least 1.
   const [countText, setCountText] = useState(String(cfg.count));

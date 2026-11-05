@@ -30,7 +30,7 @@ interface Run {
   rms: number[];
 }
 
-function Prediction() {
+export function Prediction() {
   const [env, setEnv] = useState<Env>("walk");
   const [firstVisit, setFirstVisit] = useState(true);
   const [constant, setConstant] = useState(false);
@@ -207,7 +207,7 @@ function Prediction() {
   );
 }
 
-function ExploringStarts() {
+export function ExploringStarts() {
   const g = useMemo(() => gridworld4x4(), []);
   const optimal = useMemo(() => valueIteration(g, 1).policy.ties, [g]);
   const [seed, setSeed] = useState(7);

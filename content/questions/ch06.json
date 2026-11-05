@@ -1,0 +1,402 @@
+{
+  "unit": "ch06",
+  "questions": [
+    {
+      "id": "ch06-q001",
+      "unit": "ch06",
+      "section": "6.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch06.td0",
+          "alg.ch06.td0"
+        ]
+      },
+      "concepts": [
+        "ch06.td-prediction"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "On the random walk, all estimates start at $V = 0.5$ (terminal values 0); use $\\alpha = 0.1$ and γ = 1. The agent steps from E off the right end (reward +1), then, in a later episode, from D to E (reward 0). Give the TD error of the first step, the new $V(E)$, and the new $V(D)$ after the second step.",
+      "parts": [
+        {
+          "label": "δ (first step)",
+          "answer": 0.5,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "V(E)",
+          "answer": 0.55,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "V(D)",
+          "answer": 0.505,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "First step: target $1 + 0 = 1$, TD error $\\delta = 1 - 0.5 = 0.5$, so $V(E) = 0.5 + 0.1 \\cdot 0.5 = 0.55$.",
+        "Second step: target $0 + V(E) = 0.55$, so $V(D) = 0.5 + 0.1(0.55 - 0.5) = 0.505$."
+      ],
+      "explanation": "The value learned at E passes back to D one step later: TD learns from its own estimates.",
+      "related": [
+        "ch06-q002"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.1",
+          "printedPages": [
+            144,
+            145
+          ],
+          "pdfPages": [
+            158,
+            159
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch06-q001"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q002",
+      "unit": "ch06",
+      "section": "6.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch06.td0",
+          "§6.1"
+        ]
+      },
+      "concepts": [
+        "ch06.td-prediction"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "What is the target of the TD(0) update (6.2) for $V(S_t)$?",
+      "options": [
+        "$R_{t+1} + \\gamma V(S_{t+1})$",
+        "$G_t$, the return to the end of the episode",
+        "$\\max_a Q(S_{t+1}, a)$",
+        "$\\sum_{s', r} p(s', r | S_t, a)[r + \\gamma V(s')]$"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: one sampled reward plus the discounted current estimate of the next state.",
+        "That is the constant-α Monte Carlo target (6.1).",
+        "That is part of Q-learning's target, for action values.",
+        "That is a DP expected update, which needs the model."
+      ],
+      "solution": [
+        "TD(0) waits only one step and uses $R_{t+1} + \\gamma V(S_{t+1})$.",
+        "Because it uses the current estimate $V(S_{t+1})$, it bootstraps, like DP."
+      ],
+      "explanation": "Monte Carlo's target is the full return $G_t$; TD(0)'s replaces everything after the first reward by the current estimate (p. 144).",
+      "related": [
+        "ch06-q001"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.1",
+          "printedPages": [
+            144,
+            144
+          ],
+          "pdfPages": [
+            158,
+            158
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "The TD(0) target, printed p. 144, checked against the text layer."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q003",
+      "unit": "ch06",
+      "section": "6.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch06.sarsa",
+          "alg.ch06.sarsa"
+        ]
+      },
+      "concepts": [
+        "ch06.sarsa"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "Sarsa with $\\alpha = 0.5$ and γ = 1 sees one transition: $Q(S_t, A_t) = -2$, $R_{t+1} = -1$, and at $S_{t+1}$ the two actions have $Q = -1$ and $Q = -3$. The ε-greedy choice of $A_{t+1}$ happens to be the action with $Q = -3$. Give the TD target, the TD error and the new $Q(S_t, A_t)$.",
+      "parts": [
+        {
+          "label": "TD target",
+          "answer": -4,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "TD error",
+          "answer": -2,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "new Q(S_t, A_t)",
+          "answer": -3,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "Sarsa's target uses the action it will actually take: $-1 + 1 \\cdot (-3) = -4$.",
+        "TD error: $-4 - (-2) = -2$.",
+        "New value: $-2 + 0.5 \\cdot (-2) = -3$."
+      ],
+      "explanation": "Because Sarsa bootstraps from the action actually chosen, exploratory choices lower its estimates: it learns the value of the exploring policy.",
+      "misconceptions": [
+        {
+          "wrong": "The target is −2",
+          "why": "That uses the best next action, which is Q-learning's target, not Sarsa's."
+        }
+      ],
+      "related": [
+        "ch06-q005",
+        "ch06-q004"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.4",
+          "printedPages": [
+            155,
+            156
+          ],
+          "pdfPages": [
+            169,
+            170
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch06-q003"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q004",
+      "unit": "ch06",
+      "section": "6.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.5",
+          "alg.ch06.sarsa",
+          "alg.ch06.q-learning"
+        ]
+      },
+      "concepts": [
+        "ch06.sarsa",
+        "ch06.q-learning"
+      ],
+      "type": "mcq",
+      "category": "compare-contrast",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "On cliff walking with ε = 0.1 (Example 6.6), why does Sarsa earn more reward per episode than Q-learning while both keep exploring?",
+      "options": [
+        "Sarsa accounts for its exploration and learns a safer path; Q-learning learns the edge path and sometimes falls off while exploring",
+        "Sarsa explores less than Q-learning with the same ε",
+        "Q-learning does not converge on cliff walking",
+        "Sarsa uses a model of the cliff"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: this is the draft's explanation of Figure 6.13.",
+        "Both use the same ε-greedy behaviour policy.",
+        "Q-learning does learn the optimal edge path; its online reward is lower because of exploration.",
+        "Both methods are model-free."
+      ],
+      "solution": [
+        "Q-learning learns the values of the optimal policy, which walks along the cliff edge; with ε-greedy behaviour it sometimes steps off.",
+        "Sarsa's targets include its own exploratory actions, so it learns that the edge is costly under ε-greedy behaviour and prefers the longer, safer path."
+      ],
+      "explanation": "If ε were gradually reduced, both methods would approach the optimal policy (p. 158).",
+      "related": [
+        "ch06-q003",
+        "ch06-q005"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.5",
+          "printedPages": [
+            158,
+            158
+          ],
+          "pdfPages": [
+            172,
+            172
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Example 6.6 and Figure 6.13, printed p. 158, checked against the text layer."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q005",
+      "unit": "ch06",
+      "section": "6.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch06.q-learning",
+          "alg.ch06.q-learning"
+        ]
+      },
+      "concepts": [
+        "ch06.q-learning"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "Q-learning with $\\alpha = 0.5$ and $\\gamma = 0.9$ sees one transition: $Q(S_t, A_t) = -2$, $R_{t+1} = -1$, and at $S_{t+1}$ the two actions have $Q = -1$ and $Q = -3$. Give the TD target, the TD error and the new $Q(S_t, A_t)$.",
+      "parts": [
+        {
+          "label": "TD target",
+          "answer": -1.9,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "TD error",
+          "answer": 0.1,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "new Q(S_t, A_t)",
+          "answer": -1.95,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "Q-learning's target uses the best next action: $-1 + 0.9 \\cdot \\max(-1, -3) = -1.9$.",
+        "TD error: $-1.9 - (-2) = 0.1$.",
+        "New value: $-2 + 0.5 \\cdot 0.1 = -1.95$."
+      ],
+      "explanation": "The target does not depend on which action the agent actually takes next, which is what makes Q-learning off-policy.",
+      "related": [
+        "ch06-q003",
+        "ch06-q006"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.5",
+          "printedPages": [
+            157,
+            158
+          ],
+          "pdfPages": [
+            171,
+            172
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-05",
+        "check": "ch06-q005"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q006",
+      "unit": "ch06",
+      "section": "6.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch06.q-learning",
+          "§6.5"
+        ]
+      },
+      "concepts": [
+        "ch06.q-learning"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why is Q-learning called an off-policy method?",
+      "options": [
+        "It learns $q_*$ directly, whatever exploring policy generates the experience",
+        "It never follows any policy",
+        "It needs a model to evaluate the greedy policy",
+        "It updates only at the end of each episode"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: the max in (6.6) evaluates the greedy policy, independent of the behaviour policy.",
+        "It follows a behaviour policy, usually ε-greedy, to choose its actions.",
+        "Q-learning is model-free.",
+        "It updates after every step, like all TD methods."
+      ],
+      "solution": [
+        "The learned $Q$ approximates $q_*$, the values of the greedy (optimal) policy.",
+        "The actions actually taken come from a different, exploring policy, such as ε-greedy."
+      ],
+      "explanation": "The behaviour policy still matters: it decides which pairs are visited and updated (p. 157).",
+      "related": [
+        "ch06-q005"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.5",
+          "printedPages": [
+            157,
+            157
+          ],
+          "pdfPages": [
+            171,
+            171
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-05",
+        "note": "Q-learning's independence from the policy followed, printed p. 157, checked against the text layer."
+      },
+      "reviewed": true
+    }
+  ]
+}

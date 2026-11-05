@@ -266,3 +266,99 @@ export function saveExamRecord(p: ProgressData, r: ExamRecord): ProgressData {
   const exams = [...p.exams.filter((e) => e.id !== r.id), r].sort((a, b) => a.startedAt - b.startedAt);
   return known ? { ...p, exams } : logActivity({ ...p, exams }, { at: r.submittedAt, kind: "test", ref: r.id, detail: r.title });
 }
+
+// ---------- Progress summaries (Milestone 3F) ----------
+// Everything below is computed from the stored attempts, exams, cards and statuses; nothing is stored twice.
+
+export interface QuestionSummary {
+  attempted: number; // distinct questions
+  attempts: number;
+  correct: number; // questions whose latest attempt earned full marks
+  incorrect: number; // questions whose latest attempt fell short
+  accuracy: number | null; // marks scored over marks available, all attempts
+  ms: number; // measured time
+}
+
+export function questionSummary(attempts: Attempt[]): QuestionSummary {
+  const latest = [...questionStats(attempts).values()].map((s) => s.last);
+  return {
+    attempted: latest.length,
+    attempts: attempts.length,
+    correct: latest.filter((a) => a.score >= a.max).length,
+    incorrect: latest.filter((a) => a.score < a.max).length,
+    accuracy: accuracyOf(attempts).accuracy,
+    ms: timeSpentMs(attempts),
+  };
+}
+
+export interface TopicMastery {
+  concept: string;
+  status: ConceptStatus; // set by the learner
+  available: number; // questions in the app on this concept
+  attempted: number; // of those, attempted at least once
+  latest: number | null; // marks on the latest attempt of each attempted question, as a share
+}
+
+/** Per concept: the learner's own status beside the evidence from their answers. */
+export function topicMastery(p: ProgressData, concepts: string[], questions: { id: string; concepts: string[] }[]): TopicMastery[] {
+  const stats = questionStats(p.attempts);
+  return concepts.map((concept) => {
+    const qs = questions.filter((q) => q.concepts.includes(concept));
+    const last = qs.map((q) => stats.get(q.id)?.last).filter((a): a is Attempt => !!a);
+    const max = last.reduce((s, a) => s + a.max, 0);
+    return { concept, status: statusOf(p, concept), available: qs.length, attempted: last.length, latest: max ? last.reduce((s, a) => s + a.score, 0) / max : null };
+  });
+}
+
+export interface Backlog {
+  dueCards: string[];
+  flagged: string[]; // questions marked for revision
+  incorrect: string[]; // latest attempt below full marks
+  needsRevision: string[]; // concepts with that status
+  total: number; // distinct items across the four lists
+}
+
+export function revisionBacklog(p: ProgressData, now: number): Backlog {
+  const dueList = dueCards(p, now);
+  const incorrect = incorrectQids(p.attempts);
+  const needsRevision = Object.entries(p.conceptStatus).filter(([, s]) => s.status === "needs-revision").map(([c]) => c).sort();
+  return { dueCards: dueList, flagged: p.marked, incorrect, needsRevision, total: new Set([...dueList, ...p.marked, ...incorrect, ...needsRevision]).size };
+}
+
+export interface ExamSummary {
+  count: number;
+  best: number | null; // best score share
+  latest: { id: string; title: string; at: number; percent: number } | null;
+  average: number | null;
+}
+
+export function examSummary(exams: ExamRecord[]): ExamSummary {
+  const pcts = exams.map((e) => {
+    const max = e.items.reduce((s, x) => s + x.max, 0);
+    return max ? e.items.reduce((s, x) => s + x.score, 0) / max : 0;
+  });
+  const last = exams.length ? exams[exams.length - 1] : null;
+  return {
+    count: exams.length,
+    best: pcts.length ? Math.max(...pcts) : null,
+    latest: last ? { id: last.id, title: last.title, at: last.submittedAt, percent: pcts[pcts.length - 1] } : null,
+    average: pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : null,
+  };
+}
+
+/** Logs opening a lab, unless the newest activity already is that lab. */
+export function openLab(p: ProgressData, slug: string, title: string, now: number): ProgressData {
+  const top = p.activity[0];
+  return top?.kind === "lab" && top.ref === slug ? p : logActivity(p, { at: now, kind: "lab", ref: slug, detail: title });
+}
+
+/** Labs opened, most recent first, from the activity log (which keeps the newest 200 entries). */
+export function labUse(p: ProgressData): { slug: string; title: string; visits: number; last: number }[] {
+  const m = new Map<string, { slug: string; title: string; visits: number; last: number }>();
+  for (const a of p.activity)
+    if (a.kind === "lab") {
+      const e = m.get(a.ref);
+      m.set(a.ref, e ? { ...e, visits: e.visits + 1 } : { slug: a.ref, title: a.detail ?? a.ref, visits: 1, last: a.at });
+    }
+  return [...m.values()].sort((a, b) => b.last - a.last);
+}

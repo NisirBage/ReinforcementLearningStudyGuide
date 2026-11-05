@@ -2,7 +2,7 @@
 // domain/progress.ts or store/persistence.ts; this file only wires them to state and to IndexedDB.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  emptyProgress, logActivity, recordAttempt, recordAttempts, review, saveExamRecord, setConceptStatus, toggleBookmark, toggleMarked, visit,
+  emptyProgress, logActivity, openLab, recordAttempt, recordAttempts, review, saveExamRecord, setConceptStatus, toggleBookmark, toggleMarked, visit,
   type Attempt, type ConceptStatus, type ExamRecord, type ProgressData, type Settings,
 } from "../domain/progress";
 import { STORAGE_KEY, mergeProgress, parseImport } from "./persistence";
@@ -33,6 +33,7 @@ interface Ctx {
   toggleBookmark: (qid: string) => void;
   reviewCard: (cardId: string, grade: 0 | 1 | 2 | 3) => void;
   visit: (path: string, title: string) => void;
+  openLab: (slug: string, title: string) => void; // logs lab use in the activity log
   setSettings: (patch: Partial<Settings>) => void;
   importMerge: (text: string) => void; // throws a readable Error on a bad file
   resetAll: () => void;
@@ -127,6 +128,7 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
       reviewCard: (id, g) => apply((d) => review(d, id, g, now())),
       visit: (path, title) =>
         apply((d) => (d.lastVisited?.path === path ? d : logActivity(visit(d, path, title, now()), { at: now(), kind: "lesson", ref: path, detail: title }))),
+      openLab: (slug, title) => apply((d) => openLab(d, slug, title, now())),
       setSettings: (patch) => apply((d) => ({ ...d, settings: { ...d.settings, ...patch } })),
       importMerge: (text) => {
         const incoming = parseImport(text); // throws before anything changes

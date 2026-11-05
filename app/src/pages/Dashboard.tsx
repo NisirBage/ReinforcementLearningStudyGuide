@@ -1,11 +1,29 @@
 import { Link } from "react-router-dom";
 import { cat } from "../content/load";
-import { accuracyOf, completion, dueCards, STATUS_LABEL, weakest } from "../domain/progress";
+import { accuracyOf, completion, examSummary, revisionBacklog, STATUS_LABEL, weakest, type Activity } from "../domain/progress";
 import { useProgress } from "../store/ProgressContext";
 import { Bar, Empty, PageTitle, Stat, pct } from "../components/ui";
 
 const coreConcepts = () => cat.catalog.concepts.filter((c) => !c.unit.startsWith("sup-")).map((c) => c.id);
 const nameOf = (key: string) => cat.concept(key)?.title ?? cat.unit(key)?.title ?? key;
+
+/** One line of the activity log in words. */
+function describe(a: Activity): string {
+  switch (a.kind) {
+    case "lesson":
+      return `Opened ${a.detail ?? a.ref}`;
+    case "attempt":
+      return `Answered ${a.ref}`;
+    case "review":
+      return `Reviewed ${a.ref}`;
+    case "status":
+      return `Set status of ${nameOf(a.ref)} to ${STATUS_LABEL[a.detail as keyof typeof STATUS_LABEL] ?? a.detail}`;
+    case "test":
+      return `Submitted ${a.detail ?? "a mock exam"}`;
+    case "lab":
+      return `Used the ${a.detail ?? a.ref}`;
+  }
+}
 
 export function Dashboard() {
   const { data } = useProgress();
@@ -13,8 +31,8 @@ export function Dashboard() {
   const acc = accuracyOf(data.attempts);
   const core = coreConcepts();
   const done = completion(data, core);
-  const due = dueCards(data, now).length;
-  const needsRevision = Object.entries(data.conceptStatus).filter(([, s]) => s.status === "needs-revision").length;
+  const backlog = revisionBacklog(data, now);
+  const exams = examSummary(data.exams);
   const weak = weakest(data.attempts, "concept", 3).filter((w) => (w.acc.accuracy ?? 1) < 0.8).slice(0, 5);
   const withContent = cat.units.filter((u) => u.kind === "core" && cat.conceptsOf(u.id).length > 0);
 
@@ -39,8 +57,16 @@ export function Dashboard() {
         <Stat label="Core concepts understood or mastered" value={`${core.filter((c) => ["understood", "mastered"].includes(data.conceptStatus[c]?.status ?? "")).length} / ${core.length}`} hint={pct(done)} />
         <Stat label="Questions attempted" value={acc.attempted} hint={`${acc.attempts} attempts`} />
         <Stat label="Marks scored" value={acc.accuracy === null ? "–" : pct(acc.accuracy)} hint={acc.max ? `${acc.score} of ${acc.max}` : "no attempts yet"} />
-        <Stat label="Revision due" value={due + needsRevision} hint={`${due} cards due · ${needsRevision} marked “${STATUS_LABEL["needs-revision"]}”`} />
+        <Stat
+          label="Revision backlog"
+          value={backlog.total}
+          hint={`${backlog.dueCards.length} cards due · ${backlog.incorrect.length} to re-attempt · ${backlog.flagged.length} marked · ${backlog.needsRevision.length} “${STATUS_LABEL["needs-revision"]}”`}
+        />
+        <Stat label="Mock exams" value={exams.count} hint={exams.latest ? `latest ${pct(exams.latest.percent)} · best ${pct(exams.best!)}` : "none yet"} />
       </section>
+      <p className="small">
+        <Link to="/progress">Full progress: topic mastery, mistakes, bookmarks, exams and labs</Link>
+      </p>
 
       <section className="card">
         <h2>Syllabus coverage</h2>
@@ -84,8 +110,7 @@ export function Dashboard() {
           <ul className="list">
             {data.activity.slice(0, 8).map((a, i) => (
               <li key={i}>
-                <span className="muted">{new Date(a.at).toLocaleString()}</span> · {a.kind === "lesson" ? "Opened" : a.kind === "attempt" ? "Answered" : a.kind === "review" ? "Reviewed" : "Set status of"}{" "}
-                {a.kind === "lesson" ? a.detail : a.kind === "status" ? `${nameOf(a.ref)} to ${STATUS_LABEL[a.detail as keyof typeof STATUS_LABEL] ?? a.detail}` : a.ref}
+                <span className="muted">{new Date(a.at).toLocaleString()}</span> · {describe(a)}
                 {a.kind === "attempt" && <span className="muted"> ({a.detail})</span>}
               </li>
             ))}

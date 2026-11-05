@@ -130,6 +130,7 @@ export function AlgorithmBox({ a }: { a: Algorithm }) {
           {a.name}
         </Link>
       </header>
+      {!a.bookLabel && <p className="muted small">The draft gives this method in equations and prose, not as a pseudocode box. These steps are written for the app from that text.</p>}
       <div className="pseudo" role="group" aria-label="Pseudocode">
         <div className="pseudo-io">
           <strong>Input:</strong>{" "}

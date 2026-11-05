@@ -16,6 +16,7 @@ const UnitPage = lazyPage(learn, (m) => m.UnitPage);
 const SectionPage = lazyPage(learn, (m) => m.SectionPage);
 const ConceptPage = lazyPage(items, (m) => m.ConceptPage);
 const ItemPage = lazyPage(items, (m) => m.ItemPage);
+const AlgorithmPage = lazyPage(() => import("./pages/Explainer"), (m) => m.AlgorithmPage);
 const PracticePage = lazyPage(() => import("./pages/Practice"), (m) => m.PracticePage);
 const exam = () => import("./pages/Exam");
 const ExamPage = lazyPage(exam, (m) => m.ExamPage);
@@ -34,7 +35,7 @@ const MarkedQuestions = lazyPage(revision, (m) => m.MarkedQuestions);
 const ProgressPage = lazyPage(progress, (m) => m.ProgressPage);
 const SettingsPage = lazyPage(progress, (m) => m.SettingsPage);
 
-const PAGES = [LabHub, LabPage, ExamPage, ExamResultPage, ExamHistoryPage, PracticePage, LearnIndex, UnitPage, SectionPage, ConceptPage, ItemPage, SearchPage, RevisionHub, ReviewPage, EquationLibrary, AlgorithmLibrary, NotationPage, MarkedQuestions, ProgressPage, SettingsPage];
+const PAGES = [LabHub, LabPage, AlgorithmPage, ExamPage, ExamResultPage, ExamHistoryPage, PracticePage, LearnIndex, UnitPage, SectionPage, ConceptPage, ItemPage, SearchPage, RevisionHub, ReviewPage, EquationLibrary, AlgorithmLibrary, NotationPage, MarkedQuestions, ProgressPage, SettingsPage];
 /** Fetches the code of every page now (Settings → Save for offline; tests). */
 export const preloadRoutes = () => Promise.all(PAGES.map((p) => p.preload())).then(() => undefined);
 
@@ -48,7 +49,7 @@ export function App() {
         <Route path="learn/:unit/:section" element={<SectionPage />} />
         <Route path="concept/:id" element={<ConceptPage />} />
         <Route path="equation/:id" element={<ItemPage kind="equation" />} />
-        <Route path="algorithm/:id" element={<ItemPage kind="algorithm" />} />
+        <Route path="algorithm/:id" element={<AlgorithmPage />} />
         <Route path="example/:id" element={<ItemPage kind="example" />} />
         <Route path="figure/:id" element={<ItemPage kind="figure" />} />
         <Route path="practice" element={<PracticePage />} />

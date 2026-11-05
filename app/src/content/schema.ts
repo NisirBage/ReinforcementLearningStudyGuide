@@ -172,6 +172,29 @@ export interface Equation {
   flags?: Flag[];
 }
 
+/** Interactive demonstrations an explainer can embed (implemented in app/src/pages/labs). */
+export const DEMO_KEYS = [
+  "bandit-epsilon-greedy", "bandit-ucb", "bandit-gradient", "policy-evaluation", "policy-iteration", "value-iteration",
+  "mc-prediction", "mc-es", "td0", "sarsa", "q-learning",
+] as const;
+
+/**
+ * A dedicated explainer for an implemented algorithm (Milestone 3F): the problem it solves, its mathematics, a
+ * derivation, a worked example, an embedded step-by-step demonstration, its strengths and limits, comparisons.
+ * Prerequisites, pseudocode, the implementation's source and practice questions are drawn from elsewhere.
+ */
+export interface Explainer {
+  problem: string; // Markdown
+  equations: string[]; // equation ids: the mathematical formulation
+  derivation?: { tex: string; why: string }[];
+  example: { text: string; check?: string }; // Markdown with numbers; `check` recomputes them
+  demo: (typeof DEMO_KEYS)[number];
+  lab: string; // lab slug for the full laboratory
+  advantages: string[];
+  limitations: string[];
+  comparisons: { with: string; point: string }[]; // with: an algorithm or concept id
+}
+
 export interface Algorithm {
   id: string; // "alg.ch04.iterative-policy-evaluation"
   unit: string;
@@ -185,6 +208,7 @@ export interface Algorithm {
   sources: SourceRef[];
   verification: Verification;
   flags?: Flag[];
+  explainer?: Explainer; // required for every algorithm (checked by the validator)
 }
 
 /** A worked example from a source; its checkable claims are verified by automated checks. */
@@ -668,6 +692,24 @@ export function validateBundle(b: ContentBundle, ctx: ValidationContext): string
     if (!Array.isArray(a.lines) || a.lines.length === 0 || !a.lines.every((l) => isObj(l) && isInt(l.indent) && l.indent >= 0 && isStr(l.text))) errs.push(`${at}: lines need indent and text`);
     if (!ctx.implementations.has(a.implementation)) errs.push(`${at}: implementation ${a.implementation} is not in lib/rl/registry.ts`);
     errs.push(...validateSourceList(a.sources, `${at}.sources`, src, a.unit), ...validateFlags(a.flags, at), ...validateVerification(a.verification, at, ctx.checks, true));
+  });
+  // Explainers are checked once every equation, algorithm and lab is known.
+  const eqUnit = new Map(b.equations.map((e) => [e.id, e.unit]));
+  const algIds = new Set(b.algorithms.map((a) => a.id));
+  const labSlugs = new Set(b.labs.map((l) => l.slug));
+  b.algorithms.forEach((a) => {
+    const at = `algorithm ${a.id} explainer`;
+    const x = a.explainer as unknown;
+    if (!isObj(x)) return errs.push(`${at}: every implemented algorithm needs an explainer`);
+    if (!isStr(x.problem)) errs.push(`${at}: problem required`);
+    if (!strArr(x.equations) || x.equations.length === 0 || !x.equations.every((id) => eqUnit.has(id) && isSupplementaryUnit(eqUnit.get(id)!) === isSupplementaryUnit(a.unit))) errs.push(`${at}: equations must be known equations on the same side of the core/supplementary line`);
+    if (x.derivation !== undefined && !(Array.isArray(x.derivation) && x.derivation.length > 0 && x.derivation.every((s) => isObj(s) && isStr(s.tex) && isStr(s.why)))) errs.push(`${at}: derivation steps need tex and why`);
+    if (!isObj(x.example) || !isStr(x.example.text)) errs.push(`${at}: a worked example is required`);
+    else if (x.example.check !== undefined && !(isStr(x.example.check) && ctx.checks.has(x.example.check))) errs.push(`${at}: unknown example check ${String(x.example.check)}`);
+    if (!oneOf(DEMO_KEYS, x.demo)) errs.push(`${at}: demo must be one of ${DEMO_KEYS.join(", ")}`);
+    if (!isStr(x.lab) || !labSlugs.has(x.lab)) errs.push(`${at}: lab must be a lab slug`);
+    if (!strArr(x.advantages) || !x.advantages.length || !strArr(x.limitations) || !x.limitations.length) errs.push(`${at}: advantages and limitations required`);
+    if (!Array.isArray(x.comparisons) || !x.comparisons.length || !x.comparisons.every((c) => isObj(c) && isStr(c.point) && isStr(c.with) && (algIds.has(c.with) || conceptIds.has(c.with)))) errs.push(`${at}: comparisons need a known algorithm or concept and a point`);
   });
 
   b.examples.forEach((x, i) => {

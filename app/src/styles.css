@@ -469,3 +469,14 @@ fieldset { min-width: 0; }
 .gcell.agent { background: var(--series-1); color: var(--surface); font-weight: 700; }
 .gcell .ga { font-size: 0.9rem; letter-spacing: -1px; }
 .gwind { text-align: center; color: var(--muted); font-size: 0.75rem; }
+
+/* Algorithm explainers (Milestone 3F) */
+.x-toc ol { columns: 2 15em; margin: 0; padding-left: 1.6rem; }
+.x-toc li { margin: 2px 0; break-inside: avoid; }
+.x-derivation { padding-left: 1.4rem; }
+.x-derivation li { margin-bottom: 10px; }
+.x-derivation .katex-display { margin: 4px 0; overflow-x: auto; overflow-y: hidden; }
+pre.code { max-height: 30rem; overflow: auto; padding: 10px 12px; background: var(--surface-2); border-radius: 8px; font-size: 0.8rem; line-height: 1.45; }
+.two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0 24px; }
+.demo-body { min-width: 0; }
+.demo-body > .card, .demo-body > section { box-shadow: none; }
