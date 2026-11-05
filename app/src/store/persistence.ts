@@ -35,7 +35,14 @@ function examItem(v: unknown): ExamItem | null {
   if (!(str(r.qid) && str(r.unit) && (r.section === null || str(r.section)) && Array.isArray(r.concepts) && r.concepts.every(str))) return null;
   if (!(num(r.difficulty) && num(r.max) && r.max > 0 && num(r.score) && r.score >= 0 && r.score <= r.max && num(r.ms) && r.ms >= 0)) return null;
   if (!(bool(r.answered) && bool(r.markedForReview) && bool(r.selfMarked))) return null;
-  return { qid: r.qid, unit: r.unit, section: r.section as string | null, concepts: r.concepts as string[], difficulty: r.difficulty, max: r.max, score: r.score, answered: r.answered, markedForReview: r.markedForReview, selfMarked: r.selfMarked, ms: r.ms };
+  const item: ExamItem = { qid: r.qid, unit: r.unit, section: r.section as string | null, concepts: r.concepts as string[], difficulty: r.difficulty, max: r.max, score: r.score, answered: r.answered, markedForReview: r.markedForReview, selfMarked: r.selfMarked, ms: r.ms };
+  if (r.awaitingMark === true) item.awaitingMark = true;
+  if (r.awaitingMark !== undefined && !bool(r.awaitingMark)) return null;
+  if (r.draft !== undefined) {
+    if (!r.draft || typeof r.draft !== "object" || Array.isArray(r.draft)) return null;
+    item.draft = r.draft;
+  }
+  return item;
 }
 
 /** A whole exam record, or null if any part is malformed (a partial record would give wrong results). */

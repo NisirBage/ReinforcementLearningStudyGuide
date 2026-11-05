@@ -229,8 +229,83 @@ Done, see below.
 - **The bank is still small** (34 questions, chapters 2–4 and one supplementary module). The engine works for any size, but mock exams in 3C will draw from this bank until more content is written.
 
 ### Next: Milestone 3C
-The mock-exam engine:
-- configuration: duration, question count, chapters, difficulty;
-- during the exam: question palette, answered and unanswered markers, mark for review, previous and next, and a countdown that stays correct across navigation and reloads;
-- submission: confirmation, automatic submission at time-out, and persistent attempt records;
-- results computed from the stored record: by chapter, topic and difficulty, plus incorrect questions, unattempted questions and solutions.
+Done, see below.
+
+## Milestone 3C: Mock exams (done, 2026-11-05)
+
+**Features:**
+- **Mock exams** (`/exam`):
+  - setup: chapters (supplementary modules only when ticked), difficulty, number of questions, duration (1–180 minutes), and whether to include written answers. Counts are real;
+  - questions are drawn at random from the bank with a seed.
+- **During the exam:**
+  - a countdown, pinned to the top of the page, with screen-reader warnings at 5 minutes and 1 minute left;
+  - a question palette showing answered, seen but unanswered, not visited, and marked for review;
+  - Mark for review, previous and next;
+  - no answers or solutions are shown.
+- **Submitting:** a confirmation panel shows the answered, unanswered and marked counts, with "Submit now" or "Keep working". The exam is submitted automatically when time runs out.
+- **The clock is wall-clock based (D-037):**
+  - it keeps running when you leave the page, and other pages show a banner with the time left;
+  - a reload resumes the exam with its answers;
+  - a reload after the deadline submits it as timed out, at the deadline;
+  - closing or reloading the tab asks first.
+- **Results, computed from the stored record:**
+  - total score and percentage, accuracy on answered questions, fully correct, unattempted, and time taken out of the limit;
+  - tables by chapter, by difficulty and by topic;
+  - lists of the questions answered incorrectly or partly and the unattempted ones, and every question with your answer and its solution;
+  - written answers are marked by you on the results page, and then count.
+- **Records:** attempts are logged with mode "exam", the exam id and time. Exam records are stored with your progress and are included in export, import and merge.
+- **History:** exam history (`/exam/history`).
+- **Phone navigation:** the bottom bar has 5 destinations plus More (Search, Progress, Settings). The desktop sidebar shows all 8.
+
+**Tests:** `npx vitest run` runs **17 files, 834 tests, all passed** (810 before).
+- New `tests/exam-engine.test.ts` (15):
+  - question choice: written answers and supplementary modules, filters, seed;
+  - the deadline, wall-clock time left, navigation timing, time away after a reload, duration limits, clock formatting;
+  - question states and counts, answers locked at time-out;
+  - submission: grading, written answers kept for marking, only answered questions logged;
+  - time-out at the deadline even when submitted late;
+  - results and breakdowns computed from the record, marking written answers afterwards, record storage, export and replacement, checking a stored exam before resuming.
+- New `tests/exam-ui.test.tsx` (9), with a test clock:
+  - setup counts, and the More menu;
+  - the countdown, palette and mark for review;
+  - leaving the exam (banner) and returning with answers kept;
+  - reload resume, and timed out on a late reload;
+  - automatic submission on the page;
+  - the confirmation panel, results, tables, lists and history;
+  - written answers marked after submission;
+  - the close or reload warning.
+- No existing test was changed. The test helper `renderApp` now accepts a clock.
+
+`npm run check` passes: validate, typecheck, tests, overlap 0, build, privacy. `npm audit`: 0 vulnerabilities.
+
+**Bundle (raw / gzip, the full set of files each page loads):**
+
+| Page | Size |
+|---|---|
+| Dashboard | 321.1 / 95.8 kB (3 files; was 316.8 / 94.7: More menu and exam banner) |
+| A mock exam over Chapter 2 | 782.8 / 241.8 kB |
+
+The exam banner's clock formatter was moved into its own small module, so the app shell does not pull in the exam engine.
+
+**Checked in the real browser (production build):**
+- **Countdown:** a 2-minute Chapter 2 exam counted down (01:59, then 01:57 two seconds later).
+- **Leaving and returning:** an answer marked for review, then leaving for Learn, showed the banner ("01:44 left"). Returning with an ordinary click kept the answer and the review mark.
+- **Reload:** a reload resumed at 01:31 with the answer kept.
+- **Time-out:** left to run out on the page, the exam was submitted automatically ("02:00 of 02:00", timed out). The results page shows all three tables with 0 KaTeX errors.
+- **375 px:** all 4 questions, the confirmation panel, the results page with every review section open, and exam history fit. The timer stays pinned when scrolling. The bottom bar has 6 items of 63 px; the More menu fits on screen and closes on navigation.
+- **1280 px:** the sidebar shows all 8 destinations, with no More button.
+- **Offline (server stopped):** a 10-question Chapter 2 exam started and was submitted after a reload.
+- **Clean-up:** submitting cleared the saved exam slot. The test profile's progress was then cleared.
+
+### Outstanding issues
+- **No visual review by eye yet** (screenshots still time out).
+- **The bank is small:** 28 auto-marked core questions (32 with written answers), so long exams repeat the same pool. More questions arrive with content work.
+- **Leaving the app with an exam open:** the clock keeps running (by design). If the deadline passes while the app is closed, the exam is submitted on the next visit to the exam page, and the banner on other pages says time is up until then.
+- **Questions with several topics** count once under each topic in the topic table (stated on the page), so topic rows do not add up to the total.
+- **Test-harness workaround** for navigation clicks in the exam UI tests (D-037).
+
+### Next: Milestone 3D
+The bandit, MDP and Bellman laboratories:
+- every intermediate value shown;
+- update-by-update stepping with seeded runs;
+- computations from `lib/rl`, verified against the draft's examples.

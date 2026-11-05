@@ -161,3 +161,21 @@ A flag can carry a `suggestion`, which is shown separately from the source text.
 - **Placement:** section pages and chapter pages place questions by `question.section` (D-033), not by which pages their sources cite.
 - **Why:** a reworded exercise must cite its exercise page, which is usually at the end of the chapter, and may also cite the section it tests. Exercise 4.1 (ch04-q001) now appears on §4.1 instead of under "End-of-chapter exercises".
 - **Tests updated:** two exact-list tests in `tests/domain-ui.test.ts` were updated to the new content and this rule, and they still compare exact lists. Concepts and items are still placed by their source citations.
+
+## D-037: Mock exams: a wall-clock deadline, results computed only from the stored record (Accepted, 2026-11-05)
+- **Pure engine:** `domain/exam.ts` is pure: start, go to a question, answer, mark for review, submit, time out, mark written answers afterwards, results.
+- **Timing:**
+  - an exam stores its `deadline` (epoch ms), so the time left is `deadline − now` whether the learner is on the page, elsewhere in the app, or reloading;
+  - an exam found past its deadline is submitted as `timeout` **at the deadline**, so a late reload never adds time;
+  - time per question is credited only while it is on screen, and never past the deadline.
+- **Persistence:**
+  - the exam in progress is saved after every change to the slot `rlsl:slot:exam`, outside the progress record;
+  - closing or reloading the tab asks first (`beforeunload`), and a reload resumes the exam either way;
+  - other pages show a banner with the time left and a link back.
+- **What counts:**
+  - unanswered questions score 0 in the record but are not logged as attempts;
+  - written answers (derivations and short answers) are optional in an exam. They are self-marked after submission and count once marked;
+  - "mark for review" is local to the exam, separate from the revision flag.
+- **Results:** total score, accuracy on answered questions, time, and breakdowns by chapter, topic and difficulty. They are recomputed from the stored `ExamRecord` every time, and nothing derived is stored. Each record also keeps the answers given (`draft`), so the review shows them. This is an optional, additive field of format version 2 (D-034), as is `awaitingMark`.
+- **Navigation:** phones keep five destinations on the bottom bar (Home, Learn, Practice, Mock exams, Revise), with Search, Progress and Settings under **More**. The desktop sidebar shows all of them. The Lab (3D) joins More.
+- **Test harness:** in `tests/exam-ui.test.tsx`, clicks that navigate run inside an awaited `act()`. With the instrumented loader, no content or code was pending during those clicks. The router renders the new page in a transition, which React reports as an un-awaited suspension under the testing library's synchronous `act()`. The same flows were checked by hand in the browser.

@@ -5,11 +5,11 @@ import { fetchEverything, fetchSearchIndex } from "../src/content/load";
 import { ProgressProvider } from "../src/store/ProgressContext";
 import { memoryStore } from "../src/store/idb";
 
-/** Renders the whole app at `path` with an in-memory store standing in for IndexedDB. */
-export function renderApp(path = "/", store: ReturnType<typeof memoryStore> = memoryStore()) {
+/** Renders the whole app at `path` with an in-memory store standing in for IndexedDB, and optionally a test clock. */
+export function renderApp(path = "/", store: ReturnType<typeof memoryStore> = memoryStore(), now?: () => number) {
   const view = render(
     <MemoryRouter initialEntries={[path]}>
-      <ProgressProvider store={store}>
+      <ProgressProvider store={store} now={now}>
         <App />
       </ProgressProvider>
     </MemoryRouter>,

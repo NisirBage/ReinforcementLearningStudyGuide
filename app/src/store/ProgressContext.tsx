@@ -2,8 +2,8 @@
 // domain/progress.ts or store/persistence.ts; this file only wires them to state and to IndexedDB.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  emptyProgress, logActivity, recordAttempt, recordAttempts, review, setConceptStatus, toggleBookmark, toggleMarked, visit,
-  type Attempt, type ConceptStatus, type ProgressData, type Settings,
+  emptyProgress, logActivity, recordAttempt, recordAttempts, review, saveExamRecord, setConceptStatus, toggleBookmark, toggleMarked, visit,
+  type Attempt, type ConceptStatus, type ExamRecord, type ProgressData, type Settings,
 } from "../domain/progress";
 import { STORAGE_KEY, mergeProgress, parseImport } from "./persistence";
 import { idbStore, loadFromStore, saveToStore, type KVStore } from "./idb";
@@ -22,6 +22,13 @@ interface Ctx {
    * as progress but outside the progress record, so a refresh resumes it and export files never carry it.
    */
   slot: { load: (key: string) => Promise<unknown>; save: (key: string, value: unknown) => Promise<void>; clear: (key: string) => Promise<void> };
+  /** Saves a submitted exam record and logs its attempts in one change. */
+  saveExam: (record: ExamRecord, attempts: Attempt[]) => void;
+  /** Deadline of the exam in progress (for the banner on other pages), or null. Set by the exam page. */
+  examDeadline: number | null;
+  setExamDeadline: (deadline: number | null) => void;
+  /** The clock used for exams and timing (injectable in tests). */
+  now: () => number;
   toggleMark: (qid: string) => void; // flag for revision
   toggleBookmark: (qid: string) => void;
   reviewCard: (cardId: string, grade: 0 | 1 | 2 | 3) => void;
@@ -55,6 +62,7 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
   const [message, setMessage] = useState<string>();
   const [saveFailed, setSaveFailed] = useState(false);
   const loaded = useRef(false);
+  const [examDeadline, setExamDeadline] = useState<number | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -64,6 +72,13 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
         if (!live) return;
         loaded.current = true;
         setData(r.data);
+        // An exam left open in an earlier visit: other pages show its banner until it is finished.
+        kv.get(SLOT_PREFIX + "exam")
+          .then((text) => {
+            const e = text ? (JSON.parse(text) as { deadline?: unknown }) : null;
+            if (live && e && typeof e.deadline === "number") setExamDeadline(e.deadline);
+          })
+          .catch(() => undefined);
         setMessage(r.message);
         setReady(true);
       });
@@ -103,6 +118,10 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
       attempt: (a) => apply((d) => recordAttempt(d, { ...a, at: now() })),
       recordAttempts: (list) => apply((d) => recordAttempts(d, list)),
       slot,
+      saveExam: (record, attempts) => apply((d) => recordAttempts(saveExamRecord(d, record), attempts)),
+      examDeadline,
+      setExamDeadline,
+      now,
       toggleMark: (q) => apply((d) => toggleMarked(d, q)),
       toggleBookmark: (q) => apply((d) => toggleBookmark(d, q)),
       reviewCard: (id, g) => apply((d) => review(d, id, g, now())),
@@ -115,7 +134,7 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
       },
       resetAll: () => apply(() => emptyProgress()),
     }),
-    [data, ready, message, saveFailed, apply, now, slot],
+    [data, ready, message, saveFailed, apply, now, slot, examDeadline],
   );
   return <ProgressCtx.Provider value={value}>{children}</ProgressCtx.Provider>;
 }

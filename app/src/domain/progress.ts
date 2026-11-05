@@ -47,6 +47,8 @@ export interface ExamItem {
   markedForReview: boolean;
   selfMarked: boolean;
   ms: number; // time the question was on screen
+  awaitingMark?: boolean; // written answer not yet self-marked (score 0 until then)
+  draft?: unknown; // the learner's answer as entered, for the review (domain/answer.ts Draft)
 }
 
 /** A submitted mock exam. Stored as data, so results are recomputed, never hard-coded. */
@@ -255,3 +257,12 @@ export const timeSpentMs = (attempts: Attempt[]): number => attempts.reduce((t, 
 
 /** Records several attempts at once (end of a practice session), each validated like a single attempt. */
 export const recordAttempts = (p: ProgressData, list: Attempt[]): ProgressData => list.reduce(recordAttempt, p);
+
+// ---------- Mock exams (Milestone 3C) ----------
+
+/** Stores a submitted exam (replacing an earlier version of the same exam, e.g. after self-marking). */
+export function saveExamRecord(p: ProgressData, r: ExamRecord): ProgressData {
+  const known = p.exams.some((e) => e.id === r.id);
+  const exams = [...p.exams.filter((e) => e.id !== r.id), r].sort((a, b) => a.startedAt - b.startedAt);
+  return known ? { ...p, exams } : logActivity({ ...p, exams }, { at: r.submittedAt, kind: "test", ref: r.id, detail: r.title });
+}
