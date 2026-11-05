@@ -31,5 +31,39 @@
     "related": ["ch04.policy-evaluation"],
     "keywords": ["Bellman expectation equation", "consistency condition", "backup diagram", "recursive relationship"],
     "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.7", "printedPages": [71, 72], "pdfPages": [85, 86] }]
+  },
+  {
+    "id": "ch03.finite-mdp",
+    "unit": "ch03",
+    "title": "Finite Markov decision process",
+    "kind": "definition",
+    "summary": "An MDP with finitely many states and actions, fully specified by its one-step dynamics $p(s', r | s, a)$ (3.6), the probability of each next state and reward given the state and action. The expected rewards (3.7), the transition probabilities (3.8) and the expected rewards given the next state (3.9) can all be computed from it.",
+    "prereqs": [],
+    "related": [
+      "ch03.bellman-equation-v"
+    ],
+    "keywords": [
+      "MDP",
+      "dynamics",
+      "transition probabilities",
+      "p(s',r|s,a)",
+      "transition graph",
+      "recycling robot"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          67,
+          69
+        ],
+        "pdfPages": [
+          81,
+          83
+        ]
+      }
+    ]
   }
 ]

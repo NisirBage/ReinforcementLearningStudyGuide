@@ -97,5 +97,79 @@
     "related": ["ch02.epsilon-greedy"],
     "keywords": ["UCB", "upper confidence bound", "uncertainty", "exploration bonus", "natural logarithm"],
     "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.6", "printedPages": [41, 42], "pdfPages": [55, 56] }]
+  },
+  {
+    "id": "ch02.optimistic-initial-values",
+    "unit": "ch02",
+    "title": "Optimistic initial values",
+    "kind": "idea",
+    "summary": "Starting every estimate well above any reward the action can give (the draft uses $Q_1(a) = +5$ on a testbed with $q(a) \\sim N(0, 1)$) makes even a greedy learner explore: each reward disappoints it, so it moves on to the next action. The extra exploration is temporary, so the trick suits stationary problems.",
+    "prereqs": [
+      "ch02.greedy-action-selection",
+      "ch02.constant-step-size"
+    ],
+    "related": [
+      "ch02.epsilon-greedy"
+    ],
+    "keywords": [
+      "optimistic",
+      "initial estimates",
+      "Q_1",
+      "bias",
+      "exploration"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.5",
+        "printedPages": [
+          39,
+          41
+        ],
+        "pdfPages": [
+          53,
+          55
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.gradient-bandit",
+    "unit": "ch02",
+    "title": "Gradient bandit algorithm",
+    "kind": "algorithm",
+    "summary": "Learn a numerical preference $H_t(a)$ per action instead of a value estimate, and choose actions by the soft-max (2.9) of the preferences. After each reward, raise the preference of the chosen action and lower the others in proportion to $R_t - \\bar R_t$, the reward minus the average reward (2.10). This is stochastic gradient ascent on the expected reward.",
+    "prereqs": [
+      "ch02.incremental-update"
+    ],
+    "related": [
+      "ch02.epsilon-greedy",
+      "ch02.ucb"
+    ],
+    "keywords": [
+      "preference",
+      "soft-max",
+      "Gibbs",
+      "Boltzmann",
+      "baseline",
+      "stochastic gradient ascent",
+      "H_t"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.7",
+        "printedPages": [
+          42,
+          45
+        ],
+        "pdfPages": [
+          56,
+          59
+        ]
+      }
+    ]
   }
 ]

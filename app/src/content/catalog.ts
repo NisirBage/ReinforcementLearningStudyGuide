@@ -11,7 +11,7 @@
 import {
   SELF_MARKED_TYPES,
   type Algorithm, type Concept, type ConceptKind, type ContentBundle, type Curriculum, type Equation, type Example, type Figure,
-  type Lesson, type NotationEntry, type ProvenanceKind, type QuestionCategory, type QuestionFile, type QuestionType, type Sources,
+  type Lab, type Lesson, type NotationEntry, type ProvenanceKind, type QuestionCategory, type QuestionFile, type QuestionType, type Sources,
 } from "./schema.ts";
 
 export interface ConceptStub {
@@ -29,6 +29,12 @@ export interface ItemStub {
   title: string;
   bookLabel?: string;
   concepts: string[];
+}
+export interface LabStub {
+  id: string;
+  slug: string;
+  unit: string;
+  title: string;
 }
 export interface QuestionStub {
   id: string;
@@ -53,6 +59,7 @@ export interface Catalog {
   items: ItemStub[];
   questions: QuestionStub[];
   notationCount: number;
+  labs: LabStub[];
   /** Units that have content files; every other unit has nothing to load. */
   contentUnits: string[];
   /** Other units whose items a unit's lessons show in full (lesson refs), loaded together with it. */
@@ -66,11 +73,12 @@ export interface UnitContent {
   algorithms: Algorithm[];
   examples: Example[];
   figures: Figure[];
+  labs: Lab[];
   lessons: Lesson[];
   questionFiles: QuestionFile[];
 }
 
-export const emptyUnit = (unit: string): UnitContent => ({ unit, concepts: [], equations: [], algorithms: [], examples: [], figures: [], lessons: [], questionFiles: [] });
+export const emptyUnit = (unit: string): UnitContent => ({ unit, concepts: [], equations: [], algorithms: [], examples: [], figures: [], labs: [], lessons: [], questionFiles: [] });
 
 const sortedUnique = (xs: string[]) => [...new Set(xs)].sort();
 
@@ -84,7 +92,7 @@ export function buildCatalog(b: ContentBundle): Catalog {
   ].map((s) => (s.bookLabel === undefined ? (({ bookLabel: _, ...rest }) => rest)(s) : s));
   const itemUnit = new Map(items.map((i) => [i.id, i.unit]));
   const contentUnits = sortedUnique([
-    ...b.concepts.map((c) => c.unit), ...items.map((i) => i.unit), ...b.lessons.map((l) => l.unit), ...b.questionFiles.map((f) => f.unit),
+    ...b.concepts.map((c) => c.unit), ...items.map((i) => i.unit), ...b.lessons.map((l) => l.unit), ...b.questionFiles.map((f) => f.unit), ...b.labs.map((l) => l.unit),
   ]);
   const deps: Record<string, string[]> = {};
   for (const l of b.lessons) {
@@ -102,6 +110,7 @@ export function buildCatalog(b: ContentBundle): Catalog {
       provenance: q.provenance.kind, selfMarked: (SELF_MARKED_TYPES as readonly string[]).includes(q.type),
     })),
     notationCount: b.notation.length,
+    labs: b.labs.map((l) => ({ id: l.id, slug: l.slug, unit: l.unit, title: l.title })),
     contentUnits,
     deps,
   };
@@ -116,6 +125,7 @@ export function unitContent(b: ContentBundle, unit: string): UnitContent {
     algorithms: mine(b.algorithms),
     examples: mine(b.examples),
     figures: mine(b.figures),
+    labs: mine(b.labs),
     lessons: mine(b.lessons),
     questionFiles: mine(b.questionFiles),
   };
@@ -133,6 +143,7 @@ export function bundleFrom(c: Catalog, parts: UnitContent[], notation: NotationE
     algorithms: all("algorithms"),
     examples: all("examples"),
     figures: all("figures"),
+    labs: all("labs"),
     lessons: all("lessons"),
     questionFiles: all("questionFiles"),
   };

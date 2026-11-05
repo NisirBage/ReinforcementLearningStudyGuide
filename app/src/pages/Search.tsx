@@ -15,13 +15,14 @@ const TYPE_LABEL: Record<DocType, string> = {
   definition: "Definition",
   notation: "Notation",
   figure: "Figure",
+  lab: "Lab",
 };
 const FILTERS: { key: string; label: string; types: DocType[] }[] = [
   { key: "all", label: "All", types: [] },
   { key: "concepts", label: "Concepts & definitions", types: ["concept", "definition"] },
   { key: "equations", label: "Equations", types: ["equation"] },
   { key: "algorithms", label: "Algorithms", types: ["algorithm"] },
-  { key: "examples", label: "Examples & figures", types: ["example", "figure"] },
+  { key: "examples", label: "Examples, figures & labs", types: ["example", "figure", "lab"] },
   { key: "sections", label: "Chapters & sections", types: ["chapter", "section", "unit"] },
 ];
 

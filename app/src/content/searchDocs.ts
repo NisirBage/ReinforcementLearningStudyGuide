@@ -117,6 +117,18 @@ export function buildSearchDocs(b: ContentBundle): SearchDoc[] {
       related: f.concepts.map(conceptDoc),
       tier: tierOf(f.unit),
     });
+  for (const l of b.labs ?? [])
+    docs.push({
+      id: `lab:${l.id}`,
+      type: "lab",
+      title: l.title,
+      body: l.summary,
+      keywords: ["lab", "laboratory", "simulation", "interactive", ...l.sections.map((s) => s)],
+      ref: where(l.sources, l.unit),
+      href: `/lab/${l.slug}`,
+      related: l.concepts.map(conceptDoc),
+      tier: tierOf(l.unit),
+    });
   for (const n of b.notation)
     docs.push({
       id: `notation:${n.id}`,

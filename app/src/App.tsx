@@ -21,6 +21,9 @@ const exam = () => import("./pages/Exam");
 const ExamPage = lazyPage(exam, (m) => m.ExamPage);
 const ExamResultPage = lazyPage(exam, (m) => m.ExamResultPage);
 const ExamHistoryPage = lazyPage(exam, (m) => m.ExamHistoryPage);
+const lab = () => import("./pages/Lab");
+const LabHub = lazyPage(lab, (m) => m.LabHub);
+const LabPage = lazyPage(lab, (m) => m.LabPage);
 const SearchPage = lazyPage(() => import("./pages/Search"), (m) => m.SearchPage);
 const RevisionHub = lazyPage(revision, (m) => m.RevisionHub);
 const ReviewPage = lazyPage(revision, (m) => m.ReviewPage);
@@ -31,7 +34,7 @@ const MarkedQuestions = lazyPage(revision, (m) => m.MarkedQuestions);
 const ProgressPage = lazyPage(progress, (m) => m.ProgressPage);
 const SettingsPage = lazyPage(progress, (m) => m.SettingsPage);
 
-const PAGES = [ExamPage, ExamResultPage, ExamHistoryPage, PracticePage, LearnIndex, UnitPage, SectionPage, ConceptPage, ItemPage, SearchPage, RevisionHub, ReviewPage, EquationLibrary, AlgorithmLibrary, NotationPage, MarkedQuestions, ProgressPage, SettingsPage];
+const PAGES = [LabHub, LabPage, ExamPage, ExamResultPage, ExamHistoryPage, PracticePage, LearnIndex, UnitPage, SectionPage, ConceptPage, ItemPage, SearchPage, RevisionHub, ReviewPage, EquationLibrary, AlgorithmLibrary, NotationPage, MarkedQuestions, ProgressPage, SettingsPage];
 /** Fetches the code of every page now (Settings → Save for offline; tests). */
 export const preloadRoutes = () => Promise.all(PAGES.map((p) => p.preload())).then(() => undefined);
 
@@ -52,6 +55,8 @@ export function App() {
         <Route path="exam" element={<ExamPage />} />
         <Route path="exam/history" element={<ExamHistoryPage />} />
         <Route path="exam/result/:id" element={<ExamResultPage />} />
+        <Route path="lab" element={<LabHub />} />
+        <Route path="lab/:slug" element={<LabPage />} />
         <Route path="search" element={<SearchPage />} />
         <Route path="revision" element={<RevisionHub />} />
         <Route path="revision/review" element={<ReviewPage />} />

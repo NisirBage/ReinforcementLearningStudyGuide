@@ -1,0 +1,136 @@
+[
+  {
+    "id": "lab.ch03.mdp-explorer",
+    "slug": "mdp",
+    "unit": "ch03",
+    "title": "MDP explorer",
+    "summary": "Build a finite MDP: its states, the actions available in each, and the dynamics $p(s', r | s, a)$. The explorer checks that every distribution sums to 1, draws the transition graph, derives $r(s, a)$ (3.7) and $p(s' | s, a)$ (3.8), and computes $v_\\pi$ for a policy you set, exactly and by iterative policy evaluation. Presets: the recycling robot of Example 3.7 and the 4×4 gridworld of Example 4.1.",
+    "sections": [
+      "3.6",
+      "3.7",
+      "4.1"
+    ],
+    "concepts": [
+      "ch03.finite-mdp",
+      "ch03.state-value-function",
+      "ch03.bellman-equation-v",
+      "ch04.policy-evaluation"
+    ],
+    "implementations": [
+      "mdp.solveExact",
+      "mdp.expectedReward",
+      "mdp.transitionProb",
+      "dp.iterativePolicyEvaluation",
+      "envs.recyclingRobot"
+    ],
+    "guide": [
+      "Load the recycling robot. Its dynamics follow Table 3.1, and $\\alpha$, $\\beta$, $r_{\\text{search}}$ and $r_{\\text{wait}}$ are yours to set (the draft leaves them symbolic).",
+      "Change a probability so a row no longer sums to 1: the explorer refuses to compute values and says which row is wrong.",
+      "Compare the exact $v_\\pi$ with iterative policy evaluation, and watch the largest change $\\Delta$ shrink sweep by sweep.",
+      "Load the 4×4 gridworld: the exact values are those of Figure 4.2 ($k = \\infty$).",
+      "Set $\\gamma = 1$ in the recycling robot: it never terminates, so $v_\\pi$ does not exist and the explorer says so."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          67,
+          69
+        ],
+        "pdfPages": [
+          81,
+          83
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          70,
+          72
+        ],
+        "pdfPages": [
+          84,
+          86
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-05",
+      "check": "lab.mdp.gridworld-exact"
+    },
+    "checks": [
+      "lab.mdp.recycling-consistent",
+      "lab.mdp.no-termination-detected"
+    ]
+  },
+  {
+    "id": "lab.ch03.bellman",
+    "slug": "bellman",
+    "unit": "ch03",
+    "title": "Bellman equation laboratory",
+    "summary": "Take one state's Bellman equation (3.12) apart. Set the policy, the transition probabilities, the rewards, $\\gamma$ and the successor values, and see each term $\\pi(a|s)\\,p(s', r|s, a)\\,[r + \\gamma v(s')]$ split into its immediate-reward part and its discounted-future part. Then apply the backup repeatedly to a whole MDP and watch the values settle at the fixed point $v_\\pi$.",
+    "sections": [
+      "3.7",
+      "4.1"
+    ],
+    "concepts": [
+      "ch03.bellman-equation-v",
+      "ch03.return",
+      "ch04.iterative-policy-evaluation"
+    ],
+    "implementations": [
+      "mdp.backupTerms",
+      "mdp.bellmanExpectationBackup",
+      "dp.iterativePolicyEvaluation",
+      "mdp.solveExact"
+    ],
+    "guide": [
+      "The preset is Exercise 3.9: the centre state of Figure 3.5b with four equally likely moves, reward 0 and $\\gamma = 0.9$. The total should be $0.675$, and all of it comes from the discounted future.",
+      "Raise $\\gamma$ towards 1 and watch the future part grow; set $\\gamma = 0$ and only the immediate reward is left (a myopic agent, §3.3).",
+      "Give one move a reward of +10 (like state A of Example 3.8) and compare the two parts.",
+      "In the iteration panel, step one sweep at a time and check one backup by hand against the term table.",
+      "Compare the iterates $v_k$ with the exact solution: the gap shrinks every sweep."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          71,
+          72
+        ],
+        "pdfPages": [
+          85,
+          86
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "printedPages": [
+          86,
+          86
+        ],
+        "pdfPages": [
+          100,
+          100
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-05",
+      "check": "lab.bellman.ex3-9"
+    },
+    "checks": [
+      "ch03-q004",
+      "lab.mdp.recycling-consistent"
+    ]
+  }
+]

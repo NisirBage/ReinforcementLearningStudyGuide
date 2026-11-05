@@ -309,3 +309,27 @@ The bandit, MDP and Bellman laboratories:
 - every intermediate value shown;
 - update-by-update stepping with seeded runs;
 - computations from `lib/rl`, verified against the draft's examples.
+
+## Milestone 3D: Bandit, MDP and Bellman laboratories (done, 2026-11-05)
+
+- **Labs** (`/lab`): a multi-armed bandit laboratory, an MDP explorer and a Bellman equation laboratory.
+- **Bandit lab:** greedy and ε-greedy (sample-average or constant α), optimistic initial values, UCB, and the gradient bandit.
+  - A step inspector shows every number of each update.
+  - Experiments average many runs and show reward and %-optimal curves.
+  - Presets reproduce the behaviour of Figures 2.1–2.4. Checked in the code: greedy ≈ 1.03 average reward and 35% optimal; best possible 1.539; the UCB spike at step 11; the baseline effect.
+- **MDP explorer:** an editor that checks every distribution, a layered transition diagram, (3.7) and (3.8), and v_π computed exactly and iteratively. Presets: the recycling robot (Table 3.1, with parameters the app chose) and the gridworld (matches Figure 4.2 exactly).
+- **Bellman lab:** one state's backup split into its terms (Exercise 3.9 preset gives 0.675), and iteration sweep by sweep towards v_π.
+- **Content:**
+  - a new `Lab` content type, validated;
+  - 3 concepts: optimistic initial values, the gradient bandit, the finite MDP;
+  - equations (2.9) and (2.10), checked against the page image;
+  - a `suspected-typo` flag on (2.9): its numerator is printed with an unmatched parenthesis.
+- **Search:** finds labs. Direct matches now always rank above cross-references.
+- **Tests:** 890 pass. The new tests are `lab-algorithms` (23) and `lab-ui` (10), plus 10 lab fixture checks. Two existing expectations were updated for the new content: the dashboard count, now 18 core concepts, and the UCB search ranking, which needed the ranking fix.
+- **Checked in the browser, including by eye** (screenshots now work):
+  - the chart ticks and labels were fixed, and the transition diagram was redesigned and has no label overlaps;
+  - 375 px fixes: fieldsets and long dropdowns;
+  - 2000 × 1000 runs of three methods take 2.1 s in the browser.
+
+### Next: Milestone 3E
+The dynamic programming (policy improvement, policy iteration, value iteration), Monte Carlo and TD/Sarsa/Q-learning labs, with the per-update Q-learning inspector.

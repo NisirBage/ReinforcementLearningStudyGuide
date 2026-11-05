@@ -14,6 +14,7 @@ const glob = {
   algorithms: import.meta.glob("../../../content/algorithms/*.json", { eager: true, import: "default" }),
   examples: import.meta.glob("../../../content/examples/*.json", { eager: true, import: "default" }),
   figures: import.meta.glob("../../../content/figures/*.json", { eager: true, import: "default" }),
+  labs: import.meta.glob("../../../content/labs/*.json", { eager: true, import: "default" }),
   lessons: import.meta.glob("../../../content/lessons/*.json", { eager: true, import: "default" }),
   questions: import.meta.glob("../../../content/questions/*.json", { eager: true, import: "default" }),
 };
@@ -27,6 +28,7 @@ export const bundle: ContentBundle = {
   algorithms: sorted(glob.algorithms).flat() as ContentBundle["algorithms"],
   examples: sorted(glob.examples).flat() as ContentBundle["examples"],
   figures: sorted(glob.figures).flat() as ContentBundle["figures"],
+  labs: sorted(glob.labs).flat() as ContentBundle["labs"],
   lessons: sorted(glob.lessons) as ContentBundle["lessons"],
   questionFiles: sorted(glob.questions) as ContentBundle["questionFiles"],
 };

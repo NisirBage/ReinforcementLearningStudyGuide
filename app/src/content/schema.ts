@@ -210,6 +210,26 @@ export type FigureSpec =
   | { kind: "value-grids"; rows: number; cols: number; terminal: number[]; grids: { label: string; values: number[] }[]; env?: "gridworld4x4" }
   | { kind: "backup-diagram"; root: "state" | "action"; branching: [number, number]; labels: { root: string; edge?: string; mid: string; reward: string; leaf: string } };
 
+/**
+ * An interactive laboratory (Milestone 3D). The computation lives in app/src/lib/rl (named in `implementations`,
+ * checked against the registry); the text, the draft sections it covers, its sources and its verification live here.
+ */
+export interface Lab {
+  id: string; // "lab.ch02.bandit"
+  slug: string; // route: /lab/<slug>
+  unit: string;
+  title: string;
+  summary: string; // Markdown
+  sections: string[]; // textbook (core) or Zhao (supplementary) sections the lab exercises
+  concepts: string[];
+  implementations: string[]; // keys of lib/rl/registry.ts
+  guide: string[]; // what to try, step by step (Markdown)
+  sources: SourceRef[];
+  verification: Verification; // computed: a check that reproduces the draft's own example
+  checks?: string[]; // further checks the lab's computations must pass
+  flags?: Flag[];
+}
+
 export interface Figure {
   id: string; // "fig.ch04.policy-evaluation-grids"
   unit: string;
@@ -330,6 +350,7 @@ export interface ContentBundle {
   lessons: Lesson[];
   questionFiles: QuestionFile[];
   figures: Figure[];
+  labs: Lab[];
 }
 
 // ---------- Validation helpers ----------
@@ -683,6 +704,25 @@ export function validateBundle(b: ContentBundle, ctx: ValidationContext): string
     } else errs.push(`${at}: unknown figure kind`);
     if (!isSupplementaryUnit(f.unit) && f.verification?.method !== "page-image" && f.verification?.method !== "computed") errs.push(`${at}: textbook figures must be checked against the page image or by computation`);
     errs.push(...validateSourceList(f.sources, `${at}.sources`, src, f.unit), ...validateFlags(f.flags, at), ...validateVerification(f.verification, at, ctx.checks, true));
+  });
+
+  const slugs = new Set<string>();
+  b.labs.forEach((l, i) => {
+    const at = `lab ${l?.id ?? i}`;
+    if (!isStr(l.id) || !itemId("lab").test(l.id)) errs.push(`${at}: id must look like lab.<unit>.<slug>`);
+    else claim(l.id, at);
+    if (!isStr(l.slug) || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(l.slug) || slugs.has(l.slug)) errs.push(`${at}: slug must be a unique lower-case route segment`);
+    else slugs.add(l.slug);
+    errs.push(...unitOk(l.unit, at));
+    if (!isStr(l.title) || !isStr(l.summary)) errs.push(`${at}: title and summary required`);
+    if (!strArr(l.guide) || l.guide.length === 0) errs.push(`${at}: guide needs at least one step`);
+    const book = isSupplementaryUnit(l.unit) ? "zhao" : "sb";
+    if (!strArr(l.sections) || l.sections.length === 0 || !l.sections.every((s) => findSection(src, book, s))) errs.push(`${at}: sections must be ${book === "sb" ? "textbook" : "Zhao"} sections`);
+    if (!strArr(l.concepts) || l.concepts.length === 0 || !l.concepts.every((c) => conceptIds.has(c) && sameSide(l.unit, c))) errs.push(`${at}: concepts must exist on the same side of the core/supplementary line`);
+    if (!strArr(l.implementations) || l.implementations.length === 0 || !l.implementations.every((k) => ctx.implementations.has(k))) errs.push(`${at}: every implementation must be in lib/rl/registry.ts`);
+    if (l.verification?.method !== "computed") errs.push(`${at}: a lab must be verified by a computed check that reproduces the source`);
+    if (l.checks !== undefined && !(strArr(l.checks) && l.checks.every((c) => ctx.checks.has(c)))) errs.push(`${at}: unknown check in checks`);
+    errs.push(...validateSourceList(l.sources, `${at}.sources`, src, l.unit), ...validateFlags(l.flags, at), ...validateVerification(l.verification, at, ctx.checks, true));
   });
 
   const refIds = ids; // equations, algorithms, examples and figures that lesson layers may show

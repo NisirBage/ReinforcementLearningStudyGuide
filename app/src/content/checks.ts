@@ -5,7 +5,9 @@
 import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages, recencyWeightedAverage, recencyWeights, ucbScores, argmaxAll } from "../lib/rl/bandit";
 import { iterativePolicyEvaluation } from "../lib/rl/dp";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
-import { actionValue, bellmanExpectationBackup, bellmanResidual, equiprobablePolicy, greedyActions, type FiniteMDP } from "../lib/rl/mdp";
+import { TESTBED_10, expectedMaxNormal, meanOver, recordRun, runExperiment, type Method } from "../lib/rl/banditLab";
+import { recyclingRandomPolicy, recyclingRobot } from "../lib/rl/envs/recycling";
+import { actionValue, backupTerms, bellmanExpectationBackup, bellmanResidual, equiprobablePolicy, greedyActions, solveExact, type FiniteMDP } from "../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../lib/rl/envs/gridworld4x4";
 import { robbinsMonro } from "../lib/rl/sa";
 import figuresCh04 from "../../../content/figures/ch04.json";
@@ -38,6 +40,9 @@ const random = equiprobablePolicy(grid);
 const vk = (k: number) => toCells(iterativePolicyEvaluation(grid, random, 1, { theta: 0, maxSweeps: k, mode: "two-array" }).v);
 const vPi = () => iterativePolicyEvaluation(grid, random, 1, { theta: 1e-12 }).v;
 const close = (a: number, b: number, tol = 1e-9) => Math.abs(a - b) <= tol;
+const sa = { kind: "sample-average" } as const;
+const eg = (epsilon: number): Method => ({ kind: "epsilon-greedy", epsilon, q1: 0, step: sa });
+const gr = (alpha: number, baseline: boolean): Method => ({ kind: "gradient", alpha, baseline });
 
 export const CHECKS: Record<string, Check> = {
   // ----- Chapter 2 -----
@@ -255,6 +260,86 @@ export const CHECKS: Record<string, Check> = {
     },
   },
   "ch04-q005": { kind: "answer", run: () => [vk(3)[1], vk(3)[5]] }, // exact v_3(1), v_3(5); Figure 4.2 prints −2.4 and −2.9
+
+  // ----- Laboratories (Milestone 3D): the labs reproduce the draft's own examples -----
+  // Simulations use 300 runs (the draft averages 2000) with a fixed seed; thresholds leave room for that noise.
+  "lab.bandit.fig2-1": {
+    kind: "fact", // p. 36: greedy reaches a reward of only about 1 and finds the optimal action in about one-third of tasks;
+    // ε = 0.1 explores more and keeps improving, but never selects the optimal action more than 91% of the time.
+    run: () => {
+      const [g, e01, e1] = runExperiment(TESTBED_10, [eg(0), eg(0.01), eg(0.1)], 300, 1000, 11).map((c) => ({ r: meanOver(c.avgReward, 900, 1000), o: meanOver(c.pctOptimal, 900, 1000) }));
+      return g.r > 0.85 && g.r < 1.2 && g.o > 0.24 && g.o < 0.45 && e1.o > g.o + 0.25 && e1.o < 0.91 + 0.03 && e01.r > g.r && e1.r > g.r;
+    },
+  },
+  "lab.bandit.best-possible": {
+    kind: "fact", // p. 36: "the best possible of about 1.55 on this testbed" = E[max of 10 standard normals] = 1.5388
+    run: () => Math.abs(expectedMaxNormal(10) - 1.5388) < 0.0005 && Math.abs(expectedMaxNormal(10) - 1.55) < 0.02,
+  },
+  "lab.bandit.fig2-2": {
+    kind: "fact", // Figure 2.2: optimistic greedy (Q_1 = 5) starts worse than realistic ε-greedy (ε = 0.1) and ends better; both α = 0.1
+    run: () => {
+      const a = { kind: "constant", alpha: 0.1 } as const;
+      const [opt, real] = runExperiment(TESTBED_10, [{ kind: "epsilon-greedy", epsilon: 0, q1: 5, step: a }, { kind: "epsilon-greedy", epsilon: 0.1, q1: 0, step: a }], 300, 1000, 12);
+      return meanOver(opt.pctOptimal, 0, 50) < meanOver(real.pctOptimal, 0, 50) && meanOver(opt.pctOptimal, 800, 1000) > meanOver(real.pctOptimal, 800, 1000) + 0.04;
+    },
+  },
+  "lab.bandit.fig2-3": {
+    kind: "fact", // Figure 2.3: UCB (c = 2) beats ε-greedy (ε = 0.1) after the first steps, with a spike on the 11th play
+    run: () => {
+      const [ucb, e] = runExperiment(TESTBED_10, [{ kind: "ucb", c: 2, q1: 0, step: sa }, eg(0.1)], 300, 1000, 13);
+      return ucb.avgReward[10] > ucb.avgReward[9] + 0.5 && ucb.avgReward[10] > ucb.avgReward[11] && meanOver(ucb.avgReward, 300, 1000) > meanOver(e.avgReward, 300, 1000);
+    },
+  },
+  "lab.bandit.fig2-4": {
+    kind: "fact", // Figure 2.4 (testbed mean +4): the gradient bandit with the baseline does much better than without it
+    run: () => {
+      const tb = { ...TESTBED_10, meanOfMeans: 4 };
+      const [w1, w4, n1, n4] = runExperiment(tb, [gr(0.1, true), gr(0.4, true), gr(0.1, false), gr(0.4, false)], 300, 1000, 14).map((c) => meanOver(c.pctOptimal, 800, 1000));
+      return w1 > n1 + 0.2 && w4 > n4 + 0.2 && w1 > w4;
+    },
+  },
+  "lab.bandit.step-matches-fast": {
+    kind: "fact", // the step inspector and the fast runner make the same choices and rewards on the same seed
+    run: () =>
+      [eg(0.1), { kind: "ucb", c: 2, q1: 0, step: sa } as Method, gr(0.1, true)].every((m) => {
+        const one = runExperiment(TESTBED_10, [m], 1, 200, 21)[0];
+        const rec = recordRun(TESTBED_10, m, 200, 21);
+        return rec.details.every((d, i) => close(d.reward, one.avgReward[i], 1e-12) && (one.pctOptimal[i] === 1) === (rec.q[d.action] === Math.max(...rec.q)));
+      }),
+  },
+  "lab.mdp.gridworld-exact": {
+    kind: "fact", // solving (4.4) exactly gives the k = ∞ grid of Figure 4.2: −14, −18, −20, −22
+    run: () => {
+      const v = solveExact(grid, random, 1);
+      return v !== null && toCells(v).every((x, i) => close(x, FIG_4_2.inf[i], 1e-9));
+    },
+  },
+  "lab.mdp.recycling-consistent": {
+    kind: "fact", // Example 3.7 with sample numbers: exact solution = iterative policy evaluation, and it satisfies (3.12)
+    run: () =>
+      [{ alpha: 0.9, beta: 0.6, rSearch: 2, rWait: 1 }, { alpha: 0.5, beta: 0.2, rSearch: 5, rWait: 0.5 }].every((p) => {
+        const m = recyclingRobot(p);
+        const pi = recyclingRandomPolicy();
+        const exact = solveExact(m, pi, 0.9)!;
+        const it = iterativePolicyEvaluation(m, pi, 0.9, { theta: 1e-13 }).v;
+        return exact.every((x, s) => close(x, it[s], 1e-8)) && bellmanResidual(m, exact, pi, 0.9) < 1e-9;
+      }),
+  },
+  "lab.mdp.no-termination-detected": {
+    kind: "fact", // p. 90: v_π exists if γ < 1 or termination is guaranteed; a policy that can loop forever with γ = 1 has no solution
+    run: () => {
+      const loop: FiniteMDP = { states: ["a", "T"], terminal: [false, true], actions: ["stay", "end"], dynamics: [[[{ next: 0, reward: -1, prob: 1 }], [{ next: 1, reward: 0, prob: 1 }]], [[], []]] };
+      return solveExact(loop, [[1, 0], [0, 0]], 1) === null && solveExact(loop, [[0.5, 0.5], [0, 0]], 1)![0] === -1 && solveExact(loop, [[1, 0], [0, 0]], 0.9) !== null;
+    },
+  },
+  "lab.bellman.ex3-9": {
+    kind: "fact", // the Bellman lab's preset is Exercise 3.9: reward part 0, discounted future 0.675
+    run: () => {
+      const mdp: FiniteMDP = { states: ["c", "n1", "n2", "n3", "n4"], terminal: [false, true, true, true, true], actions: ["n", "s", "e", "w"], dynamics: [[1, 2, 3, 4].map((next) => [{ next, reward: 0, prob: 1 }]), [], [], [], []] };
+      const b = backupTerms(mdp, [0, 2.3, 0.4, -0.4, 0.7], equiprobablePolicy(mdp), 0, 0.9);
+      return b.terms.length === 4 && close(b.reward, 0) && close(b.future, 0.675, 1e-12) && close(b.total, 0.675, 1e-12);
+    },
+  },
 
   // ----- Supplementary: Zhao Chapter 6 (stochastic approximation) -----
   "sup-zhao-06.mean-estimation-is-rm": {

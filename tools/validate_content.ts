@@ -28,7 +28,7 @@ for (const f of bundle.questionFiles)
 const n = (xs: unknown[]) => xs.length;
 const qs = bundle.questionFiles.flatMap((f) => f.questions);
 console.log(
-  `content: ${n(bundle.concepts)} concepts, ${n(bundle.equations)} equations, ${n(bundle.algorithms)} algorithms, ${n(bundle.examples)} examples, ${n(bundle.figures)} figures, ` +
+  `content: ${n(bundle.concepts)} concepts, ${n(bundle.equations)} equations, ${n(bundle.algorithms)} algorithms, ${n(bundle.examples)} examples, ${n(bundle.figures)} figures, ${n(bundle.labs)} labs, ` +
     `${bundle.lessons.reduce((s, l) => s + l.sections.length, 0)} lesson sections, ${n(qs)} questions, ${n(bundle.notation)} notation entries; ${Object.keys(CHECKS).length} checks`,
 );
 if (errors.length) {

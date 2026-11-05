@@ -62,3 +62,86 @@ export function greedyActions(mdp: FiniteMDP, v: readonly number[], gamma: numbe
     return qs.flatMap((q, a) => (q >= m - tol ? [a] : []));
   });
 }
+
+// ---------- For the MDP Explorer and Bellman Laboratory (Milestone 3D) ----------
+
+/** r(s, a) = Σ_{s′, r} r · p(s′, r | s, a), the expected reward (3.7). */
+export const expectedReward = (mdp: FiniteMDP, s: number, a: number): number => mdp.dynamics[s][a].reduce((t, o) => t + o.prob * o.reward, 0);
+
+/** p(s′ | s, a) = Σ_r p(s′, r | s, a), the state-transition probability (3.8). */
+export const transitionProb = (mdp: FiniteMDP, s: number, a: number, next: number): number =>
+  mdp.dynamics[s][a].reduce((t, o) => t + (o.next === next ? o.prob : 0), 0);
+
+/** r(s, a, s′) = Σ_r r p(s′, r | s, a) / p(s′ | s, a) (3.9); undefined when p(s′ | s, a) = 0. */
+export function expectedRewardGivenNext(mdp: FiniteMDP, s: number, a: number, next: number): number | undefined {
+  const p = transitionProb(mdp, s, a, next);
+  if (p === 0) return undefined;
+  return mdp.dynamics[s][a].reduce((t, o) => t + (o.next === next ? o.prob * o.reward : 0), 0) / p;
+}
+
+/** One term of the Bellman backup (3.12) at state s: weight π(a|s)·p(s′,r|s,a) and its two parts. */
+export interface BackupTerm {
+  action: number;
+  next: number;
+  reward: number;
+  pi: number; // π(a|s)
+  p: number; // p(s′, r | s, a)
+  weight: number; // π(a|s) p(s′, r | s, a)
+  rewardPart: number; // weight · r
+  futurePart: number; // weight · γ v(s′)
+}
+
+/** Every term of (3.12) at s, so the lab can show how the immediate reward and the discounted future add up. */
+export function backupTerms(mdp: FiniteMDP, v: readonly number[], pi: Policy, s: number, gamma: number): { terms: BackupTerm[]; reward: number; future: number; total: number } {
+  const terms: BackupTerm[] = [];
+  if (!mdp.terminal[s])
+    mdp.actions.forEach((_, a) => {
+      if (!(pi[s][a] > 0)) return;
+      for (const o of mdp.dynamics[s][a]) {
+        const weight = pi[s][a] * o.prob;
+        terms.push({ action: a, next: o.next, reward: o.reward, pi: pi[s][a], p: o.prob, weight, rewardPart: weight * o.reward, futurePart: weight * gamma * v[o.next] });
+      }
+    });
+  const reward = terms.reduce((t, x) => t + x.rewardPart, 0);
+  const future = terms.reduce((t, x) => t + x.futurePart, 0);
+  return { terms, reward, future, total: reward + future };
+}
+
+/**
+ * v_π exactly, by solving the |S| linear equations (4.4): v(s) − γ Σ_a π(a|s) Σ p(s′,r|s,a) v(s′) = Σ_a π(a|s) r(s,a),
+ * with v = 0 at terminal states. Gaussian elimination with partial pivoting. Returns null when the system is
+ * singular, which happens when γ = 1 and termination is not guaranteed under π (then v_π does not exist, p. 90).
+ */
+export function solveExact(mdp: FiniteMDP, pi: Policy, gamma: number): number[] | null {
+  const idx = mdp.states.map((_, s) => s).filter((s) => !mdp.terminal[s]);
+  const pos = new Map(idx.map((s, i) => [s, i]));
+  const n = idx.length;
+  const A = idx.map(() => new Array<number>(n + 1).fill(0));
+  idx.forEach((s, i) => {
+    A[i][i] += 1;
+    mdp.actions.forEach((_, a) => {
+      const w = pi[s][a];
+      if (!(w > 0)) return;
+      for (const o of mdp.dynamics[s][a]) {
+        A[i][n] += w * o.prob * o.reward;
+        const j = pos.get(o.next);
+        if (j !== undefined) A[i][j] -= gamma * w * o.prob;
+      }
+    });
+  });
+  for (let c = 0; c < n; c++) {
+    let p = c;
+    for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    if (Math.abs(A[p][c]) < 1e-12) return null;
+    [A[c], A[p]] = [A[p], A[c]];
+    for (let r = 0; r < n; r++) {
+      if (r === c) continue;
+      const f = A[r][c] / A[c][c];
+      if (f !== 0) for (let k = c; k <= n; k++) A[r][k] -= f * A[c][k];
+    }
+  }
+  const v = mdp.states.map(() => 0);
+  idx.forEach((s, i) => (v[s] = A[i][n] / A[i][i]));
+  // A nearly singular system can still return huge values; treat those as "no solution".
+  return v.every((x) => Number.isFinite(x) && Math.abs(x) < 1e12) ? v : null;
+}

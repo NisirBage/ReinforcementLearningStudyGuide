@@ -96,7 +96,7 @@ main { max-width: 860px; margin: 0 auto; padding: 16px 16px calc(var(--nav-h) + 
 
 .nav {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
-  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
   height: calc(var(--nav-h) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
   background: var(--surface); border-top: 1px solid var(--border);
 }
@@ -397,3 +397,66 @@ table.notation tr.focus { background: var(--sup-bg); }
 .breakdown caption { text-align: left; font-weight: 700; padding: 4px 0; }
 .breakdown th, .breakdown td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
 .breakdown thead th { color: var(--muted); font-weight: 600; }
+
+/* ---------- Laboratories (Milestone 3D) ---------- */
+/* Series colours: the dataviz reference palette, slots 1–4 in fixed order, validated for each surface
+   (light #ffffff, dark #17212c). Light slots 3–4 are below 3:1, so charts carry direct labels and a table view. */
+:root { --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500; }
+}
+:root[data-theme="dark"] { --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500; }
+.chart { margin: 12px 0 20px; }
+.chart-title { font-weight: 700; margin-bottom: 4px; }
+.chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.chart .grid line { stroke: var(--border); stroke-width: 1; }
+.chart .grid text, .chart .axis-label, .chart .end-label { fill: var(--muted); font-size: 11px; }
+.chart .end-label { fill: var(--text); }
+.chart .line { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.chart .reference line { stroke: var(--muted); stroke-dasharray: 4 4; }
+.chart .reference text { fill: var(--muted); font-size: 11px; }
+.chart .hover line { stroke: var(--muted); stroke-width: 1; }
+.chart .dot { stroke: var(--surface); stroke-width: 2; }
+.s1 { stroke: var(--series-1); fill: var(--series-1); } .s2 { stroke: var(--series-2); fill: var(--series-2); }
+.s3 { stroke: var(--series-3); fill: var(--series-3); } .s4 { stroke: var(--series-4); fill: var(--series-4); }
+.line.s1, .line.s2, .line.s3, .line.s4 { fill: none; }
+.swatch { display: inline-block; width: 12px; height: 4px; border-radius: 2px; vertical-align: middle; }
+.swatch.s1 { background: var(--series-1); } .swatch.s2 { background: var(--series-2); } .swatch.s3 { background: var(--series-3); } .swatch.s4 { background: var(--series-4); }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; list-style: none; padding: 0; margin: 0 0 4px; font-size: 0.9rem; }
+.chart-tip { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.85rem; color: var(--muted); }
+.chart-tip strong { color: var(--text); }
+.lab-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.num { font-variant-numeric: tabular-nums; }
+.lab-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; display: block; overflow-x: auto; }
+.lab-table th, .lab-table td { padding: 4px 8px; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+.lab-table th:first-child, .lab-table td:first-child { text-align: left; }
+.lab-table tr.chosen { background: var(--surface-2); font-weight: 600; }
+.lab-table td.best::after { content: " ★"; color: var(--muted); }
+.calc { font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace); font-size: 0.88rem; background: var(--surface-2); border-radius: 8px; padding: 8px 10px; overflow-x: auto; white-space: pre-wrap; }
+.inputs { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 8px 0; }
+.inputs input[type="number"] { width: 6.5rem; }
+.inputs select, .inputs input { font: inherit; }
+.mini-input { width: 5.5rem; font: inherit; min-height: 34px; padding: 0 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
+.errors { color: var(--bad); }
+.parts-bar { display: grid; grid-template-columns: 9rem 1fr 5rem; gap: 6px 8px; align-items: center; font-size: 0.9rem; }
+.parts-bar .track { height: 10px; background: var(--surface-2); border-radius: 5px; position: relative; overflow: hidden; }
+.parts-bar .fill { position: absolute; top: 0; bottom: 0; background: var(--series-1); border-radius: 5px; }
+.parts-bar .fill.neg { background: var(--series-2); }
+.mdp-graph { width: 100%; max-width: 520px; height: auto; display: block; margin: 8px auto; }
+.mdp-graph .state circle { fill: var(--surface); stroke: var(--text); stroke-width: 1.5; }
+.mdp-graph .state.terminal circle { stroke-dasharray: 3 3; }
+.mdp-graph text { fill: var(--text); font-size: 12px; }
+.mdp-graph .edge { stroke: var(--muted); stroke-width: 1.2; fill: none; }
+.mdp-graph .anode { fill: var(--text); }
+.mdp-graph .elabel { fill: var(--muted); font-size: 10px; }
+.vgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 3.6rem)); gap: 2px; margin: 6px 0; }
+.vgrid span { text-align: center; padding: 6px 0; background: var(--surface-2); border-radius: 4px; font-variant-numeric: tabular-nums; font-size: 0.85rem; }
+.vgrid span.t { background: var(--border); }
+/* Inputs rows wrap; a long <select> (e.g. preset names) shrinks to the screen instead of widening the page. */
+.inputs > * { min-width: 0; max-width: 100%; }
+.inputs label select { max-width: 100%; }
+.inputs label { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+/* Fieldsets default to min-width: min-content, which lets a wide table inside widen the page; let them shrink. */
+fieldset { min-width: 0; }
+.outcomes { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin: 8px 0; }
+.method { padding: 8px 12px; }

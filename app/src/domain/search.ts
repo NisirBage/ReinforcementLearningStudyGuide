@@ -3,7 +3,7 @@
 // one-typo matching for longer words, RL abbreviation expansion, and one hop of cross-references
 // ("related") so a hit on "Bellman equation" also surfaces the concepts it links to.
 
-export type DocType = "chapter" | "section" | "unit" | "concept" | "equation" | "algorithm" | "example" | "definition" | "notation" | "figure";
+export type DocType = "chapter" | "section" | "unit" | "concept" | "equation" | "algorithm" | "example" | "definition" | "notation" | "figure" | "lab";
 
 export interface SearchDoc {
   id: string;
@@ -178,5 +178,8 @@ export function search(index: SearchIndex, query: string, limit = 30): SearchHit
         cross.push({ doc, score: h.score * 0.35, via: h.doc.id });
       }
     }
-  return [...direct, ...cross].sort((a, b) => b.score - a.score).slice(0, limit);
+  // Direct matches always come first; cross-references follow, strongest first. (A strongly matched concept used
+  // to lift every concept it links to above weaker but direct matches, such as the equation of the same name.)
+  cross.sort((a, b) => b.score - a.score);
+  return [...direct, ...cross].slice(0, limit);
 }

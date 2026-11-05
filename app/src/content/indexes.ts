@@ -175,6 +175,7 @@ export function buildIndexes(b: ContentBundle) {
     questionsFor: (conceptId: string) => questions.filter((q) => q.concepts.includes(conceptId)),
     sectionsOf,
     sectionContent,
+    lab: (slug: string) => b.labs.find((l) => l.slug === slug),
     chapterLevel,
     dependents,
     prereqChain,

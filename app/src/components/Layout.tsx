@@ -10,6 +10,7 @@ export const NAV = [
   ["/learn", "Learn", "☰", true],
   ["/practice", "Practice", "✎", true],
   ["/exam", "Mock exams", "⏱", true],
+  ["/lab", "Lab", "⚗", true],
   ["/revision", "Revise", "↻", true],
   ["/search", "Search", "⌕", false],
   ["/progress", "Progress", "◔", false],
