@@ -9,9 +9,12 @@ import { Flags, Md } from "../components/math";
 import { BanditLab } from "./labs/BanditLab";
 import { BellmanLab } from "./labs/BellmanLab";
 import { MdpExplorer } from "./labs/MdpExplorer";
+import { DpLab } from "./labs/DpLab";
+import { McLab } from "./labs/McLab";
+import { TdLab } from "./labs/TdLab";
 import { NotFound } from "./NotFound";
 
-const BODIES: Record<string, () => ReactElement> = { bandit: BanditLab, mdp: MdpExplorer, bellman: BellmanLab };
+const BODIES: Record<string, () => ReactElement> = { bandit: BanditLab, mdp: MdpExplorer, bellman: BellmanLab, dp: DpLab, mc: McLab, td: TdLab };
 
 export function LabHub() {
   const labs = cat.catalog.labs;
@@ -29,7 +32,6 @@ export function LabHub() {
           </Link>
         ))}
       </div>
-      <p className="muted small">Dynamic programming, Monte Carlo and temporal-difference laboratories come next.</p>
     </>
   );
 }
@@ -80,7 +82,7 @@ function About({ lab }: { lab: Lab }) {
         {lab.sections.map((s, i) => (
           <span key={s}>
             {i ? ", " : ""}
-            <Link to={`/learn/${lab.unit === "ch03" && s.startsWith("4.") ? "ch04" : lab.unit}/${s}`}>§{s}</Link>
+            <Link to={`/learn/${lab.unit.startsWith("sup-") ? lab.unit : `ch${s.split(".")[0].padStart(2, "0")}`}/${s}`}>§{s}</Link>
           </span>
         ))}
       </p>

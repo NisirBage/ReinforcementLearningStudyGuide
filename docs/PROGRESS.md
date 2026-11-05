@@ -332,4 +332,52 @@ The bandit, MDP and Bellman laboratories:
   - 2000 × 1000 runs of three methods take 2.1 s in the browser.
 
 ### Next: Milestone 3E
-The dynamic programming (policy improvement, policy iteration, value iteration), Monte Carlo and TD/Sarsa/Q-learning labs, with the per-update Q-learning inspector.
+Done, see below.
+
+## Milestone 3E: Dynamic programming, Monte Carlo and TD laboratories (done, 2026-11-05)
+
+**Labs:**
+- **Dynamic programming:**
+  - policy iteration, stepped evaluation by improvement, showing the values, the greedy arrows (ties drawn together) and the states that changed;
+  - value iteration, sweep by sweep, with Δ;
+  - problems: the 4×4 gridworld, the gambler's problem (value and stake charts like Figure 4.6), the recycling robot and the windy gridworld.
+- **Monte Carlo:**
+  - episodes with their returns computed backwards;
+  - first-visit or every-visit, with sample averages or constant α, and each update written out;
+  - estimates against the true values, with an RMS curve;
+  - Monte Carlo ES on the gridworld, with its departure from the draft stated.
+- **Temporal difference:**
+  - TD(0) stepped, showing the target, TD error and new value;
+  - Figure 6.6 (estimates over states) and Figure 6.7 (RMS curves, 100 sequences);
+  - a Sarsa / Q-learning inspector on cliff walking and the windy gridworld, showing every quantity of each update, the agent, the greedy arrows, max Q and the greedy path;
+  - a comparison of the two on Figures 6.13 and 6.11.
+
+**Code:**
+- `lib/rl`: `dp.ts` (`greedyPolicy`, `policyIteration`, `valueIteration`), `sampling.ts`, `mc.ts`, `td.ts`, `envs/examples.ts`;
+- components: `GridView`, and `LineChart` gained `xFrom`.
+
+**Content:** 8 concepts (Chapters 4–6); equations (4.9), (4.10), (6.1), (6.2), (6.5) and (6.6), checked against the page images; 7 pseudocode boxes (Figures 4.3, 4.5, 5.1, 5.4, 6.1, 6.9, 6.12), with Figure 4.3's acknowledged bug flagged; 3 labs; 9 new draft fixtures (51 checks in all).
+
+**Fixtures, reproduced:**
+- gridworld: v* and policy iteration in 2 evaluations;
+- gambler, p_h = 0.4: v(25), v(50), v(75) = 0.16, 0.4, 0.64;
+- random walk: Monte Carlo converges; TD beats MC (Figure 6.7) from the start value 0.236;
+- windy gridworld: minimum 15 steps, 130–200 episodes by 8000 steps;
+- cliff: Sarsa > Q-learning online, Q-learning's path 13 steps;
+- Monte Carlo ES finds an optimal gridworld policy.
+
+**Measured differently from the draft:** windy-gridworld episodes average about 20 steps after 8000 steps, against the draft's "about 17" (D-039).
+
+**Tests:** **21 files, 1017 tests, all passed**.
+- New: `lab3e-algorithms` (18) and `lab3e-ui` (8).
+- Three existing expectations changed: the dashboard concept count (now 26), the dependents of the Bellman equation (TD(0) added), and the focus test's Learn link, now scoped to the main navigation because the dashboard lists "Temporal-Difference Learning".
+
+`npm run check` passes (overlap 0, privacy check).
+
+**Checked in the browser:**
+- 375 px: all lab pages and the new section, concept, equation and algorithm pages fit after running the experiments, with 0 KaTeX errors;
+- seen by eye: the TD inspector and cliff grid (legible at phone width), and the gambler's stake chart (Figure 4.6's shape);
+- fixed after looking: the value chart is now drawn for capital 1–99 only, and chart table rows fall on round x values.
+
+### Next: Milestone 3F
+Algorithm explainers for every implemented algorithm, progress integration of the labs and questions, and final QA.

@@ -3,6 +3,9 @@
 import * as bandit from "./bandit";
 import * as banditLab from "./banditLab";
 import * as recycling from "./envs/recycling";
+import * as examples from "./envs/examples";
+import * as mc from "./mc";
+import * as td from "./td";
 import * as dp from "./dp";
 import * as mdp from "./mdp";
 import * as sa from "./sa";
@@ -21,6 +24,18 @@ export const IMPLEMENTATIONS = {
   "mdp.expectedReward": mdp.expectedReward, // (3.7)
   "mdp.transitionProb": mdp.transitionProb, // (3.8)
   "envs.recyclingRobot": recycling.recyclingRobot, // Example 3.7, Table 3.1
+  "dp.greedyPolicy": dp.greedyPolicy, // policy improvement (4.9)
+  "dp.policyIteration": dp.policyIteration, // Figure 4.3
+  "dp.valueIteration": dp.valueIteration, // (4.10), Figure 4.5
+  "mc.mcUpdate": mc.mcUpdate, // first-/every-visit and constant-α MC (Figure 5.1, 6.1)
+  "mc.esEpisode": mc.esEpisode, // Monte Carlo ES (Figure 5.4)
+  "td.td0Update": td.td0Update, // TD(0) (6.2), Figure 6.1
+  "td.sarsaStep": td.sarsaStep, // Sarsa (6.5), Figure 6.9
+  "td.qLearningStep": td.qLearningStep, // Q-learning (6.6), Figure 6.12
+  "envs.gamblersProblem": examples.gamblersProblem, // Example 4.3
+  "envs.randomWalk": examples.randomWalk, // Example 6.2
+  "envs.windyGridworld": examples.windyGridworld, // Example 6.5
+  "envs.cliffWalking": examples.cliffWalking, // Example 6.6
   "sa.robbinsMonro": sa.robbinsMonro, // supplementary (Zhao Ch 6)
 } as const;
 

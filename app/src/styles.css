@@ -460,3 +460,12 @@ table.notation tr.focus { background: var(--sup-bg); }
 fieldset { min-width: 0; }
 .outcomes { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin: 8px 0; }
 .method { padding: 8px 12px; }
+.gridview { display: grid; gap: 2px; margin: 8px 0; font-size: 0.72rem; max-width: 640px; }
+.gcell { position: relative; min-height: 2.6rem; padding: 2px; background: var(--surface-2); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.gcell.cliff { background: repeating-linear-gradient(45deg, var(--border), var(--border) 4px, var(--surface-2) 4px, var(--surface-2) 8px); }
+.gcell.goal, .gcell.term { background: var(--border); font-weight: 700; }
+.gcell.start { outline: 2px solid var(--muted); outline-offset: -2px; }
+.gcell.path { box-shadow: inset 0 0 0 2px var(--series-1); }
+.gcell.agent { background: var(--series-1); color: var(--surface); font-weight: 700; }
+.gcell .ga { font-size: 0.9rem; letter-spacing: -1px; }
+.gwind { text-align: center; color: var(--muted); font-size: 0.75rem; }

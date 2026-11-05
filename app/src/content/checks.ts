@@ -3,7 +3,11 @@
 // An answer check returns the numbers a question's answer key must equal (within the part's tolerance).
 // Printed values below are transcribed from page images of the April 2015 draft and cite their page.
 import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages, recencyWeightedAverage, recencyWeights, ucbScores, argmaxAll } from "../lib/rl/bandit";
-import { iterativePolicyEvaluation } from "../lib/rl/dp";
+import { iterativePolicyEvaluation, policyIteration, valueIteration } from "../lib/rl/dp";
+import { RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, randomWalk, windyGridworld } from "../lib/rl/envs/examples";
+import { esEpisode, newEs, runMcPrediction } from "../lib/rl/mc";
+import { greedyPath, rmsError, runControl, runTd0 } from "../lib/rl/td";
+import { makeRng } from "../domain/random";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
 import { TESTBED_10, expectedMaxNormal, meanOver, recordRun, runExperiment, type Method } from "../lib/rl/banditLab";
 import { recyclingRandomPolicy, recyclingRobot } from "../lib/rl/envs/recycling";
@@ -338,6 +342,104 @@ export const CHECKS: Record<string, Check> = {
       const mdp: FiniteMDP = { states: ["c", "n1", "n2", "n3", "n4"], terminal: [false, true, true, true, true], actions: ["n", "s", "e", "w"], dynamics: [[1, 2, 3, 4].map((next) => [{ next, reward: 0, prob: 1 }]), [], [], [], []] };
       const b = backupTerms(mdp, [0, 2.3, 0.4, -0.4, 0.7], equiprobablePolicy(mdp), 0, 0.9);
       return b.terms.length === 4 && close(b.reward, 0) && close(b.future, 0.675, 1e-12) && close(b.total, 0.675, 1e-12);
+    },
+  },
+
+  // ----- Laboratories, Milestone 3E: dynamic programming, Monte Carlo and TD -----
+  "lab.dp.gridworld-optimal": {
+    kind: "fact", // §4.2–4.4: the optimal values of Example 4.1 are minus the steps to the nearest corner (−1, −2, −3, p. 96);
+    // value iteration and policy iteration (from the random policy) both reach them, policy iteration after one improvement.
+    run: () => {
+      const want = [0, -1, -2, -3, -1, -2, -3, -2, -2, -3, -2, -1, -3, -2, -1, 0];
+      const vi = valueIteration(grid, 1);
+      const pi = policyIteration(grid, 1);
+      return toCells(vi.v).every((x, i) => close(x, want[i])) && pi.stable && pi.steps.length === 2 && toCells(pi.steps[1].v).every((x, i) => close(x, want[i], 1e-9));
+    },
+  },
+  "lab.dp.gambler-bold-play": {
+    kind: "fact", // Example 4.3 with p_h = 0.4: for p_h < 1/2 bold play is optimal, so v*(25) = 0.16, v*(50) = 0.4, v*(75) = 0.64,
+    // and staking everything at $50 is among the maximizing stakes (Figure 4.6 shows a stake of 50 there).
+    run: () => {
+      const g = gamblersProblem(0.4);
+      const vi = valueIteration(g, 1, { theta: 1e-13 });
+      return close(vi.v[25], 0.16, 1e-9) && close(vi.v[50], 0.4, 1e-9) && close(vi.v[75], 0.64, 1e-9) && vi.policy.ties[50].includes(50);
+    },
+  },
+  "lab.dp.recycling-optimal-consistent": {
+    kind: "fact", // policy iteration and value iteration agree on the recycling robot (Example 3.7, sample numbers), γ = 0.9
+    run: () => {
+      const m = recyclingRobot({ alpha: 0.9, beta: 0.6, rSearch: 2, rWait: 1 });
+      const pi = policyIteration(m, 0.9);
+      const vi = valueIteration(m, 0.9, { theta: 1e-13 });
+      return pi.stable && pi.steps.at(-1)!.v.every((x, s) => close(x, vi.v[s], 1e-7));
+    },
+  },
+  "lab.mc.random-walk-converges": {
+    kind: "fact", // §5.1: first-visit and every-visit MC estimates converge to v_π; on Example 6.2, v = 1/6 … 5/6
+    run: () => {
+      const rw = randomWalk();
+      const pol = equiprobablePolicy(rw);
+      const states = [1, 2, 3, 4, 5];
+      const fv = runMcPrediction(rw, pol, RANDOM_WALK_START, 1, 2000, makeRng(31)).state.V;
+      const ev = runMcPrediction(rw, pol, RANDOM_WALK_START, 1, 2000, makeRng(32), { firstVisit: false }).state.V;
+      return rmsError(fv, RANDOM_WALK_TRUE, states) < 0.03 && rmsError(ev, RANDOM_WALK_TRUE, states) < 0.03;
+    },
+  },
+  "lab.mc.es-gridworld": {
+    kind: "fact", // §5.3, Figure 5.4: Monte Carlo ES finds an optimal policy of the 4×4 gridworld (episodes cut at 50 steps; see the lab)
+    run: () => {
+      let st = newEs(grid);
+      const rng = makeRng(7);
+      for (let e = 0; e < 20000; e++) st = esEpisode(grid, st, 1, rng).state;
+      const opt = valueIteration(grid, 1).policy.ties;
+      return st.policy.every((a, s) => grid.terminal[s] || opt[s].includes(a));
+    },
+  },
+  "lab.td.random-walk-start": {
+    kind: "fact", // Example 6.2 with V = 0.5 everywhere: the RMS error over A–E is √(1/18) ≈ 0.236, where Figure 6.7's curves start
+    run: () => close(rmsError([0, 0.5, 0.5, 0.5, 0.5, 0.5, 0], RANDOM_WALK_TRUE, [1, 2, 3, 4, 5]), Math.sqrt(1 / 18), 1e-12),
+  },
+  "lab.td.fig6-7": {
+    kind: "fact", // Figure 6.7: averaged over 100 sequences, TD(0) is better than constant-α MC after 100 episodes, for the α shown
+    run: () => {
+      const rw = randomWalk();
+      const pol = equiprobablePolicy(rw);
+      const states = [1, 2, 3, 4, 5];
+      const at100 = (f: (seed: number) => number[]) => {
+        let s = 0;
+        for (let r = 1; r <= 100; r++) s += rmsError(f(r), RANDOM_WALK_TRUE, states);
+        return s / 100;
+      };
+      const td = Math.min(...[0.05, 0.1, 0.15].map((a) => at100((seed) => runTd0(rw, pol, RANDOM_WALK_START, a, 1, 100, makeRng(seed), 0.5).V)));
+      const mcErr = Math.min(...[0.01, 0.02, 0.03, 0.04].map((a) => at100((seed) => runMcPrediction(rw, pol, RANDOM_WALK_START, 1, 100, makeRng(1000 + seed), { alpha: a, v0: 0.5, firstVisit: false }).state.V)));
+      return td < mcErr;
+    },
+  },
+  "lab.td.windy-fig6-11": {
+    kind: "fact", // Example 6.5: the shortest path takes 15 steps; ε-greedy Sarsa (ε = 0.1, α = 0.5, Q = 0) completes
+    // roughly 170 episodes in its first 8000 steps (Figure 6.11). Checked range: 130–200 over three seeds.
+    run: () => {
+      const w = windyGridworld();
+      const counts = [1, 2, 3].map((seed) => runControl(w, w.grid.start, { method: "sarsa", alpha: 0.5, epsilon: 0.1, gamma: 1 }, makeRng(seed), { maxTotalSteps: 8000 }).rewards.length);
+      return close(valueIteration(w, 1).v[w.grid.start], -15) && counts.every((c) => c >= 130 && c <= 200);
+    },
+  },
+  "lab.td.cliff-fig6-13": {
+    kind: "fact", // Example 6.6 (ε = 0.1): Q-learning learns the optimal path along the cliff (13 steps) but earns less per
+    // episode online than Sarsa, which learns a longer, safer path (Figure 6.13: about −50 against about −25). 20 runs, α = 0.5.
+    run: () => {
+      const c = cliffWalking();
+      const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+      const out = { sarsa: [] as number[], q: [] as number[], qPath: [] as number[], sPath: [] as number[] };
+      for (let seed = 1; seed <= 20; seed++) {
+        const s = runControl(c, c.grid.start, { method: "sarsa", alpha: 0.5, epsilon: 0.1, gamma: 1 }, makeRng(seed), { episodes: 500 });
+        const q = runControl(c, c.grid.start, { method: "q-learning", alpha: 0.5, epsilon: 0.1, gamma: 1 }, makeRng(seed), { episodes: 500 });
+        out.sarsa.push(mean(s.rewards.slice(100)));
+        out.q.push(mean(q.rewards.slice(100)));
+        out.qPath.push((greedyPath(c, q.Q, c.grid.start) ?? []).length - 1);
+        out.sPath.push((greedyPath(c, s.Q, c.grid.start) ?? [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]).length - 1);
+      }
+      return mean(out.sarsa) > mean(out.q) + 10 && out.qPath.every((n) => n === 13) && out.sPath.filter((n) => n > 13).length >= 15;
     },
   },
 

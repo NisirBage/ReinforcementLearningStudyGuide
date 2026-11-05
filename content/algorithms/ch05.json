@@ -1,0 +1,118 @@
+[
+  {
+    "id": "alg.ch05.first-visit-mc",
+    "unit": "ch05",
+    "concept": "ch05.mc-prediction",
+    "name": "First-visit Monte Carlo prediction",
+    "bookLabel": "Figure 5.1",
+    "inputs": [
+      "the policy $\\pi$ to evaluate"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $V$ and an empty list $Returns(s)$ for each state"
+      },
+      {
+        "indent": 0,
+        "text": "repeat for ever:"
+      },
+      {
+        "indent": 1,
+        "text": "generate one episode by following $\\pi$"
+      },
+      {
+        "indent": 1,
+        "text": "for each state $s$ that occurs in it:"
+      },
+      {
+        "indent": 2,
+        "text": "$G \\leftarrow$ the return after the first time $s$ occurs"
+      },
+      {
+        "indent": 2,
+        "text": "add $G$ to $Returns(s)$; set $V(s)$ to the average of $Returns(s)$"
+      }
+    ],
+    "output": "$V \\approx v_\\pi$",
+    "implementation": "mc.mcUpdate",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.1",
+        "printedPages": [
+          115,
+          115
+        ],
+        "pdfPages": [
+          129,
+          129
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05",
+      "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    }
+  },
+  {
+    "id": "alg.ch05.mc-es",
+    "unit": "ch05",
+    "concept": "ch05.mc-es",
+    "name": "Monte Carlo ES (exploring starts)",
+    "bookLabel": "Figure 5.4",
+    "inputs": [
+      "episodes that always end (assumed by the draft)"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $Q(s, a)$, any $\\pi(s)$ and empty lists $Returns(s, a)$"
+      },
+      {
+        "indent": 0,
+        "text": "repeat for ever:"
+      },
+      {
+        "indent": 1,
+        "text": "pick a start pair $(S_0, A_0)$, every pair having positive probability"
+      },
+      {
+        "indent": 1,
+        "text": "generate an episode from $(S_0, A_0)$, then follow $\\pi$"
+      },
+      {
+        "indent": 1,
+        "text": "for each pair $(s, a)$ in it: average the return after its first occurrence into $Q(s, a)$"
+      },
+      {
+        "indent": 1,
+        "text": "for each $s$ in it: $\\pi(s) \\leftarrow \\operatorname{argmax}_a Q(s, a)$"
+      }
+    ],
+    "output": "$\\pi \\approx \\pi_*$, $Q \\approx q_*$",
+    "implementation": "mc.esEpisode",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.3",
+        "printedPages": [
+          123,
+          123
+        ],
+        "pdfPages": [
+          137,
+          137
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05",
+      "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    }
+  }
+]

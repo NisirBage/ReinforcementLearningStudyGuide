@@ -1,0 +1,65 @@
+[
+  {
+    "id": "lab.ch05.mc",
+    "slug": "mc",
+    "unit": "ch05",
+    "title": "Monte Carlo laboratory",
+    "summary": "Generate episodes, compute their returns backwards ($G_t = R_{t+1} + \\gamma G_{t+1}$), and watch first-visit or every-visit Monte Carlo update the estimates, with sample averages or a constant step size. Then let Monte Carlo ES find an optimal policy from exploring starts.",
+    "sections": [
+      "5.1",
+      "5.3"
+    ],
+    "concepts": [
+      "ch05.mc-prediction",
+      "ch05.mc-es"
+    ],
+    "implementations": [
+      "mc.mcUpdate",
+      "mc.esEpisode",
+      "envs.randomWalk"
+    ],
+    "guide": [
+      "Generate one random-walk episode and read its returns: with $\\gamma = 1$ every return is 1 if it ended on the right and 0 otherwise.",
+      "Compare first-visit and every-visit: in an episode that passes C three times, every-visit makes three updates to $V(C)$ and first-visit makes one.",
+      "Run 1000 episodes and watch the RMS error against the true values $1/6, \\dots, 5/6$ fall.",
+      "Switch to a constant step size: the estimates keep fluctuating instead of settling.",
+      "Run Monte Carlo ES on the 4×4 gridworld. The draft assumes every episode ends, but a greedy policy can walk into a wall for ever, so the lab cuts episodes at 50 steps and still averages their (very negative) returns. That departs from the draft, and it is why the method still finds an optimal policy here."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.1",
+        "printedPages": [
+          114,
+          116
+        ],
+        "pdfPages": [
+          128,
+          130
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.3",
+        "printedPages": [
+          120,
+          123
+        ],
+        "pdfPages": [
+          134,
+          137
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-05",
+      "check": "lab.mc.random-walk-converges"
+    },
+    "checks": [
+      "lab.mc.es-gridworld"
+    ]
+  }
+]

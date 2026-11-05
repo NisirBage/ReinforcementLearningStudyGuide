@@ -60,7 +60,7 @@ describe("content indexes", () => {
     expect(ix.prereqChain("ch04.iterative-policy-evaluation").map((c) => c.id)).toEqual([
       "ch04.policy-evaluation", "ch03.bellman-equation-v", "ch03.state-value-function", "ch03.return",
     ]);
-    expect(ix.dependents("ch03.bellman-equation-v").map((c) => c.id)).toEqual(["ch04.policy-evaluation"]);
+    expect(ix.dependents("ch03.bellman-equation-v").map((c) => c.id)).toEqual(["ch04.policy-evaluation", "ch06.td-prediction"]); // TD(0) added in Milestone 3E
   });
   test("units: 15 core in draft order, supplementary after; the draft's empty chapters are flagged", () => {
     expect(ix.units.filter((u) => u.kind === "core").map((u) => u.id)).toEqual(Array.from({ length: 15 }, (_, i) => `ch${String(i + 1).padStart(2, "0")}`));

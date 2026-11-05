@@ -31,5 +31,109 @@
     "related": [],
     "keywords": ["gridworld", "Example 4.1", "Figure 4.2", "equiprobable random policy", "expected steps to termination"],
     "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 93], "pdfPages": [106, 107] }]
+  },
+  {
+    "id": "ch04.policy-improvement",
+    "unit": "ch04",
+    "title": "Policy improvement",
+    "kind": "theorem",
+    "summary": "Acting greedily with respect to $v_\\pi$, choosing $\\operatorname{argmax}_a q_\\pi(s, a)$ in every state (4.9), gives a policy at least as good as $\\pi$ everywhere. That is the policy improvement theorem (4.7)–(4.8). If the greedy policy is no better, $\\pi$ was already optimal.",
+    "prereqs": [
+      "ch04.policy-evaluation"
+    ],
+    "related": [
+      "ch04.policy-iteration"
+    ],
+    "keywords": [
+      "greedy policy",
+      "policy improvement theorem",
+      "argmax",
+      "q_pi"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.2",
+        "printedPages": [
+          94,
+          96
+        ],
+        "pdfPages": [
+          108,
+          110
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.policy-iteration",
+    "unit": "ch04",
+    "title": "Policy iteration",
+    "kind": "algorithm",
+    "summary": "Alternate full policy evaluation and greedy improvement, $\\pi_0 \\to v_{\\pi_0} \\to \\pi_1 \\to v_{\\pi_1} \\to \\cdots$, until the policy stops changing. A finite MDP has finitely many policies, so this ends at an optimal policy, often after very few iterations.",
+    "prereqs": [
+      "ch04.policy-improvement",
+      "ch04.iterative-policy-evaluation"
+    ],
+    "related": [
+      "ch04.value-iteration"
+    ],
+    "keywords": [
+      "policy iteration",
+      "evaluation",
+      "improvement",
+      "policy-stable"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.3",
+        "printedPages": [
+          96,
+          98
+        ],
+        "pdfPages": [
+          110,
+          112
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.value-iteration",
+    "unit": "ch04",
+    "title": "Value iteration",
+    "kind": "algorithm",
+    "summary": "Policy iteration with evaluation cut to a single sweep: back up each state with the maximum over actions (4.10). This turns the Bellman optimality equation into an update rule, and $v_k$ converges to $v_*$. A greedy policy is read off at the end.",
+    "prereqs": [
+      "ch04.policy-iteration"
+    ],
+    "related": [
+      "ch04.policy-improvement"
+    ],
+    "keywords": [
+      "value iteration",
+      "Bellman optimality",
+      "v_*",
+      "max backup",
+      "gambler's problem"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.4",
+        "printedPages": [
+          98,
+          101
+        ],
+        "pdfPages": [
+          112,
+          115
+        ]
+      }
+    ]
   }
 ]

@@ -29,6 +29,7 @@ interface Props {
   yMax?: number;
   reference?: { y: number; label: string }; // a dashed horizontal line, e.g. the best possible average reward
   tableEvery?: number; // rows of the table view: every k-th x
+  xFrom?: number; // x value of the first point (default 1: steps, episodes, sweeps); 0 for e.g. capital 0…100
 }
 
 const W = 640;
@@ -36,7 +37,7 @@ const H = 260;
 const M = { l: 48, r: 96, t: 12, b: 34 };
 const MAX_POINTS = 300;
 
-export function LineChart({ title, series, xLabel, yLabel, format, yMin, yMax, reference, tableEvery }: Props) {
+export function LineChart({ title, series, xLabel, yLabel, format, yMin, yMax, reference, tableEvery, xFrom = 1 }: Props) {
   const id = useId();
   const [hover, setHover] = useState<number | null>(null);
   const n = Math.max(0, ...series.map((s) => s.values.length));
@@ -77,7 +78,8 @@ export function LineChart({ title, series, xLabel, yLabel, format, yMin, yMax, r
     .sort((a, b) => a.yy - b.yy)
     .reduce<{ k: number; yy: number }[]>((acc, e) => [...acc, { ...e, yy: acc.length ? Math.max(e.yy, acc[acc.length - 1].yy + 13) : e.yy }], []);
   const every = tableEvery ?? Math.max(1, Math.round(n / 10));
-  const rows = Array.from({ length: Math.ceil(n / every) }, (_, j) => Math.min(n - 1, (j + 1) * every - 1));
+  // Table rows on round x values (10, 20, … for steps from 1; 0, 10, … for x from 0), plus the last point.
+  const rows = Array.from({ length: n }, (_, i) => i).filter((i) => (i + xFrom) % every === 0 || i === n - 1);
 
   return (
     <figure className="chart" aria-labelledby={`${id}-t`}>
@@ -103,10 +105,10 @@ export function LineChart({ title, series, xLabel, yLabel, format, yMin, yMax, r
           </g>
         ))}
         <text className="axis-label" x={M.l} y={H - 6}>
-          1
+          {xFrom}
         </text>
         <text className="axis-label" x={W - M.r} y={H - 6} textAnchor="end">
-          {n}
+          {n - 1 + xFrom}
         </text>
         <text className="axis-label" x={(M.l + W - M.r) / 2} y={H - 6} textAnchor="middle">
           {xLabel}
@@ -142,7 +144,7 @@ export function LineChart({ title, series, xLabel, yLabel, format, yMin, yMax, r
       {hover !== null && (
         <div className="chart-tip" role="status">
           <strong>
-            {xLabel} {hover + 1}
+            {xLabel} {hover + xFrom}
           </strong>
           {series.map((s, k) => (
             <span key={k}>
@@ -167,7 +169,7 @@ export function LineChart({ title, series, xLabel, yLabel, format, yMin, yMax, r
           <tbody>
             {rows.map((i) => (
               <tr key={i}>
-                <th scope="row">{i + 1}</th>
+                <th scope="row">{i + xFrom}</th>
                 {series.map((s, k) => (
                   <td key={k}>{format(s.values[i])}</td>
                 ))}

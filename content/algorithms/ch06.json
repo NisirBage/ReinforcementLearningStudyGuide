@@ -1,0 +1,195 @@
+[
+  {
+    "id": "alg.ch06.td0",
+    "unit": "ch06",
+    "concept": "ch06.td-prediction",
+    "name": "Tabular TD(0)",
+    "bookLabel": "Figure 6.1",
+    "inputs": [
+      "the policy $\\pi$ to evaluate",
+      "step size $\\alpha$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $V$ (terminal states 0)"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "set $S$ to the start state"
+      },
+      {
+        "indent": 1,
+        "text": "repeat until $S$ is terminal:"
+      },
+      {
+        "indent": 2,
+        "text": "take the action $\\pi$ gives for $S$; see $R$ and $S'$"
+      },
+      {
+        "indent": 2,
+        "text": "$V(S) \\leftarrow V(S) + \\alpha[R + \\gamma V(S') - V(S)]$"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow S'$"
+      }
+    ],
+    "output": "$V \\approx v_\\pi$",
+    "implementation": "td.td0Update",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.1",
+        "printedPages": [
+          145,
+          145
+        ],
+        "pdfPages": [
+          159,
+          159
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05",
+      "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    }
+  },
+  {
+    "id": "alg.ch06.sarsa",
+    "unit": "ch06",
+    "concept": "ch06.sarsa",
+    "name": "Sarsa",
+    "bookLabel": "Figure 6.9",
+    "inputs": [
+      "step size $\\alpha$",
+      "exploration ε"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $Q(s, a)$; $Q$ of a terminal state is 0"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "set $S$; choose $A$ from $S$ ε-greedily with respect to $Q$"
+      },
+      {
+        "indent": 1,
+        "text": "repeat until $S$ is terminal:"
+      },
+      {
+        "indent": 2,
+        "text": "take $A$; see $R$ and $S'$"
+      },
+      {
+        "indent": 2,
+        "text": "choose $A'$ from $S'$ ε-greedily with respect to $Q$"
+      },
+      {
+        "indent": 2,
+        "text": "$Q(S, A) \\leftarrow Q(S, A) + \\alpha[R + \\gamma Q(S', A') - Q(S, A)]$"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow S'$, $A \\leftarrow A'$"
+      }
+    ],
+    "output": "$Q$ for the ε-greedy policy being followed",
+    "implementation": "td.sarsaStep",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.4",
+        "printedPages": [
+          155,
+          155
+        ],
+        "pdfPages": [
+          169,
+          169
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05",
+      "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    }
+  },
+  {
+    "id": "alg.ch06.q-learning",
+    "unit": "ch06",
+    "concept": "ch06.q-learning",
+    "name": "Q-learning",
+    "bookLabel": "Figure 6.12",
+    "inputs": [
+      "step size $\\alpha$",
+      "exploration ε"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $Q(s, a)$; $Q$ of a terminal state is 0"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "set $S$"
+      },
+      {
+        "indent": 1,
+        "text": "repeat until $S$ is terminal:"
+      },
+      {
+        "indent": 2,
+        "text": "choose $A$ from $S$ ε-greedily with respect to $Q$; take it; see $R$ and $S'$"
+      },
+      {
+        "indent": 2,
+        "text": "$Q(S, A) \\leftarrow Q(S, A) + \\alpha[R + \\gamma \\max_a Q(S', a) - Q(S, A)]$"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow S'$"
+      }
+    ],
+    "output": "$Q \\approx q_*$",
+    "implementation": "td.qLearningStep",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.5",
+        "printedPages": [
+          158,
+          158
+        ],
+        "pdfPages": [
+          172,
+          172
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05",
+      "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    }
+  }
+]

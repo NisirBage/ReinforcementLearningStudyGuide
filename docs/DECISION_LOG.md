@@ -179,3 +179,35 @@ A flag can carry a `suggestion`, which is shown separately from the source text.
 - **Results:** total score, accuracy on answered questions, time, and breakdowns by chapter, topic and difficulty. They are recomputed from the stored `ExamRecord` every time, and nothing derived is stored. Each record also keeps the answers given (`draft`), so the review shows them. This is an optional, additive field of format version 2 (D-034), as is `awaitingMark`.
 - **Navigation:** phones keep five destinations on the bottom bar (Home, Learn, Practice, Mock exams, Revise), with Search, Progress and Settings under **More**. The desktop sidebar shows all of them. The Lab (3D) joins More.
 - **Test harness:** in `tests/exam-ui.test.tsx`, clicks that navigate run inside an awaited `act()`. With the instrumented loader, no content or code was pending during those clicks. The router renders the new page in a transition, which React reports as an un-awaited suspension under the testing library's synchronous `act()`. The same flows were checked by hand in the browser.
+
+## D-038: Laboratories are content plus tested code (Accepted, 2026-11-05)
+- **Content type:** a lab is a `Lab` item in `content/labs/<unit>.json`, holding its summary, guide, sections, concepts, sources, flags and verification. The validator requires:
+  - every `implementations` key to exist in `lib/rl/registry.ts`;
+  - a `computed` verification whose check reproduces one of the draft's own examples.
+- **Draft fixtures are checks** in `checks.ts`, using seeded simulations of 300 runs with tolerances that leave room for noise:
+  - Figures 2.1–2.4;
+  - the best possible average reward on the testbed, ≈ 1.539, computed exactly;
+  - the gridworld's exact v_π, the recycling robot's consistency, and detection of a missing solution;
+  - Exercise 3.9.
+- **Behaviour versus mathematics:** behavioural claims, such as "greedy finds the optimal action in about a third of tasks", are tested statistically. Update rules are tested exactly by hand computation. The step inspector and the fast runner are tested to agree step for step on the same seed.
+- **Following the draft as written:**
+  - the gradient bandit's baseline R̄_t includes R_t, as the draft defines it (p. 43);
+  - (2.9) is printed with an unmatched parenthesis. It is flagged `suspected-typo` and computed as a normal soft-max.
+- **Example 3.7:** the draft leaves α, β, r_search and r_wait symbolic. The app's sample numbers are labelled as the app's.
+- **Charts** use the dataviz reference palette (slots 1–4), validated against both theme surfaces. Light-mode slots 3–4 are below 3:1 contrast, so every chart has direct labels and a table view.
+- **Transitions** are drawn as a layered diagram (state → action → next state), with labels placed so they never overlap.
+- **Search:** direct matches always rank above cross-references.
+
+## D-039: Dynamic programming, Monte Carlo and TD laboratories (Accepted, 2026-11-05)
+- **One environment definition.** The environments are FiniteMDPs in `lib/rl/envs/examples.ts`: the gambler's problem (Example 4.3), the random walk (6.2), the windy gridworld (6.5) and cliff walking (6.6). DP reads their dynamics; Monte Carlo and TD only sample them (`lib/rl/sampling.ts`). The grid layouts were read from the page images of Figures 6.10 and 6.13.
+- **Policy iteration (Figure 4.3):** the draft's caption admits it may never stop when equally good policies alternate. It is flagged `source-acknowledged-issue`, and the app keeps the current action while it is still among the maximizers. π₀ is the equiprobable random policy, as in the draft's Figure 4.2 example.
+- **Exercise 4.4:** an evaluation that does not converge (γ = 1 and a policy that loops) is reported as diverged, not run for ever.
+- **Gambler's problem:**
+  - stake 0 is in the draft's action set and ties for the maximum under γ = 1, so the lab shows the smallest positive maximizing stake;
+  - policy iteration is not offered for it: the draft uses value iteration there, and a policy that stakes 0 never ends an episode, so its evaluation cannot be trusted.
+- **Monte Carlo ES (Figure 5.4):** the draft assumes every episode ends. On the gridworld a deterministic policy can loop, so episodes are cut at 50 steps and their partial returns are still averaged. This is a stated departure, and the lab says so.
+- **Sarsa and Q-learning** are separate functions with separate targets. Every update exposes S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1} (Sarsa), Q(S_t, A_t), the bootstrap term, the TD target, the TD error and the new value. Sarsa carries the A_{t+1} it chose, with its exploration flag, into the next step.
+- **Replication results, reported as measured:**
+  - the windy gridworld matches the draft's minimum of 15 steps and its roughly 170 episodes in 8000 steps (155–164 here);
+  - after 8000 steps, Sarsa's episodes average about 20 steps here against the draft's "about 17"; the cause is unknown, and the lab says so rather than tuning;
+  - cliff walking matches Figure 6.13 (Sarsa −28 vs Q-learning −51 per episode, Q-learning's path 13 steps). The draft gives no α for it, so the app's α = 0.5 is labelled as the app's choice.

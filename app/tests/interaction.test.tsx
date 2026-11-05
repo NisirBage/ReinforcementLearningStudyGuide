@@ -62,7 +62,7 @@ describe("progress updates and persistence", () => {
     cleanup();
     renderApp("/", store);
     await ready();
-    expect(screen.getByText("1 / 18")).toBeInTheDocument(); // dashboard counts it (18 core concepts since Milestone 3D)
+    expect(screen.getByText("1 / 26")).toBeInTheDocument(); // dashboard counts it (26 core concepts since Milestone 3E)
   });
 
   test("answering an exercise is graded, recorded and shown on the dashboard after reload", async () => {
@@ -266,7 +266,8 @@ describe("spaced review and keyboard use", () => {
     const user = userEvent.setup();
     renderApp("/");
     await ready();
-    await user.click(screen.getByRole("link", { name: /Learn/ }));
+    // The main navigation's Learn link (the dashboard also lists "Temporal-Difference Learning").
+    await user.click(within(screen.getByRole("navigation", { name: "Main" })).getByRole("link", { name: /Learn/ }));
     await waitFor(() => expect(document.activeElement?.tagName).toBe("H1"));
     expect(document.activeElement).toHaveTextContent("Learn");
   });

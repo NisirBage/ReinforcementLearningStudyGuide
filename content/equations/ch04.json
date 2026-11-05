@@ -23,5 +23,93 @@
     ],
     "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [91, 91], "pdfPages": [105, 105] }],
     "verification": { "method": "page-image", "on": "2026-11-04", "note": "The example values are checked by ch04-q002 and ch04.fig4-2-two-array-iterates." }
+  },
+  {
+    "id": "eq.ch04.greedy-improvement",
+    "unit": "ch04",
+    "concept": "ch04.policy-improvement",
+    "name": "Greedy policy improvement",
+    "bookLabel": "(4.9)",
+    "tex": "\\pi'(s) = \\operatorname*{argmax}_a q_\\pi(s,a) = \\operatorname*{argmax}_a \\sum_{s',r} p(s',r|s,a)\\big[r + \\gamma v_\\pi(s')\\big]",
+    "symbols": [
+      {
+        "tex": "\\pi'",
+        "meaning": "the new, greedy policy"
+      },
+      {
+        "tex": "q_\\pi(s,a)",
+        "meaning": "value of taking a in s and then following π"
+      }
+    ],
+    "intuition": "Look one step ahead with $v_\\pi$ and pick the action that looks best.",
+    "assumptions": [
+      "Ties may be broken arbitrarily, or shared among the maximizing actions (p. 96)."
+    ],
+    "pitfalls": [
+      "Improvement needs the model $p(s', r | s, a)$; with only $v_\\pi$ and no model it cannot be computed."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.2",
+        "printedPages": [
+          95,
+          95
+        ],
+        "pdfPages": [
+          109,
+          109
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05"
+    }
+  },
+  {
+    "id": "eq.ch04.value-iteration",
+    "unit": "ch04",
+    "concept": "ch04.value-iteration",
+    "name": "Value iteration backup",
+    "bookLabel": "(4.10)",
+    "tex": "v_{k+1}(s) = \\max_a \\sum_{s',r} p(s',r|s,a)\\big[r + \\gamma v_k(s')\\big]",
+    "symbols": [
+      {
+        "tex": "v_k",
+        "meaning": "the estimate after k sweeps"
+      },
+      {
+        "tex": "\\max_a",
+        "meaning": "the only difference from the policy evaluation backup (4.5)"
+      }
+    ],
+    "intuition": "One sweep of evaluation with an improvement built in: back up each state with its best action.",
+    "assumptions": [
+      "For arbitrary $v_0$, $v_k \\to v_*$ under the conditions that guarantee $v_*$ exists."
+    ],
+    "pitfalls": [
+      "Value iteration needs infinitely many sweeps for exact convergence; in practice it stops when the change Δ is small."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.4",
+        "printedPages": [
+          100,
+          100
+        ],
+        "pdfPages": [
+          114,
+          114
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05"
+    }
   }
 ]

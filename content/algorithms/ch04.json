@@ -20,5 +20,136 @@
     "implementation": "dp.iterativePolicyEvaluation",
     "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 92], "pdfPages": [106, 106] }],
     "verification": { "method": "computed", "on": "2026-11-04", "check": "ch04.in-place-converges-to-same-v", "note": "Pseudocode compared with the page image; the implementation reproduces Figure 4.2 (ch04.fig4-2-v-pi)." }
+  },
+  {
+    "id": "alg.ch04.policy-iteration",
+    "unit": "ch04",
+    "concept": "ch04.policy-iteration",
+    "name": "Policy iteration",
+    "bookLabel": "Figure 4.3",
+    "inputs": [
+      "small threshold $\\theta > 0$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $V$ and any deterministic $\\pi$"
+      },
+      {
+        "indent": 0,
+        "text": "repeat"
+      },
+      {
+        "indent": 1,
+        "text": "Evaluate: sweep with $V(s) \\leftarrow \\sum_{s',r} p(s',r|s,\\pi(s))[r + \\gamma V(s')]$ until the largest change is below $\\theta$"
+      },
+      {
+        "indent": 1,
+        "text": "Improve: for every $s$, remember the old action, then set $\\pi(s)$ to an action maximizing $\\sum_{s',r} p(s',r|s,a)[r + \\gamma V(s')]$"
+      },
+      {
+        "indent": 1,
+        "text": "if no state changed its action: stop with $V$ and $\\pi$"
+      }
+    ],
+    "output": "$V \\approx v_*$ and an optimal $\\pi$",
+    "implementation": "dp.policyIteration",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.3",
+        "printedPages": [
+          97,
+          97
+        ],
+        "pdfPages": [
+          111,
+          111
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05",
+      "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    },
+    "flags": [
+      {
+        "type": "source-acknowledged-issue",
+        "note": "The caption says the algorithm may never stop if the policy keeps switching between equally good policies.",
+        "suggestion": "The app keeps the current action whenever it is still among the maximizing actions, so the policy only changes for a strictly better action."
+      }
+    ]
+  },
+  {
+    "id": "alg.ch04.value-iteration",
+    "unit": "ch04",
+    "concept": "ch04.value-iteration",
+    "name": "Value iteration",
+    "bookLabel": "Figure 4.5",
+    "inputs": [
+      "small threshold $\\theta > 0$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $V$, e.g. $V(s) = 0$, terminal states 0"
+      },
+      {
+        "indent": 0,
+        "text": "repeat"
+      },
+      {
+        "indent": 1,
+        "text": "$\\Delta \\leftarrow 0$"
+      },
+      {
+        "indent": 1,
+        "text": "for each $s \\in \\mathcal{S}$:"
+      },
+      {
+        "indent": 2,
+        "text": "keep the old value $v \\leftarrow V(s)$"
+      },
+      {
+        "indent": 2,
+        "text": "$V(s) \\leftarrow \\max_a \\sum_{s',r} p(s',r|s,a)[r + \\gamma V(s')]$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\Delta \\leftarrow \\max(\\Delta, |v - V(s)|)$"
+      },
+      {
+        "indent": 0,
+        "text": "until $\\Delta < \\theta$"
+      },
+      {
+        "indent": 0,
+        "text": "Return a policy that is greedy with respect to $V$"
+      }
+    ],
+    "output": "$V \\approx v_*$ and a deterministic greedy $\\pi$",
+    "implementation": "dp.valueIteration",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.4",
+        "printedPages": [
+          101,
+          101
+        ],
+        "pdfPages": [
+          115,
+          115
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-05",
+      "note": "Pseudocode compared with the page image; the implementation is checked against the draft's examples by the lab checks."
+    }
   }
 ]

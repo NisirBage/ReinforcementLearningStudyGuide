@@ -2,7 +2,7 @@
 
 A private, offline study environment for reinforcement learning. It is built on the **April 2015 draft of Sutton & Barto, *Reinforcement Learning: An Introduction* (2nd ed.)**, which is the authoritative core. Zhao's *Mathematical Foundations of RL*, his lecture slides L1–L10, and selected papers appear as clearly labelled supplementary material.
 
-**Status:** Milestone 3C is done. Timed mock exams are available: a wall-clock countdown that survives navigation and reloads, mark for review, a submission dialog, automatic submission at time-out, and results by chapter, topic and difficulty computed from stored records. Practice and a 34-question verified bank are also available. 834 tests pass. The interactive labs are next (Milestones 3D–3F), and textbook coverage has not started yet. See [docs/PROGRESS.md](docs/PROGRESS.md) and [docs/DECISION_LOG.md](docs/DECISION_LOG.md).
+**Status:** Milestone 3E is done. The Interactive Lab has six laboratories: bandits, the MDP explorer, Bellman, dynamic programming, Monte Carlo, and TD with Sarsa and Q-learning. Each shows every intermediate value and is checked against the draft's own examples. Practice, mock exams and a 34-question verified bank are also available. 1017 tests pass. Algorithm explainers and final QA are next (Milestone 3F), and textbook coverage has not started yet. See [docs/PROGRESS.md](docs/PROGRESS.md) and [docs/DECISION_LOG.md](docs/DECISION_LOG.md).
 
 ## Layout
 - `content/`: all learning material as structured JSON. Every item records its source location (chapter, section, printed page and PDF page).
