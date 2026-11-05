@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
-import { idx } from "../content/bundle";
+import { cat } from "../content/load";
 import { accuracyOf, completion, dueCards, STATUS_LABEL, weakest } from "../domain/progress";
 import { useProgress } from "../store/ProgressContext";
 import { Bar, Empty, PageTitle, Stat, pct } from "../components/ui";
 
-const coreConcepts = () => idx.bundle.concepts.filter((c) => !c.unit.startsWith("sup-")).map((c) => c.id);
-const nameOf = (key: string) => idx.concept(key)?.title ?? idx.unit(key)?.title ?? key;
+const coreConcepts = () => cat.catalog.concepts.filter((c) => !c.unit.startsWith("sup-")).map((c) => c.id);
+const nameOf = (key: string) => cat.concept(key)?.title ?? cat.unit(key)?.title ?? key;
 
 export function Dashboard() {
   const { data } = useProgress();
@@ -16,7 +16,7 @@ export function Dashboard() {
   const due = dueCards(data, now).length;
   const needsRevision = Object.entries(data.conceptStatus).filter(([, s]) => s.status === "needs-revision").length;
   const weak = weakest(data.attempts, "concept", 3).filter((w) => (w.acc.accuracy ?? 1) < 0.8).slice(0, 5);
-  const withContent = idx.units.filter((u) => u.kind === "core" && idx.conceptsOf(u.id).length > 0);
+  const withContent = cat.units.filter((u) => u.kind === "core" && cat.conceptsOf(u.id).length > 0);
 
   return (
     <>
@@ -46,11 +46,11 @@ export function Dashboard() {
         <h2>Syllabus coverage</h2>
         <Bar value={done} label="Share of core concepts understood or mastered" />
         <p className="muted small">
-          Counts only concepts available in the app. So far {withContent.length} of {idx.units.filter((u) => u.kind === "core").length} chapters have learning material.
+          Counts only concepts available in the app. So far {withContent.length} of {cat.units.filter((u) => u.kind === "core").length} chapters have learning material.
         </p>
         <ul className="list">
           {withContent.map((u) => {
-            const ids = idx.conceptsOf(u.id).map((c) => c.id);
+            const ids = cat.conceptsOf(u.id).map((c) => c.id);
             return (
               <li key={u.id}>
                 <Link to={`/learn/${u.id}`}>

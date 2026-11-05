@@ -6,13 +6,17 @@ import {
   type Activity,
   type Attempt,
   type CardState,
+  ATTEMPT_MODES,
   type ConceptStatus,
+  type ExamItem,
+  type ExamRecord,
   type ProgressData,
 } from "../domain/progress";
 
 export const APP_ID = "rl-study-lab";
 export const STORAGE_KEY = "rlsl:v1";
-export const SCHEMA_VERSION = 1;
+// 1: Milestone 2. 2: Milestone 3 adds bookmarks, exam records and attempt mode/time (older saves load with empty values).
+export const SCHEMA_VERSION = 2;
 
 interface Envelope {
   schema: number;
@@ -24,6 +28,30 @@ const arr = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
 const obj = (v: unknown): Record<string, unknown> => (v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : {});
 const num = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const str = (v: unknown): v is string => typeof v === "string" && v.length > 0;
+const bool = (v: unknown): v is boolean => typeof v === "boolean";
+
+function examItem(v: unknown): ExamItem | null {
+  const r = obj(v);
+  if (!(str(r.qid) && str(r.unit) && (r.section === null || str(r.section)) && Array.isArray(r.concepts) && r.concepts.every(str))) return null;
+  if (!(num(r.difficulty) && num(r.max) && r.max > 0 && num(r.score) && r.score >= 0 && r.score <= r.max && num(r.ms) && r.ms >= 0)) return null;
+  if (!(bool(r.answered) && bool(r.markedForReview) && bool(r.selfMarked))) return null;
+  return { qid: r.qid, unit: r.unit, section: r.section as string | null, concepts: r.concepts as string[], difficulty: r.difficulty, max: r.max, score: r.score, answered: r.answered, markedForReview: r.markedForReview, selfMarked: r.selfMarked, ms: r.ms };
+}
+
+/** A whole exam record, or null if any part is malformed (a partial record would give wrong results). */
+export function examRecord(v: unknown): ExamRecord | null {
+  const r = obj(v);
+  const c = obj(r.config);
+  const items = arr(r.items).map(examItem);
+  if (!(str(r.id) && str(r.title) && num(r.startedAt) && num(r.submittedAt) && r.submittedAt >= r.startedAt && num(r.limitMs) && r.limitMs > 0 && num(r.elapsedMs) && r.elapsedMs >= 0)) return null;
+  if (!(r.endedBy === "submitted" || r.endedBy === "timeout")) return null;
+  if (!(Array.isArray(c.units) && c.units.every(str) && Array.isArray(c.difficulties) && c.difficulties.every(num) && num(c.count))) return null;
+  if (items.length === 0 || items.some((x) => x === null)) return null;
+  return {
+    id: r.id, title: r.title, startedAt: r.startedAt, submittedAt: r.submittedAt, limitMs: r.limitMs, elapsedMs: r.elapsedMs, endedBy: r.endedBy,
+    config: { units: c.units as string[], difficulties: c.difficulties as number[], count: c.count }, items: items as ExamItem[],
+  };
+}
 
 /** Keeps every well-formed record and drops malformed ones, so older or partial saves still load. */
 export function migrate(raw: unknown): ProgressData {
@@ -35,9 +63,15 @@ export function migrate(raw: unknown): ProgressData {
     if ((CONCEPT_STATUSES as readonly string[]).includes(r.status as string) && r.status !== "not-started" && num(r.at))
       conceptStatus[id] = { status: r.status as ConceptStatus, at: r.at };
   }
-  const attempts = arr(d.attempts).filter((a): a is Attempt => {
+  const attempts = arr(d.attempts).flatMap((a): Attempt[] => {
     const r = obj(a);
-    return str(r.qid) && str(r.unit) && Array.isArray(r.concepts) && num(r.score) && num(r.max) && r.max > 0 && r.score >= 0 && r.score <= r.max && num(r.at);
+    if (!(str(r.qid) && str(r.unit) && Array.isArray(r.concepts) && num(r.score) && num(r.max) && r.max > 0 && r.score >= 0 && r.score <= r.max && num(r.at))) return [];
+    const out: Attempt = { qid: r.qid, unit: r.unit, concepts: r.concepts as string[], score: r.score, max: r.max, at: r.at };
+    if (str(r.sessionId)) out.sessionId = r.sessionId;
+    if ((ATTEMPT_MODES as readonly string[]).includes(r.mode as string)) out.mode = r.mode as Attempt["mode"];
+    if (num(r.ms) && r.ms >= 0) out.ms = r.ms;
+    if (bool(r.selfMarked)) out.selfMarked = r.selfMarked;
+    return [out];
   });
   const cards: Record<string, CardState> = {};
   for (const [id, v] of Object.entries(obj(d.cards))) {
@@ -52,6 +86,7 @@ export function migrate(raw: unknown): ProgressData {
     conceptStatus,
     attempts,
     marked: [...new Set(arr(d.marked).filter(str))].sort(),
+    bookmarks: [...new Set(arr(d.bookmarks).filter(str))].sort(),
     cards,
     activity,
     lastVisited: str(lv.path) && str(lv.title) && num(lv.at) ? { path: lv.path, title: lv.title, at: lv.at } : null,
@@ -59,6 +94,7 @@ export function migrate(raw: unknown): ProgressData {
       theme: ["system", "light", "dark"].includes(s.theme as string) ? (s.theme as ProgressData["settings"]["theme"]) : base.settings.theme,
       show2018Notation: s.show2018Notation === true,
     },
+    exams: arr(d.exams).map(examRecord).filter((x): x is ExamRecord => x !== null).sort((a, b) => a.startedAt - b.startedAt),
   };
 }
 
@@ -158,9 +194,11 @@ export function mergeProgress(cur: ProgressData, inc: ProgressData): ProgressDat
     conceptStatus,
     attempts,
     marked: [...new Set([...cur.marked, ...inc.marked])].sort(),
+    bookmarks: [...new Set([...cur.bookmarks, ...inc.bookmarks])].sort(),
     cards,
     activity: [...acts.values()].sort((a, b) => b.at - a.at).slice(0, 200),
     lastVisited,
     settings: cur.settings,
+    exams: [...new Map([...inc.exams, ...cur.exams].map((e) => [e.id, e])).values()].sort((a, b) => a.startedAt - b.startedAt),
   };
 }

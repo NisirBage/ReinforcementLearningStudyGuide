@@ -90,6 +90,66 @@ All 102 foundation tests still pass unchanged.
 - **Not built yet:** practice and mock-exam modules, interactive labs (bandits, DP, TD…), the concept-graph explorer.
 
 ### Next
-1. Your visual review of the interface.
-2. Code-splitting per chapter.
-3. Textbook coverage, chapter by chapter, under the same verification rules.
+Superseded by Milestone 3 below.
+
+## Milestone 3A: Performance, question and progress formats (done, 2026-11-05)
+
+**Bundle size** (production build, raw / gzip, JS + CSS):
+
+| What is downloaded | Before (2b) | After (3A) |
+|---|---|---|
+| Opening the dashboard | 784.9 / 243.9 kB (one script + one CSS) | 308.6 / 93.5 kB (shell script, runtime, base CSS) |
+| Settings or progress page | same 784.9 / 243.9 kB | 316.0 / 96.3 kB |
+| A section with maths (§4.1) | same 784.9 / 243.9 kB | 740.1 / 232.0 kB (adds the page code, the maths renderer and ch04) |
+| First search (all units) | same 784.9 / 243.9 kB | 375.3 / 114.8 kB |
+
+Maths pages still need the maths renderer (KaTeX and markdown-it, 358 kB raw / 120 kB gzipped), which is now a separate file fetched once. The main gain is that nothing else pays for it, and each new chapter adds its own chunk instead of growing the first load.
+
+**Features:**
+- Lazy-loaded routes, maths renderer and content: a catalogue up front, one chunk per unit, supplementary units fetched only when requested (D-031).
+- Loading states, error boundaries and a "Try again" that really fetches again.
+- Service worker:
+  - stores the shell at install and chapters on first use;
+  - **Save everything for offline** in Settings, with a real stored-file count;
+  - an app update keeps saved chapters (D-032).
+- Question format: provenance (4 kinds), section mapping, rubric, short-answer type, option notes, related questions, the code-interpretation category, and the exercise registry of the draft (D-033).
+- The 11 existing questions moved to the new format. The question card shows provenance ("Exercise 4.1, reworded", "Derived from the textbook", "New application question") and option notes, and calls its items "Question" instead of "Exercise".
+- Progress format version 2: bookmarks, exam records, attempt mode and time, with migration from version 1 (D-034).
+
+**Tests:** `npx vitest run` runs **13 files, 659 tests, all passed** (605 before).
+- New `tests/questions-schema.test.ts` (28): the exercise registry, all real questions, and 19 deliberately broken questions rejected.
+- New `tests/progress-v2.test.ts` (10): v1 saves and exports, IndexedDB re-save, bookmarks, exam records, malformed records, merge.
+- New `tests/loading.test.tsx` (16): the catalogue and unit chunks against the content files, only the needed units fetched, no supplementary fetch from core pages, loading state, failed download with retry, failed page code with retry, a page bug kept inside its boundary.
+- Existing tests: assertions unchanged. Interaction tests preload first (D-031), the async wait is 5 s, and two schema-number expectations moved from 1 to 2 (D-034).
+
+`npm run check` passes: validate, typecheck, tests, overlap (0 matches at 9 words), build and privacy check. `npm audit`: 0 vulnerabilities.
+
+**Checked in the real browser (production build):**
+- **Dashboard:** it requests 3 files (shell script, runtime, CSS), no content and no KaTeX. The worker stores 36 files at install.
+- **§4.1:** it requests its page code, the renderer and ch04 only (28 formulas, 0 KaTeX errors). ch04 is then stored.
+- **Server stopped:**
+  - §4.1 reloads fully;
+  - unopened §2.4 shows the error panel with the navigation still working;
+  - Settings reports 37 of 81 files stored.
+- **Save everything:** 81 of 81 stored. With the server stopped and a full reload, search (33 results), §2.4 (50 formulas), the supplementary module and the notation all work.
+- **Update:** after rebuilding, the new cache carried over all 5 stored content chunks.
+- **IndexedDB:** a status set on a concept page survived a reload, saved with schema 2. It was then reset to "not started".
+- **No CSP errors.** The only console errors were the deliberate offline failure.
+- **375 px:** 23 pages fit with no horizontal scroll, after two fixes:
+  - the equation-library chapter menu was 581 px wide;
+  - the move buttons of the §4.1 ordering question were pushed off-screen by a long formula.
+
+  The Milestone 2b check compared page width with viewport width, which grow together when a page overflows, so it missed both. The check now also requires the viewport to stay 375 px.
+- **Desktop:** the sidebar layout is unchanged.
+
+### Outstanding issues
+- **Still no visual review by eye** (screenshots time out in the hidden pane). Layout was checked by measurement.
+- **Maths pages still download the 358 kB maths renderer** on first use.
+- **Search downloads every unit on its first query** (it covers supplementary material too). Results can still be filtered to the 2015 draft.
+- **Supplementary section mapping** checks that a section exists in Zhao's book, not that it is in that unit's attached Zhao chapters.
+- **Rubric marking UI** (ticking marking points) arrives with the practice environment in 3B. Short answers use the existing single self-mark until then.
+- **Not automated:** offline and IndexedDB behaviour in a real browser were checked by hand, not by an end-to-end test.
+- **Test-browser activity log:** the activity log of the browser pane's test profile keeps the entries from the status check above (statuses and attempts are empty).
+
+### Next: Milestone 3B
+The question-bank engine (selection, seeded randomisation, tolerance grading, rubric self-marking) and the Practice section (filters, feedback modes, step-by-step solutions, bookmarks, revision flags, re-attempting incorrect questions), with a reviewed, verified set of new questions for the chapters that have material.

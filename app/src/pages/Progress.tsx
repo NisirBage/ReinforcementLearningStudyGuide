@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { idx } from "../content/bundle";
+import { cat } from "../content/load";
 import { CONCEPT_STATUSES, STATUS_LABEL, accuracyOf, completion, dueCards, statusOf, weakest } from "../domain/progress";
 import { exportProgress } from "../store/persistence";
 import { requestPersistence } from "../store/idb";
+import { offlineStatus, offlineSupported, saveAllOffline, type OfflineStatus } from "../store/offline";
 import { useProgress } from "../store/ProgressContext";
 import { Bar, ConfirmButton, Empty, PageTitle, Stat, pct } from "../components/ui";
 
@@ -18,9 +19,9 @@ export function ProgressPage() {
     );
   }, []);
   const acc = accuracyOf(data.attempts);
-  const coreUnits = idx.units.filter((u) => u.kind === "core" && idx.conceptsOf(u.id).length);
-  const supUnits = idx.units.filter((u) => u.kind === "supplementary" && idx.conceptsOf(u.id).length);
-  const allConcepts = idx.bundle.concepts;
+  const coreUnits = cat.units.filter((u) => u.kind === "core" && cat.conceptsOf(u.id).length);
+  const supUnits = cat.units.filter((u) => u.kind === "supplementary" && cat.conceptsOf(u.id).length);
+  const allConcepts = cat.catalog.concepts;
   const counts = CONCEPT_STATUSES.map((s) => [s, allConcepts.filter((c) => !c.unit.startsWith("sup-") && statusOf(data, c.id) === s).length] as const);
   const weakUnits = weakest(data.attempts, "unit", 3);
 
@@ -67,7 +68,7 @@ export function ProgressPage() {
           </thead>
           <tbody>
             {[...coreUnits, ...supUnits].map((u) => {
-              const ids = idx.conceptsOf(u.id).map((c) => c.id);
+              const ids = cat.conceptsOf(u.id).map((c) => c.id);
               const a = accuracyOf(data.attempts.filter((x) => x.unit === u.id));
               const done = completion(data, ids);
               return (
@@ -93,7 +94,7 @@ export function ProgressPage() {
           <ul className="list">
             {weakUnits.map((w) => (
               <li key={w.key}>
-                {idx.unit(w.key)?.title ?? w.key}: {pct(w.acc.accuracy ?? 0)} over {w.acc.attempts} attempts
+                {cat.unit(w.key)?.title ?? w.key}: {pct(w.acc.accuracy ?? 0)} over {w.acc.attempts} attempts
               </li>
             ))}
           </ul>
@@ -164,6 +165,47 @@ export function SettingsPage() {
         </label>
         <p className="muted small">These cross-references come from general knowledge of the 2018 edition. No copy of it was checked, so each one is marked unverified.</p>
       </section>
+      <OfflineCard />
     </>
+  );
+}
+
+function OfflineCard() {
+  const [supported] = useState(offlineSupported);
+  const [s, setS] = useState<OfflineStatus | null>(null);
+  const [phase, setPhase] = useState<"idle" | "saving" | "done" | "error">("idle");
+  useEffect(() => {
+    if (supported) offlineStatus().then(setS, () => setPhase("error"));
+  }, [supported]);
+  const save = () => {
+    setPhase("saving");
+    saveAllOffline(setS).then(
+      (r) => (setS(r), setPhase(r.failed ? "error" : "done")),
+      () => setPhase("error"),
+    );
+  };
+  return (
+    <section className="card">
+      <h2>Offline use</h2>
+      <p>
+        The app's pages are stored on this device when it is first opened. Each chapter's material is stored the first time you open it. To have every chapter, module
+        and the search index available offline in advance, save everything now.
+      </p>
+      {!supported ? (
+        <p className="muted small" role="status">
+          Offline storage is managed by the installed build (served over HTTPS or from localhost). It is not active in this session, so pages are fetched as needed.
+        </p>
+      ) : (
+        <>
+          <p role="status" className="muted">
+            {s ? `${s.stored} of ${s.total} files stored on this device${s.stored === s.total ? ": everything is available offline." : "."}` : "Checking…"}
+            {phase === "error" && " Some files could not be stored; check the connection and try again."}
+          </p>
+          <button type="button" className="btn btn-primary" onClick={save} disabled={phase === "saving" || (s !== null && s.stored === s.total)}>
+            {phase === "saving" ? "Saving…" : "Save everything for offline"}
+          </button>
+        </>
+      )}
+    </section>
   );
 }

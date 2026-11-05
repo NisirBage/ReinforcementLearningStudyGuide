@@ -1,12 +1,34 @@
+// Routes. Every page except the dashboard and not-found is its own chunk, fetched when first opened
+// (Milestone 3A, D-031); pages that show maths also pull in the KaTeX/markdown chunk.
 import { Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { lazyPage } from "./components/Boundary";
 import { Dashboard } from "./pages/Dashboard";
-import { LearnIndex, SectionPage, UnitPage } from "./pages/Learn";
-import { ConceptPage, ItemPage } from "./pages/Items";
-import { SearchPage } from "./pages/Search";
-import { AlgorithmLibrary, EquationLibrary, MarkedQuestions, NotationPage, ReviewPage, RevisionHub } from "./pages/Revision";
-import { ProgressPage, SettingsPage } from "./pages/Progress";
 import { NotFound } from "./pages/NotFound";
+
+const learn = () => import("./pages/Learn");
+const items = () => import("./pages/Items");
+const revision = () => import("./pages/Revision");
+const progress = () => import("./pages/Progress");
+
+const LearnIndex = lazyPage(learn, (m) => m.LearnIndex);
+const UnitPage = lazyPage(learn, (m) => m.UnitPage);
+const SectionPage = lazyPage(learn, (m) => m.SectionPage);
+const ConceptPage = lazyPage(items, (m) => m.ConceptPage);
+const ItemPage = lazyPage(items, (m) => m.ItemPage);
+const SearchPage = lazyPage(() => import("./pages/Search"), (m) => m.SearchPage);
+const RevisionHub = lazyPage(revision, (m) => m.RevisionHub);
+const ReviewPage = lazyPage(revision, (m) => m.ReviewPage);
+const EquationLibrary = lazyPage(revision, (m) => m.EquationLibrary);
+const AlgorithmLibrary = lazyPage(revision, (m) => m.AlgorithmLibrary);
+const NotationPage = lazyPage(revision, (m) => m.NotationPage);
+const MarkedQuestions = lazyPage(revision, (m) => m.MarkedQuestions);
+const ProgressPage = lazyPage(progress, (m) => m.ProgressPage);
+const SettingsPage = lazyPage(progress, (m) => m.SettingsPage);
+
+const PAGES = [LearnIndex, UnitPage, SectionPage, ConceptPage, ItemPage, SearchPage, RevisionHub, ReviewPage, EquationLibrary, AlgorithmLibrary, NotationPage, MarkedQuestions, ProgressPage, SettingsPage];
+/** Fetches the code of every page now (Settings → Save for offline; tests). */
+export const preloadRoutes = () => Promise.all(PAGES.map((p) => p.preload())).then(() => undefined);
 
 export function App() {
   return (

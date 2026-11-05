@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { Suspense, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getSearchIndex } from "../content/bundle";
+import { useSearchIndex } from "../content/load";
 import { search, type DocType } from "../domain/search";
 import { Badge, Empty, PageTitle } from "../components/ui";
 
@@ -31,10 +31,6 @@ export function SearchPage() {
   const [text, setText] = useState(q);
   const [filter, setFilter] = useState("all");
   const [core, setCore] = useState(false);
-  const hits = useMemo(() => (q.trim() ? search(getSearchIndex(), q, 60) : []), [q]);
-  const types = FILTERS.find((f) => f.key === filter)!.types;
-  const shown = hits.filter((h) => (!types.length || types.includes(h.doc.type)) && (!core || h.doc.tier === "core"));
-  const byId = new Map(hits.map((h) => [h.doc.id, h.doc]));
 
   return (
     <>
@@ -70,12 +66,27 @@ export function SearchPage() {
           </label>
         </div>
       )}
-      {q && (
-        <p role="status" className="muted">
-          {shown.length} result{shown.length === 1 ? "" : "s"} for “{q}”
-        </p>
+      {q.trim() && (
+        <Suspense fallback={<p role="status" className="muted">Preparing the search index…</p>}>
+          <Results q={q} filter={filter} core={core} />
+        </Suspense>
       )}
-      {q && !shown.length && <Empty>Nothing matches. Try a broader word, or a section number such as 4.1.</Empty>}
+    </>
+  );
+}
+
+/** Suspends the first time while every unit is fetched and indexed; later searches are instant. */
+function Results({ q, filter, core }: { q: string; filter: string; core: boolean }) {
+  const hits = search(useSearchIndex(), q, 60);
+  const types = FILTERS.find((f) => f.key === filter)!.types;
+  const shown = hits.filter((h) => (!types.length || types.includes(h.doc.type)) && (!core || h.doc.tier === "core"));
+  const byId = new Map(hits.map((h) => [h.doc.id, h.doc]));
+  return (
+    <>
+      <p role="status" className="muted">
+        {shown.length} result{shown.length === 1 ? "" : "s"} for “{q}”
+      </p>
+      {!shown.length && <Empty>Nothing matches. Try a broader word, or a section number such as 4.1.</Empty>}
       <ol className="results">
         {shown.map((h) => (
           <li key={h.doc.id} className={h.doc.tier === "supplementary" ? "is-sup" : ""}>

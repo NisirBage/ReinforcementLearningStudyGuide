@@ -1,12 +1,13 @@
 // One practice question: collects the response, grades it with domain/grade.ts, records the attempt.
 import { useMemo, useState } from "react";
 import type { Question } from "../content/schema";
-import { DIFFICULTY_LABEL, isSupplementaryUnit } from "../content/schema";
+import { DIFFICULTY_LABEL, PROVENANCE_LABEL, SELF_MARKED_TYPES, isSupplementaryUnit } from "../content/schema";
 import { gradeQuestion, parseNumber, type Grade, type Response } from "../domain/grade";
 import { accuracyOf } from "../domain/progress";
 import { makeRng, shuffle } from "../domain/random";
 import { useProgress } from "../store/ProgressContext";
-import { Badge, Md, MdInline, Sources } from "./ui";
+import { Badge, Sources } from "./ui";
+import { Md, MdInline } from "./math";
 
 const TYPE_LABEL: Record<Question["type"], string> = {
   mcq: "Choose one",
@@ -16,7 +17,19 @@ const TYPE_LABEL: Record<Question["type"], string> = {
   ordering: "Put in order",
   "true-false": "True or false",
   derivation: "Derivation",
+  "short-answer": "Short answer",
 };
+
+const isSelfMarked = (q: Question) => (SELF_MARKED_TYPES as readonly string[]).includes(q.type);
+
+/** Says plainly where the question comes from; a generated question is never presented as a textbook one. */
+export function ProvenanceBadge({ q }: { q: Question }) {
+  const p = q.provenance;
+  if (p.kind === "supplementary") return null; // the Supplementary badge already says it
+  if (p.kind === "textbook-exercise") return <Badge tone="core" title="Reworded from the April 2015 draft; see the cited page for the original">Exercise {p.exercise}, reworded</Badge>;
+  const basis = p.basis?.length ? `Based on ${p.basis.join(", ")}` : undefined;
+  return <Badge tone={p.kind === "textbook-derived" ? "core" : "neutral"} title={basis}>{PROVENANCE_LABEL[p.kind]}</Badge>;
+}
 
 /** A stable, per-question shuffle so ordering questions never start already solved. */
 const scrambled = (q: Question) => {
@@ -54,6 +67,7 @@ export function QuestionCard({ q, index }: { q: Question; index?: number }) {
       case "ordering":
         return { type: "ordering", order };
       case "derivation":
+      case "short-answer":
         return { type: "derivation", selfScore: self };
     }
   };
@@ -61,7 +75,7 @@ export function QuestionCard({ q, index }: { q: Question; index?: number }) {
     const g = gradeQuestion(q, response());
     setGrade(g);
     setShown(true);
-    attempt({ qid: q.id, unit: q.unit, concepts: q.concepts, score: g.score, max: g.max });
+    attempt({ qid: q.id, unit: q.unit, concepts: q.concepts, score: g.score, max: g.max, mode: "lesson", ...(isSelfMarked(q) ? { selfMarked: true } : {}) });
   };
   const move = (i: number, d: -1 | 1) =>
     setOrder((o) => {
@@ -76,11 +90,11 @@ export function QuestionCard({ q, index }: { q: Question; index?: number }) {
     <article className="item question" id={q.id} aria-labelledby={`${q.id}-h`}>
       <header className="item-head">
         <span className="item-kind" id={`${q.id}-h`}>
-          {index !== undefined ? `Exercise ${index + 1}` : "Exercise"} · {TYPE_LABEL[q.type]}
+          {index !== undefined ? `Question ${index + 1}` : "Question"} · {TYPE_LABEL[q.type]}
         </span>
         <Badge>{DIFFICULTY_LABEL[q.difficulty]}</Badge>
         <Badge>{q.marks} mark{q.marks === 1 ? "" : "s"}</Badge>
-        {q.adaptedFrom && <Badge tone="core">Adapted from {q.adaptedFrom}</Badge>}
+        <ProvenanceBadge q={q} />
         {isSupplementaryUnit(q.unit) && <Badge tone="sup">Supplementary</Badge>}
       </header>
       <Md text={q.stem} />
@@ -163,7 +177,7 @@ export function QuestionCard({ q, index }: { q: Question; index?: number }) {
           ))}
         </ol>
       )}
-      {q.type === "derivation" && shown && (
+      {isSelfMarked(q) && shown && (
         <label className="part">
           <span>Mark your own work out of {q.marks}</span>
           <input type="number" min={0} max={q.marks} value={self ?? ""} onChange={(e) => setSelf(e.target.value === "" ? null : Number(e.target.value))} />
@@ -172,7 +186,7 @@ export function QuestionCard({ q, index }: { q: Question; index?: number }) {
 
       <div className="actions">
         {!shown ? (
-          q.type === "derivation" ? (
+          isSelfMarked(q) ? (
             <button type="button" className="btn btn-primary" onClick={() => setShown(true)}>
               Show model answer
             </button>
@@ -198,7 +212,7 @@ export function QuestionCard({ q, index }: { q: Question; index?: number }) {
             Try again
           </button>
         )}
-        {q.type === "derivation" && shown && !grade && (
+        {isSelfMarked(q) && shown && !grade && (
           <button type="button" className="btn btn-primary" onClick={submit} disabled={self === null}>
             Record my mark
           </button>
@@ -215,7 +229,16 @@ export function QuestionCard({ q, index }: { q: Question; index?: number }) {
               {grade.correct ? "Correct" : grade.score > 0 ? "Partly correct" : "Not correct"}: {grade.score} / {grade.max}
             </p>
           )}
-          {q.type === "derivation" && typeof q.answer === "string" && <Md text={q.answer} />}
+          {isSelfMarked(q) && typeof q.answer === "string" && <Md text={q.answer} />}
+          {q.optionNotes && (
+            <ul className="option-notes">
+              {q.optionNotes.map((n, i) => (
+                <li key={i}>
+                  <MdInline text={q.options![i]} />: <MdInline text={n} />
+                </li>
+              ))}
+            </ul>
+          )}
           <h4>Solution</h4>
           <ol className="solution">
             {q.solution.map((s, i) => (

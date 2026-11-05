@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "description": "Repository tools (TypeScript run with tsx from app/, Python run directly). ESM, like app/."
+}

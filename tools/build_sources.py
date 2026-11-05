@@ -143,6 +143,50 @@ def slide_count(path: Path) -> int:
     return len(re.findall(r"^=====(?:P|SLIDE) \d+=====$", path.read_text(encoding="utf-8"), re.M))
 
 
+EXERCISE = re.compile(r"^(∗?)Exercise (\d+)\.(\d+)(.*)$")
+PLACEHOLDER = re.compile(r"^:?\s*There is no exercise", re.IGNORECASE)
+
+
+def sb_exercises(sb_text: str, chapters: list[dict], offset: int) -> list[dict]:
+    """Every exercise heading in the draft: a line that starts with 'Exercise N.M' (or '∗Exercise').
+
+    Only the number, page and two markers are kept (optional ∗, '(programming)'); no exercise text is stored.
+    Mentions inside running text ('There is no Exercise 8.1.') do not start a line and are skipped.
+    The draft prints two placeholders ('Exercise 3.7 There is no exercise 3.7', likewise 8.1); they are kept
+    with placeholder: true so a question can never claim to be one of them.
+    """
+    out, seen = [], set()
+    chunks = re.split(r"=====PAGE (\d+)=====", sb_text)
+    for i in range(1, len(chunks), 2):
+        pdf = int(chunks[i])
+        for line in chunks[i + 1].splitlines():
+            m = EXERCISE.match(line.strip())
+            if not m:
+                continue
+            number = f"{m.group(2)}.{m.group(3)}"
+            if number in seen:
+                sys.exit(f"exercise {number} appears twice as a heading")
+            seen.add(number)
+            rest = m.group(4)
+            printed = pdf - offset
+            ch = next((c for c in chapters if c["id"] == m.group(2)), None)
+            if ch is None or not (ch["startPage"] <= printed <= ch["endPage"]):
+                sys.exit(f"exercise {number} on printed page {printed} is outside chapter {m.group(2)}")
+            out.append({
+                "id": number, "chapter": m.group(2), "page": printed, "pdfPage": pdf,
+                "optional": m.group(1) == "∗", "programming": "(programming)" in rest,
+                "placeholder": bool(PLACEHOLDER.match(rest)),
+            })
+    # Numbers must run 1, 2, 3 … within each chapter.
+    by_ch: dict[str, list[int]] = {}
+    for e in out:
+        by_ch.setdefault(e["chapter"], []).append(int(e["id"].split(".")[1]))
+    for ch, ns in by_ch.items():
+        if ns != list(range(1, len(ns) + 1)):
+            sys.exit(f"chapter {ch} exercise numbers are not consecutive: {ns}")
+    return out
+
+
 def main() -> None:
     sb_text = (EXTRACTED / "sutton-barto-2015.txt").read_text(encoding="utf-8")
     pages = re.split(r"=====PAGE \d+=====", sb_text)
@@ -150,6 +194,7 @@ def main() -> None:
     sb = build_book(parse_toc(toc_tokens(sb_toc)), 14, last_page=338)
     for m in sb["matter"]:
         m["pdfPage"] = ROMAN[m["page"]] if m["page"] in ROMAN else int(m["page"]) + 14
+    sb["exercises"] = sb_exercises(sb_text, sb["chapters"], 14)
 
     zhao_text = (EXTRACTED / "zhao" / "B_1_-_Table_of_contents.pdf.txt").read_text(encoding="utf-8")
     zhao = build_book(parse_toc(toc_tokens(zhao_text)), None, last_page=275)
@@ -194,7 +239,7 @@ def main() -> None:
     OUT.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     n_sec = lambda b: sum(len(c["sections"]) for c in b["chapters"])
     print(f"sb (core): {len(sb['chapters'])} chapters, {n_sec(sb)} sections | "
-          f"zhao (supplementary): {len(zhao['chapters'])} chapters, {n_sec(zhao)} sections | lectures: {len(lectures)}")
+          f"{len(sb['exercises'])} exercises | zhao (supplementary): {len(zhao['chapters'])} chapters, {n_sec(zhao)} sections | lectures: {len(lectures)}")
 
 
 if __name__ == "__main__":

@@ -1,26 +1,13 @@
 // Small presentational components shared by every page. No business logic here.
+// Nothing here renders maths, so pages without maths (dashboard, progress, settings) do not load KaTeX: see math.tsx.
 import { useEffect, useRef, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { renderInline, renderMarkdown, renderTex } from "../lib/render";
-import { describeSource } from "../content/searchDocs";
-import type { Flag, SourceRef } from "../content/schema";
+import { describeSource } from "../content/describe";
+import type { SourceRef } from "../content/schema";
 import { CONCEPT_STATUSES, STATUS_LABEL, type ConceptStatus } from "../domain/progress";
-import { idx } from "../content/bundle";
+import { cat } from "../content/load";
 
 export const pct = (x: number) => `${Math.round(x * 100)}%`;
-
-export function Tex({ tex, display = false }: { tex: string; display?: boolean }) {
-  return <span className={display ? "tex tex-display" : "tex"} dangerouslySetInnerHTML={{ __html: renderTex(tex, display) }} />;
-}
-
-/** Markdown with $…$ maths. Content is trusted repository text and raw HTML is disabled in the renderer. */
-export function Md({ text, className }: { text: string; className?: string }) {
-  return <div className={className ? `md ${className}` : "md"} dangerouslySetInnerHTML={{ __html: renderMarkdown(text) }} />;
-}
-
-export function MdInline({ text }: { text: string }) {
-  return <span dangerouslySetInnerHTML={{ __html: renderInline(text) }} />;
-}
 
 export function Badge({ children, tone = "neutral", title }: { children: ReactNode; tone?: "neutral" | "core" | "sup" | "warn" | "ok"; title?: string }) {
   return (
@@ -53,34 +40,6 @@ export function Sources({ refs, label = "Source" }: { refs: SourceRef[]; label?:
   );
 }
 
-const FLAG_LABEL: Record<Flag["type"], string> = {
-  "suspected-typo": "Possible typo in the source",
-  "source-acknowledged-issue": "Issue noted by the book itself",
-  "figure-rounding": "Printed values are rounded",
-  "extraction-uncertain": "Transcription uncertain",
-  "empty-in-draft": "Empty in this draft",
-  "notation-unverified": "2018-edition notation not verified",
-};
-
-export function Flags({ flags }: { flags?: Flag[] }) {
-  if (!flags?.length) return null;
-  return (
-    <div className="flags">
-      {flags.map((f, i) => (
-        <div className="flag" key={i} role="note">
-          <strong>⚑ {FLAG_LABEL[f.type]}.</strong> <MdInline text={f.note} />
-          {f.suggestion && (
-            <>
-              {" "}
-              <em>Reading note:</em> <MdInline text={f.suggestion} />
-            </>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function StatusPicker({ value, onChange, label }: { value: ConceptStatus; onChange: (s: ConceptStatus) => void; label: string }) {
   return (
     <label className={`status status-${value}`}>
@@ -97,7 +56,7 @@ export function StatusPicker({ value, onChange, label }: { value: ConceptStatus;
 }
 
 export function ConceptLink({ id }: { id: string }) {
-  const c = idx.concept(id);
+  const c = cat.concept(id);
   if (!c) return <span className="muted">{id}</span>;
   return (
     <Link className={`chip ${c.unit.startsWith("sup-") ? "chip-sup" : ""}`} to={`/concept/${c.id}`}>

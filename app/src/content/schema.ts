@@ -48,8 +48,19 @@ export interface LectureEntry {
   zhaoChapter: string;
 }
 
+/** An exercise heading in the April 2015 draft (tools/build_sources.py). No exercise text is stored. */
+export interface ExerciseEntry {
+  id: string; // "4.1"
+  chapter: string;
+  page: number; // printed page
+  pdfPage: number;
+  optional: boolean; // marked ∗
+  programming: boolean; // marked "(programming)"
+  placeholder: boolean; // the draft prints "There is no exercise N.M" under this number
+}
+
 export interface Sources {
-  sb: BookSource;
+  sb: BookSource & { exercises: ExerciseEntry[] };
   zhao: BookSource;
   lectures: { key: "lectures"; role: "supplementary"; title: string; authors: string; items: LectureEntry[] };
 }
@@ -239,11 +250,34 @@ export interface NotationEntry {
   flags?: Flag[];
 }
 
-export const QUESTION_TYPES = ["mcq", "multi", "numeric", "multi-numeric", "ordering", "true-false", "derivation"] as const;
+export const QUESTION_TYPES = ["mcq", "multi", "numeric", "multi-numeric", "ordering", "true-false", "derivation", "short-answer"] as const;
 export type QuestionType = (typeof QUESTION_TYPES)[number];
+/** Types whose free-text answers the learner marks against a rubric: the app never pretends to grade them. */
+export const SELF_MARKED_TYPES = ["derivation", "short-answer"] as const;
 export const QUESTION_CATEGORIES = [
-  "conceptual", "definition", "derivation", "numerical", "algorithm-trace", "pseudocode", "scenario", "compare-contrast", "analytical",
+  "conceptual", "definition", "derivation", "numerical", "algorithm-trace", "pseudocode", "code-interpretation", "scenario", "compare-contrast", "analytical",
 ] as const;
+/**
+ * Where a question comes from (learner requirement: never present a generated question as a textbook one).
+ *   textbook-exercise  the draft's own exercise, reworded (book text is never copied, D-002); must cite its page
+ *   textbook-derived   built directly on a numbered exercise, section, equation, algorithm, example or figure
+ *   generated          a new application question written for this app (basis optional)
+ *   supplementary      from a supplementary unit; the only kind allowed there, and never allowed in core units
+ */
+export const PROVENANCE_KINDS = ["textbook-exercise", "textbook-derived", "generated", "supplementary"] as const;
+export type ProvenanceKind = (typeof PROVENANCE_KINDS)[number];
+export const PROVENANCE_LABEL: Record<ProvenanceKind, string> = {
+  "textbook-exercise": "Textbook exercise (reworded)",
+  "textbook-derived": "Derived from the textbook",
+  generated: "New application question",
+  supplementary: "Supplementary",
+};
+/** basis entries: "Exercise 4.1", "§2.4", or the id of an equation, algorithm, example or figure. */
+export type Provenance =
+  | { kind: "textbook-exercise"; exercise: string }
+  | { kind: "textbook-derived"; basis: string[] }
+  | { kind: "generated"; basis?: string[] }
+  | { kind: "supplementary"; basis?: string[] };
 export type QuestionCategory = (typeof QUESTION_CATEGORIES)[number];
 export type Difficulty = 1 | 2 | 3 | 4;
 export const DIFFICULTY_LABEL: Record<Difficulty, string> = { 1: "Beginner", 2: "Intermediate", 3: "Advanced", 4: "Challenging" };
@@ -257,6 +291,8 @@ export interface NumericPart {
 export interface Question {
   id: string; // "ch02-q001"
   unit: string;
+  section: string | null; // the section the question tests (textbook for core, Zhao for supplementary); null = whole chapter
+  provenance: Provenance;
   concepts: string[];
   type: QuestionType;
   category: QuestionCategory;
@@ -269,7 +305,9 @@ export interface Question {
   solution: string[];
   explanation: string;
   misconceptions?: { wrong: string; why: string }[];
-  adaptedFrom?: string; // e.g. "Exercise 4.1"
+  optionNotes?: string[]; // mcq / multi: why each option is right or wrong, one per option (required once reviewed)
+  rubric?: { point: string; marks: number }[]; // derivation / short-answer: marking points, summing to marks
+  related?: string[]; // ids of related questions on the same side of the core/supplementary line
   sources: SourceRef[];
   verification?: Verification; // required for numeric and multi-numeric
   reviewed: boolean;
@@ -378,6 +416,24 @@ export function validateSources(data: unknown): string[] {
   if (!isObj(data)) return ["sources: not an object"];
   const errs = [...validateBook(data.sb, "sb"), ...validateBook(data.zhao, "zhao")];
   if (isObj(data.sb) && data.sb.pdfPageOffset !== 14) errs.push("sources.sb: pdfPageOffset must be 14 for the April 2015 draft");
+  if (isObj(data.sb) && Array.isArray(data.sb.chapters)) {
+    const ex = data.sb.exercises;
+    const chapters = data.sb.chapters as ChapterEntry[];
+    if (!Array.isArray(ex)) errs.push("sources.sb.exercises must be an array (run tools/build_sources.py)");
+    else {
+      const seen = new Set<string>();
+      ex.forEach((e: unknown, i) => {
+        const at = `sources.sb.exercises[${i}]`;
+        if (!isObj(e) || !isStr(e.id) || !/^\d+\.\d+$/.test(e.id) || seen.has(e.id)) return errs.push(`${at} needs a unique id N.M`);
+        seen.add(e.id);
+        const ch = chapters.find((c) => c.id === e.chapter);
+        if (!ch || !e.id.startsWith(`${ch.id}.`)) return errs.push(`${at} chapter must match its number`);
+        if (!isInt(e.page) || e.page < ch.startPage || e.page > ch.endPage) errs.push(`${at} page outside chapter ${ch.id}`);
+        else if (e.pdfPage !== e.page + 14) errs.push(`${at} pdfPage must be page + 14`);
+        if (typeof e.optional !== "boolean" || typeof e.programming !== "boolean" || typeof e.placeholder !== "boolean") errs.push(`${at} optional, programming and placeholder must be booleans`);
+      });
+    }
+  }
   const lec = data.lectures;
   if (!isObj(lec) || !Array.isArray(lec.items) || lec.items.length === 0) return [...errs, "sources.lectures: missing items"];
   lec.items.forEach((l: unknown, i) => {
@@ -653,7 +709,70 @@ export function validateBundle(b: ContentBundle, ctx: ValidationContext): string
   });
 
   const seenQ = new Set<string>();
-  b.questionFiles.forEach((f, i) => errs.push(...validateQuestionFile(f, src, units, conceptIds, conceptUnit, ctx, `questions[${i}] (${f?.unit})`, seenQ)));
+  const basisIds = new Map<string, string>(); // id → unit, for provenance bases
+  for (const x of [...b.equations, ...b.algorithms, ...b.examples, ...b.figures]) if (isStr(x?.id)) basisIds.set(x.id, x.unit);
+  b.questionFiles.forEach((f, i) => errs.push(...validateQuestionFile(f, src, units, conceptIds, conceptUnit, ctx, `questions[${i}] (${f?.unit})`, seenQ, basisIds)));
+  // Related questions are checked once every file has been read.
+  const all = b.questionFiles.flatMap((f) => (Array.isArray(f?.questions) ? f.questions : []));
+  const qUnit = new Map(all.filter((q) => isStr(q?.id)).map((q) => [q.id, q.unit]));
+  for (const q of all) {
+    if (q?.related === undefined) continue;
+    if (!strArr(q.related)) errs.push(`question ${q.id}: related must be a string array`);
+    else
+      for (const r of q.related) {
+        if (r === q.id) errs.push(`question ${q.id}: lists itself as related`);
+        else if (!qUnit.has(r)) errs.push(`question ${q.id}: related names unknown question ${r}`);
+        else if (isSupplementaryUnit(qUnit.get(r)!) !== isSupplementaryUnit(q.unit)) errs.push(`question ${q.id}: related question ${r} is on the other side of the core/supplementary line`);
+      }
+  }
+  return errs;
+}
+
+/** "Exercise 4.1", "§2.4" or a content item id. Returns an error message, or null if the basis is valid. */
+function checkBasis(b: unknown, unit: string, src: Sources, basisIds: Map<string, string>): string | null {
+  if (!isStr(b)) return "basis entries must be strings";
+  const ex = /^Exercise (\d+\.\d+)$/.exec(b);
+  if (ex) {
+    const e = src.sb.exercises.find((x) => x.id === ex[1]);
+    if (!e) return `${b} is not an exercise in the April 2015 draft`;
+    if (e.placeholder) return `${b} is a placeholder in the draft ("There is no exercise ${e.id}")`;
+    return isSupplementaryUnit(unit) ? `${b}: supplementary questions may not be based on textbook exercises` : null;
+  }
+  const sec = /^§(.+)$/.exec(b);
+  if (sec) {
+    const book = isSupplementaryUnit(unit) ? "zhao" : "sb";
+    return findSection(src, book, sec[1]) ? null : `${b} is not a ${book === "sb" ? "textbook" : "Zhao"} section`;
+  }
+  if (!basisIds.has(b)) return `basis ${b} is not an exercise, a section or a known equation/algorithm/example/figure`;
+  return isSupplementaryUnit(basisIds.get(b)!) === isSupplementaryUnit(unit) ? null : `basis ${b} is on the other side of the core/supplementary line`;
+}
+
+/** The textbook sources of a question must include the printed page of an exercise it is based on. */
+function citesPage(sources: unknown, chapter: string, page: number): boolean {
+  return Array.isArray(sources) && sources.some((s) => isObj(s) && s.kind === "textbook" && s.chapter === chapter && pair(s.printedPages) && s.printedPages[0] <= page && page <= s.printedPages[1]);
+}
+
+function validateProvenance(q: Obj, unit: string, src: Sources, basisIds: Map<string, string>, at: string): string[] {
+  const p = q.provenance;
+  if (!isObj(p) || !oneOf(PROVENANCE_KINDS, p.kind)) return [`${at} provenance needs a kind: ${PROVENANCE_KINDS.join(", ")}`];
+  if (q.adaptedFrom !== undefined) return [`${at} adaptedFrom was replaced by provenance`];
+  const sup = isSupplementaryUnit(unit);
+  if (sup !== (p.kind === "supplementary")) return [`${at} provenance must be "supplementary" exactly when the unit is supplementary`];
+  const errs: string[] = [];
+  const bases = p.kind === "textbook-exercise" ? [`Exercise ${String(p.exercise)}`] : p.basis;
+  if (p.kind === "textbook-derived" && !(Array.isArray(bases) && bases.length > 0)) return [`${at} textbook-derived provenance needs at least one basis`];
+  if (bases !== undefined && !Array.isArray(bases)) return [`${at} provenance basis must be an array`];
+  for (const b of bases ?? []) {
+    const e = checkBasis(b, unit, src, basisIds);
+    if (e) errs.push(`${at} provenance: ${e}`);
+    const m = isStr(b) ? /^Exercise (\d+\.\d+)$/.exec(b) : null;
+    const ex = m && src.sb.exercises.find((x) => x.id === m[1]);
+    if (ex && !ex.placeholder && !citesPage(q.sources, ex.chapter, ex.page)) errs.push(`${at} sources must cite the page of Exercise ${ex.id} (printed p. ${ex.page})`);
+  }
+  if (p.kind === "textbook-exercise") {
+    if (!isStr(p.exercise)) errs.push(`${at} textbook-exercise provenance needs the exercise number`);
+    else if (!p.exercise.startsWith(`${Number(unit.slice(2))}.`)) errs.push(`${at} Exercise ${p.exercise} belongs to another chapter`);
+  }
   return errs;
 }
 
@@ -684,7 +803,7 @@ export function validateConceptGraph(concepts: Concept[]): string[] {
 
 export function validateQuestionFile(
   data: unknown, src: Sources, units: Set<string>, concepts: Set<string>, conceptUnit: Map<string, string>,
-  ctx: ValidationContext, label: string, seen: Set<string>,
+  ctx: ValidationContext, label: string, seen: Set<string>, basisIds: Map<string, string> = new Map(),
 ): string[] {
   if (!isObj(data)) return [`${label}: not an object`];
   if (!isStr(data.unit) || !units.has(data.unit)) return [`${label}: unknown unit ${String(data.unit)}`];
@@ -699,6 +818,24 @@ export function validateQuestionFile(
     else seen.add(q.id);
     if (q.unit !== unit) errs.push(`${at} unit differs from the file`);
     if (!oneOf(QUESTION_TYPES, q.type)) return errs.push(`${at} bad type`);
+    // Section mapping: a section of this unit's chapter (textbook for core, the attached Zhao chapters for supplementary), or null.
+    if (q.section !== null) {
+      const sup = isSupplementaryUnit(unit);
+      const sec = isStr(q.section) ? findSection(src, sup ? "zhao" : "sb", q.section) : undefined;
+      const chapterOk = isStr(q.section) && (sup ? true : q.section.startsWith(`${Number(unit.slice(2))}.`));
+      if (!sec || !chapterOk) errs.push(`${at} section must be null or a ${sup ? "Zhao" : "textbook"} section of this unit's chapter (got ${String(q.section)})`);
+    }
+    errs.push(...validateProvenance(q, unit, src, basisIds, at));
+    if ((SELF_MARKED_TYPES as readonly string[]).includes(q.type)) {
+      const r = q.rubric;
+      if (!Array.isArray(r) || r.length === 0 || !r.every((x) => isObj(x) && isStr(x.point) && isNum(x.marks) && x.marks > 0)) errs.push(`${at} ${q.type} needs a rubric of marking points with positive marks`);
+      else if (isNum(q.marks) && Math.abs(r.reduce((s, x) => s + (x.marks as number), 0) - q.marks) > 1e-9) errs.push(`${at} rubric marks must add up to the question's marks`);
+    } else if (q.rubric !== undefined) errs.push(`${at} rubric is only for derivation and short-answer questions`);
+    if (q.optionNotes !== undefined || (q.reviewed === true && (q.type === "mcq" || q.type === "multi"))) {
+      const n = q.optionNotes;
+      if (q.type !== "mcq" && q.type !== "multi") errs.push(`${at} optionNotes are only for mcq and multi`);
+      else if (!(Array.isArray(n) && Array.isArray(q.options) && n.length === q.options.length && n.every(isStr))) errs.push(`${at} reviewed mcq/multi questions need one optionNote per option, saying why it is right or wrong`);
+    }
     if (!oneOf(QUESTION_CATEGORIES, q.category)) errs.push(`${at} bad category`);
     if (![1, 2, 3, 4].includes(q.difficulty as number)) errs.push(`${at} difficulty must be 1–4`);
     if (!isNum(q.marks) || q.marks <= 0) errs.push(`${at} marks must be positive`);
@@ -730,7 +867,8 @@ export function validateQuestionFile(
         if (typeof q.answer !== "boolean") errs.push(`${at} true-false answer must be boolean`);
         break;
       case "derivation":
-        if (!isStr(q.answer)) errs.push(`${at} derivation needs a model answer`);
+      case "short-answer":
+        if (!isStr(q.answer)) errs.push(`${at} ${q.type} needs a model answer`);
         break;
       case "numeric":
       case "multi-numeric": {

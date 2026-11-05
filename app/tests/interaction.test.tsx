@@ -3,12 +3,13 @@
 // backup export/import, settings, spaced review and keyboard use.
 import { act, cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { STORAGE_KEY, decodeSaved, exportProgress } from "../src/store/persistence";
 import { emptyProgress, setConceptStatus } from "../src/domain/progress";
 import { memoryStore } from "../src/store/idb";
-import { renderApp } from "./helpers";
+import { preloadAll, renderApp } from "./helpers";
 
+beforeAll(preloadAll);
 afterEach(cleanup);
 const saved = (store: ReturnType<typeof memoryStore>) => decodeSaved(store.dump()[STORAGE_KEY]);
 const ready = () => screen.findByRole("heading", { level: 1 });
@@ -121,7 +122,7 @@ describe("backup", () => {
     await user.click(screen.getByRole("button", { name: "Export backup" }));
     expect(click).toHaveBeenCalled();
     const text = await created[0].text();
-    expect(JSON.parse(text)).toMatchObject({ app: "rl-study-lab", schema: 1 });
+    expect(JSON.parse(text)).toMatchObject({ app: "rl-study-lab", schema: 2 });
     expect(screen.getByText("Backup downloaded.")).toBeInTheDocument();
     vi.unstubAllGlobals();
   });

@@ -1,17 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { idx } from "../content/bundle";
+import { cat, useContent } from "../content/load";
+import type { ItemKind } from "../content/catalog";
 import { isSupplementaryUnit } from "../content/schema";
 import { reviewQueue } from "../domain/progress";
 import { useProgress } from "../store/ProgressContext";
 import { AlgorithmBox, EquationCard } from "../components/items";
 import { QuestionCard } from "../components/QuestionCard";
-import { Badge, Empty, Md, MdInline, PageTitle, Sources, Tex } from "../components/ui";
+import { Badge, Empty, PageTitle, Sources } from "../components/ui";
+import { Md, MdInline, Tex } from "../components/math";
 
 export function RevisionHub() {
   const { data } = useProgress();
   const now = Date.now();
-  const queue = reviewQueue(data, idx.cardIds(), now);
+  const queue = reviewQueue(data, cat.cardIds(), now);
   const due = queue.filter((c) => !c.isNew).length;
   const needs = Object.entries(data.conceptStatus).filter(([, s]) => s.status === "needs-revision").map(([id]) => id);
   return (
@@ -26,15 +28,15 @@ export function RevisionHub() {
         </Link>
         <Link className="tile" to="/revision/equations">
           <strong>Equation library</strong>
-          <span>{idx.bundle.equations.length} equations</span>
+          <span>{cat.itemsOf("equation").length} equations</span>
         </Link>
         <Link className="tile" to="/revision/algorithms">
           <strong>Algorithms</strong>
-          <span>{idx.bundle.algorithms.length} pseudocode boxes</span>
+          <span>{cat.itemsOf("algorithm").length} pseudocode boxes</span>
         </Link>
         <Link className="tile" to="/revision/notation">
           <strong>Notation</strong>
-          <span>{idx.bundle.notation.length} symbols</span>
+          <span>{cat.catalog.notationCount} symbols</span>
         </Link>
         <Link className="tile" to="/revision/marked">
           <strong>Marked questions</strong>
@@ -47,7 +49,7 @@ export function RevisionHub() {
           <ul className="list">
             {needs.map((id) => (
               <li key={id}>
-                <Link to={`/concept/${id}`}>{idx.concept(id)?.title ?? id}</Link>
+                <Link to={`/concept/${id}`}>{cat.concept(id)?.title ?? id}</Link>
               </li>
             ))}
           </ul>
@@ -59,48 +61,84 @@ export function RevisionHub() {
   );
 }
 
+const CORE = "core";
+const EVERYTHING = "everything";
+/** Which units a library shows. Supplementary units are fetched only when the learner picks them. */
+function scopeUnits(kind: ItemKind, scope: string): string[] {
+  const units = [...new Set(cat.itemsOf(kind).map((i) => i.unit))];
+  if (scope === CORE) return units.filter((u) => !isSupplementaryUnit(u));
+  if (scope === EVERYTHING) return units;
+  return units.filter((u) => u === scope);
+}
+const unitLabel = (u: string) => (cat.unit(u)?.kind === "core" ? `Chapter ${cat.unit(u)!.core!.chapter}` : `${cat.unit(u)?.title} (supplementary)`);
+
+function ScopeSelect({ kind, value, onChange }: { kind: ItemKind; value: string; onChange: (v: string) => void }) {
+  const units = [...new Set(cat.itemsOf(kind).map((i) => i.unit))];
+  return (
+    <label>
+      Show{" "}
+      <select value={value} onChange={(e) => onChange(e.target.value)}>
+        <option value={CORE}>all 2015-draft chapters</option>
+        {units.map((u) => (
+          <option key={u} value={u}>
+            {unitLabel(u)}
+          </option>
+        ))}
+        <option value={EVERYTHING}>everything, including supplementary</option>
+      </select>
+    </label>
+  );
+}
+
+function EquationList({ scope }: { scope: string }) {
+  const units = scopeUnits("equation", scope);
+  const idx = useContent(units);
+  const list = idx.bundle.equations.filter((e) => units.includes(e.unit));
+  return list.length ? list.map((e) => <EquationCard key={e.id} e={e} compact />) : <Empty>No equations here yet.</Empty>;
+}
+
 export function EquationLibrary() {
-  const [unit, setUnit] = useState("all");
-  const units = [...new Set(idx.bundle.equations.map((e) => e.unit))];
-  const list = idx.bundle.equations.filter((e) => unit === "all" || e.unit === unit);
+  const [scope, setScope] = useState(CORE);
   return (
     <>
       <p className="crumb">
         <Link to="/revision">Revise</Link> / equations
       </p>
       <PageTitle title="Equation library">Equation library</PageTitle>
-      <label>
-        Show{" "}
-        <select value={unit} onChange={(e) => setUnit(e.target.value)}>
-          <option value="all">all chapters</option>
-          {units.map((u) => (
-            <option key={u} value={u}>
-              {idx.unit(u)?.kind === "core" ? `Chapter ${idx.unit(u)!.core!.chapter}` : `${idx.unit(u)?.title} (supplementary)`}
-            </option>
-          ))}
-        </select>
-      </label>
-      {list.map((e) => (
-        <EquationCard key={e.id} e={e} compact />
-      ))}
+      <ScopeSelect kind="equation" value={scope} onChange={setScope} />
+      <Suspense fallback={<p className="muted" role="status">Loading equations…</p>}>
+        <EquationList scope={scope} />
+      </Suspense>
     </>
   );
 }
 
+function AlgorithmList({ scope }: { scope: string }) {
+  const units = scopeUnits("algorithm", scope);
+  const idx = useContent(units);
+  const list = idx.bundle.algorithms.filter((a) => units.includes(a.unit));
+  return list.length ? list.map((a) => <AlgorithmBox key={a.id} a={a} />) : <Empty>No algorithms yet.</Empty>;
+}
+
 export function AlgorithmLibrary() {
+  const [scope, setScope] = useState(CORE);
   return (
     <>
       <p className="crumb">
         <Link to="/revision">Revise</Link> / algorithms
       </p>
       <PageTitle title="Algorithms">Algorithms</PageTitle>
-      {idx.bundle.algorithms.length ? idx.bundle.algorithms.map((a) => <AlgorithmBox key={a.id} a={a} />) : <Empty>No algorithms yet.</Empty>}
+      <ScopeSelect kind="algorithm" value={scope} onChange={setScope} />
+      <Suspense fallback={<p className="muted" role="status">Loading algorithms…</p>}>
+        <AlgorithmList scope={scope} />
+      </Suspense>
     </>
   );
 }
 
 export function NotationPage() {
   const { data } = useProgress();
+  const notation = useContent([], true).bundle.notation;
   const [params] = useSearchParams();
   const focus = params.get("focus");
   useEffect(() => {
@@ -126,7 +164,7 @@ export function NotationPage() {
           </tr>
         </thead>
         <tbody>
-          {idx.bundle.notation.map((n) => (
+          {notation.map((n) => (
             <tr key={n.id} id={`n-${n.id}`} className={focus === n.id ? "focus" : ""}>
               <td>
                 <Tex tex={n.tex} />
@@ -160,6 +198,8 @@ export function NotationPage() {
 /** Front and back of a revision card: concepts show their summary, equations their formula. */
 function CardFace({ id, flipped }: { id: string; flipped: boolean }) {
   const key = id.replace(/^card:/, "");
+  const unit = cat.unitOf(key);
+  const idx = useContent(unit ? [unit] : []);
   const c = idx.concept(key);
   const e = idx.equation(key);
   if (c)
@@ -202,7 +242,7 @@ const GRADES: [0 | 1 | 2 | 3, string][] = [
 export function ReviewPage() {
   const { data, reviewCard } = useProgress();
   // The queue is fixed when the page opens, so grading a card does not reshuffle the session.
-  const [queue] = useState(() => reviewQueue(data, idx.cardIds(), Date.now()));
+  const [queue] = useState(() => reviewQueue(data, cat.cardIds(), Date.now()));
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const current = queue[i];
@@ -243,7 +283,9 @@ export function ReviewPage() {
             Card {i + 1} of {queue.length} {current.isNew && <Badge>new</Badge>}. Keyboard: Space flips; 1–4 grade.
           </p>
           <div className={`flashcard ${flipped ? "flipped" : ""}`} aria-live="polite">
-            <CardFace id={current.id} flipped={flipped} />
+            <Suspense fallback={<p className="muted" role="status">Loading card…</p>}>
+              <CardFace id={current.id} flipped={flipped} />
+            </Suspense>
           </div>
           {!flipped ? (
             <button type="button" className="btn btn-primary" onClick={() => setFlipped(true)}>
@@ -266,6 +308,9 @@ export function ReviewPage() {
 
 export function MarkedQuestions() {
   const { data } = useProgress();
+  // Units are fixed when the page opens, so un-marking a question does not reload the page.
+  const [units] = useState(() => [...new Set(data.marked.map((id) => cat.question(id)?.unit).filter((u): u is string => !!u))]);
+  const idx = useContent(units);
   const qs = data.marked.map((id) => idx.question(id)).filter((q) => q !== undefined);
   return (
     <>

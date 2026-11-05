@@ -171,6 +171,7 @@ main { max-width: 860px; margin: 0 auto; padding: 16px 16px calc(var(--nav-h) + 
 .seg button.on { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 .check { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
 .check input { width: 18px; height: 18px; }
+select { max-width: 100%; }
 select, input[type="number"] { font: inherit; min-height: 38px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
 
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
@@ -295,6 +296,8 @@ svg.backup text { fill: var(--text); font: italic 14px Georgia, serif; }
 .ordering li.ok { border-color: var(--ok); }
 .ordering li.bad { border-color: var(--bad); }
 .ord-btns { display: flex; gap: 4px; flex: none; }
+/* A long inline formula scrolls inside its step instead of pushing the move buttons off a phone screen. */
+.ord-text { min-width: 0; flex: 1 1 auto; overflow-x: auto; overflow-y: hidden; }
 .feedback { border-top: 1px dashed var(--border); margin-top: 10px; padding-top: 8px; }
 .verdict { font-weight: 700; }
 .verdict.ok { color: var(--ok); }

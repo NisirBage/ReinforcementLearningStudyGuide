@@ -72,7 +72,7 @@ describe("backup files", () => {
   test("rejects other apps' files and newer exports with a readable message", () => {
     expect(() => parseImport("nope")).toThrow("Not a JSON file.");
     expect(() => parseImport(JSON.stringify({ app: "nlp-study-lab", data: {} }))).toThrow(/not an RL Study Lab export/);
-    expect(() => parseImport(JSON.stringify({ app: "rl-study-lab", schema: 2, data: {} }))).toThrow(/newer version/);
+    expect(() => parseImport(JSON.stringify({ app: "rl-study-lab", schema: 3, data: {} }))).toThrow(/newer version/);
   });
   test("merge unites attempts without duplicates, newer status and review win, local settings stay", () => {
     const laptop = sample();

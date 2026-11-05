@@ -1,6 +1,7 @@
 // Markdown + KaTeX rendering for lesson bodies, captions, question stems and solutions (from the NLP Study Lab).
 // Math ($…$ inline, $$…$$ display) is cut out before Markdown parsing and pasted back as KaTeX HTML, so Markdown
 // never mangles TeX. Raw HTML in content is NOT rendered (html: false); only KaTeX's own output is inserted.
+import "katex/dist/katex.min.css"; // travels with the renderer chunk, so only maths pages load it
 import katex from "katex";
 import MarkdownIt from "markdown-it";
 

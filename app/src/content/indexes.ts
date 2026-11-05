@@ -2,9 +2,11 @@
 // Pure: the browser and the tests build the same indexes from the same bundle.
 import {
   isSupplementaryUnit, sectionPages,
+  type BookSource,
   type Algorithm, type ChapterEntry, type Concept, type ContentBundle, type CoreUnit, type Equation, type Example, type Figure,
   type LessonSection, type Question, type SectionEntry, type SourceRef, type SupplementaryUnit,
 } from "./schema";
+import type { Catalog, ItemKind } from "./catalog";
 
 export interface UnitView {
   id: string;
@@ -31,20 +33,18 @@ const citesSection = (it: Item, book: "textbook" | "zhao", section: string) => i
 const citesChapterOnly = (it: Item, book: "textbook" | "zhao", chapter: string) =>
   it.sources.some((s) => s.kind === book && s.chapter === chapter && s.section === undefined);
 
-export function buildIndexes(b: ContentBundle) {
-  const questions = b.questionFiles.flatMap((f) => f.questions);
-  const concepts = new Map(b.concepts.map((c) => [c.id, c]));
+/** Book structure only (sources + curriculum): the same in the catalogue and in a loaded bundle. */
+export function structureIndex(sources: { sb: Omit<BookSource, never>; zhao: BookSource }, curriculum: ContentBundle["curriculum"]) {
   const units: UnitView[] = [
-    ...b.curriculum.core.map((u) => ({
-      id: u.id, title: u.title, kind: "core" as const, status: u.status, core: u, chapter: b.sources.sb.chapters.find((c) => c.id === u.chapter),
+    ...curriculum.core.map((u) => ({
+      id: u.id, title: u.title, kind: "core" as const, status: u.status, core: u, chapter: sources.sb.chapters.find((c) => c.id === u.chapter),
     })),
-    ...b.curriculum.supplementary.map((u) => ({
+    ...curriculum.supplementary.map((u) => ({
       id: u.id, title: u.title, kind: "supplementary" as const, status: "supplementary" as const, sup: u,
-      chapter: u.zhao?.length ? b.sources.zhao.chapters.find((c) => c.id === u.zhao![0]) : undefined,
+      chapter: u.zhao?.length ? sources.zhao.chapters.find((c) => c.id === u.zhao![0]) : undefined,
     })),
   ];
   const unit = (id: string) => units.find((u) => u.id === id);
-  const inUnit = <T extends { unit: string }>(xs: T[], id: string) => xs.filter((x) => x.unit === id);
 
   /** Sections listed for a unit: the textbook chapter's sections, or the sections of the cited Zhao chapters. */
   function sectionsOf(id: string): { book: "sb" | "zhao"; chapter: ChapterEntry; section: SectionEntry }[] {
@@ -52,10 +52,78 @@ export function buildIndexes(b: ContentBundle) {
     if (!u) return [];
     if (u.kind === "core") return (u.chapter?.sections ?? []).map((section) => ({ book: "sb" as const, chapter: u.chapter!, section }));
     return (u.sup!.zhao ?? []).flatMap((z) => {
-      const ch = b.sources.zhao.chapters.find((c) => c.id === z)!;
+      const ch = sources.zhao.chapters.find((c) => c.id === z)!;
       return ch.sections.map((section) => ({ book: "zhao" as const, chapter: ch, section }));
     });
   }
+  const supplementsFor = (chapter: string) => curriculum.supplementary.filter((s) => s.attachTo.chapter === chapter);
+  const emptyNote = (chapter: string, section: string | null) => curriculum.emptyInSource.find((e) => e.chapter === chapter && e.section === section)?.note;
+  const pagesOf = (book: "sb" | "zhao", sectionId: string) => sectionPages(sources as unknown as ContentBundle["sources"], book, sectionId);
+  return { units, unit, sectionsOf, supplementsFor, emptyNote, pagesOf };
+}
+
+/** Every prerequisite, nearest first, without repeats. */
+function chainOf<T extends { id: string; prereqs: string[] }>(byId: Map<string, T>, id: string): T[] {
+  const out: T[] = [];
+  const seen = new Set<string>([id]);
+  let frontier = byId.get(id)?.prereqs ?? [];
+  while (frontier.length) {
+    const next: string[] = [];
+    for (const p of frontier)
+      if (!seen.has(p) && byId.has(p)) {
+        seen.add(p);
+        out.push(byId.get(p)!);
+        next.push(...byId.get(p)!.prereqs);
+      }
+    frontier = next;
+  }
+  return out;
+}
+
+/**
+ * Lookups over the catalogue (loaded with the app shell): navigation, counts, titles and cross-links, plus
+ * which units a page must load. Never returns full content: that comes from buildIndexes() over loaded units.
+ */
+export function catalogIndex(c: Catalog) {
+  const s = structureIndex(c.sources, c.curriculum);
+  const concepts = new Map(c.concepts.map((x) => [x.id, x]));
+  const items = new Map(c.items.map((x) => [x.id, x]));
+  const questions = new Map(c.questions.map((x) => [x.id, x]));
+  const has = new Set(c.contentUnits);
+  const inUnit = <T extends { unit: string }>(xs: T[], id: string) => xs.filter((x) => x.unit === id);
+  /** The unit that holds a concept, item or question, if the catalogue knows it. */
+  const unitOf = (id: string) => concepts.get(id)?.unit ?? items.get(id)?.unit ?? questions.get(id)?.unit;
+  /** Units to load to show `units` in full: themselves and the units their lessons show items from. Only units with content. */
+  const withDeps = (units: string[]) => [...new Set(units.flatMap((u) => [u, ...(c.deps[u] ?? [])]))].filter((u) => has.has(u)).sort();
+  return {
+    ...s,
+    catalog: c,
+    concept: (id: string) => concepts.get(id),
+    item: (id: string) => items.get(id),
+    question: (id: string) => questions.get(id),
+    unitOf,
+    withDeps,
+    hasContent: (unit: string) => has.has(unit),
+    conceptsOf: (unitId: string) => inUnit(c.concepts, unitId),
+    questionsOf: (unitId: string) => inUnit(c.questions, unitId),
+    itemsOf: (kind: ItemKind) => c.items.filter((i) => i.kind === kind),
+    dependents: (id: string) => c.concepts.filter((x) => x.prereqs.includes(id)),
+    prereqChain: (id: string) => chainOf(concepts, id),
+    /** Units holding the concept and every item or question about it (what its concept page shows). */
+    unitsForConcept: (id: string) =>
+      withDeps([concepts.get(id)?.unit, ...c.items.filter((i) => i.concepts.includes(id)).map((i) => i.unit), ...c.questions.filter((q) => q.concepts.includes(id)).map((q) => q.unit)].filter((u): u is string => !!u)),
+    /** Ids of revision cards: one per concept and one per equation (same as buildIndexes().cardIds). */
+    cardIds: () => [...c.concepts.map((x) => `card:${x.id}`), ...c.items.filter((i) => i.kind === "equation").map((i) => `card:${i.id}`)],
+  };
+}
+
+export type CatalogIndex = ReturnType<typeof catalogIndex>;
+
+export function buildIndexes(b: ContentBundle) {
+  const questions = b.questionFiles.flatMap((f) => f.questions);
+  const concepts = new Map(b.concepts.map((c) => [c.id, c]));
+  const { units, unit, sectionsOf, supplementsFor, emptyNote, pagesOf } = structureIndex(b.sources, b.curriculum);
+  const inUnit = <T extends { unit: string }>(xs: T[], id: string) => xs.filter((x) => x.unit === id);
 
   function sectionContent(unitId: string, sectionId: string): SectionContent {
     const book = isSupplementaryUnit(unitId) ? "zhao" : "textbook";
@@ -83,27 +151,7 @@ export function buildIndexes(b: ContentBundle) {
 
   /** Concepts that list `id` as a prerequisite (what this concept unlocks). */
   const dependents = (id: string) => b.concepts.filter((c) => c.prereqs.includes(id));
-  /** Every prerequisite, nearest first, without repeats. */
-  function prereqChain(id: string): Concept[] {
-    const out: Concept[] = [];
-    const seen = new Set<string>([id]);
-    let frontier = concepts.get(id)?.prereqs ?? [];
-    while (frontier.length) {
-      const next: string[] = [];
-      for (const p of frontier)
-        if (!seen.has(p) && concepts.has(p)) {
-          seen.add(p);
-          out.push(concepts.get(p)!);
-          next.push(...concepts.get(p)!.prereqs);
-        }
-      frontier = next;
-    }
-    return out;
-  }
-
-  const supplementsFor = (chapter: string) => b.curriculum.supplementary.filter((s) => s.attachTo.chapter === chapter);
-  const emptyNote = (chapter: string, section: string | null) => b.curriculum.emptyInSource.find((e) => e.chapter === chapter && e.section === section)?.note;
-  const pagesOf = (book: "sb" | "zhao", sectionId: string) => sectionPages(b.sources, book, sectionId);
+  const prereqChain = (id: string): Concept[] => chainOf(concepts, id);
 
   return {
     bundle: b,

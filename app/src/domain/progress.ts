@@ -25,7 +25,41 @@ export interface Attempt {
   score: number; // marks awarded
   max: number; // marks available
   at: number; // epoch ms
-  sessionId?: string;
+  sessionId?: string; // practice session or exam id
+  mode?: AttemptMode; // where the attempt was made (absent in v1 saves: those were all lesson exercises)
+  ms?: number; // time spent on the question, when measured
+  selfMarked?: boolean; // derivation / short-answer: the score is the learner's own mark against the rubric
+}
+
+export const ATTEMPT_MODES = ["lesson", "practice", "exam", "review"] as const;
+export type AttemptMode = (typeof ATTEMPT_MODES)[number];
+
+/** One question as it stood when an exam was submitted. Results pages compute everything from these. */
+export interface ExamItem {
+  qid: string;
+  unit: string;
+  section: string | null;
+  concepts: string[];
+  difficulty: number;
+  max: number;
+  score: number; // 0 when unanswered
+  answered: boolean;
+  markedForReview: boolean;
+  selfMarked: boolean;
+  ms: number; // time the question was on screen
+}
+
+/** A submitted mock exam. Stored as data, so results are recomputed, never hard-coded. */
+export interface ExamRecord {
+  id: string;
+  title: string;
+  startedAt: number;
+  submittedAt: number;
+  limitMs: number; // configured duration
+  elapsedMs: number; // time actually used (≤ limitMs)
+  endedBy: "submitted" | "timeout";
+  config: { units: string[]; difficulties: number[]; count: number };
+  items: ExamItem[];
 }
 
 /** Spaced-repetition state of one revision card (SM-2 family). */
@@ -49,11 +83,13 @@ export interface Activity {
 export interface ProgressData {
   conceptStatus: Record<string, { status: ConceptStatus; at: number }>;
   attempts: Attempt[];
-  marked: string[]; // question ids marked for revision, sorted
+  marked: string[]; // question ids flagged for revision, sorted
+  bookmarks: string[]; // question ids bookmarked, sorted (separate from the revision flag)
   cards: Record<string, CardState>;
   activity: Activity[]; // newest first, capped
   lastVisited: { path: string; title: string; at: number } | null;
   settings: Settings;
+  exams: ExamRecord[]; // submitted mock exams, oldest first
 }
 
 export const ACTIVITY_CAP = 200;
@@ -63,10 +99,12 @@ export const emptyProgress = (): ProgressData => ({
   conceptStatus: {},
   attempts: [],
   marked: [],
+  bookmarks: [],
   cards: {},
   activity: [],
   lastVisited: null,
   settings: { theme: "system", show2018Notation: false },
+  exams: [],
 });
 
 export function logActivity(p: ProgressData, a: Activity): ProgressData {
@@ -92,6 +130,13 @@ export function toggleMarked(p: ProgressData, qid: string): ProgressData {
   if (set.has(qid)) set.delete(qid);
   else set.add(qid);
   return { ...p, marked: [...set].sort() };
+}
+
+export function toggleBookmark(p: ProgressData, qid: string): ProgressData {
+  const set = new Set(p.bookmarks);
+  if (set.has(qid)) set.delete(qid);
+  else set.add(qid);
+  return { ...p, bookmarks: [...set].sort() };
 }
 
 export function visit(p: ProgressData, path: string, title: string, now: number): ProgressData {

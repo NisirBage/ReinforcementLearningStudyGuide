@@ -8,7 +8,8 @@ import { iterativePolicyEvaluation } from "../lib/rl/dp";
 import { equiprobablePolicy } from "../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../lib/rl/envs/gridworld4x4";
 import { useProgress } from "../store/ProgressContext";
-import { Badge, ConceptLink, Flags, Md, MdInline, Sources, SupplementaryBanner, Tex } from "./ui";
+import { Badge, ConceptLink, Sources, SupplementaryBanner } from "./ui";
+import { Flags, Md, MdInline, Tex } from "./math";
 
 export function EquationCard({ e, compact = false }: { e: Equation; compact?: boolean }) {
   const { data } = useProgress();

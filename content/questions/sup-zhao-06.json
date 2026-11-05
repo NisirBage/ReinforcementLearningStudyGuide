@@ -4,6 +4,8 @@
     {
       "id": "sup-zhao-06-q001",
       "unit": "sup-zhao-06",
+      "section": null,
+      "provenance": { "kind": "supplementary", "basis": ["eq.sup-zhao-06.rm-update"] },
       "concepts": ["sup-zhao-06.robbins-monro"],
       "type": "multi-numeric",
       "category": "numerical",

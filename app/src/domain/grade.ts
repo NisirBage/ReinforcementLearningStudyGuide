@@ -7,7 +7,7 @@ export type Response =
   | { type: "true-false"; value: boolean | null }
   | { type: "numeric"; values: (number | null)[] } // numeric and multi-numeric, one value per part
   | { type: "ordering"; order: number[] } // indices into q.options as the learner arranged them
-  | { type: "derivation"; selfScore: number | null }; // self-marked against the model answer
+  | { type: "derivation"; selfScore: number | null }; // derivation and short-answer: self-marked against the model answer
 
 export interface Grade {
   score: number;
@@ -53,7 +53,8 @@ export function gradeQuestion(q: Question, r: Response): Grade {
       const ok = Array.from({ length: n }, (_, i) => order[i] === i); // options are stored in the correct order
       return all(ok.every(Boolean) ? max : 0, { parts: ok });
     }
-    case "derivation": {
+    case "derivation":
+    case "short-answer": {
       const s = r.type === "derivation" ? r.selfScore : null;
       return all(s === null ? 0 : Math.max(0, Math.min(max, s)));
     }

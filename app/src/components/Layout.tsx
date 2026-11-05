@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useProgress } from "../store/ProgressContext";
+import { RouteBoundary } from "./Boundary";
 
 export const NAV = [
   ["/", "Home", "⌂"],
@@ -78,7 +79,15 @@ export function Layout() {
             Progress could not be saved in this browser. Export a backup from the Progress page to keep it.
           </div>
         )}
-        {ready ? <Outlet /> : <p className="muted">Loading your progress…</p>}
+        {ready ? (
+          <RouteBoundary resetKey={loc.pathname + loc.search}>
+            <Outlet />
+          </RouteBoundary>
+        ) : (
+          <p className="muted" role="status">
+            Loading your progress…
+          </p>
+        )}
       </main>
     </div>
   );

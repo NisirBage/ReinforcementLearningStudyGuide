@@ -2,9 +2,10 @@
 // with a `// @vitest-environment jsdom` comment.
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
+import { contentChunks } from "./plugins/vite_content.ts";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [contentChunks(), react()],
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts", "tests/**/*.test.tsx"],

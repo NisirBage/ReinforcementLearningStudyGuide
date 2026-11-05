@@ -813,6 +813,773 @@
         "page": "338",
         "pdfPage": 352
       }
+    ],
+    "exercises": [
+      {
+        "id": "1.1",
+        "chapter": "1",
+        "page": 26,
+        "pdfPage": 40,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "1.2",
+        "chapter": "1",
+        "page": 26,
+        "pdfPage": 40,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "1.3",
+        "chapter": "1",
+        "page": 26,
+        "pdfPage": 40,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "1.4",
+        "chapter": "1",
+        "page": 26,
+        "pdfPage": 40,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "1.5",
+        "chapter": "1",
+        "page": 26,
+        "pdfPage": 40,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "2.1",
+        "chapter": "2",
+        "page": 51,
+        "pdfPage": 65,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "2.2",
+        "chapter": "2",
+        "page": 51,
+        "pdfPage": 65,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "2.3",
+        "chapter": "2",
+        "page": 52,
+        "pdfPage": 66,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "2.4",
+        "chapter": "2",
+        "page": 52,
+        "pdfPage": 66,
+        "optional": false,
+        "programming": true,
+        "placeholder": false
+      },
+      {
+        "id": "2.5",
+        "chapter": "2",
+        "page": 52,
+        "pdfPage": 66,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "2.6",
+        "chapter": "2",
+        "page": 52,
+        "pdfPage": 66,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.1",
+        "chapter": "3",
+        "page": 85,
+        "pdfPage": 99,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.2",
+        "chapter": "3",
+        "page": 85,
+        "pdfPage": 99,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.3",
+        "chapter": "3",
+        "page": 85,
+        "pdfPage": 99,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.4",
+        "chapter": "3",
+        "page": 85,
+        "pdfPage": 99,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.5",
+        "chapter": "3",
+        "page": 85,
+        "pdfPage": 99,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.6",
+        "chapter": "3",
+        "page": 85,
+        "pdfPage": 99,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.7",
+        "chapter": "3",
+        "page": 86,
+        "pdfPage": 100,
+        "optional": false,
+        "programming": false,
+        "placeholder": true
+      },
+      {
+        "id": "3.8",
+        "chapter": "3",
+        "page": 86,
+        "pdfPage": 100,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.9",
+        "chapter": "3",
+        "page": 86,
+        "pdfPage": 100,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.10",
+        "chapter": "3",
+        "page": 86,
+        "pdfPage": 100,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.11",
+        "chapter": "3",
+        "page": 86,
+        "pdfPage": 100,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.12",
+        "chapter": "3",
+        "page": 86,
+        "pdfPage": 100,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.13",
+        "chapter": "3",
+        "page": 86,
+        "pdfPage": 100,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.14",
+        "chapter": "3",
+        "page": 87,
+        "pdfPage": 101,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.15",
+        "chapter": "3",
+        "page": 87,
+        "pdfPage": 101,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.16",
+        "chapter": "3",
+        "page": 87,
+        "pdfPage": 101,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.17",
+        "chapter": "3",
+        "page": 87,
+        "pdfPage": 101,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.18",
+        "chapter": "3",
+        "page": 87,
+        "pdfPage": 101,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.19",
+        "chapter": "3",
+        "page": 87,
+        "pdfPage": 101,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.20",
+        "chapter": "3",
+        "page": 87,
+        "pdfPage": 101,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "3.21",
+        "chapter": "3",
+        "page": 87,
+        "pdfPage": 101,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "4.1",
+        "chapter": "4",
+        "page": 110,
+        "pdfPage": 124,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "4.2",
+        "chapter": "4",
+        "page": 110,
+        "pdfPage": 124,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "4.3",
+        "chapter": "4",
+        "page": 110,
+        "pdfPage": 124,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "4.4",
+        "chapter": "4",
+        "page": 110,
+        "pdfPage": 124,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "4.5",
+        "chapter": "4",
+        "page": 110,
+        "pdfPage": 124,
+        "optional": false,
+        "programming": true,
+        "placeholder": false
+      },
+      {
+        "id": "4.6",
+        "chapter": "4",
+        "page": 110,
+        "pdfPage": 124,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "4.7",
+        "chapter": "4",
+        "page": 111,
+        "pdfPage": 125,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "4.8",
+        "chapter": "4",
+        "page": 111,
+        "pdfPage": 125,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "4.9",
+        "chapter": "4",
+        "page": 111,
+        "pdfPage": 125,
+        "optional": false,
+        "programming": true,
+        "placeholder": false
+      },
+      {
+        "id": "4.10",
+        "chapter": "4",
+        "page": 111,
+        "pdfPage": 125,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.1",
+        "chapter": "5",
+        "page": 140,
+        "pdfPage": 154,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.2",
+        "chapter": "5",
+        "page": 140,
+        "pdfPage": 154,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.3",
+        "chapter": "5",
+        "page": 140,
+        "pdfPage": 154,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.4",
+        "chapter": "5",
+        "page": 141,
+        "pdfPage": 155,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.5",
+        "chapter": "5",
+        "page": 141,
+        "pdfPage": 155,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.6",
+        "chapter": "5",
+        "page": 141,
+        "pdfPage": 155,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.7",
+        "chapter": "5",
+        "page": 141,
+        "pdfPage": 155,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.8",
+        "chapter": "5",
+        "page": 141,
+        "pdfPage": 155,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "5.9",
+        "chapter": "5",
+        "page": 141,
+        "pdfPage": 155,
+        "optional": false,
+        "programming": true,
+        "placeholder": false
+      },
+      {
+        "id": "5.10",
+        "chapter": "5",
+        "page": 142,
+        "pdfPage": 156,
+        "optional": true,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.1",
+        "chapter": "6",
+        "page": 164,
+        "pdfPage": 178,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.2",
+        "chapter": "6",
+        "page": 164,
+        "pdfPage": 178,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.3",
+        "chapter": "6",
+        "page": 164,
+        "pdfPage": 178,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.4",
+        "chapter": "6",
+        "page": 164,
+        "pdfPage": 178,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.5",
+        "chapter": "6",
+        "page": 164,
+        "pdfPage": 178,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.6",
+        "chapter": "6",
+        "page": 165,
+        "pdfPage": 179,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.7",
+        "chapter": "6",
+        "page": 165,
+        "pdfPage": 179,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.8",
+        "chapter": "6",
+        "page": 165,
+        "pdfPage": 179,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.9",
+        "chapter": "6",
+        "page": 165,
+        "pdfPage": 179,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.10",
+        "chapter": "6",
+        "page": 165,
+        "pdfPage": 179,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "6.11",
+        "chapter": "6",
+        "page": 165,
+        "pdfPage": 179,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "7.1",
+        "chapter": "7",
+        "page": 193,
+        "pdfPage": 207,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "7.2",
+        "chapter": "7",
+        "page": 193,
+        "pdfPage": 207,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "7.3",
+        "chapter": "7",
+        "page": 193,
+        "pdfPage": 207,
+        "optional": true,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "7.4",
+        "chapter": "7",
+        "page": 193,
+        "pdfPage": 207,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "7.5",
+        "chapter": "7",
+        "page": 193,
+        "pdfPage": 207,
+        "optional": false,
+        "programming": true,
+        "placeholder": false
+      },
+      {
+        "id": "7.6",
+        "chapter": "7",
+        "page": 193,
+        "pdfPage": 207,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "7.7",
+        "chapter": "7",
+        "page": 193,
+        "pdfPage": 207,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "8.1",
+        "chapter": "8",
+        "page": 221,
+        "pdfPage": 235,
+        "optional": false,
+        "programming": false,
+        "placeholder": true
+      },
+      {
+        "id": "8.2",
+        "chapter": "8",
+        "page": 221,
+        "pdfPage": 235,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "8.3",
+        "chapter": "8",
+        "page": 222,
+        "pdfPage": 236,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "8.4",
+        "chapter": "8",
+        "page": 222,
+        "pdfPage": 236,
+        "optional": false,
+        "programming": true,
+        "placeholder": false
+      },
+      {
+        "id": "8.5",
+        "chapter": "8",
+        "page": 222,
+        "pdfPage": 236,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "8.6",
+        "chapter": "8",
+        "page": 222,
+        "pdfPage": 236,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "8.7",
+        "chapter": "8",
+        "page": 222,
+        "pdfPage": 236,
+        "optional": false,
+        "programming": true,
+        "placeholder": false
+      },
+      {
+        "id": "9.1",
+        "chapter": "9",
+        "page": 253,
+        "pdfPage": 267,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "9.2",
+        "chapter": "9",
+        "page": 253,
+        "pdfPage": 267,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "9.3",
+        "chapter": "9",
+        "page": 254,
+        "pdfPage": 268,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "9.4",
+        "chapter": "9",
+        "page": 254,
+        "pdfPage": 268,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "9.5",
+        "chapter": "9",
+        "page": 254,
+        "pdfPage": 268,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "9.6",
+        "chapter": "9",
+        "page": 254,
+        "pdfPage": 268,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "9.7",
+        "chapter": "9",
+        "page": 254,
+        "pdfPage": 268,
+        "optional": false,
+        "programming": false,
+        "placeholder": false
+      },
+      {
+        "id": "11.1",
+        "chapter": "11",
+        "page": 262,
+        "pdfPage": 276,
+        "optional": true,
+        "programming": false,
+        "placeholder": false
+      }
     ]
   },
   "zhao": {

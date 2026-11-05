@@ -4,6 +4,8 @@
     {
       "id": "ch02-q001",
       "unit": "ch02",
+      "section": "2.3",
+      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.incremental-update"] },
       "concepts": ["ch02.incremental-update"],
       "type": "multi-numeric",
       "category": "numerical",
@@ -23,6 +25,7 @@
       ],
       "explanation": "With step size 1/k the incremental rule reproduces the sample average exactly, whatever Q_1 was.",
       "misconceptions": [{ "wrong": "Q_2 = 3 (averaging Q_1 with R_1)", "why": "Q_1 is not a reward; with k = 1 the step size is 1, so Q_2 = R_1." }],
+      "related": ["ch02-q002"],
       "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [37, 37], "pdfPages": [51, 51] }],
       "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q001" },
       "reviewed": true
@@ -30,6 +33,8 @@
     {
       "id": "ch02-q002",
       "unit": "ch02",
+      "section": "2.4",
+      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.constant-step"] },
       "concepts": ["ch02.constant-step-size"],
       "type": "numeric",
       "category": "numerical",
@@ -39,6 +44,7 @@
       "parts": [{ "label": "Q_3", "answer": 3.5, "tolerance": 0.001 }],
       "solution": ["$Q_2 = 4 + 0.5(10 - 4) = 7$.", "$Q_3 = 7 + 0.5(0 - 7) = 3.5$."],
       "explanation": "Rule (2.5) applied twice. Equivalently, by (2.6): $0.25 \\cdot 4 + 0.25 \\cdot 10 + 0.5 \\cdot 0 = 3.5$.",
+      "related": ["ch02-q001", "ch02-q003"],
       "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 38], "pdfPages": [52, 52] }],
       "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q002" },
       "reviewed": true
@@ -46,6 +52,8 @@
     {
       "id": "ch02-q003",
       "unit": "ch02",
+      "section": "2.4",
+      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.recency-weighted"] },
       "concepts": ["ch02.recency-weighted-average"],
       "type": "multi-numeric",
       "category": "numerical",
@@ -65,6 +73,7 @@
       ],
       "explanation": "The most recent reward gets the largest weight; each older reward gets a factor (1 − α) less.",
       "misconceptions": [{ "wrong": "Weights 0.5, 0.25, 0.125 on R_1, R_2, R_3", "why": "The exponent is k − i, the number of rewards since R_i, so the oldest reward has the smallest weight." }],
+      "related": ["ch02-q002", "ch02-q007"],
       "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }],
       "verification": { "method": "computed", "on": "2026-11-04", "check": "ch02-q003" },
       "reviewed": true
@@ -72,6 +81,8 @@
     {
       "id": "ch02-q004",
       "unit": "ch02",
+      "section": "2.6",
+      "provenance": { "kind": "generated", "basis": ["eq.ch02.ucb"] },
       "concepts": ["ch02.ucb"],
       "type": "multi-numeric",
       "category": "numerical",
@@ -100,6 +111,8 @@
     {
       "id": "ch02-q005",
       "unit": "ch02",
+      "section": "2.4",
+      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.step-size-conditions"] },
       "concepts": ["ch02.step-size-conditions"],
       "type": "multi",
       "category": "analytical",
@@ -108,6 +121,13 @@
       "stem": "Which step-size sequences $\\alpha_k$ satisfy both conditions in (2.7), $\\sum_k \\alpha_k = \\infty$ and $\\sum_k \\alpha_k^2 < \\infty$? Select all that apply.",
       "options": ["$\\alpha_k = 1/k$", "$\\alpha_k = 0.1$ (constant)", "$\\alpha_k = 1/k^2$", "$\\alpha_k = 1/\\sqrt{k}$", "$\\alpha_k = 1/(k + 10)$"],
       "answer": [0, 4],
+      "optionNotes": [
+        "Satisfies both: the harmonic series $\\sum 1/k$ diverges, while $\\sum 1/k^2 = \\pi^2/6$ is finite.",
+        "Fails the second condition: $\\sum 0.1 = \\infty$ but $\\sum 0.01 = \\infty$ too, so the estimate never settles. A constant step keeps tracking recent rewards, which is useful when the problem is nonstationary.",
+        "Fails the first condition: $\\sum 1/k^2$ is finite, so the steps become too small to overcome the initial estimate.",
+        "Fails the second condition: $\\sum 1/\\sqrt{k} = \\infty$ but $\\sum (1/\\sqrt{k})^2 = \\sum 1/k = \\infty$.",
+        "Satisfies both: it is the harmonic series shifted by 10, so its sum diverges, and $\\sum 1/(k+10)^2 < \\sum 1/k^2$ is finite."
+      ],
       "solution": [
         "$1/k$: the harmonic series diverges and $\\sum 1/k^2 = \\pi^2/6$ converges. Both hold.",
         "Constant $0.1$: $\\sum 0.01$ diverges, so the second condition fails.",
@@ -122,6 +142,8 @@
     {
       "id": "ch02-q006",
       "unit": "ch02",
+      "section": "2.2",
+      "provenance": { "kind": "generated", "basis": ["§2.2"] },
       "concepts": ["ch02.epsilon-greedy"],
       "type": "multi-numeric",
       "category": "numerical",
@@ -148,6 +170,8 @@
     {
       "id": "ch02-q007",
       "unit": "ch02",
+      "section": "2.4",
+      "provenance": { "kind": "textbook-derived", "basis": ["eq.ch02.recency-weighted"] },
       "concepts": ["ch02.recency-weighted-average"],
       "type": "true-false",
       "category": "conceptual",
@@ -160,6 +184,7 @@
         "Only after adding the weight $(1-\\alpha)^k$ on $Q_1$ is the total exactly 1."
       ],
       "explanation": "The initial estimate keeps a small, geometrically shrinking share of the weight. The estimate is biased by Q_1, as Section 2.5 discusses.",
+      "related": ["ch02-q003"],
       "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }],
       "reviewed": true
     }

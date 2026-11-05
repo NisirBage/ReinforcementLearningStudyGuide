@@ -80,3 +80,60 @@ A flag can carry a `suggestion`, which is shown separately from the source text.
 - Search results link to real routes, not `#anchors`, because routing uses the URL hash.
 - Any `console.error` during a UI test fails it (`tests/setup.ts`).
 - Supplementary material is linked from core pages ("Go further"), never rendered inside them.
+
+## D-031: Code and content are split; pages load what they show (Accepted, 2026-11-05)
+- **Problem:** Milestone 2b shipped one 746 kB script: KaTeX, markdown-it and every chapter loaded on every page, including the dashboard.
+- **Pages:** every route except the dashboard and not-found is its own chunk (`App.tsx`, `lazyPage` in `components/Boundary.tsx`).
+- **Maths renderer:** KaTeX, markdown-it, their CSS and fonts form one `render` chunk. Only pages that show maths fetch it (`components/math.tsx`, split from `ui.tsx`).
+- **Content:** `app/plugins/vite_content.ts` derives from `content/`, with the pure functions in `content/catalog.ts`:
+  - a **catalogue** loaded with the shell (38 KiB of JSON today): the page tables, the curriculum, and stubs for every concept, item and question;
+  - **one chunk per unit**, plus one for the notation.
+- **Loading rules:**
+  - pages call `useContent(units)` for exactly the units they show;
+  - supplementary units are never fetched by core pages;
+  - libraries fetch supplementary units only when the learner selects them;
+  - the search index is built on the first query.
+- **No second copy:** `content/` stays the only source (D-001). A test checks that the catalogue and every unit chunk equal what the content files give. Another checks that app code never imports the old all-content `bundle.ts`, which is now used by tests only.
+- **Failures:**
+  - each route has an error boundary and a loading state;
+  - a failed download stays cached until **Try again**, which fetches it again (React.lazy would keep the failure for good);
+  - the navigation and search box keep working around a failed page.
+- **Instant cached renders:** a page whose content is already in memory renders at once, without a loading frame.
+- **Tests:** interaction tests preload pages and content first. A click that must fetch a page suspends inside the testing library's synchronous `act()`, which React reports as an error. Route tests do not preload, so they exercise on-demand loading. `tests/loading.test.tsx` covers loading states, failures and retry. Async queries wait up to 5 s (default 1 s), because the first maths page in a busy parallel run can take longer.
+
+## D-032: Offline: the shell is stored at install, chapters on first use or on request (Accepted, 2026-11-05)
+- **At install**, the service worker stores 36 files (996 KiB): the shell, every page's code, the maths renderer and its woff2 fonts.
+- **On first fetch**, it stores chapter chunks, the notation and the other font formats.
+- **On request**, Settings → **Save everything for offline** stores all 81 files and reports the count from the worker's own cache.
+- **Updates:** a new build carries over every stored file whose content-hashed name is unchanged, so an update does not lose saved chapters.
+- **Trade-off (the learner's choice):** a chapter that has never been opened or saved is not available offline. Its page says so and offers a retry.
+
+## D-033: Question provenance and the exercise registry (Accepted, 2026-11-05)
+- **`provenance` is required on every question**, with one of four kinds:
+  - `textbook-exercise`: the draft's exercise, reworded;
+  - `textbook-derived`: names its basis (an exercise, §section or content item id);
+  - `generated`: a new application question;
+  - `supplementary`: required in supplementary units and forbidden in core ones.
+- **Exercise registry:** `tools/build_sources.py` now writes `sources.sb.exercises`, the 85 exercise headings of the draft with printed and PDF pages and the ∗ and (programming) markers. No exercise text is stored.
+- **Checks against the registry:**
+  - a cited exercise must exist and not be a placeholder;
+  - it must belong to the question's chapter;
+  - its page must be cited.
+- **Placeholders flagged, not fixed:** the draft prints two placeholders, "There is no exercise 3.7" and "There is no Exercise 8.1". They are recorded as `placeholder: true` (D-023), so no question can claim them.
+- **Other new fields:**
+  - `section` (required, may be null), checked against the unit's chapter;
+  - `related`, checked to exist on the same side of the core/supplementary line;
+  - `rubric` for `derivation` and the new `short-answer` type, whose marks must sum to the question's marks; these are self-marked, never auto-graded;
+  - `optionNotes` for reviewed mcq/multi questions, saying why each option is right or wrong;
+  - a new category, `code-interpretation`.
+- **`adaptedFrom` retired:** the field is now rejected. ch04-q001 is `textbook-exercise` 4.1, because it asks what Exercise 4.1 asks. It is reworded, and adds the value of v_π(11) from Figure 4.2.
+
+## D-034: Progress format version 2 (Accepted, 2026-11-05)
+- **Additive:**
+  - `bookmarks`, separate from the revision flag `marked`;
+  - `exams`, submitted mock-exam records, from which results are recomputed and never stored as summaries;
+  - optional `mode` (lesson, practice, exam, review), `ms` and `selfMarked` on attempts.
+- **Older saves:** version 1 saves and exports load unchanged, with empty new fields.
+- **Malformed records:** a malformed exam record is dropped whole, never kept in part.
+- **Merging** unites bookmarks and exams by id.
+- **Tests updated:** two existing tests named the schema number. The export now says `schema: 2`, and the "newer version" refusal test now uses 3.

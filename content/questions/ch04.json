@@ -4,6 +4,8 @@
     {
       "id": "ch04-q001",
       "unit": "ch04",
+      "section": "4.1",
+      "provenance": { "kind": "textbook-exercise", "exercise": "4.1" },
       "concepts": ["ch04.gridworld-4x4", "ch03.bellman-equation-v"],
       "type": "multi-numeric",
       "category": "numerical",
@@ -21,7 +23,6 @@
       ],
       "explanation": "An action value is one step of reward plus the value of the state you land in. After that step the policy π takes over.",
       "misconceptions": [{ "wrong": "q_π(11, down) = −14", "why": "That is v_π(11), the average over all four actions. Choosing down terminates immediately." }],
-      "adaptedFrom": "Exercise 4.1",
       "sources": [{ "kind": "textbook", "chapter": "4", "printedPages": [110, 110], "pdfPages": [124, 124] }],
       "verification": { "method": "computed", "on": "2026-11-04", "check": "ch04-q001" },
       "reviewed": true
@@ -29,6 +30,8 @@
     {
       "id": "ch04-q002",
       "unit": "ch04",
+      "section": "4.1",
+      "provenance": { "kind": "textbook-derived", "basis": ["fig.ch04.policy-evaluation-grids", "eq.ch04.policy-evaluation-update"] },
       "concepts": ["ch04.iterative-policy-evaluation"],
       "type": "multi-numeric",
       "category": "algorithm-trace",
@@ -46,6 +49,7 @@
       ],
       "explanation": "Figure 4.2 prints $v_2(1)$ as −1.7. The exact value is −1.75 (see the figure-rounding flag on Example 4.1).",
       "misconceptions": [{ "wrong": "v_2(1) = −1.7 exactly", "why": "That is the printed one-decimal value. The exact two-array iterate is −1.75." }],
+      "related": ["ch04-q003"],
       "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [91, 93], "pdfPages": [105, 107] }],
       "verification": { "method": "computed", "on": "2026-11-04", "check": "ch04-q002" },
       "reviewed": true
@@ -53,6 +57,8 @@
     {
       "id": "ch04-q003",
       "unit": "ch04",
+      "section": "4.1",
+      "provenance": { "kind": "textbook-derived", "basis": ["alg.ch04.iterative-policy-evaluation"] },
       "concepts": ["ch04.iterative-policy-evaluation"],
       "type": "ordering",
       "category": "pseudocode",
@@ -72,6 +78,7 @@
         "Test the stopping condition once the sweep is complete."
       ],
       "explanation": "The old value must be saved before the backup overwrites it, or the change Δ cannot be measured.",
+      "related": ["ch04-q002"],
       "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 92], "pdfPages": [106, 106] }],
       "reviewed": true
     }

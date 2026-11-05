@@ -2,7 +2,7 @@
 // domain/progress.ts or store/persistence.ts; this file only wires them to state and to IndexedDB.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  emptyProgress, logActivity, recordAttempt, review, setConceptStatus, toggleMarked, visit,
+  emptyProgress, logActivity, recordAttempt, review, setConceptStatus, toggleBookmark, toggleMarked, visit,
   type Attempt, type ConceptStatus, type ProgressData, type Settings,
 } from "../domain/progress";
 import { STORAGE_KEY, mergeProgress, parseImport } from "./persistence";
@@ -15,7 +15,8 @@ interface Ctx {
   saveFailed: boolean;
   setStatus: (concept: string, status: ConceptStatus) => void;
   attempt: (a: Omit<Attempt, "at">) => void;
-  toggleMark: (qid: string) => void;
+  toggleMark: (qid: string) => void; // flag for revision
+  toggleBookmark: (qid: string) => void;
   reviewCard: (cardId: string, grade: 0 | 1 | 2 | 3) => void;
   visit: (path: string, title: string) => void;
   setSettings: (patch: Partial<Settings>) => void;
@@ -80,6 +81,7 @@ export function ProgressProvider({ children, store, now = Date.now }: Props) {
       setStatus: (c, s) => apply((d) => setConceptStatus(d, c, s, now())),
       attempt: (a) => apply((d) => recordAttempt(d, { ...a, at: now() })),
       toggleMark: (q) => apply((d) => toggleMarked(d, q)),
+      toggleBookmark: (q) => apply((d) => toggleBookmark(d, q)),
       reviewCard: (id, g) => apply((d) => review(d, id, g, now())),
       visit: (path, title) =>
         apply((d) => (d.lastVisited?.path === path ? d : logActivity(visit(d, path, title, now()), { at: now(), kind: "lesson", ref: path, detail: title }))),

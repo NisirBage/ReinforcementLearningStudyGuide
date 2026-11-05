@@ -1,26 +1,32 @@
 // Pages for one concept or one content item, reached from search and cross-links.
 import { Link, useParams } from "react-router-dom";
-import { idx } from "../content/bundle";
+import { cat, useContent } from "../content/load";
 import { isSupplementaryUnit } from "../content/schema";
 import { STATUS_LABEL, statusOf } from "../domain/progress";
 import { useProgress } from "../store/ProgressContext";
 import { AlgorithmBox, EquationCard, ExampleCard, FigureView } from "../components/items";
 import { QuestionCard } from "../components/QuestionCard";
-import { Badge, ConceptLink, Flags, Md, PageTitle, Sources, StatusPicker, SupplementaryBanner } from "../components/ui";
+import { Badge, ConceptLink, PageTitle, Sources, StatusPicker, SupplementaryBanner } from "../components/ui";
+import { Flags, Md } from "../components/math";
 import { NotFound } from "./NotFound";
 
 const unitCrumb = (unit: string) => {
-  const u = idx.unit(unit);
+  const u = cat.unit(unit);
   return u ? <Link to={`/learn/${u.id}`}>{u.kind === "core" ? `Chapter ${u.core!.chapter}` : u.title}</Link> : unit;
 };
 
 export function ConceptPage() {
   const { id = "" } = useParams();
-  const c = idx.concept(id);
+  if (!cat.concept(id)) return <NotFound />;
+  return <ConceptBody id={id} />;
+}
+
+function ConceptBody({ id }: { id: string }) {
+  const idx = useContent(cat.unitsForConcept(id)); // the concept's unit and every unit with items about it
+  const c = idx.concept(id)!;
   const { data, setStatus } = useProgress();
-  if (!c) return <NotFound />;
-  const chain = idx.prereqChain(c.id);
-  const unlocks = idx.dependents(c.id);
+  const chain = cat.prereqChain(c.id); // from the catalogue: prerequisites may sit in units not loaded here
+  const unlocks = cat.dependents(c.id);
   const eqs = idx.equationsFor(c.id);
   const algs = idx.algorithmsFor(c.id);
   const exs = idx.examplesFor(c.id);
@@ -85,6 +91,13 @@ export function ConceptPage() {
 
 export function ItemPage({ kind }: { kind: "equation" | "algorithm" | "example" | "figure" }) {
   const { id = "" } = useParams();
+  const stub = cat.item(id);
+  if (!stub || stub.kind !== kind) return <NotFound />;
+  return <ItemBody kind={kind} id={id} unit={stub.unit} />;
+}
+
+function ItemBody({ kind, id, unit }: { kind: "equation" | "algorithm" | "example" | "figure"; id: string; unit: string }) {
+  const idx = useContent([unit]);
   const item = kind === "equation" ? idx.equation(id) : kind === "algorithm" ? idx.algorithm(id) : kind === "example" ? idx.example(id) : idx.figure(id);
   if (!item) return <NotFound />;
   const title = "name" in item ? item.name : item.title;

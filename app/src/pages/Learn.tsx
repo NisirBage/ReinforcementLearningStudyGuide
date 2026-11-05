@@ -1,24 +1,25 @@
 // Chapter list, unit pages and section pages.
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { idx } from "../content/bundle";
+import { cat, useContent } from "../content/load";
 import { isSupplementaryUnit } from "../content/schema";
 import { completion, statusOf, type ConceptStatus } from "../domain/progress";
 import { useProgress } from "../store/ProgressContext";
 import { AlgorithmBox, EquationCard, ExampleCard, FigureView } from "../components/items";
 import { QuestionCard } from "../components/QuestionCard";
-import { Badge, ConceptLink, Empty, Md, PageTitle, Sources, StatusPicker, SupplementaryBanner, pct } from "../components/ui";
+import { Badge, ConceptLink, Empty, PageTitle, Sources, StatusPicker, SupplementaryBanner, pct } from "../components/ui";
+import { Md } from "../components/math";
 import { NotFound } from "./NotFound";
 
-const off = () => idx.bundle.sources.sb.pdfPageOffset ?? 0;
+const off = () => cat.catalog.sources.sb.pdfPageOffset ?? 0;
 const pages = (a: number, b: number) => (a === b ? `p. ${a}` : `pp. ${a}–${b}`);
 const zhaoName = (id: string) => (/^[A-D]$/.test(id) ? `Appendix ${id}` : `Chapter ${id}`);
 const sbPages = (a: number, b: number) => `${pages(a, b)} (PDF ${a + off() === b + off() ? a + off() : `${a + off()}–${b + off()}`})`;
 
 export function LearnIndex() {
   const { data } = useProgress();
-  const parts = [null, ...idx.bundle.sources.sb.parts.map((p) => p.title)];
-  const core = idx.units.filter((u) => u.kind === "core");
+  const parts = [null, ...cat.catalog.sources.sb.parts.map((p) => p.title)];
+  const core = cat.units.filter((u) => u.kind === "core");
   return (
     <>
       <PageTitle title="Learn">Learn</PageTitle>
@@ -31,7 +32,7 @@ export function LearnIndex() {
             {part && <h2 className="part">Part · {part}</h2>}
             <ul className="rows">
               {list.map((u) => {
-                const concepts = idx.conceptsOf(u.id).map((c) => c.id);
+                const concepts = cat.conceptsOf(u.id).map((c) => c.id);
                 return (
                   <li key={u.id}>
                     <Link className="row" to={`/learn/${u.id}`}>
@@ -55,7 +56,7 @@ export function LearnIndex() {
       <section>
         <h2 className="part">Supplementary modules (not in the 2015 draft)</h2>
         <ul className="rows">
-          {idx.units
+          {cat.units
             .filter((u) => u.kind === "supplementary")
             .map((u) => (
               <li key={u.id}>
@@ -77,7 +78,7 @@ export function LearnIndex() {
 
 function ConceptRow({ id }: { id: string }) {
   const { data, setStatus } = useProgress();
-  const c = idx.concept(id)!;
+  const c = cat.concept(id)!;
   return (
     <li className="concept-row" id={c.id}>
       <Link to={`/concept/${c.id}`}>{c.title}</Link>
@@ -88,12 +89,18 @@ function ConceptRow({ id }: { id: string }) {
 
 export function UnitPage() {
   const { unit = "" } = useParams();
-  const u = idx.unit(unit);
+  const u = cat.unit(unit);
   const { visit } = useProgress();
   useEffect(() => {
     if (u) visit(`/learn/${u.id}`, u.kind === "core" ? `Chapter ${u.core!.chapter}: ${u.title}` : u.title);
   }, [u, visit]);
   if (!u) return <NotFound />;
+  return <UnitBody unitId={u.id} />;
+}
+
+function UnitBody({ unitId }: { unitId: string }) {
+  const idx = useContent([unitId]); // suspends until this chapter's content is loaded
+  const u = idx.unit(unitId)!;
   const sup = u.kind === "supplementary";
   const sections = idx.sectionsOf(u.id);
   const chapterLevel = idx.chapterLevel(u.id);
@@ -209,8 +216,8 @@ const LAYER_LABEL: Record<string, string> = {
 
 export function SectionPage() {
   const { unit = "", section = "" } = useParams();
-  const u = idx.unit(unit);
-  const list = u ? idx.sectionsOf(u.id) : [];
+  const u = cat.unit(unit);
+  const list = u ? cat.sectionsOf(u.id) : [];
   const i = list.findIndex((s) => s.section.id === section);
   const { visit } = useProgress();
   const entry = list[i];
@@ -218,7 +225,14 @@ export function SectionPage() {
     if (u && entry) visit(`/learn/${u.id}/${entry.section.id}`, `§${entry.section.id} ${entry.section.title}`);
   }, [u, entry, visit]);
   if (!u || !entry) return <NotFound />;
-  const { book, chapter, section: s } = entry;
+  return <SectionBody unitId={u.id} index={i} />;
+}
+
+function SectionBody({ unitId, index: i }: { unitId: string; index: number }) {
+  const idx = useContent([unitId]); // suspends until this chapter's content is loaded
+  const u = idx.unit(unitId)!;
+  const list = idx.sectionsOf(u.id);
+  const { book, chapter, section: s } = list[i];
   const c = idx.sectionContent(u.id, s.id);
   const span = idx.pagesOf(book, s.id);
   const empty = book === "sb" ? idx.emptyNote(chapter.id, s.id) : undefined;
