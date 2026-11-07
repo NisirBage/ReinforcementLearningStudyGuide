@@ -92,6 +92,10 @@ export interface ProgressData {
   lastVisited: { path: string; title: string; at: number } | null;
   settings: Settings;
   exams: ExamRecord[]; // submitted mock exams, oldest first
+  /** Sections the learner has marked as read, "<unit>/<section>" → when (Milestone 4A; absent in older saves). */
+  sectionsRead: Record<string, number>;
+  /** Bookmarked sections, "<unit>/<section>", sorted (separate from question bookmarks). */
+  sectionBookmarks: string[];
 }
 
 export const ACTIVITY_CAP = 200;
@@ -107,6 +111,8 @@ export const emptyProgress = (): ProgressData => ({
   lastVisited: null,
   settings: { theme: "system", show2018Notation: false },
   exams: [],
+  sectionsRead: {},
+  sectionBookmarks: [],
 });
 
 export function logActivity(p: ProgressData, a: Activity): ProgressData {
@@ -362,3 +368,26 @@ export function labUse(p: ProgressData): { slug: string; title: string; visits: 
     }
   return [...m.values()].sort((a, b) => b.last - a.last);
 }
+
+// ---------- Reading progress and section bookmarks (Milestone 4A) ----------
+
+/** The key of a section in sectionsRead and sectionBookmarks. */
+export const sectionKey = (unit: string, section: string) => `${unit}/${section}`;
+
+/** Marks a section as read, or clears the mark. Reading is the learner's own statement, never inferred from a visit. */
+export function setSectionRead(p: ProgressData, key: string, read: boolean, now: number): ProgressData {
+  const sectionsRead = { ...p.sectionsRead };
+  if (read) sectionsRead[key] = now;
+  else delete sectionsRead[key];
+  return { ...p, sectionsRead };
+}
+
+export function toggleSectionBookmark(p: ProgressData, key: string): ProgressData {
+  const set = new Set(p.sectionBookmarks);
+  if (set.has(key)) set.delete(key);
+  else set.add(key);
+  return { ...p, sectionBookmarks: [...set].sort() };
+}
+
+/** How many of the given section keys are marked read. */
+export const readCount = (p: ProgressData, keys: string[]) => keys.filter((k) => p.sectionsRead[k] !== undefined).length;

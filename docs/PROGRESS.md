@@ -453,3 +453,100 @@ The eleven algorithms: ε-greedy, UCB and the gradient bandit (new boxes, becaus
 
 ### Next
 Textbook coverage beyond Chapters 2–6, starting with the chapters the draft builds on next (Chapter 7, eligibility traces), using the same content types, checks and explainers.
+
+## Milestone 4: Comprehensive textbook coverage (in progress)
+
+The plan and its baseline are in [COVERAGE_AUDIT.md](COVERAGE_AUDIT.md), approved on 2026-11-07 with its six recommended decisions:
+1. Chapter 1 is covered after Chapter 6.
+2. Summary, history and bibliographic sections get reading guides.
+3. Programming exercises become guided lab tasks.
+4. Chapter 14 gets lessons and questions only.
+5. Monte Carlo ES moves to blackjack.
+6. Placeholder exercises 3.7 and 8.1 are listed as placeholders.
+
+The live, per-section status is [docs/coverage/](coverage/README.md), generated from the content and checked by `npm run check`.
+
+### Milestone 4A: Coverage tooling, validation, search index, reading progress (done, 2026-11-07)
+
+No new learning content: this step builds the means to measure and check it.
+
+**Source inventory.** `tools/build_inventory.py` (`npm run inventory`) reads the draft's text layer and writes `content/source/inventory.json`. For each chapter introduction and section it records the numbered equations, the named examples, the figure captions and the approximate length. It records numbers only, never text.
+- Totals: **80 equations, 36 examples, 104 figure captions**.
+- Each is assigned to exactly one place, and the numbering runs without gaps through every chapter (tested).
+- Ligatures in the text layer (ﬁ, ﬀ, ﬃ) had hidden five section headings (§3.4, 4.7, 5.5, 5.7, 7.7); the text is now normalised.
+- Equation numbers cited again later in the text are not counted twice.
+- Chapter 4's (4.1)–(4.2) sit in the chapter introduction, before §4.1, so introductions are tracked too.
+- **Examples 4.1 and 6.3, which the audit could not locate, are confirmed:** both are headed without a colon.
+
+**Coverage.** `content/coverage.ts` computes each section's status from the content and the inventory:
+- **covered** needs all four: a lesson, every numbered equation the draft has there, every named example (as a worked-example item or a lab check), and at least one question;
+- **partial** lists what is missing;
+- the other statuses are **not started** and **unwritten in the draft**.
+
+`content/coverage/coverage.json` declares only what cannot be computed:
+- reading-guide sections (the summaries, the Chapter 1 history and the bibliographical remarks);
+- examples reproduced by lab checks (4.3, 6.2, 6.5, 6.6);
+- the two placeholder exercises;
+- sections that are thin in the draft (§7.8, 7.9, 11.2, and the partly written Chapter 15).
+
+A declaration can never make a section covered on its own (tested). The validator checks every declaration, for example that only exercises the registry marks as placeholders may be declared placeholders.
+
+**Coverage report:** `npm run coverage` writes `docs/coverage/README.md` and one page per chapter, listing what each section still needs. `npm run check` now fails if the committed report is out of date.
+
+**Baseline** (honest, before any 4C–4N content):
+
+| | Covered |
+|---|---|
+| Written sections | 2 of 86 (§2.3 and §2.4) |
+| Numbered equations | 18 of 80 |
+| Named examples | 5 of 36 |
+| Exercises | 7 of 85 (5 in the bank, 2 declared placeholders) |
+
+**Validator** (`npm run validate`, new module `content/quality.ts`). New errors:
+- links written inside Markdown that do not resolve. Content links use in-app routes such as `#/concept/<id>` or `#/learn/ch04/4.2`; external links are refused;
+- control characters in any string;
+- TeX that KaTeX cannot parse, in every field (moved from the tests into validation; the renderer's functions now live in `lib/renderCore.ts` so Node can use them without the stylesheet);
+- identical question stems;
+- equation and example labels that the draft does not have, or that sit in a different section from the one the item cites.
+
+New warnings (`npm run validate -- --warnings`):
+- near-duplicate questions;
+- equations no lesson, question or explainer uses;
+- lesson references to items outside the section's concepts and their prerequisites.
+
+The page-range check against the cited section already existed; the audit had listed it as missing, and the audit is corrected. Current state: 0 errors, 1 warning: (2.1) is not yet used by any lesson or question.
+
+**Search** is built at build time into its own chunk (`virtual:rl-search`, 68.2 / 15.3 kB). The first search fetches that chunk and the search engine and **no chapter content** (tested). Before, it loaded every chapter, which would not have scaled.
+
+**Reading progress and bookmarks:**
+- Each section page has "Mark as read" and "☆ Bookmark". Reading is the learner's own statement and is never inferred from a visit.
+- The chapter list shows how many sections are read; a chapter's section list shows ✓ read and ★.
+- Progress has a Reading card with sections read per chapter and the bookmarked sections.
+- Stored as two optional fields, `sectionsRead` and `sectionBookmarks`. The saved format stays version 2, so older saves and backups load unchanged (tested); import, export and merge carry the new fields.
+
+**Coverage badges:** chapter and section listings and section pages show Covered, Partial, Not started or Unwritten in draft, with an explanation on hover. This replaces the old "Material" and "Outline only" badges, which said nothing about completeness.
+
+**Tests:** **23 files, 1151 tests, all passed.**
+- New: `coverage4a` (22): the inventory, coverage, declarations, quality checks (each error and warning provoked deliberately), the search index, reading progress and the badges.
+- One changed expectation: the catalogue test now passes the coverage summary, because the catalogue gained that field.
+- **Test timing:** on 2026-11-07 the machine ran the suite slowly: 54–67 s, against 43 s before, at the previous commit too. Two of five full runs each failed a *different* UI test that was waiting for its first render (5.7–6.2 s, over the 5 s wait ceiling). The ceiling (`asyncUtilTimeout` in `tests/setup.ts`) is now 10 s. It limits waiting and relaxes no assertion: an element that never appears still fails. The new quality checks also cache KaTeX results, to lighten the parallel load. Three full runs afterwards all passed.
+
+`npm run check` passes (overlap 0 matches, privacy check).
+
+**Checked in the browser** (375 px):
+- the Learn list with its badges;
+- the Chapter 4 section list;
+- a section page's read and bookmark toggles, which persist and show on the chapter page;
+- search from the prebuilt index;
+- no console errors.
+
+The test mark made during the review was removed afterwards.
+
+**Bundle:** app shell 317.1 / 94.6 kB (was 313.5 / 93.7: the coverage summary and the reading interface).
+
+**Outstanding:**
+- Rebuilding the inventory needs the local, git-ignored text layer. The committed `inventory.json` is what the app and the checks use.
+- Section word counts are approximate.
+
+#### Next: Milestone 4B
+Verification: the windy-gridworld investigation, blackjack (Examples 5.1, 5.3 and 5.4) with Monte Carlo ES moved to it, the gridworld ES variant discarding cut-off episodes, and tests of the random-number generator.

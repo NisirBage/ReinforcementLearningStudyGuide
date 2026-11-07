@@ -112,13 +112,13 @@ export function useContent(units: string[], withNotation = false): Indexes {
 }
 
 let searchIndex: Promise<ReturnType<typeof buildIndex>> | null = null;
-/** The search index covers everything, so it is built once, on first search, from every unit. */
+/**
+ * The search index covers everything. Its documents (titles, short summaries, locations) are built at build time
+ * into their own small chunk, so the first search fetches that chunk and the search engine, never the chapters.
+ */
 export function fetchSearchIndex() {
   if (!searchIndex) {
-    // The index builder is fetched with the search page's first query, not with the app shell.
-    searchIndex = tracked(
-      Promise.all([fetchIndexes(allUnits(true), true), import("./searchDocs"), import("../domain/search")]).then(([idx, docs, s]) => s.buildIndex(docs.buildSearchDocs(idx.bundle))),
-    );
+    searchIndex = tracked(Promise.all([import("virtual:rl-search"), import("../domain/search")]).then(([docs, s]) => s.buildIndex(docs.default)));
     searchIndex.catch(() => undefined);
   }
   return searchIndex;

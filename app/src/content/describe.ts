@@ -1,5 +1,5 @@
 // Formats a source reference for display. Kept apart from searchDocs.ts so the app shell does not carry the search code.
-import type { SourceRef } from "./schema";
+import type { SourceRef } from "./schema.ts";
 
 export const span = (a: number | string, b: number | string) => (a === b ? `p. ${a}` : `pp. ${a}–${b}`);
 export const pdfSpan = ([a, b]: [number, number]) => (a === b ? `PDF ${a}` : `PDF ${a}–${b}`);

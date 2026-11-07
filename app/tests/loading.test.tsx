@@ -7,7 +7,8 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { catalog, loadNotation, loadUnit } from "virtual:rl-content";
-import { loadBundle } from "../../tools/content_loader.ts";
+import { loadBundle, loadCoverageInputs } from "../../tools/content_loader.ts";
+import { computeCoverage, coverageSummary } from "../src/content/coverage";
 import { stripLocal } from "../plugins/vite_content.ts";
 import { buildCatalog, unitContent } from "../src/content/catalog";
 import { cat, fetchIndexes, fetchUnit, resetContentCache, setUnitLoaderForTests } from "../src/content/load";
@@ -26,7 +27,8 @@ afterEach(() => {
 
 describe("catalogue", () => {
   test("is exactly what the content files give (no hand-kept copy)", () => {
-    expect(catalog).toEqual(stripLocal(buildCatalog(full)));
+    const { inventory, declarations } = loadCoverageInputs();
+    expect(catalog).toEqual(stripLocal(buildCatalog(full, coverageSummary(computeCoverage(full, inventory, declarations)))));
   });
 
   test("holds stubs only: no summaries, formulas, lesson text, stems or solutions", () => {

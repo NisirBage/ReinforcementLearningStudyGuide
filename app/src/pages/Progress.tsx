@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { cat } from "../content/load";
-import { CONCEPT_STATUSES, STATUS_LABEL, accuracyOf, completion, examSummary, labUse, questionSummary, repeatedMistakes, revisionBacklog, statusOf, topicMastery, weakest } from "../domain/progress";
+import { CONCEPT_STATUSES, STATUS_LABEL, accuracyOf, completion, examSummary, labUse, questionSummary, repeatedMistakes, revisionBacklog, sectionKey, statusOf, topicMastery, weakest } from "../domain/progress";
 import { exportProgress } from "../store/persistence";
 import { requestPersistence } from "../store/idb";
 import { offlineStatus, offlineSupported, saveAllOffline, type OfflineStatus } from "../store/offline";
@@ -216,6 +216,49 @@ export function ProgressPage() {
             </tbody>
           </table>
         </div>
+      </section>
+
+      <section className="card" aria-labelledby="reading-h">
+        <h2 id="reading-h">Reading</h2>
+        <p>
+          {Object.keys(data.sectionsRead).length} section{Object.keys(data.sectionsRead).length === 1 ? "" : "s"} marked as read. Use “Mark as read” on any section page; the app never marks a section read for you.
+        </p>
+        <ul className="list">
+          {cat.units
+            .filter((u) => u.kind === "core" && u.status !== "empty-in-draft")
+            .map((u) => {
+              const keys = (u.chapter?.sections ?? []).map((s) => sectionKey(u.id, s.id));
+              const n = keys.filter((k) => data.sectionsRead[k] !== undefined).length;
+              return n ? (
+                <li key={u.id}>
+                  <Link to={`/learn/${u.id}`}>
+                    Chapter {u.core!.chapter}: {u.title}
+                  </Link>{" "}
+                  <span className="muted">
+                    · {n} of {keys.length} sections read
+                  </span>
+                </li>
+              ) : null;
+            })}
+        </ul>
+        <h3>Bookmarked sections</h3>
+        {data.sectionBookmarks.length ? (
+          <ul className="list">
+            {data.sectionBookmarks.map((k) => {
+              const [unit, sec] = k.split("/");
+              const entry = cat.sectionsOf(unit).find((x) => x.section.id === sec);
+              return (
+                <li key={k}>
+                  <Link to={`/learn/${unit}/${sec}`}>
+                    §{sec} {entry?.section.title ?? ""}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="muted">No bookmarked sections. Use “☆ Bookmark” on any section page.</p>
+        )}
       </section>
 
       <section className="card" aria-labelledby="labs-h">

@@ -7,12 +7,15 @@
 // emits it as a separate file. Local-only provenance keys ("file", "$comment") are dropped from everything served.
 import { resolve } from "node:path";
 import type { Plugin, ViteDevServer } from "vite";
-import { CONTENT_DIR, loadBundle } from "../../tools/content_loader.ts";
+import { CONTENT_DIR, loadBundle, loadCoverageInputs } from "../../tools/content_loader.ts";
+import { computeCoverage, coverageSummary } from "../src/content/coverage.ts";
 import { buildCatalog, unitContent } from "../src/content/catalog.ts";
+import { buildSearchDocs } from "../src/content/searchDocs.ts";
 
 const ID = "virtual:rl-content";
 const UNIT = "virtual:rl-unit/";
 const NOTATION = "virtual:rl-notation";
+const SEARCH = "virtual:rl-search"; // the search documents, built here so search never loads chapter bodies (D-042)
 const resolved = (id: string) => "\0" + id;
 
 const LOCAL_ONLY_KEYS = new Set(["file", "$comment"]);
@@ -33,13 +36,14 @@ export function contentChunks(): Plugin {
     name: "rl-content",
     enforce: "pre",
     resolveId(id) {
-      if (id === ID || id === NOTATION || id.startsWith(UNIT)) return resolved(id);
+      if (id === ID || id === NOTATION || id === SEARCH || id.startsWith(UNIT)) return resolved(id);
     },
     load(id) {
       if (!id.startsWith("\0")) return;
       const key = id.slice(1);
       if (key === ID) {
-        const catalog = buildCatalog(bundle);
+        const { inventory, declarations } = loadCoverageInputs();
+        const catalog = buildCatalog(bundle, coverageSummary(computeCoverage(bundle, inventory, declarations)));
         const loaders = catalog.contentUnits.map((u) => `  ${JSON.stringify(u)}: () => import(${JSON.stringify(UNIT + u)}),`).join("\n");
         return [
           `export const catalog = JSON.parse(${JSON.stringify(JSON.stringify(stripLocal(catalog)))});`,
@@ -51,6 +55,7 @@ export function contentChunks(): Plugin {
         ].join("\n");
       }
       if (key === NOTATION) return asModule(bundle.notation);
+      if (key === SEARCH) return asModule(buildSearchDocs(bundle));
       if (key.startsWith(UNIT)) return asModule(unitContent(bundle, key.slice(UNIT.length)));
     },
     configureServer(server: ViteDevServer) {

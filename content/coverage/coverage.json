@@ -1,0 +1,32 @@
+{
+  "$comment": "What the coverage report cannot compute (D-042). Read by app/src/content/coverage.ts and checked by the validator. A declaration never marks a section covered on its own: the lesson, equation, example and question criteria still apply.",
+  "sections": {
+    "1.6": { "treatment": "reading-guide", "note": "Chapter summary." },
+    "1.7": { "treatment": "reading-guide", "note": "History of the field: a reading guide with a few questions, not a full lesson (Milestone 4 decision 2)." },
+    "1.8": { "treatment": "reading-guide", "note": "Bibliographical remarks." },
+    "2.9": { "treatment": "reading-guide", "note": "Chapter summary, with the bibliographical remarks and exercises that follow it." },
+    "3.10": { "treatment": "reading-guide", "note": "Chapter summary, with the bibliographical remarks and exercises that follow it." },
+    "4.8": { "treatment": "reading-guide", "note": "Chapter summary, with the bibliographical remarks and exercises that follow it." },
+    "5.9": { "treatment": "reading-guide", "note": "Chapter summary, with the bibliographical remarks and exercises that follow it." },
+    "6.7": { "treatment": "reading-guide", "note": "Chapter summary, with the bibliographical remarks and exercises that follow it." },
+    "7.10": { "treatment": "reading-guide", "note": "Chapter conclusions, with the bibliographical remarks and exercises that follow them." },
+    "8.9": { "treatment": "reading-guide", "note": "Chapter summary, with the bibliographical remarks and exercises that follow it." },
+    "9.6": { "treatment": "reading-guide", "note": "Chapter summary, with the bibliographical remarks and exercises that follow it." }
+  },
+  "examples": {
+    "4.3": { "check": "lab.dp.gambler-bold-play", "lab": "dp", "note": "Value iteration reproduces v*(25), v*(50), v*(75) and a stake of 50 at capital 50." },
+    "6.2": { "check": "lab.td.fig6-7", "lab": "td", "note": "Figure 6.7: TD(0) ahead of constant-α MC on the random walk." },
+    "6.5": { "check": "lab.td.windy-fig6-11", "lab": "td", "note": "The 15-step minimum and the episode rate of Figure 6.11. The draft's 'about 17 steps' is under investigation (Milestone 4B)." },
+    "6.6": { "check": "lab.td.cliff-fig6-13", "lab": "td", "note": "Figure 6.13: Sarsa earns more online; Q-learning learns the 13-step edge path." }
+  },
+  "exercises": {
+    "3.7": { "disposition": "placeholder", "note": "A placeholder in the April 2015 draft (no exercise text)." },
+    "8.1": { "disposition": "placeholder", "note": "A placeholder in the April 2015 draft (no exercise text)." }
+  },
+  "thin": {
+    "7.8": "Short in the draft (about 260 words).",
+    "7.9": "Optional and short in the draft (about 220 words).",
+    "11.2": "Short in the draft (about 250 words).",
+    "15.1": "The draft's closing chapter is partly written; only 15.1 and 15.5 have text."
+  }
+}

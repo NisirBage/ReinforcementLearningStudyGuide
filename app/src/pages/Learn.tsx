@@ -3,11 +3,11 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { cat, useContent } from "../content/load";
 import { isSupplementaryUnit } from "../content/schema";
-import { completion, statusOf, type ConceptStatus } from "../domain/progress";
+import { completion, readCount, sectionKey, statusOf, type ConceptStatus } from "../domain/progress";
 import { useProgress } from "../store/ProgressContext";
 import { AlgorithmBox, EquationCard, ExampleCard, FigureView } from "../components/items";
 import { QuestionCard } from "../components/QuestionCard";
-import { Badge, ConceptLink, Empty, PageTitle, Sources, StatusPicker, SupplementaryBanner, pct } from "../components/ui";
+import { Badge, ConceptLink, CoverageBadge, Empty, PageTitle, Sources, StatusPicker, SupplementaryBanner, pct } from "../components/ui";
 import { Md } from "../components/math";
 import { NotFound } from "./NotFound";
 
@@ -33,6 +33,8 @@ export function LearnIndex() {
             <ul className="rows">
               {list.map((u) => {
                 const concepts = cat.conceptsOf(u.id).map((c) => c.id);
+                const keys = (u.chapter?.sections ?? []).map((s) => sectionKey(u.id, s.id));
+                const read = readCount(data, keys);
                 return (
                   <li key={u.id}>
                     <Link className="row" to={`/learn/${u.id}`}>
@@ -42,9 +44,10 @@ export function LearnIndex() {
                         <small>
                           {u.chapter && sbPages(u.chapter.startPage, u.chapter.endPage)} · {u.chapter?.sections.length ?? 0} sections
                           {concepts.length ? ` · ${concepts.length} concepts · ${pct(completion(data, concepts))} understood` : ""}
+                          {read ? ` · ${read} of ${keys.length} read` : ""}
                         </small>
                       </span>
-                      {u.status === "empty-in-draft" ? <Badge tone="warn">Empty in draft</Badge> : concepts.length ? <Badge tone="ok">Material</Badge> : <Badge>Outline only</Badge>}
+                      <CoverageBadge status={cat.catalog.coverage.chapters[u.core!.chapter]} what="chapter" />
                     </Link>
                   </li>
                 );
@@ -100,6 +103,7 @@ export function UnitPage() {
 
 function UnitBody({ unitId }: { unitId: string }) {
   const idx = useContent([unitId]); // suspends until this chapter's content is loaded
+  const { data } = useProgress();
   const u = idx.unit(unitId)!;
   const sup = u.kind === "supplementary";
   const sections = idx.sectionsOf(u.id);
@@ -149,8 +153,10 @@ function UnitBody({ unitId }: { unitId: string }) {
                     {section.id} {section.title}
                   </Link>
                   {section.optional && <Badge title="Marked ∗: can be skipped on first reading">∗ optional</Badge>}
-                  {empty && <Badge tone="warn">Empty in draft</Badge>}
-                  {content.lesson && <Badge tone="ok">Lesson</Badge>}
+                  {book === "sb" ? <CoverageBadge status={cat.catalog.coverage.sections[section.id]} /> : empty && <Badge tone="warn">Empty in draft</Badge>}
+                  {book !== "sb" && content.lesson && <Badge tone="ok">Lesson</Badge>}
+                  {data.sectionsRead[sectionKey(u.id, section.id)] !== undefined && <Badge tone="ok" title="You marked this section as read">✓ read</Badge>}
+                  {data.sectionBookmarks.includes(sectionKey(u.id, section.id)) && <Badge title="Bookmarked">★</Badge>}
                   <span className="muted small">
                     {" "}
                     · {span ? (book === "sb" ? sbPages(span[0], span[1]) : pages(span[0], span[1])) : ""}
@@ -228,6 +234,24 @@ export function SectionPage() {
   return <SectionBody unitId={u.id} index={i} />;
 }
 
+function ReadingActions({ unitId, section }: { unitId: string; section: string }) {
+  const { data, setSectionRead, toggleSectionBookmark } = useProgress();
+  const key = sectionKey(unitId, section);
+  const readAt = data.sectionsRead[key];
+  const marked = data.sectionBookmarks.includes(key);
+  return (
+    <div className="reading-actions">
+      <button type="button" className="btn btn-small" aria-pressed={readAt !== undefined} onClick={() => setSectionRead(key, readAt === undefined)}>
+        {readAt !== undefined ? "✓ Read" : "Mark as read"}
+      </button>
+      <button type="button" className="btn btn-small" aria-pressed={marked} onClick={() => toggleSectionBookmark(key)}>
+        {marked ? "★ Bookmarked" : "☆ Bookmark"}
+      </button>
+      {readAt !== undefined && <span className="muted small">marked read {new Date(readAt).toLocaleDateString()}</span>}
+    </div>
+  );
+}
+
 function SectionBody({ unitId, index: i }: { unitId: string; index: number }) {
   const idx = useContent([unitId]); // suspends until this chapter's content is loaded
   const u = idx.unit(unitId)!;
@@ -269,7 +293,14 @@ function SectionBody({ unitId, index: i }: { unitId: string; index: number }) {
       <p className="muted">
         {book === "sb" ? "Sutton & Barto, April 2015 draft" : `Zhao, ${zhaoName(chapter.id)}`} · {span ? (book === "sb" ? sbPages(span[0], span[1]) : `${pages(span[0], span[1])} (${zhaoName(chapter.id)} PDF ${span[0] - (chapter.pdf?.offset ?? 0)}–${span[1] - (chapter.pdf?.offset ?? 0)})`) : "page not listed"}
         {s.optional && " · marked ∗ (optional on first reading)"}
+        {book === "sb" && (
+          <>
+            {" "}
+            <CoverageBadge status={cat.catalog.coverage.sections[s.id]} />
+          </>
+        )}
       </p>
+      <ReadingActions unitId={u.id} section={s.id} />
       {empty && <p className="flag">⚑ {empty} The app adds nothing in its place.</p>}
 
       {toc.length > 1 && (

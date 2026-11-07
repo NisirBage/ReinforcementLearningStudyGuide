@@ -4,3 +4,8 @@ declare module "virtual:rl-content" {
   export const loadUnit: (unit: string) => Promise<import("./catalog").UnitContent | null>;
   export const loadNotation: () => Promise<import("./schema").NotationEntry[]>;
 }
+
+declare module "virtual:rl-search" {
+  const docs: import("../domain/search").SearchDoc[];
+  export default docs;
+}

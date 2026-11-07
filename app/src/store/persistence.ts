@@ -102,8 +102,13 @@ export function migrate(raw: unknown): ProgressData {
       show2018Notation: s.show2018Notation === true,
     },
     exams: arr(d.exams).map(examRecord).filter((x): x is ExamRecord => x !== null).sort((a, b) => a.startedAt - b.startedAt),
+    sectionsRead: Object.fromEntries(Object.entries(obj(d.sectionsRead)).filter(([k, v]) => SECTION_KEY.test(k) && num(v))) as Record<string, number>,
+    sectionBookmarks: [...new Set(arr(d.sectionBookmarks).filter((k): k is string => str(k) && SECTION_KEY.test(k)))].sort(),
   };
 }
+
+/** "ch02/2.3" or "sup-zhao-06/6.1". */
+const SECTION_KEY = /^(ch\d{2}|sup-[a-z0-9-]+)\/\d+(\.\d+)*$/;
 
 function storage(): Storage | null {
   try {
@@ -207,5 +212,8 @@ export function mergeProgress(cur: ProgressData, inc: ProgressData): ProgressDat
     lastVisited,
     settings: cur.settings,
     exams: [...new Map([...inc.exams, ...cur.exams].map((e) => [e.id, e])).values()].sort((a, b) => a.startedAt - b.startedAt),
+    // Read marks are united (the later time wins); section bookmarks are united.
+    sectionsRead: Object.fromEntries([...new Set([...Object.keys(cur.sectionsRead), ...Object.keys(inc.sectionsRead)])].map((k) => [k, Math.max(cur.sectionsRead[k] ?? 0, inc.sectionsRead[k] ?? 0)])),
+    sectionBookmarks: [...new Set([...cur.sectionBookmarks, ...inc.sectionBookmarks])].sort(),
   };
 }

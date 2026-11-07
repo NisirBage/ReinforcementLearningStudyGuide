@@ -2,6 +2,7 @@
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { ContentBundle } from "../app/src/content/schema.ts";
+import type { CoverageDeclarations, Inventory } from "../app/src/content/coverage.ts";
 
 export const CONTENT_DIR = resolve(import.meta.dirname, "..", "content");
 
@@ -31,5 +32,13 @@ export function loadBundle(): ContentBundle {
     questionFiles: jsonFiles("questions").map((f) => f.data as ContentBundle["questionFiles"][number]),
     figures: flat("figures"),
     labs: flat("labs"),
+  };
+}
+
+/** The inputs of the coverage report (D-042): the generated source inventory and the coverage declarations. */
+export function loadCoverageInputs(): { inventory: Inventory; declarations: CoverageDeclarations } {
+  return {
+    inventory: readJson(join(CONTENT_DIR, "source", "inventory.json")) as Inventory,
+    declarations: readJson(join(CONTENT_DIR, "coverage", "coverage.json")) as CoverageDeclarations,
   };
 }

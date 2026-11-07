@@ -1,8 +1,8 @@
 // Turns the content bundle into search documents. Pure, so the same index is built in the browser and in tests.
-import type { SearchDoc } from "../domain/search";
-import { isSupplementaryUnit, sectionPages, type ContentBundle, type SourceRef } from "./schema";
+import type { SearchDoc } from "../domain/search.ts";
+import { isSupplementaryUnit, sectionPages, type ContentBundle, type SourceRef } from "./schema.ts";
 
-import { describeSource, pdfSpan, span } from "./describe";
+import { describeSource, pdfSpan, span } from "./describe.ts";
 
 export { describeSource };
 

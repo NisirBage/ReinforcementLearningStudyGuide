@@ -114,3 +114,32 @@ export function ConfirmButton({ label, confirm, onConfirm, className = "btn" }: 
     </button>
   );
 }
+
+const COVERAGE_LABEL: Record<string, [string, "ok" | "neutral" | "warn"]> = {
+  covered: ["Covered", "ok"],
+  partial: ["Partial", "neutral"],
+  "not-started": ["Not started", "neutral"],
+  unwritten: ["Unwritten in draft", "warn"],
+};
+/**
+ * How much of a chapter or section the app covers, computed at build time (content/coverage.ts, D-042). "Covered"
+ * means a lesson, every numbered equation and named example of the draft there, and at least one question.
+ */
+export function CoverageBadge({ status, what = "section" }: { status: string | undefined; what?: "section" | "chapter" }) {
+  if (!status) return null;
+  const [label, tone] = COVERAGE_LABEL[status] ?? [status, "neutral"];
+  const why =
+    status === "covered"
+      ? `This ${what} has a lesson, every numbered equation and example of the draft${what === "chapter" ? ", every exercise" : ""} and practice questions.`
+      : status === "unwritten"
+        ? `The April 2015 draft has only a heading here; the app adds nothing in its place.`
+        : status === "partial"
+          ? `Some of this ${what}'s material is in the app, but not all of it yet.`
+          : `None of this ${what}'s material is in the app yet.`;
+  return (
+    <Badge tone={tone} title={why}>
+      <span className="sr-only">Coverage: </span>
+      {label}
+    </Badge>
+  );
+}

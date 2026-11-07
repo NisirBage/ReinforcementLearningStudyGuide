@@ -13,6 +13,7 @@ import {
   type Algorithm, type Concept, type ConceptKind, type ContentBundle, type Curriculum, type Equation, type Example, type Figure,
   type Lab, type Lesson, type NotationEntry, type ProvenanceKind, type QuestionCategory, type QuestionFile, type QuestionType, type Sources,
 } from "./schema.ts";
+import type { CoverageSummary } from "./coverage.ts";
 
 export interface ConceptStub {
   id: string;
@@ -64,6 +65,8 @@ export interface Catalog {
   contentUnits: string[];
   /** Other units whose items a unit's lessons show in full (lesson refs), loaded together with it. */
   deps: Record<string, string[]>;
+  /** Coverage status of each textbook chapter and section (content/coverage.ts), for the honest badges. */
+  coverage: CoverageSummary;
 }
 
 export interface UnitContent {
@@ -82,7 +85,9 @@ export const emptyUnit = (unit: string): UnitContent => ({ unit, concepts: [], e
 
 const sortedUnique = (xs: string[]) => [...new Set(xs)].sort();
 
-export function buildCatalog(b: ContentBundle): Catalog {
+const NO_COVERAGE: CoverageSummary = { chapters: {}, sections: {} };
+
+export function buildCatalog(b: ContentBundle, coverage: CoverageSummary = NO_COVERAGE): Catalog {
   const questions = b.questionFiles.flatMap((f) => f.questions);
   const items: ItemStub[] = [
     ...b.equations.map((e) => ({ id: e.id, unit: e.unit, kind: "equation" as const, title: e.name, bookLabel: e.bookLabel, concepts: [e.concept] })),
@@ -113,6 +118,7 @@ export function buildCatalog(b: ContentBundle): Catalog {
     labs: b.labs.map((l) => ({ id: l.id, slug: l.slug, unit: l.unit, title: l.title })),
     contentUnits,
     deps,
+    coverage,
   };
 }
 
