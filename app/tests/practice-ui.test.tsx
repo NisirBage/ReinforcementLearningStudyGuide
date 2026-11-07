@@ -35,7 +35,7 @@ describe("practice setup", () => {
     await user.click(screen.getByRole("link", { name: /Practice/ }));
     expect(await ready()).toHaveTextContent("Practice");
     // With nothing ticked, every 2015-draft question matches and supplementary ones do not.
-    expect(screen.getByText(/^48 questions match/)).toBeInTheDocument(); // 2015-draft questions in content/questions (Milestone 3F added 16)
+    expect(screen.getByText(/^75 questions match/)).toBeInTheDocument(); // 2015-draft questions in content/questions (Milestone 4C added 27)
     await user.click(screen.getByLabelText(/Zhao: stochastic approximation/));
     expect(screen.getByText(/^2 questions match/)).toBeInTheDocument();
     // The quick starts show the learner's real (empty) history.
@@ -154,7 +154,9 @@ describe("a practice session", () => {
     await user.click(screen.getByLabelText(/Chapter 2: Multi-arm Bandits/));
     await user.click(screen.getByText("Sections, topics, question types and sources"));
     await user.click(screen.getByLabelText("Short answer"));
-    expect(screen.getByText(/^1 question matches/)).toBeInTheDocument();
+    expect(screen.getByText(/^5 questions match/)).toBeInTheDocument(); // Chapter 2 short answers since Milestone 4C
+    await user.click(screen.getByLabelText(/^§2\.4 Tracking a Nonstationary Problem/));
+    expect(screen.getByText(/^1 question matches/)).toBeInTheDocument(); // ch02-q010
     await user.click(screen.getByRole("button", { name: "Start practice" }));
     await user.type(screen.getByRole("textbox"), "Recent rewards get more weight with a constant step.");
     await user.click(screen.getByRole("button", { name: "Show model answer" }));

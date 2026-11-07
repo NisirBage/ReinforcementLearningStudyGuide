@@ -6,9 +6,32 @@
     "kind": "definition",
     "summary": "The true value q(a) of an action is its mean reward; the sample-average method estimates it at step t by averaging the rewards actually received each time the action was chosen, Q_t(a), with a default (such as 0) before the first selection.",
     "prereqs": [],
-    "related": ["ch02.greedy-action-selection", "ch02.incremental-update"],
-    "keywords": ["sample-average method", "Q_t(a)", "N_t(a)", "law of large numbers", "true value q(a)"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [33, 34], "pdfPages": [47, 48] }]
+    "related": [
+      "ch02.greedy-action-selection",
+      "ch02.incremental-update"
+    ],
+    "keywords": [
+      "sample-average method",
+      "Q_t(a)",
+      "N_t(a)",
+      "law of large numbers",
+      "true value q(a)"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.2",
+        "printedPages": [
+          33,
+          34
+        ],
+        "pdfPages": [
+          47,
+          48
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.greedy-action-selection",
@@ -16,10 +39,32 @@
     "title": "Greedy action selection",
     "kind": "definition",
     "summary": "Choose an action whose current estimate is largest, A_t = argmax_a Q_t(a), breaking ties arbitrarily. It exploits current knowledge and never deliberately samples actions that look worse.",
-    "prereqs": ["ch02.action-value-estimate"],
-    "related": ["ch02.epsilon-greedy"],
-    "keywords": ["argmax", "exploitation", "greedy"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [34, 34], "pdfPages": [48, 48] }]
+    "prereqs": [
+      "ch02.action-value-estimate"
+    ],
+    "related": [
+      "ch02.epsilon-greedy"
+    ],
+    "keywords": [
+      "argmax",
+      "exploitation",
+      "greedy"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.2",
+        "printedPages": [
+          34,
+          34
+        ],
+        "pdfPages": [
+          48,
+          48
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.epsilon-greedy",
@@ -27,10 +72,33 @@
     "title": "ε-greedy action selection",
     "kind": "definition",
     "summary": "Act greedily most of the time, but with a small probability ε pick an action uniformly at random, regardless of the estimates. In the limit every action is tried infinitely often, so every estimate converges to its true value.",
-    "prereqs": ["ch02.greedy-action-selection"],
-    "related": ["ch02.ucb"],
-    "keywords": ["epsilon greedy", "exploration", "near-greedy", "10-armed testbed"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [34, 36], "pdfPages": [48, 50] }]
+    "prereqs": [
+      "ch02.greedy-action-selection"
+    ],
+    "related": [
+      "ch02.ucb"
+    ],
+    "keywords": [
+      "epsilon greedy",
+      "exploration",
+      "near-greedy",
+      "10-armed testbed"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.2",
+        "printedPages": [
+          34,
+          36
+        ],
+        "pdfPages": [
+          48,
+          50
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.incremental-update",
@@ -38,10 +106,33 @@
     "title": "Incremental computation of sample averages",
     "kind": "procedure",
     "summary": "The average of the first k rewards can be obtained from the previous average and the newest reward alone, Q_{k+1} = Q_k + (1/k)[R_k − Q_k], so memory and computation per step stay constant.",
-    "prereqs": ["ch02.action-value-estimate"],
-    "related": ["ch02.general-update-rule", "ch02.constant-step-size"],
-    "keywords": ["incremental implementation", "running average", "constant memory"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [36, 38], "pdfPages": [50, 52] }]
+    "prereqs": [
+      "ch02.action-value-estimate"
+    ],
+    "related": [
+      "ch02.general-update-rule",
+      "ch02.constant-step-size"
+    ],
+    "keywords": [
+      "incremental implementation",
+      "running average",
+      "constant memory"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.3",
+        "printedPages": [
+          36,
+          38
+        ],
+        "pdfPages": [
+          50,
+          52
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.general-update-rule",
@@ -49,10 +140,34 @@
     "title": "NewEstimate ← OldEstimate + StepSize [Target − OldEstimate]",
     "kind": "idea",
     "summary": "The bracketed difference is an error in the estimate; the update moves the estimate a fraction (the step size) of the way toward a possibly noisy target. This form recurs throughout the book.",
-    "prereqs": ["ch02.incremental-update"],
-    "related": ["ch02.constant-step-size"],
-    "keywords": ["update rule", "error", "target", "step size", "alpha"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [37, 38], "pdfPages": [51, 52] }]
+    "prereqs": [
+      "ch02.incremental-update"
+    ],
+    "related": [
+      "ch02.constant-step-size"
+    ],
+    "keywords": [
+      "update rule",
+      "error",
+      "target",
+      "step size",
+      "alpha"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.3",
+        "printedPages": [
+          37,
+          38
+        ],
+        "pdfPages": [
+          51,
+          52
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.constant-step-size",
@@ -60,10 +175,33 @@
     "title": "Constant step size for nonstationary problems",
     "kind": "procedure",
     "summary": "When the true action values drift over time, recent rewards should count more. Replacing 1/k by a constant α in (0, 1] does exactly that.",
-    "prereqs": ["ch02.general-update-rule"],
-    "related": ["ch02.recency-weighted-average", "ch02.step-size-conditions"],
-    "keywords": ["nonstationary", "tracking", "constant alpha"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 38], "pdfPages": [52, 52] }]
+    "prereqs": [
+      "ch02.general-update-rule"
+    ],
+    "related": [
+      "ch02.recency-weighted-average",
+      "ch02.step-size-conditions"
+    ],
+    "keywords": [
+      "nonstationary",
+      "tracking",
+      "constant alpha"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.4",
+        "printedPages": [
+          38,
+          38
+        ],
+        "pdfPages": [
+          52,
+          52
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.recency-weighted-average",
@@ -71,10 +209,32 @@
     "title": "Exponential, recency-weighted average",
     "kind": "idea",
     "summary": "With a constant step size, Q_{k+1} is a weighted average of the initial estimate and all past rewards; the weight on a reward decays geometrically with how many rewards ago it arrived, and all weights sum to 1.",
-    "prereqs": ["ch02.constant-step-size"],
-    "related": ["ch02.step-size-conditions"],
-    "keywords": ["exponential recency-weighted average", "weighted average", "geometric decay"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }]
+    "prereqs": [
+      "ch02.constant-step-size"
+    ],
+    "related": [
+      "ch02.step-size-conditions"
+    ],
+    "keywords": [
+      "exponential recency-weighted average",
+      "weighted average",
+      "geometric decay"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.4",
+        "printedPages": [
+          38,
+          39
+        ],
+        "pdfPages": [
+          52,
+          53
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.step-size-conditions",
@@ -82,10 +242,33 @@
     "title": "Step-size conditions for convergence",
     "kind": "theorem",
     "summary": "A result from stochastic approximation: estimates converge with probability 1 if the step sizes sum to infinity (steps large enough to overcome initial conditions and noise) while their squares have a finite sum (steps eventually small enough). 1/k meets both; a constant α fails the second.",
-    "prereqs": ["ch02.recency-weighted-average"],
-    "related": ["ch02.incremental-update"],
-    "keywords": ["convergence with probability 1", "stochastic approximation", "Robbins-Monro conditions", "sum of alpha"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [39, 39], "pdfPages": [53, 53] }]
+    "prereqs": [
+      "ch02.recency-weighted-average"
+    ],
+    "related": [
+      "ch02.incremental-update"
+    ],
+    "keywords": [
+      "convergence with probability 1",
+      "stochastic approximation",
+      "Robbins-Monro conditions",
+      "sum of alpha"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.4",
+        "printedPages": [
+          39,
+          39
+        ],
+        "pdfPages": [
+          53,
+          53
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.ucb",
@@ -93,10 +276,34 @@
     "title": "Upper-confidence-bound (UCB) action selection",
     "kind": "procedure",
     "summary": "Prefer actions whose estimates are high or still uncertain: maximise Q_t(a) plus an uncertainty bonus c·sqrt(ln t / N_t(a)), treating untried actions as maximising. The bonus shrinks when an action is chosen and grows slowly while it is not.",
-    "prereqs": ["ch02.epsilon-greedy"],
-    "related": ["ch02.epsilon-greedy"],
-    "keywords": ["UCB", "upper confidence bound", "uncertainty", "exploration bonus", "natural logarithm"],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.6", "printedPages": [41, 42], "pdfPages": [55, 56] }]
+    "prereqs": [
+      "ch02.epsilon-greedy"
+    ],
+    "related": [
+      "ch02.epsilon-greedy"
+    ],
+    "keywords": [
+      "UCB",
+      "upper confidence bound",
+      "uncertainty",
+      "exploration bonus",
+      "natural logarithm"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.6",
+        "printedPages": [
+          41,
+          42
+        ],
+        "pdfPages": [
+          55,
+          56
+        ]
+      }
+    ]
   },
   {
     "id": "ch02.optimistic-initial-values",
@@ -106,7 +313,8 @@
     "summary": "Starting every estimate well above any reward the action can give (the draft uses $Q_1(a) = +5$ on a testbed with $q(a) \\sim N(0, 1)$) makes even a greedy learner explore: each reward disappoints it, so it moves on to the next action. The extra exploration is temporary, so the trick suits stationary problems.",
     "prereqs": [
       "ch02.greedy-action-selection",
-      "ch02.constant-step-size"
+      "ch02.constant-step-size",
+      "ch02.recency-weighted-average"
     ],
     "related": [
       "ch02.epsilon-greedy"
@@ -131,6 +339,13 @@
           53,
           55
         ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The text writes the initial estimates as $Q_1(a)$ (e.g. $Q_1(a) = +5$, p. 40), and so does the legend of Figure 2.2, but the x-axis of Figure 2.5 labels the same parameter $Q_0$ (checked on the page images, PDF pp. 54 and 62; the PDF's text layer also reads $Q_0$ for Figure 2.2, but the printed figure shows $Q_1$).",
+        "suggestion": "Read $Q_0$ on Figure 2.5's axis as $Q_1(a)$, the estimate before the first selection."
       }
     ]
   },
@@ -168,6 +383,345 @@
         "pdfPages": [
           56,
           59
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.evaluative-feedback",
+    "unit": "ch02",
+    "title": "Evaluative and instructive feedback",
+    "kind": "idea",
+    "summary": "Instructive feedback names the correct action whatever the learner did (supervised learning). Evaluative feedback only scores the action actually taken, without saying whether a better one existed. Reinforcement learning works from evaluative feedback, which is why it has to explore.",
+    "prereqs": [],
+    "related": [
+      "ch02.exploration-exploitation",
+      "ch02.n-armed-bandit"
+    ],
+    "keywords": [
+      "evaluative",
+      "instructive",
+      "supervised learning",
+      "trial and error",
+      "nonassociative"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "printedPages": [
+          31,
+          32
+        ],
+        "pdfPages": [
+          45,
+          46
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.n-armed-bandit",
+    "unit": "ch02",
+    "title": "The n-armed bandit problem",
+    "kind": "definition",
+    "summary": "On every step the learner chooses one of $n$ actions and receives a reward drawn from a stationary distribution that depends only on that action. The value $q(a)$ of an action is its mean reward; the goal is to maximise the expected total reward over a fixed number of steps, without knowing the values.",
+    "prereqs": [
+      "ch02.evaluative-feedback"
+    ],
+    "related": [
+      "ch02.exploration-exploitation",
+      "ch02.associative-search"
+    ],
+    "keywords": [
+      "bandit",
+      "slot machine",
+      "arm",
+      "lever",
+      "action value",
+      "q(a)",
+      "stationary"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.1",
+        "printedPages": [
+          32,
+          33
+        ],
+        "pdfPages": [
+          46,
+          47
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.exploration-exploitation",
+    "unit": "ch02",
+    "title": "Exploration and exploitation",
+    "kind": "idea",
+    "summary": "Choosing an action whose estimate is currently largest (a greedy action) exploits what is known and maximises the expected reward of this step. Choosing any other action explores: it improves that action's estimate and may find something better. No single choice can do both; which pays off depends on the estimates, their uncertainty and how many steps remain.",
+    "prereqs": [
+      "ch02.n-armed-bandit"
+    ],
+    "related": [
+      "ch02.epsilon-greedy",
+      "ch02.ucb",
+      "ch02.optimistic-initial-values"
+    ],
+    "keywords": [
+      "explore",
+      "exploit",
+      "greedy action",
+      "nongreedy",
+      "conflict",
+      "trade-off",
+      "dual control"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.1",
+        "printedPages": [
+          32,
+          33
+        ],
+        "pdfPages": [
+          46,
+          47
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.ten-armed-testbed",
+    "unit": "ch02",
+    "title": "The 10-armed testbed",
+    "kind": "procedure",
+    "summary": "The draft's benchmark: 2000 random bandit problems with $n = 10$, true values $q(a)$ that are standard normal draws (mean 0, variance 1), and rewards $R_t$ normal with mean $q(A_t)$ and variance 1. Methods are compared by average reward and % optimal action over 1000 steps, averaged over the 2000 problems.",
+    "prereqs": [
+      "ch02.epsilon-greedy"
+    ],
+    "related": [
+      "ch02.parameter-study"
+    ],
+    "keywords": [
+      "testbed",
+      "2000 tasks",
+      "Figure 2.1",
+      "average reward",
+      "optimal action",
+      "benchmark"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.2",
+        "printedPages": [
+          34,
+          36
+        ],
+        "pdfPages": [
+          48,
+          50
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.performance-gradient",
+    "unit": "ch02",
+    "title": "Gradient bandits as stochastic gradient ascent",
+    "kind": "theorem",
+    "summary": "The expected value of the gradient-bandit update (2.10) equals $\\alpha$ times the gradient of the expected reward $\\mathbb{E}[R_t] = \\sum_b \\pi_t(b) q(b)$ with respect to the preferences, as in exact gradient ascent (2.11). The proof needs only the derivative of the soft-max, $\\partial \\pi_t(b) / \\partial H_t(a) = \\pi_t(b)(\\mathbb{1}_{a=b} - \\pi_t(a))$.",
+    "prereqs": [
+      "ch02.gradient-bandit"
+    ],
+    "related": [
+      "ch02.reward-baseline"
+    ],
+    "keywords": [
+      "stochastic gradient ascent",
+      "performance gradient",
+      "expected reward",
+      "soft-max derivative",
+      "quotient rule"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.7",
+        "printedPages": [
+          43,
+          46
+        ],
+        "pdfPages": [
+          57,
+          60
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.reward-baseline",
+    "unit": "ch02",
+    "title": "The reward baseline",
+    "kind": "idea",
+    "summary": "In the gradient-bandit update the reward is compared with a baseline $\\bar R_t$. Any baseline that does not depend on the action chosen leaves the expected update unchanged, because the soft-max derivatives sum to zero over the actions; it changes only the variance of the updates, and so the speed of learning (Figure 2.4).",
+    "prereqs": [
+      "ch02.gradient-bandit"
+    ],
+    "related": [
+      "ch02.performance-gradient"
+    ],
+    "keywords": [
+      "baseline",
+      "average reward",
+      "variance",
+      "R̄_t",
+      "Figure 2.4"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.7",
+        "printedPages": [
+          43,
+          43
+        ],
+        "pdfPages": [
+          57,
+          57
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.7",
+        "printedPages": [
+          46,
+          46
+        ],
+        "pdfPages": [
+          60,
+          60
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.associative-search",
+    "unit": "ch02",
+    "title": "Associative search (contextual bandits)",
+    "kind": "definition",
+    "summary": "A task with several situations, each signalled to the learner, in which each action affects only the immediate reward. The learner must find, by trial and error, the best action for each situation: a policy. It sits between the $n$-armed bandit (one situation) and the full reinforcement learning problem (actions also affect the next situation).",
+    "prereqs": [
+      "ch02.n-armed-bandit"
+    ],
+    "related": [
+      "ch03.finite-mdp"
+    ],
+    "keywords": [
+      "associative search",
+      "contextual bandit",
+      "policy",
+      "situation",
+      "clue",
+      "nonassociative"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.8",
+        "printedPages": [
+          46,
+          47
+        ],
+        "pdfPages": [
+          60,
+          61
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.parameter-study",
+    "unit": "ch02",
+    "title": "Parameter study",
+    "kind": "procedure",
+    "summary": "To compare methods that each have a parameter, score every method at many parameter values by one number, the average reward over the first 1000 steps (the area under its learning curve), and plot the scores against the parameter on a log scale (Figure 2.5). Look both at the best score and at how sensitive the method is to its parameter.",
+    "prereqs": [
+      "ch02.ten-armed-testbed"
+    ],
+    "related": [
+      "ch02.ucb",
+      "ch02.gradient-bandit",
+      "ch02.optimistic-initial-values"
+    ],
+    "keywords": [
+      "parameter study",
+      "sensitivity",
+      "inverted U",
+      "Figure 2.5",
+      "learning curve",
+      "area under the curve"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.9",
+        "printedPages": [
+          47,
+          48
+        ],
+        "pdfPages": [
+          61,
+          62
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch02.bayes-optimal-exploration",
+    "unit": "ch02",
+    "title": "Gittins indices and Bayes-optimal exploration",
+    "kind": "idea",
+    "summary": "If the distribution of possible problems is known, exploration can in principle be balanced optimally: Gittins indices do this for a class of bandit problems, and a Bayesian look-ahead over the information state does it in general. The look-ahead tree grows exponentially, and neither approach carries over to the full reinforcement learning problem.",
+    "prereqs": [
+      "ch02.exploration-exploitation"
+    ],
+    "related": [
+      "ch02.n-armed-bandit"
+    ],
+    "keywords": [
+      "Gittins index",
+      "Bayes optimal",
+      "information state",
+      "posterior",
+      "prior",
+      "tree of possibilities"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.9",
+        "printedPages": [
+          49,
+          49
+        ],
+        "pdfPages": [
+          63,
+          63
         ]
       }
     ]

@@ -55,9 +55,9 @@ describe("mock exam setup", () => {
     await ready();
     await go(screen.getByRole("link", { name: /Mock exams/ }));
     expect(await ready()).toHaveTextContent("Mock exams");
-    expect(screen.getByText(/^44 questions available/)).toBeInTheDocument(); // 48 core minus 4 written
+    expect(screen.getByText(/^65 questions available/)).toBeInTheDocument(); // 75 core minus 10 written (Milestone 4C added 27 and 6)
     await user.click(screen.getByLabelText(/Include written answers/));
-    expect(screen.getByText(/^48 questions available/)).toBeInTheDocument();
+    expect(screen.getByText(/^75 questions available/)).toBeInTheDocument();
   });
 
   test("on a phone-width layout, Search, Progress and Settings sit under More", async () => {

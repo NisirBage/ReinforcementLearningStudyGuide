@@ -19,7 +19,8 @@ export const IMPLEMENTATIONS = {
   "mdp.bellmanExpectationBackup": mdp.bellmanExpectationBackup,
   "dp.iterativePolicyEvaluation": dp.iterativePolicyEvaluation,
   "banditLab.agentStep": banditLab.agentStep, // ε-greedy, optimistic, UCB and gradient bandit steps (§2.2–2.7)
-  "banditLab.runExperiment": banditLab.runExperiment, // averages over many runs (Figures 2.1–2.4)
+  "banditLab.runExperiment": banditLab.runExperiment, // averages over many runs (Figures 2.1–2.4; Exercise 2.4's random walk)
+  "banditLab.parameterStudy": banditLab.parameterStudy, // the parameter study of Figure 2.5
   "mdp.solveExact": mdp.solveExact, // v_π by solving (4.4) exactly
   "mdp.backupTerms": mdp.backupTerms, // the terms of (3.12)
   "mdp.expectedReward": mdp.expectedReward, // (3.7)

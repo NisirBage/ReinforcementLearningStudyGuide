@@ -27,9 +27,10 @@ describe("the question bank", () => {
     expect(new Set(all.map((q) => q.difficulty))).toEqual(new Set([1, 2, 3, 4]));
     expect(new Set(all.map((q) => q.provenance.kind))).toEqual(new Set(["textbook-exercise", "textbook-derived", "generated", "supplementary"]));
   });
-  test("textbook-exercise questions are exactly the reworded exercises 3.9, 3.10, 3.12, 4.1 and 4.2", () => {
+  test("textbook-exercise questions are exactly the reworded exercises 2.1–2.3, 2.5, 2.6, 3.9, 3.10, 3.12, 4.1 and 4.2", () => {
     const ex = all.filter((q) => q.provenance.kind === "textbook-exercise").map((q) => (q.provenance as { exercise: string }).exercise).sort();
-    expect(ex).toEqual(["3.10", "3.12", "3.9", "4.1", "4.2"]);
+    // Exercise 2.4 is a programming exercise, done as a lab task (content/coverage/coverage.json), not a bank question.
+    expect(ex).toEqual(["2.1", "2.2", "2.3", "2.5", "2.6", "3.10", "3.12", "3.9", "4.1", "4.2"]);
   });
   test("every self-marked question has a model answer and a rubric adding up to its marks", () => {
     for (const q of all.filter((x) => x.type === "derivation" || x.type === "short-answer")) {
@@ -101,11 +102,11 @@ describe("selection", () => {
   });
   test("filters combine: chapter, section, topic, difficulty, type, provenance", () => {
     const ids = (c: Partial<PracticeConfig>) => matchingQuestions(stubs, cfg(c), p, unitOrder).map((q) => q.id);
-    expect(ids({ units: ["ch02"], sections: ["2.6"] })).toEqual(["ch02-q004", "ch02-q014"]);
+    expect(ids({ units: ["ch02"], sections: ["2.6"] })).toEqual(["ch02-q004", "ch02-q014", "ch02-q033", "ch02-q034"]);
     expect(ids({ concepts: ["ch03.return"] })).toEqual(["ch03-q001", "ch03-q002", "ch03-q003", "ch03-q005"]);
     expect(ids({ units: ["ch04"], difficulties: [1] })).toEqual(["ch04-q003", "ch04-q007"]);
-    expect(ids({ types: ["derivation", "short-answer"] })).toEqual(["ch02-q010", "ch02-q011", "ch03-q005", "ch03-q006"]);
-    expect(ids({ provenance: ["textbook-exercise"] })).toEqual(["ch03-q005", "ch03-q004", "ch03-q006", "ch04-q001", "ch04-q004"]); // §3.3 before §3.7
+    expect(ids({ types: ["derivation", "short-answer"] })).toEqual(["ch02-q022", "ch02-q026", "ch02-q010", "ch02-q011", "ch02-q027", "ch02-q029", "ch02-q033", "ch02-q036", "ch03-q005", "ch03-q006"]); // by section, then file order
+    expect(ids({ provenance: ["textbook-exercise"] })).toEqual(["ch02-q023", "ch02-q026", "ch02-q027", "ch02-q029", "ch02-q040", "ch03-q005", "ch03-q004", "ch03-q006", "ch04-q001", "ch04-q004"]); // §3.3 before §3.7
     expect(ids({ units: ["ch03"], provenance: ["generated"] })).toEqual([]);
   });
   test("book order sorts by chapter, then section numerically, then id", () => {

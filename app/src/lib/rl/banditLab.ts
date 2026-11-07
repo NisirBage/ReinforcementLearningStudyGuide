@@ -12,6 +12,13 @@
 //   - ties are broken at random (the draft does so for Figure 2.1);
 //   - R̄_t is "the average of all the rewards up through and including time t" (p. 43), so it includes R_t;
 //   - the printed numerator of (2.9) has a stray parenthesis, e^{H_t(a))}; read as e^{H_t(a)} (flagged in content).
+//
+// Milestone 4C adds two experiments the draft describes but the lab could not yet run:
+//   - a nonstationary testbed (Exercise 2.4): every q(a) takes an independent random walk after each step. The draft
+//     says only that the q(a) "start out equal and then take independent random walks"; the size of a walk step is
+//     ours to choose, and the lab says so;
+//   - the parameter study of Figure 2.5 (`FIG_2_5`, `parameterStudy`): each method's average reward over 1000 steps
+//     as a function of its parameter. The parameter ranges are read from the figure.
 import { makeRng, type Rng } from "../../domain/random";
 
 export type StepSize = { kind: "sample-average" } | { kind: "constant"; alpha: number };
@@ -25,6 +32,7 @@ export interface Testbed {
   meanOfMeans: number; // q(a) ~ N(meanOfMeans, sdOfMeans²); the draft's testbed uses 0 (Figure 2.4: 4)
   sdOfMeans: number;
   rewardSd: number; // R_t ~ N(q(A_t), rewardSd²); the draft uses 1
+  walkSd?: number; // > 0: after every step each q(a) moves by an independent N(0, walkSd²) step (Exercise 2.4)
 }
 export const TESTBED_10: Testbed = { arms: 10, meanOfMeans: 0, sdOfMeans: 1, rewardSd: 1 };
 
@@ -104,6 +112,7 @@ export interface StepDetail {
   stepSize?: number; // the α or 1/N(a) used for Q, or α for H
   baseline?: number; // gradient: R̄_t (including R_t) or 0 without baseline
   after: number[]; // Q_{t+1} or H_{t+1}
+  optimal: boolean; // A_t had the largest true value q(a) at step t
 }
 
 function select(s: AgentState, rng: Rng): Pick<StepDetail, "explored" | "scores" | "probs" | "action"> {
@@ -144,29 +153,41 @@ export function agentStep(s: AgentState, q: readonly number[], rewardSd: number,
   const sel = select(s, rng);
   const reward = q[sel.action] + rewardSd * gaussian(rng);
   const u = update(s, sel.action, reward, sel.probs);
+  const optimal = q[sel.action] === Math.max(...q);
   return {
     state: u.state,
-    detail: { t: s.t + 1, before: s.values, counts: s.counts, ...sel, reward, stepSize: u.stepSize, baseline: u.baseline, after: u.state.values },
+    detail: { t: s.t + 1, before: s.values, counts: s.counts, ...sel, reward, stepSize: u.stepSize, baseline: u.baseline, after: u.state.values, optimal },
   };
 }
 
 /** Seeds for run r of an experiment: the problem and the agent's randomness, so every method faces the same problems. */
 const problemRng = (seed: number, run: number) => makeRng((seed * 1_000_003 + run * 7919) >>> 0);
 const agentRng = (seed: number, run: number, m: number) => makeRng((seed * 999_983 + run * 104_729 + m * 15_485_863 + 1) >>> 0);
+/** The random walk of run r's true values: the same walk for every method, so they face the same moving problem. */
+const walkRng = (seed: number, run: number) => makeRng((seed * 1_000_033 + run * 6151 + 17) >>> 0);
+
+/** Moves every q(a) one random-walk step (Exercise 2.4), in place. */
+function walk(q: number[], sd: number, rng: Rng): void {
+  for (let k = 0; k < q.length; k++) q[k] += sd * gaussian(rng);
+}
 
 /** One recorded run (for the step inspector): every step of one method on one problem. */
 export function recordRun(tb: Testbed, method: Method, steps: number, seed: number, run = 0, methodIndex = 0) {
-  const q = makeProblem(tb, problemRng(seed, run));
+  const q0 = makeProblem(tb, problemRng(seed, run));
   const rng = agentRng(seed, run, methodIndex);
+  const wr = walkRng(seed, run);
   let s = newAgent(method, tb.arms);
-  const best = q.indexOf(Math.max(...q));
+  const q = q0.slice();
+  const qs: number[][] = []; // qs[i]: the true values when step i + 1 was taken (all equal to q0 on a stationary testbed)
   const details: StepDetail[] = [];
   for (let i = 0; i < steps; i++) {
+    qs.push(q.slice());
     const out = agentStep(s, q, tb.rewardSd, rng);
     s = out.state;
     details.push(out.detail);
+    if (tb.walkSd) walk(q, tb.walkSd, wr);
   }
-  return { q, best, details, final: s };
+  return { q: q0, best: q0.indexOf(Math.max(...q0)), qs, details, final: s };
 }
 
 export interface Curves {
@@ -186,12 +207,15 @@ export function runBlock(tb: Testbed, methods: Method[], steps: number, seed: nu
   const probs = new Float64Array(n);
   const scores = new Float64Array(n);
   for (let r = from; r < to; r++) {
-    const q = makeProblem(tb, problemRng(seed, r));
-    let best = -Infinity;
-    for (const x of q) best = Math.max(best, x);
+    const q0 = makeProblem(tb, problemRng(seed, r));
+    let best0 = -Infinity;
+    for (const x of q0) best0 = Math.max(best0, x);
     methods.forEach((m, mi) => {
       // The same arithmetic as select() and update(), in place (checked step for step by lab.bandit.step-matches-fast).
       const rng = agentRng(seed, r, mi);
+      const q = tb.walkSd ? q0.slice() : q0;
+      const wr = tb.walkSd ? walkRng(seed, r) : null;
+      let best = best0;
       values.fill(m.kind === "gradient" ? 0 : m.q1);
       counts.fill(0);
       let mean = 0;
@@ -225,6 +249,11 @@ export function runBlock(tb: Testbed, methods: Method[], steps: number, seed: nu
         }
         c.avgReward[i] += reward;
         if (q[a] === best) c.pctOptimal[i] += 1;
+        if (wr) {
+          walk(q, tb.walkSd!, wr);
+          best = -Infinity;
+          for (const x of q) best = Math.max(best, x);
+        }
       }
     });
   }
@@ -276,4 +305,43 @@ export function erf(x: number): number {
   let f = z;
   for (let k = 60; k >= 1; k--) f = z + k / 2 / f;
   return sign * (1 - Math.exp(-z * z) / (Math.sqrt(Math.PI) * f));
+}
+
+/**
+ * Figure 2.5: one family of methods per curve, each at its parameter values (powers of two, read from the figure:
+ * ε 1/128–1/4; gradient-bandit α 1/32–4, whose last point falls below the plotted range; UCB c 1/16–4; optimistic
+ * greedy Q₁ 1/4–4 with α = 0.1). ε-greedy and UCB use sample averages; the gradient bandit uses the baseline.
+ */
+export interface StudyFamily {
+  key: "epsilon-greedy" | "gradient" | "ucb" | "optimistic";
+  label: string;
+  param: string;
+  exponents: number[]; // parameter = 2^exponent
+  make: (x: number) => Method;
+}
+const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+export const FIG_2_5: StudyFamily[] = [
+  { key: "epsilon-greedy", label: "ε-greedy", param: "ε", exponents: range(-7, -2), make: (x) => ({ kind: "epsilon-greedy", epsilon: x, q1: 0, step: { kind: "sample-average" } }) },
+  { key: "gradient", label: "gradient bandit", param: "α", exponents: range(-5, 2), make: (x) => ({ kind: "gradient", alpha: x, baseline: true }) },
+  { key: "ucb", label: "UCB", param: "c", exponents: range(-4, 2), make: (x) => ({ kind: "ucb", c: x, q1: 0, step: { kind: "sample-average" } }) },
+  { key: "optimistic", label: "optimistic greedy", param: "Q₁", exponents: range(-2, 2), make: (x) => ({ kind: "epsilon-greedy", epsilon: 0, q1: x, step: { kind: "constant", alpha: 0.1 } }) },
+];
+/** The x-axis of Figure 2.5: 2^−7 … 2^2. */
+export const FIG_2_5_EXPONENTS = range(-7, 2);
+
+/** Every (family, exponent) setting of a study, in order: the methods `parameterStudy` runs. */
+export const studyMethods = (families: StudyFamily[]): Method[] => families.flatMap((f) => f.exponents.map((e) => f.make(2 ** e)));
+
+/**
+ * Average reward over all `steps` (the area under the learning curve, as in Figure 2.5) for every setting, from
+ * `runBlock` sums accumulated over `runs` runs: result[f][j] belongs to families[f].exponents[j].
+ */
+export function studyResult(families: StudyFamily[], acc: Curves[], runs: number, steps: number): number[][] {
+  let i = 0;
+  return families.map((f) => f.exponents.map(() => meanOver(acc[i++].avgReward, 0, steps) / runs));
+}
+
+/** The whole parameter study at once (checks and tests). */
+export function parameterStudy(tb: Testbed, families: StudyFamily[], runs: number, steps: number, seed: number): number[][] {
+  return studyResult(families, runBlock(tb, studyMethods(families), steps, seed, 0, runs), runs, steps);
 }

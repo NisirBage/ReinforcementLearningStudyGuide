@@ -10,7 +10,7 @@ import { HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, sti
 import { greedyPath, newControl, qLearningStep, rmsError, runControl, runTd0, sarsaStep, td0Update } from "../lib/rl/td";
 import { makeRng } from "../domain/random";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
-import { TESTBED_10, expectedMaxNormal, meanOver, recordRun, runExperiment, softmax, type Method } from "../lib/rl/banditLab";
+import { FIG_2_5, TESTBED_10, expectedMaxNormal, meanOver, parameterStudy, recordRun, runExperiment, softmax, type Method } from "../lib/rl/banditLab";
 import { recyclingRandomPolicy, recyclingRobot } from "../lib/rl/envs/recycling";
 import { actionValue, backupTerms, bellmanExpectationBackup, bellmanResidual, equiprobablePolicy, greedyActions, solveExact, type FiniteMDP } from "../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../lib/rl/envs/gridworld4x4";
@@ -157,6 +157,116 @@ export const CHECKS: Record<string, Check> = {
       const w = recencyWeights(10, 0.1);
       return [w.rewards[0], w.initial];
     },
+  },
+  // ----- Chapter 2, Milestone 4C -----
+  "ch02.softmax-derivative": {
+    kind: "fact", // ∂π(b)/∂H(a) = π(b)(1[a=b] − π(a)) (p. 46), against central finite differences of the soft-max
+    run: () => {
+      const rng = makeRng(42);
+      for (let trial = 0; trial < 20; trial++) {
+        const n = 2 + Math.floor(rng() * 5);
+        const h = Array.from({ length: n }, () => 4 * rng() - 2);
+        const pi = softmax(h);
+        for (let a = 0; a < n; a++) {
+          const up = softmax(h.map((x, i) => (i === a ? x + 1e-6 : x)));
+          const dn = softmax(h.map((x, i) => (i === a ? x - 1e-6 : x)));
+          for (let b = 0; b < n; b++) if (!close((up[b] - dn[b]) / 2e-6, pi[b] * ((a === b ? 1 : 0) - pi[a]), 1e-7)) return false;
+        }
+      }
+      return true;
+    },
+  },
+  "ch02.gradient-update-unified": {
+    kind: "fact", // H(a) += α(R − R̄)(1[a=A] − π(a)) for all a equals the two cases of (2.10)
+    run: () => {
+      const rng = makeRng(43);
+      for (let trial = 0; trial < 50; trial++) {
+        const n = 2 + Math.floor(rng() * 5);
+        const h = Array.from({ length: n }, () => 4 * rng() - 2);
+        const pi = softmax(h);
+        const A = Math.floor(rng() * n);
+        const [alpha, r, rbar] = [rng(), 4 * rng() - 2, 4 * rng() - 2];
+        const twoCases = h.map((x, a) => (a === A ? x + alpha * (r - rbar) * (1 - pi[A]) : x - alpha * (r - rbar) * pi[a]));
+        const unified = h.map((x, a) => x + alpha * (r - rbar) * ((a === A ? 1 : 0) - pi[a]));
+        if (!twoCases.every((v, i) => close(v, unified[i], 1e-12))) return false;
+      }
+      return true;
+    },
+  },
+  "ch02.expected-update-is-gradient": {
+    kind: "fact", // §2.7: the expected step E[(R − X)(1[a=A] − π(a))] equals ∂E[R]/∂H(a) for ANY action-independent X (here 0, 1000 and E[R])
+    run: () => {
+      const rng = makeRng(44);
+      for (let trial = 0; trial < 20; trial++) {
+        const n = 2 + Math.floor(rng() * 5);
+        const h = Array.from({ length: n }, () => 4 * rng() - 2);
+        const q = Array.from({ length: n }, () => 4 * rng() - 2);
+        const pi = softmax(h);
+        const er = (hh: number[]) => softmax(hh).reduce((s, p, b) => s + p * q[b], 0);
+        for (const X of [0, 1000, er(h)])
+          for (let a = 0; a < n; a++) {
+            // E over A ~ π and R with E[R | A] = q(A): Σ_b π(b)(q(b) − X)(1[a=b] − π(a))
+            const expected = pi.reduce((s, p, b) => s + p * (q[b] - X) * ((a === b ? 1 : 0) - pi[a]), 0);
+            const grad = (er(h.map((x, i) => (i === a ? x + 1e-6 : x))) - er(h.map((x, i) => (i === a ? x - 1e-6 : x)))) / 2e-6;
+            if (!close(expected, grad, 1e-6)) return false;
+          }
+      }
+      return true;
+    },
+  },
+  "ch02-q023": {
+    kind: "answer", // Exercise 2.1, long run: P(optimal) = 1 − ε + ε/10; reward = (1 − ε)·E[max q] + ε·E[mean q], E[mean q] = 0
+    run: () => {
+      const m = expectedMaxNormal(10);
+      return [1 - 0.01 + 0.01 / 10, 1 - 0.1 + 0.1 / 10, 0.99 * m, 0.9 * m];
+    },
+  },
+  "ch02-q028": {
+    kind: "answer", // Exercise 2.3's weights for α = (1/2, 1/4, 1/5), found by running the recursion on unit inputs
+    run: () => {
+      const alphas = [1 / 2, 1 / 4, 1 / 5];
+      const run = (q1: number, r: number[]) => r.reduce((q, rk, k) => q + alphas[k] * (rk - q), q1);
+      const basis = [run(1, [0, 0, 0]), run(0, [1, 0, 0]), run(0, [0, 1, 0]), run(0, [0, 0, 1])];
+      // the closed form of the solution, ∏(1 − α_j) and α_i ∏_{j>i}(1 − α_j), must agree with the recursion
+      const closed = [0.5 * 0.75 * 0.8, 0.5 * 0.75 * 0.8, 0.25 * 0.8, 0.2];
+      return basis.every((w, i) => close(w, closed[i], 1e-12)) ? basis : [NaN, NaN, NaN, NaN];
+    },
+  },
+  "ch02-q030": {
+    kind: "answer", // optimistic start Q_1 = 5, α = 0.1, rewards 1.0 and 0.6; weight (1 − α)^10 on Q_1 after ten rewards
+    run: () => {
+      const q = constantStepEstimates([1.0, 0.6], 0.1, 5);
+      return [q[1], q[2], recencyWeights(10, 0.1).initial];
+    },
+  },
+  "ch02-q034": { kind: "answer", run: () => [100, 1000].map((t) => ucbScores([0], [20], t, 2)[0]) }, // the bonus c√(ln t / N) with Q = 0
+  "ch02-q035": {
+    kind: "answer", // ∂π(2)/∂H(2) and ∂π(1)/∂H(2) at H = (0, ln 2, 0), by finite differences of the soft-max
+    run: () => {
+      const d = (b: number) => (softmax([0, Math.log(2) + 1e-7, 0])[b] - softmax([0, Math.log(2) - 1e-7, 0])[b]) / 2e-7;
+      return [d(1), d(0)];
+    },
+  },
+  "ch02-q037": {
+    kind: "answer", // E[R] = Σ π q and its derivative in H(2), by finite differences, for q = (1, 2, 0), H = (0, ln 2, 0)
+    run: () => {
+      const q = [1, 2, 0];
+      const er = (h2: number) => softmax([0, h2, 0]).reduce((s, p, b) => s + p * q[b], 0);
+      return [er(Math.log(2)), (er(Math.log(2) + 1e-7) - er(Math.log(2) - 1e-7)) / 2e-7];
+    },
+  },
+  "ch02-q040": {
+    kind: "answer", // Exercise 2.6: best expected reward without and with knowing the case
+    run: () => {
+      const cases = [[0.1, 0.2], [0.9, 0.8]]; // case A, case B, each with probability 0.5
+      const blind = Math.max(...[0, 1].map((a) => 0.5 * cases[0][a] + 0.5 * cases[1][a])); // one action for both cases (mixing cannot beat the best)
+      const told = 0.5 * Math.max(...cases[0]) + 0.5 * Math.max(...cases[1]);
+      return [blind, told];
+    },
+  },
+  "ch02-q043": {
+    kind: "answer", // Bayesian look-ahead tree: 2 actions × 2 rewards per play
+    run: () => [(2 * 2) ** 3, 1000 * Math.log2(2 * 2)],
   },
 
   // ----- Chapter 3 -----
@@ -330,6 +440,57 @@ export const CHECKS: Record<string, Check> = {
         const rec = recordRun(TESTBED_10, m, 200, 21);
         return rec.details.every((d, i) => close(d.reward, one.avgReward[i], 1e-12) && (one.pctOptimal[i] === 1) === (rec.q[d.action] === Math.max(...rec.q)));
       }),
+  },
+  "lab.bandit.fig2-5": {
+    kind: "fact", // Figure 2.5 (p. 48), 300 runs: every curve peaks in the interior, within one doubling of the draft's peak
+    // (read from the page image: ε 1/16, α 1/4, c 1/2–1, Q₁ 1); UCB's best is the highest; each method stays within 0.1 of its
+    // best over at least three consecutive settings (a factor of 4 or more, "about an order of magnitude" in the draft);
+    // the gradient bandit at α = 4 is its worst point. With 2000 runs (measured, Milestone 4C) UCB leads by 0.025.
+    run: () => {
+      const res = parameterStudy(TESTBED_10, FIG_2_5, 300, 1000, 25);
+      const draftPeak: Record<string, number[]> = { "epsilon-greedy": [-4], gradient: [-2], ucb: [-1, 0], optimistic: [0] };
+      const bests = res.map((v) => Math.max(...v));
+      return FIG_2_5.every((f, i) => {
+        const v = res[i];
+        const j = v.indexOf(bests[i]);
+        const interior = j > 0 && j < v.length - 1;
+        const nearDraft = draftPeak[f.key].some((e) => Math.abs(f.exponents[j] - e) <= 1);
+        let run = 0;
+        let longest = 0;
+        for (const x of v) longest = Math.max(longest, (run = x >= bests[i] - 0.1 ? run + 1 : 0));
+        return interior && nearDraft && longest >= 3;
+      }) && bests[2] === Math.max(...bests) && Math.min(...res[1]) === res[1][res[1].length - 1] && res[1][res[1].length - 1] < bests[1] - 0.3;
+    },
+  },
+  "lab.bandit.ex2-4": {
+    kind: "fact", // Exercise 2.4 (lab task): on a random-walk testbed (step sd 0.01, our choice), ε = 0.1 with α = 0.1 beats
+    // sample averages over the second half of 10,000 steps, in reward and in % optimal (measured with 500 runs: 1.17 vs 0.94, 74% vs 45%)
+    run: () => {
+      const tb = { ...TESTBED_10, sdOfMeans: 0, walkSd: 0.01 };
+      const [sa, ca] = runExperiment(tb, [eg(0.1), { kind: "epsilon-greedy", epsilon: 0.1, q1: 0, step: { kind: "constant", alpha: 0.1 } }], 100, 10_000, 3);
+      return meanOver(ca.avgReward, 5000, 10_000) > meanOver(sa.avgReward, 5000, 10_000) + 0.1 && meanOver(ca.pctOptimal, 5000, 10_000) > meanOver(sa.pctOptimal, 5000, 10_000) + 0.15;
+    },
+  },
+  "lab.bandit.walk-step-matches-fast": {
+    kind: "fact", // on the random-walk testbed the inspector and the fast runner still agree step for step; the values start equal and move
+    run: () => {
+      const tb = { ...TESTBED_10, sdOfMeans: 0, walkSd: 0.01 };
+      return [eg(0.1), { kind: "ucb", c: 2, q1: 0, step: sa } as Method, gr(0.1, true)].every((m) => {
+        const one = runExperiment(tb, [m], 1, 300, 22)[0];
+        const rec = recordRun(tb, m, 300, 22);
+        const startEqual = rec.qs[0].every((x) => x === 0);
+        const moved = rec.qs[299].some((x) => x !== 0);
+        return startEqual && moved && rec.details.every((d, i) => close(d.reward, one.avgReward[i], 1e-12) && (one.pctOptimal[i] === 1) === d.optimal && d.optimal === (rec.qs[i][d.action] === Math.max(...rec.qs[i])));
+      });
+    },
+  },
+  "lab.bandit.optimistic-spike": {
+    kind: "fact", // Figure 2.2 / Exercise 2.5: optimistic greedy tries each arm once on steps 1–10 (about 10% optimal each), then spikes on step 11
+    run: () => {
+      const [opt] = runExperiment(TESTBED_10, [{ kind: "epsilon-greedy", epsilon: 0, q1: 5, step: { kind: "constant", alpha: 0.1 } }], 300, 20, 12);
+      const first10 = Array.from(opt.pctOptimal.slice(0, 10));
+      return first10.every((x) => x > 0.04 && x < 0.17) && opt.pctOptimal[10] > 0.3 && opt.pctOptimal[10] > opt.pctOptimal[12] + 0.15;
+    },
   },
   "lab.mdp.gridworld-exact": {
     kind: "fact", // solving (4.4) exactly gives the k = ∞ grid of Figure 4.2: −14, −18, −20, −22

@@ -2,10 +2,120 @@
   "unit": "ch02",
   "sections": [
     {
+      "id": "ch02.s2-1",
+      "section": "2.1",
+      "title": "The n-armed bandit problem",
+      "concepts": [
+        "ch02.evaluative-feedback",
+        "ch02.n-armed-bandit",
+        "ch02.exploration-exploitation"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "A teacher who marks your answer *wrong* and shows the right one gives **instructive** feedback. A slot machine that simply pays out gives **evaluative** feedback: it scores what you did, and says nothing about what else you could have done. Reinforcement learning learns from the second kind, so the only way to find out whether another choice is better is to try it. The chapter opening studies this in the simplest possible setting: a single situation, where each choice earns an immediate reward and nothing else."
+        },
+        {
+          "layer": "formal",
+          "body": "In the **$n$-armed bandit problem** the learner chooses, on each step, one of $n$ actions and receives a numerical reward drawn from a stationary distribution that depends only on the action chosen. The **value** of an action is its expected reward (written $q(a)$ from §2.2 on). The goal is to maximise the expected total reward over a run, for example 1000 steps. The values are unknown; the learner can only estimate them.\\n\\nAt any moment an action with the largest estimate is a **greedy** action. Choosing it is **exploiting** current knowledge; choosing any other action is **exploring**, because it improves the estimate of that action."
+        },
+        {
+          "layer": "example",
+          "body": "Arm A has been pulled 50 times and its estimate, 1.0, is reliable. Arm B has been pulled twice and its estimate, 0.95, is very uncertain: its true value could easily be 1.5. A greedy learner pulls A. With 1000 steps still to go, a few pulls of B cost little and might reveal an arm worth half a point more on every remaining step. With one step to go, exploring cannot pay: there is no future in which to use what it reveals. Whether to explore depends on the estimates, how uncertain they are, and how many steps remain."
+        },
+        {
+          "layer": "connections",
+          "body": "The draft deliberately does not try to balance exploration and exploitation optimally: the methods that do so rely on assumptions (stationarity, a known prior) that rarely hold in the full problem. The chapter's goal is only to make sure *some* exploration happens. The same tension returns in every control method of the book, for example the exploring starts and ε-soft policies of Monte Carlo control (Chapter 5) and the ε-greedy behaviour of Sarsa and Q-learning (Chapter 6)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            31,
+            31
+          ],
+          "pdfPages": [
+            45,
+            45
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.1",
+          "printedPages": [
+            32,
+            33
+          ],
+          "pdfPages": [
+            46,
+            47
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch02.s2-2",
+      "section": "2.2",
+      "title": "Action-value methods",
+      "concepts": [
+        "ch02.action-value-estimate",
+        "ch02.greedy-action-selection",
+        "ch02.epsilon-greedy",
+        "ch02.ten-armed-testbed"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Estimate how good each action is by averaging the rewards it has produced so far. Then mostly pick the action that looks best, but now and then pick one at random, so that no estimate is left to go stale."
+        },
+        {
+          "layer": "formal",
+          "body": "The **sample-average** estimate $Q_t(a)$ is the mean of the rewards received from $a$ before step $t$, or a default such as 0 if $a$ has never been tried. By the law of large numbers $Q_t(a) \\to q(a)$ as the number of selections $N_t(a) \\to \\infty$. **Greedy** selection takes $A_t = \\operatorname{argmax}_a Q_t(a)$, breaking ties arbitrarily. **ε-greedy** selection does the same with probability $1 - \\varepsilon$, and with probability $\\varepsilon$ picks uniformly among all $n$ actions, ignoring the estimates.",
+          "refs": [
+            "eq.ch02.sample-average",
+            "eq.ch02.greedy"
+          ]
+        },
+        {
+          "layer": "math",
+          "body": "With one greedy action, ε-greedy chooses it with probability $1 - \\varepsilon + \\varepsilon/n$ (the random branch can pick it too) and each other action with probability $\\varepsilon / n$. Every action is therefore chosen infinitely often, every $Q_t(a)$ converges to $q(a)$, and the probability of choosing an optimal action tends to $1 - \\varepsilon + \\varepsilon / n$, a little more than $1 - \\varepsilon$. On the 10-armed testbed with $\\varepsilon = 0.1$ that limit is $0.91$. These are guarantees about the limit only; they say nothing about how fast the method learns."
+        },
+        {
+          "layer": "example",
+          "body": "The **10-armed testbed**: 2000 random problems, each with $q(a) \\sim N(0, 1)$ for its 10 actions and rewards $R_t \\sim N(q(A_t), 1)$; every method runs 1000 steps on each problem and the results are averaged. The best possible average reward is $\\mathbb{E}[\\max_a q(a)]$, the expected largest of 10 standard normal values, $\\approx 1.5388$ (the draft rounds it to about 1.55). In Figure 2.1 greedy improves fastest at first but levels off near 1, finding the optimal action in only about a third of the problems; $\\varepsilon = 0.1$ finds it sooner but can never choose it more than 91% of the time; $\\varepsilon = 0.01$ learns more slowly and ends ahead on both measures. Reproduce it with the Figure 2.1 preset of the [bandit laboratory](#/lab/bandit)."
+        },
+        {
+          "layer": "connections",
+          "body": "How much exploration helps depends on the task. Noisier rewards make it more valuable. With noiseless rewards greedy learns each value from one pull and may do best on a stationary task, but if the values drift, even noiseless rewards call for exploration, since a neglected action may have become the best. The draft stresses that the full problem is usually *effectively* nonstationary: as the learner's policy improves, the decision problems it faces change."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.2",
+          "printedPages": [
+            33,
+            36
+          ],
+          "pdfPages": [
+            47,
+            50
+          ]
+        }
+      ]
+    },
+    {
       "id": "ch02.s2-3",
       "section": "2.3",
       "title": "Incremental implementation",
-      "concepts": ["ch02.incremental-update", "ch02.general-update-rule"],
+      "concepts": [
+        "ch02.incremental-update",
+        "ch02.general-update-rule"
+      ],
       "layers": [
         {
           "layer": "intuition",
@@ -14,12 +124,16 @@
         {
           "layer": "formal",
           "body": "For one action, let $Q_k$ be the estimate before its $k$-th reward $R_k$ arrives, i.e. the mean of the $k-1$ rewards seen so far. The incremental rule computes $Q_{k+1}$ from $Q_k$, $R_k$ and $k$ alone.",
-          "refs": ["eq.ch02.incremental-update"]
+          "refs": [
+            "eq.ch02.incremental-update"
+          ]
         },
         {
           "layer": "derivation",
           "body": "Expand the average of $k$ rewards, separate the newest one, and rewrite the sum of the first $k-1$ rewards as $(k-1)Q_k$. The step-by-step derivation is shown with the equation.",
-          "refs": ["eq.ch02.incremental-update"]
+          "refs": [
+            "eq.ch02.incremental-update"
+          ]
         },
         {
           "layer": "example",
@@ -28,20 +142,40 @@
         {
           "layer": "computation",
           "body": "Store two numbers per action, $Q$ and the count $k$. Each update costs one subtraction, one division and one addition, regardless of how many rewards came before.",
-          "refs": ["eq.ch02.general-update"]
+          "refs": [
+            "eq.ch02.general-update"
+          ]
         },
         {
           "layer": "connections",
           "body": "The pattern *new estimate = old estimate + step size × (target − old estimate)* returns in Monte Carlo methods (Chapter 5), TD learning (Chapter 6) and function approximation (Chapter 9); only the target and the step size change."
         }
       ],
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [36, 38], "pdfPages": [50, 52] }]
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.3",
+          "printedPages": [
+            36,
+            38
+          ],
+          "pdfPages": [
+            50,
+            52
+          ]
+        }
+      ]
     },
     {
       "id": "ch02.s2-4",
       "section": "2.4",
       "title": "Tracking a nonstationary problem",
-      "concepts": ["ch02.constant-step-size", "ch02.recency-weighted-average", "ch02.step-size-conditions"],
+      "concepts": [
+        "ch02.constant-step-size",
+        "ch02.recency-weighted-average",
+        "ch02.step-size-conditions"
+      ],
       "layers": [
         {
           "layer": "intuition",
@@ -50,7 +184,10 @@
         {
           "layer": "math",
           "body": "With constant $\\alpha$, unrolling the update shows the estimate is a weighted average of $Q_1$ and every past reward, with weights that shrink by a factor $(1-\\alpha)$ for each newer reward and that add up to 1.",
-          "refs": ["eq.ch02.constant-step", "eq.ch02.recency-weighted"]
+          "refs": [
+            "eq.ch02.constant-step",
+            "eq.ch02.recency-weighted"
+          ]
         },
         {
           "layer": "example",
@@ -59,10 +196,305 @@
         {
           "layer": "formal",
           "body": "Two conditions on the step sizes are sufficient for convergence with probability 1. The sample-average choice $1/k$ meets both; a constant $\\alpha$ fails the second, which is exactly why it keeps tracking change.",
-          "refs": ["eq.ch02.step-size-conditions"]
+          "refs": [
+            "eq.ch02.step-size-conditions"
+          ]
         }
       ],
-      "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }]
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            39
+          ],
+          "pdfPages": [
+            52,
+            53
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch02.s2-5",
+      "section": "2.5",
+      "title": "Optimistic initial values",
+      "concepts": [
+        "ch02.optimistic-initial-values"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Start every estimate far above any reward the problem can plausibly give. Whatever a greedy learner tries then disappoints it, so it switches to something it has not tried; every action is tried several times before the estimates settle. The exploration comes from the starting values, not from random choices."
+        },
+        {
+          "layer": "formal",
+          "body": "All the methods so far depend on the initial estimates $Q_1(a)$: they are **biased** by them. For sample averages the bias disappears at an action's first selection, since (2.3) with $k = 1$ gives $Q_2 = R_1$. For a constant step size it is permanent but fades: by (2.6), after $k$ selections $Q_1$ still carries the weight $(1 - \\alpha)^k$. The initial values are thus extra parameters the user must set, even if only to 0, but they are also a simple way to supply prior knowledge about likely rewards.",
+          "refs": [
+            "eq.ch02.recency-weighted"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "On the testbed, set $Q_1(a) = +5$ for every arm and use $\\alpha = 0.1$. An arm whose first reward is $0.8$ moves to $5 + 0.1(0.8 - 5) = 4.58$, below the 5 of every untried arm, so greedy selection moves on: the first ten steps try all ten arms. The optimistic start keeps the weight $0.9^k$ after $k$ pulls of an arm, $0.35$ after 10 pulls and under $0.01$ after 50. In Figure 2.2 optimistic greedy is worse at first and then overtakes realistic ε-greedy ($Q_1 = 0$, $\\varepsilon = 0.1$). The [bandit laboratory](#/lab/bandit)'s Figure 2.2 preset reproduces this; look at the % optimal curve around step 11, which Exercise 2.5 asks about."
+        },
+        {
+          "layer": "connections",
+          "body": "The trick explores only at the start. If the task changes later, nothing renews the drive to explore, so it is a poor tool for nonstationary problems; any method that treats the beginning of time as special has this weakness, including sample averages, which weight the earliest reward as much as the latest. The draft's verdict is that such simple methods, alone or combined, are often adequate in practice, and later chapters use them often. Figure 2.5's axis calls the initial estimate $Q_0$ where the text and Figure 2.2 write $Q_1$ (flagged on the concept)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.5",
+          "printedPages": [
+            39,
+            41
+          ],
+          "pdfPages": [
+            53,
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch02.s2-6",
+      "section": "2.6",
+      "title": "Upper-confidence-bound action selection",
+      "concepts": [
+        "ch02.ucb"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "ε-greedy explores blindly: when it explores, an action that is clearly bad is as likely to be tried as one that is nearly best or barely tested. A better use of exploration favours the actions that might turn out to be optimal: those whose estimates are close to the best, or whose estimates are still very uncertain."
+        },
+        {
+          "layer": "formal",
+          "body": "UCB selection (2.8) adds to each estimate an uncertainty bonus $c\\sqrt{\\ln t / N_t(a)}$ and picks the largest total; an action never tried ($N_t(a) = 0$) counts as maximising. The bonus plays the role of a confidence margin, so the total is a kind of upper bound on the action's true value, and $c > 0$ sets the confidence level.",
+          "refs": [
+            "eq.ch02.ucb"
+          ]
+        },
+        {
+          "layer": "math",
+          "body": "Each selection of $a$ increases $N_t(a)$ and shrinks its bonus. Each step on which $a$ is *not* selected increases $t$ and so grows its bonus, but only logarithmically. Because $\\ln t$ is unbounded, every action is eventually selected again; because it grows slowly, actions with low estimates or many past selections wait longer and longer between selections."
+        },
+        {
+          "layer": "example",
+          "body": "With $c = 2$, an arm tried $N = 20$ times has bonus $2\\sqrt{\\ln 100 / 20} \\approx 0.96$ at $t = 100$. If it is then ignored until $t = 1000$, its bonus has grown only to $2\\sqrt{\\ln 1000 / 20} \\approx 1.18$: ten times as many steps added less than a quarter to the bonus. Compare UCB with ε-greedy in the Figure 2.3 preset of the [bandit laboratory](#/lab/bandit), and look at step 11."
+        },
+        {
+          "layer": "connections",
+          "body": "UCB often works well on bandits, but the draft finds it hard to extend: nonstationary problems would need more than the methods of §2.4, and with large state spaces and function approximation (Part III) no practical way of using the idea was known. The bibliographical remarks identify this rule as UCB1 (Auer, Cesa-Bianchi and Fischer, 2002)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.6",
+          "printedPages": [
+            41,
+            42
+          ],
+          "pdfPages": [
+            55,
+            56
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            50,
+            50
+          ],
+          "pdfPages": [
+            64,
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch02.s2-7",
+      "section": "2.7",
+      "title": "Gradient bandits",
+      "concepts": [
+        "ch02.gradient-bandit",
+        "ch02.performance-gradient",
+        "ch02.reward-baseline"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Instead of estimating how much reward each action gives, learn a **preference** for each action and choose actions with probabilities that grow with the preference. Only differences between preferences matter. After each reward, push the chosen action's preference up if the reward beat the average so far and down if it fell short, and move the other actions the opposite way."
+        },
+        {
+          "layer": "formal",
+          "body": "The probabilities are the soft-max (2.9) of the preferences $H_t(a)$, written $\\pi_t(a)$; initially all preferences are equal. After choosing $A_t$ and receiving $R_t$, the preferences are updated by (2.10), with step size $\\alpha > 0$ and baseline $\\bar R_t$, the average of all rewards up to and including step $t$ (computed incrementally as in §2.3, or with a constant step size as in §2.4 for a nonstationary problem).",
+          "refs": [
+            "eq.ch02.softmax-preferences",
+            "eq.ch02.gradient-bandit-update"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "Three arms, $H = (0, 0, 0)$, so $\\pi = (\\tfrac13, \\tfrac13, \\tfrac13)$, and $\\alpha = 0.1$. Step 1 picks arm 1 and pays $R_1 = 2$; the baseline includes $R_1$, so $\\bar R_1 = 2$ and nothing changes. Step 2 picks arm 2 and pays $R_2 = 0.5$: $\\bar R_2 = 1.25$ and $R_2 - \\bar R_2 = -0.75$. Arm 2's preference becomes $0 + 0.1(-0.75)(1 - \\tfrac13) = -0.05$ and arms 1 and 3 each become $0 - 0.1(-0.75)\\tfrac13 = +0.025$. The changes sum to zero, as they always do. Step through more updates with the gradient-bandit method of the [bandit laboratory](#/lab/bandit)."
+        },
+        {
+          "layer": "derivation",
+          "body": "Why this update? In exact gradient ascent (2.11) every preference would move in proportion to the gradient of the expected reward $\\mathbb{E}[R_t] = \\sum_b \\pi_t(b) q(b)$. That needs the unknown $q(b)$, but the gradient can be rewritten as an expectation over the action taken: subtract any $X_t$ that does not depend on the action (allowed because the soft-max derivatives sum to zero), turn the sum into an expectation under $\\pi_t$, use the soft-max derivative, and replace $q(A_t)$ by its sample $R_t$. The result, $\\mathbb{E}[(R_t - \\bar R_t)(\\mathbb{1}_{a = A_t} - \\pi_t(a))]$, is exactly the expected value of (2.10). So the gradient bandit is **stochastic gradient ascent** on expected reward. Each step is written out with the equations.",
+          "refs": [
+            "eq.ch02.exact-gradient-ascent",
+            "eq.ch02.softmax-derivative",
+            "eq.ch02.gradient-bandit-indicator-form"
+          ]
+        },
+        {
+          "layer": "math",
+          "body": "Two consequences. First, the exact gradient is $\\partial \\mathbb{E}[R_t] / \\partial H_t(a) = \\pi_t(a)\\big(q(a) - \\mathbb{E}[R_t]\\big)$: preferences of better-than-average actions rise. Second, the derivation never used what the baseline is, only that it does not depend on the action. Any such baseline (0, 1000, the average reward) gives the same expected update; it changes only the update's **variance**, and so how fast learning goes. Figure 2.4 shows the effect: with every true value shifted up by 4, the average-reward baseline adapts at once, while the zero baseline learns much worse."
+        },
+        {
+          "layer": "connections",
+          "body": "The draft notes that gradient bandits are a special case of the gradient-based algorithms of Williams (1992), which grew into the actor–critic and policy-gradient methods treated later. In this April 2015 draft, actor–critic methods appear in Chapter 11 (Policy Approximation). The soft-max is also how the gradient bandit explores: no action's probability ever reaches zero."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.7",
+          "printedPages": [
+            42,
+            46
+          ],
+          "pdfPages": [
+            56,
+            60
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            50,
+            51
+          ],
+          "pdfPages": [
+            64,
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch02.s2-8",
+      "section": "2.8",
+      "title": "Associative search (contextual bandits)",
+      "concepts": [
+        "ch02.associative-search"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "So far there has been one situation, so the learner only had to find (or track) one best action. Now imagine several bandit problems, one chosen at random on each play. If nothing tells you which one you face, the arms' values seem to change randomly from play to play. If a clue tells you, you can learn which action is best *for each clue*."
+        },
+        {
+          "layer": "formal",
+          "body": "In an **associative search** task (now often called a **contextual bandit**) each play comes with a signal identifying the situation, and the learner must learn a **policy**, which says for each situation which action to take there. As in the bandit problem, an action affects only the immediate reward. If actions could also affect which situation comes next, we would have the full reinforcement learning problem, the subject of [Chapter 3](#/learn/ch03)."
+        },
+        {
+          "layer": "example",
+          "body": "A machine shows red or green, each half the time. When red, arm 1 pays 1 on average and arm 2 pays 0; when green, the reverse. Ignoring the colour, each arm is worth $0.5$ on average, and the methods of this chapter cannot do better than $0.5$ per play. Keeping separate estimates for red and for green (one bandit per colour) learns to play arm 1 on red and arm 2 on green, earning $1$ per play. Exercise 2.6 asks the same question with less obvious numbers."
+        },
+        {
+          "layer": "connections",
+          "body": "The three settings form a ladder: one situation and immediate rewards (the $n$-armed bandit); several signalled situations and immediate rewards (associative search); situations that depend on the actions taken (the full problem). The bibliographical remarks connect associative search with Thorndike's Law of Effect (Chapter 1), which links situations to actions, and with the discriminative stimuli of operant conditioning, which correspond to states."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.8",
+          "printedPages": [
+            46,
+            47
+          ],
+          "pdfPages": [
+            60,
+            61
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            51,
+            51
+          ],
+          "pdfPages": [
+            65,
+            65
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch02.s2-9",
+      "section": "2.9",
+      "title": "Summary (reading guide)",
+      "concepts": [
+        "ch02.parameter-study",
+        "ch02.bayes-optimal-exploration"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**What this section does.** It recaps the chapter's ways of exploring: ε-greedy explores at random a small fraction of the time; UCB chooses deterministically but favours actions sampled less often; gradient bandits choose by a soft-max over learned preferences; optimistic initial values make even greedy selection explore. It then compares them all in one parameter study, and closes with the more principled approaches it decided not to pursue. Read pp. 47–49, then the bibliographical remarks (pp. 49–51) and the six exercises (pp. 51–52)."
+        },
+        {
+          "layer": "example",
+          "body": "**Figure 2.5, the parameter study.** Each method is scored by its average reward over the first 1000 steps, the area under its learning curve, at parameter values that double from point to point, and the scores are plotted on a log scale. Every curve is an inverted U: each method does best at an intermediate parameter value. Each also does well over about an order of magnitude of its parameter, and UCB comes out best. The [bandit laboratory](#/lab/bandit)'s parameter study reproduces the figure: with 2000 runs the peaks fall at the same parameter values as the draft's (ε = 1/16, α = 1/4, c = 1/2 to 1, $Q_1 = 1$), at about 1.34, 1.41, 1.49 and 1.46, a little above the values read from the draft's figure (about 1.31, 1.38, 1.47 and 1.44). (The draft's 'neither too large nor too big' presumably means neither too small nor too large.)"
+        },
+        {
+          "layer": "connections",
+          "body": "**Beyond simple methods.** The classical solution is the **Gittins index**, optimal for a class of bandit problems more general than this chapter's, but only when the prior distribution over problems is known. A fully **Bayesian** treatment is also possible in principle: the posterior over action values becomes an *information state*, and one can look ahead over every possible sequence of actions and rewards. With just two actions and two possible rewards, 1000 plays already give a tree with $2^{2000}$ leaves, so this is intractable done exactly. Neither approach generalises to the full problem, which is why the draft calls its simple methods the practical state of the art. **Bibliography pointers:** bandits in statistics go back to Thompson (1933) and Robbins (1952); Watkins (1989) introduced the name *action value*; UCB1 to Auer, Cesa-Bianchi and Fischer (2002); the name *softmax* to Bridle (1990), and the rule itself to Luce (1959)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.9",
+          "printedPages": [
+            47,
+            49
+          ],
+          "pdfPages": [
+            61,
+            63
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            49,
+            51
+          ],
+          "pdfPages": [
+            63,
+            65
+          ]
+        }
+      ]
     }
   ]
 }

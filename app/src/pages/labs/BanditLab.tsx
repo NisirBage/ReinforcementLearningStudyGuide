@@ -1,8 +1,10 @@
 // Bandit laboratory: configure a testbed and up to four methods; step through one run with every number of each
-// update shown; or average many runs (Figures 2.1–2.4). All computation is in lib/rl/banditLab.ts.
+// update shown; or average many runs (Figures 2.1–2.4, and Exercise 2.4's nonstationary testbed); or run the
+// parameter study of Figure 2.5. All computation is in lib/rl/banditLab.ts.
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  TESTBED_10, expectedMaxNormal, finishCurves, meanOver, recordRun, runBlock, type Curves, type Method, type StepDetail, type Testbed,
+  FIG_2_5, FIG_2_5_EXPONENTS, TESTBED_10, expectedMaxNormal, finishCurves, meanOver, recordRun, runBlock, studyMethods, studyResult, type Curves, type Method,
+  type StepDetail, type Testbed,
 } from "../../lib/rl/banditLab";
 import { LineChart } from "../../components/LineChart";
 import { Tex } from "../../components/math";
@@ -16,6 +18,7 @@ interface Preset {
   testbed: Testbed;
   methods: Method[];
   note: string;
+  steps?: number; // the experiment's suggested number of steps (default 1000)
 }
 export const PRESETS: Record<string, Preset> = {
   fig21: {
@@ -41,6 +44,13 @@ export const PRESETS: Record<string, Preset> = {
     testbed: { ...TESTBED_10, meanOfMeans: 4 },
     methods: [{ kind: "gradient", alpha: 0.1, baseline: true }, { kind: "gradient", alpha: 0.4, baseline: true }, { kind: "gradient", alpha: 0.1, baseline: false }, { kind: "gradient", alpha: 0.4, baseline: false }],
     note: "True values centred on +4. The baseline adapts at once; without it, learning is much worse.",
+  },
+  ex24: {
+    label: "Exercise 2.4 (lab task): a nonstationary testbed",
+    testbed: { ...TESTBED_10, sdOfMeans: 0, walkSd: 0.01 },
+    methods: [{ kind: "epsilon-greedy", epsilon: 0.1, q1: 0, step: SA }, { kind: "epsilon-greedy", epsilon: 0.1, q1: 0, step: CONST(0.1) }],
+    note: "Every q(a) starts at 0, and after each step each one moves by an independent normal step with standard deviation 0.01. The draft does not give the size of the walk; 0.01 is our choice. Both methods use ε = 0.1, as the exercise asks; runs are 10,000 steps long.",
+    steps: 10_000,
   },
 };
 
@@ -169,7 +179,10 @@ export function Inspector({ testbed, methods }: { testbed: Testbed; methods: Met
   const d = t > 0 ? run.details[t - 1] : null;
   const shown = run.details.slice(0, t);
   const total = shown.reduce((s, x) => s + x.reward, 0);
-  const optimal = shown.filter((x) => run.q[x.action] === run.q[run.best]).length;
+  const optimal = shown.filter((x) => x.optimal).length;
+  // The true values when step t was taken (they move after every step on a nonstationary testbed).
+  const qNow = run.qs[Math.max(0, t - 1)];
+  const bestNow = qNow.indexOf(Math.max(...qNow));
   const valuesNow = d ? d.after : run.details[0].before;
   const countsNow = d ? d.counts.map((c, i) => c + (i === d.action ? 1 : 0)) : new Array(testbed.arms).fill(0);
   const probsNow = method.kind === "gradient" ? softmaxView(valuesNow) : null;
@@ -214,7 +227,8 @@ export function Inspector({ testbed, methods }: { testbed: Testbed; methods: Met
       <p className="muted small" role="status">
         Step {t} of {MAX} · total reward {f3(total)} · average reward {t ? f3(total / t) : "–"} · optimal action chosen {t ? `${optimal} times (${Math.round((100 * optimal) / t)}%)` : "–"}
       </p>
-      {d ? <StepExplain d={d} m={method} q={run.q} /> : <p className="muted">Press Step to take the first action.</p>}
+      {d ? <StepExplain d={d} m={method} q={qNow} /> : <p className="muted">Press Step to take the first action.</p>}
+      {testbed.walkSd ? <p className="muted small">Nonstationary testbed: the true values q(a) shown are those at step {Math.max(1, t)}; they move after every step.</p> : null}
       <table className="lab-table">
         <caption className="sr-only">Arms after step {t}</caption>
         <thead>
@@ -234,7 +248,7 @@ export function Inspector({ testbed, methods }: { testbed: Testbed; methods: Met
                 {a + 1}
                 {d?.action === a ? " ← A_t" : ""}
               </td>
-              {showTrue && <td className={a === run.best ? "best num" : "num"}>{f3(run.q[a])}</td>}
+              {showTrue && <td className={a === bestNow ? "best num" : "num"}>{f3(qNow[a])}</td>}
               <td className="num">{countsNow[a]}</td>
               <td className="num">{f3(v)}</td>
               {probsNow && <td className="num">{f3(probsNow[a])}</td>}
@@ -262,7 +276,7 @@ export function Inspector({ testbed, methods }: { testbed: Testbed; methods: Met
                   <td>{x.t}</td>
                   <td>{x.action + 1}</td>
                   <td className="num">{f3(x.reward)}</td>
-                  <td>{run.q[x.action] === run.q[run.best] ? "yes" : "no"}</td>
+                  <td>{x.optimal ? "yes" : "no"}</td>
                 </tr>
               ))}
             </tbody>
@@ -280,9 +294,11 @@ const softmaxView = (h: number[]) => {
   return e.map((x) => x / s);
 };
 
-function Experiment({ testbed, methods }: { testbed: Testbed; methods: Method[] }) {
+function Experiment({ testbed, methods, suggestedSteps }: { testbed: Testbed; methods: Method[]; suggestedSteps?: number }) {
   const [runs, setRuns] = useState(2000);
-  const [steps, setSteps] = useState(1000);
+  const [steps, setSteps] = useState(suggestedSteps ?? 1000);
+  // A preset suggests a run length; editing the set-up (preset "custom") keeps whatever is entered.
+  useEffect(() => void (suggestedSteps !== undefined && setSteps(suggestedSteps)), [suggestedSteps]);
   const [seed, setSeed] = useState(7);
   const [progress, setProgress] = useState<number | null>(null);
   const [result, setResult] = useState<{ curves: Curves[]; methods: Method[]; testbed: Testbed; runs: number; steps: number } | null>(null);
@@ -310,7 +326,7 @@ function Experiment({ testbed, methods }: { testbed: Testbed; methods: Method[] 
     };
     setTimeout(next, 0);
   };
-  const best = result && result.testbed.sdOfMeans > 0 ? result.testbed.meanOfMeans + result.testbed.sdOfMeans * expectedMaxNormal(result.testbed.arms) : null;
+  const best = result && result.testbed.sdOfMeans > 0 && !result.testbed.walkSd ? result.testbed.meanOfMeans + result.testbed.sdOfMeans * expectedMaxNormal(result.testbed.arms) : null;
   return (
     <section className="card" aria-labelledby="exp-h">
       <h2 id="exp-h">Average many runs</h2>
@@ -320,7 +336,7 @@ function Experiment({ testbed, methods }: { testbed: Testbed; methods: Method[] 
           Runs <NumberInput label="Runs" value={runs} min={1} max={5000} integer onChange={setRuns} />
         </label>
         <label>
-          Steps <NumberInput label="Steps" value={steps} min={10} max={5000} integer onChange={setSteps} />
+          Steps <NumberInput label="Steps" value={steps} min={10} max={20000} integer onChange={setSteps} />
         </label>
         <label>
           Seed <NumberInput label="Seed of the experiment" value={seed} integer onChange={setSeed} />
@@ -388,6 +404,133 @@ function Experiment({ testbed, methods }: { testbed: Testbed; methods: Method[] 
               Best possible average reward: <Tex tex={`\\mathbb{E}[\\max_a q(a)] \\approx ${best.toFixed(4)}`} /> (exact, by integration). The draft says about 1.55 for the 10-armed testbed.
             </p>
           )}
+          {result.testbed.walkSd ? (
+            <p className="muted small">The true values move on every step, so "optimal" means the arm with the largest q(a) at that step.</p>
+          ) : null}
+        </>
+      )}
+    </section>
+  );
+}
+
+const POW2 = (e: number) => (e >= 0 ? String(2 ** e) : `1/${2 ** -e}`);
+/** Where the draft's curves peak in Figure 2.5, read from the page image (approximate). */
+const FIG_2_5_PEAKS: Record<string, string> = {
+  "epsilon-greedy": "ε = 1/16, about 1.31",
+  gradient: "α = 1/4, about 1.38",
+  ucb: "c = 1/2 and 1, about 1.47",
+  optimistic: "Q₁ = 1, about 1.44",
+};
+
+/** Figure 2.5: every method's average reward over the first 1000 steps, against its parameter. */
+export function ParameterStudy() {
+  const [runs, setRuns] = useState(200);
+  const [seed, setSeed] = useState(25);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [result, setResult] = useState<{ values: number[][]; runs: number } | null>(null);
+  const cancel = useRef(false);
+  useEffect(() => () => void (cancel.current = true), []);
+  const STEPS = 1000;
+  const go = () => {
+    cancel.current = false;
+    const ms = studyMethods(FIG_2_5);
+    let acc: Curves[] | undefined;
+    let done = 0;
+    const BLOCK = 10;
+    setProgress(0);
+    const next = () => {
+      if (cancel.current) return setProgress(null);
+      const to = Math.min(runs, done + BLOCK);
+      acc = runBlock(TESTBED_10, ms, STEPS, seed, done, to, acc);
+      done = to;
+      setProgress(done / runs);
+      if (done < runs) setTimeout(next, 0);
+      else {
+        setResult({ values: studyResult(FIG_2_5, acc, runs, STEPS), runs });
+        setProgress(null);
+      }
+    };
+    setTimeout(next, 0);
+  };
+  const series = result
+    ? FIG_2_5.map((f, i) => ({
+        label: `${f.label} (${f.param})`,
+        short: f.label,
+        values: FIG_2_5_EXPONENTS.map((e) => {
+          const j = f.exponents.indexOf(e);
+          return j < 0 ? NaN : result.values[i][j];
+        }),
+      }))
+    : [];
+  return (
+    <section className="card" aria-labelledby="study-h">
+      <h2 id="study-h">Parameter study (Figure 2.5)</h2>
+      <p className="muted small">
+        Each point is one method at one parameter value, scored by its average reward over the first 1000 steps (the area under its learning curve), on the draft's 10-armed testbed. The parameter
+        values double from point to point: ε for ε-greedy, α for the gradient bandit (with the baseline), c for UCB, and the initial estimate Q₁ for greedy with α = 0.1. The ranges are read from the
+        figure. The draft averages 2000 runs; fewer runs are quicker and noisier.
+      </p>
+      <div className="inputs">
+        <label>
+          Runs <NumberInput label="Runs of the parameter study" value={runs} min={1} max={2000} integer onChange={setRuns} />
+        </label>
+        <label>
+          Seed <NumberInput label="Seed of the parameter study" value={seed} integer onChange={setSeed} />
+        </label>
+        {progress === null ? (
+          <button type="button" className="btn btn-primary" onClick={go}>
+            Run the study
+          </button>
+        ) : (
+          <button type="button" className="btn" onClick={() => (cancel.current = true)}>
+            Stop
+          </button>
+        )}
+      </div>
+      {progress !== null && (
+        <p role="status" className="muted">
+          Running… {Math.round(progress * 100)}%
+        </p>
+      )}
+      {result && (
+        <>
+          <LineChart
+            title={`Average reward over the first 1000 steps (${result.runs} runs)`}
+            series={series}
+            xLabel="ε / α / c / Q₁"
+            yLabel="average reward over the first 1000 steps"
+            format={(v) => v.toFixed(3)}
+            xLabels={FIG_2_5_EXPONENTS.map(POW2)}
+          />
+          <table className="lab-table">
+            <caption>Best setting of each method</caption>
+            <thead>
+              <tr>
+                <th scope="col">Method</th>
+                <th scope="col">best parameter here</th>
+                <th scope="col">average reward</th>
+                <th scope="col">the draft's peak (read from the figure)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {FIG_2_5.map((f, i) => {
+                const vals = result.values[i];
+                const j = vals.indexOf(Math.max(...vals));
+                return (
+                  <tr key={f.key}>
+                    <td>
+                      <span className={`swatch s${i + 1}`} aria-hidden="true" /> {f.label}
+                    </td>
+                    <td>
+                      {f.param} = {POW2(f.exponents[j])}
+                    </td>
+                    <td className="num">{vals[j].toFixed(3)}</td>
+                    <td>{FIG_2_5_PEAKS[f.key]}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </>
       )}
     </section>
@@ -436,9 +579,14 @@ export function BanditLab() {
           <label>
             Reward noise σ <NumberInput label="Reward noise σ" value={testbed.rewardSd} min={0} onChange={(x) => (setPreset("custom"), setTestbed({ ...testbed, rewardSd: x }))} />
           </label>
+          <label>
+            Random walk per step{" "}
+            <NumberInput label="Random walk per step" value={testbed.walkSd ?? 0} min={0} onChange={(x) => (setPreset("custom"), setTestbed({ ...testbed, walkSd: x }))} />
+          </label>
         </div>
         <p className="muted small">
-          Each problem draws <Tex tex="q(a) \sim N(\text{mean}, \text{spread}^2)" />; each reward is <Tex tex="R_t \sim N(q(A_t), \sigma^2)" />. The draft's testbed is 10 arms, mean 0, spread 1, σ = 1.
+          Each problem draws <Tex tex="q(a) \sim N(\text{mean}, \text{spread}^2)" />; each reward is <Tex tex="R_t \sim N(q(A_t), \sigma^2)" />. The draft's testbed is 10 arms, mean 0, spread 1, σ = 1,
+          with no random walk. A random walk above 0 makes the problem nonstationary: after every step each q(a) moves by an independent normal step with that standard deviation.
         </p>
         {methods.map((m, i) => (
           <MethodEditor
@@ -456,7 +604,8 @@ export function BanditLab() {
         )}
       </section>
       <Inspector testbed={testbed} methods={methods} />
-      <Experiment testbed={testbed} methods={methods} />
+      <Experiment testbed={testbed} methods={methods} suggestedSteps={preset === "custom" ? undefined : (PRESETS[preset].steps ?? 1000)} />
+      <ParameterStudy />
     </>
   );
 }

@@ -32,7 +32,7 @@ describe("choosing exam questions", () => {
     expect(auto.every((q) => q.type !== "derivation" && q.type !== "short-answer")).toBe(true);
     expect(auto.every((q) => !q.unit.startsWith("sup-"))).toBe(true);
     const withWritten = examQuestions(stubs, cfg({ count: 100, includeWritten: true }), p, unitOrder);
-    expect(withWritten.length - auto.length).toBe(4); // ch02-q010, ch02-q011, ch03-q005, ch03-q006
+    expect(withWritten.length - auto.length).toBe(10); // ch02-q010, q011, q022, q026, q027, q029, q033, q036 (4C added six); ch03-q005, ch03-q006
     expect(examQuestions(stubs, cfg({ units: ["sup-zhao-06"], count: 100 }), p, unitOrder).sort()).toEqual(["sup-zhao-06-q001", "sup-zhao-06-q002"]);
   });
   test("chapters, difficulty and count apply; the same seed gives the same paper", () => {

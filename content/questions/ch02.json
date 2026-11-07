@@ -1246,6 +1246,1645 @@
         "note": "Baseline discussion and Figure 2.4, printed pp. 43–44, checked against the text layer."
       },
       "reviewed": true
+    },
+    {
+      "id": "ch02-q020",
+      "unit": "ch02",
+      "section": "2.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.1"
+        ]
+      },
+      "concepts": [
+        "ch02.evaluative-feedback"
+      ],
+      "type": "mcq",
+      "category": "scenario",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "A language-learning app shows a learner one of four possible hints after a mistake and records whether the learner then gets the next exercise right. It never learns which hint would have been best for that mistake, only how the hint it showed worked out. What kind of feedback is this?",
+      "options": [
+        "Evaluative: it scores the action taken, not the other actions",
+        "Instructive: it names the correct action",
+        "Both evaluative and instructive in equal measure",
+        "Neither, because the outcome is a yes/no signal rather than a number"
+      ],
+      "answer": 0,
+      "solution": [
+        "Instructive feedback gives the correct action independently of the action taken; evaluative feedback depends entirely on the action taken.",
+        "The app observes only how the shown hint worked out, so its feedback is evaluative."
+      ],
+      "explanation": "Evaluative feedback is what makes active exploration necessary: the value of an action can only be learned by taking it.",
+      "optionNotes": [
+        "Correct: the app sees only the result of the hint it chose. Learning which hint is best requires trying the others, which is exactly the exploration problem of this chapter.",
+        "Instructive feedback would say which hint was right regardless of the one shown, as a labelled training example does. Nothing here provides that.",
+        "Nothing in the set-up ever reveals the correct choice, so there is no instructive component.",
+        "A success indicator is still a numerical reward (1 or 0); its kind is decided by what it depends on, not by its range."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            31,
+            32
+          ],
+          "pdfPages": [
+            45,
+            46
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Evaluative versus instructive feedback, chapter opening, printed p. 31."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q021",
+      "unit": "ch02",
+      "section": "2.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.1"
+        ]
+      },
+      "concepts": [
+        "ch02.exploration-exploitation"
+      ],
+      "type": "multi",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "A learner's current estimates for four actions are $Q = (0.4, 1.1, 1.1, 0.7)$. Which of the following statements are correct? Select all that apply.",
+      "options": [
+        "Actions 2 and 3 are both greedy actions",
+        "Choosing action 4 is exploring",
+        "Choosing action 2 maximises the expected reward of this step, as far as the learner can tell",
+        "Choosing action 1 is exploiting, because its estimate is the most certain",
+        "A single choice can both exploit and explore"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "solution": [
+        "Greedy actions: those with the largest estimate, here actions 2 and 3.",
+        "Choosing either is exploiting; choosing action 1 or 4 is exploring.",
+        "One choice cannot do both."
+      ],
+      "explanation": "The definitions are relative to the learner's estimates, not to the true values it cannot see.",
+      "optionNotes": [
+        "Correct: a greedy action is any action whose estimate is largest, and both have 1.1.",
+        "Correct: any nongreedy choice is exploration; it improves the estimate of that action.",
+        "Correct: exploiting means acting on the current estimates to get the most reward on this step.",
+        "Exploitation means choosing a greedy action. Certainty does not make an action greedy; action 1 has the smallest estimate.",
+        "No: each choice is either greedy or not, which is why the draft speaks of a conflict between the two."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.1",
+          "printedPages": [
+            32,
+            32
+          ],
+          "pdfPages": [
+            46,
+            46
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Definitions of greedy actions, exploiting and exploring, printed p. 32."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q022",
+      "unit": "ch02",
+      "section": "2.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.1"
+        ]
+      },
+      "concepts": [
+        "ch02.exploration-exploitation"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "A learner knows the value of its greedy action exactly. Several other actions have slightly lower estimates, but those estimates rest on very few rewards. Explain when it is worth choosing one of the other actions, and why the number of steps left matters.",
+      "answer": "Exploiting gives the most expected reward on this step, so exploring always costs a little now. It pays only if what it reveals can be used later: with uncertain estimates close to the greedy value, it is likely that at least one of those actions is actually better, and finding it allows that better action to be exploited on many later steps. With many steps left, the long-run gain can outweigh the short-run cost; with few steps left there is little time to use the information, so exploiting is better. The right balance depends on the estimates, their uncertainty and the number of remaining steps.",
+      "solution": [
+        "Short run: the greedy action has the highest expected reward now.",
+        "Long run: discovering a better action pays on every later step on which it is exploited.",
+        "So exploration is worth more when the alternatives are uncertain and close, and when many steps remain."
+      ],
+      "explanation": "This is the exploration–exploitation conflict in its simplest form.",
+      "rubric": [
+        {
+          "point": "Says exploring lowers the expected reward on the current step",
+          "marks": 1
+        },
+        {
+          "point": "Says uncertain estimates close to the greedy one make it likely that a better action exists, which exploration can discover and later exploit",
+          "marks": 1
+        },
+        {
+          "point": "Says more remaining steps make exploring more worthwhile because the information can be used more often",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.1",
+          "printedPages": [
+            32,
+            33
+          ],
+          "pdfPages": [
+            46,
+            47
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "The worked argument on printed pp. 32–33."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q023",
+      "unit": "ch02",
+      "section": "2.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "2.1"
+      },
+      "concepts": [
+        "ch02.epsilon-greedy",
+        "ch02.ten-armed-testbed"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "In the comparison of Figure 2.1 (10-armed testbed, sample averages), consider the long run, once every estimate has converged to its true value. For $\\varepsilon = 0.01$ and for $\\varepsilon = 0.1$, find the probability of selecting the optimal action on a step and the expected reward per step. Use $\\mathbb{E}[\\max_a q(a)] \\approx 1.5388$ for the testbed and recall that the $q(a)$ have mean 0. Which method is better in the long run, and by how much?",
+      "parts": [
+        {
+          "label": "P(optimal), ε = 0.01",
+          "answer": 0.991,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "P(optimal), ε = 0.1",
+          "answer": 0.91,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "reward per step, ε = 0.01",
+          "answer": 1.5234,
+          "tolerance": 0.002
+        },
+        {
+          "label": "reward per step, ε = 0.1",
+          "answer": 1.3849,
+          "tolerance": 0.002
+        }
+      ],
+      "solution": [
+        "Once the estimates are correct, the greedy branch always picks the optimal action. The random branch (probability $\\varepsilon$) picks it with probability $1/10$.",
+        "$P = 1 - \\varepsilon + \\varepsilon/10$: $0.99 + 0.001 = 0.991$ for $\\varepsilon = 0.01$, and $0.9 + 0.01 = 0.91$ for $\\varepsilon = 0.1$.",
+        "Expected reward: the greedy branch earns $\\max_a q(a)$ and a uniformly random action earns the mean of the $q(a)$, which is 0 on average. So the reward per step is $(1 - \\varepsilon) \\times 1.5388$: $1.5234$ and $1.3849$.",
+        "$\\varepsilon = 0.01$ is better in the long run on both measures: it selects the optimal action $0.991 / 0.91 \\approx 1.09$ times as often and earns about $0.14$ more per step, about 10% more. Over a long run its cumulative reward and cumulative count of optimal choices pull ahead by those amounts per step, once its slower start has been made up."
+      ],
+      "explanation": "The method that explores less wins in the long run on a stationary problem, but only after it has found the optimal action, which takes it longer (Figure 2.1).",
+      "misconceptions": [
+        {
+          "wrong": "P(optimal) = 1 − ε",
+          "why": "The exploratory choice is uniform over all 10 actions, so it also picks the optimal action with probability ε/10."
+        }
+      ],
+      "related": [
+        "ch02-q009"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            51,
+            51
+          ],
+          "pdfPages": [
+            65,
+            65
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02-q023"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q024",
+      "unit": "ch02",
+      "section": "2.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.2"
+        ]
+      },
+      "concepts": [
+        "ch02.greedy-action-selection",
+        "ch02.epsilon-greedy"
+      ],
+      "type": "mcq",
+      "category": "scenario",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "On which variant of the 10-armed testbed would you expect purely greedy selection (with each action tried once at the start) to be most competitive with $\\varepsilon$-greedy selection?",
+      "options": [
+        "Rewards without noise (variance 0) and true values that never change",
+        "Reward variance 10 instead of 1",
+        "True values that drift slowly over time, with noiseless rewards",
+        "True values that drift slowly over time, with reward variance 10"
+      ],
+      "answer": 0,
+      "solution": [
+        "Greedy selection fails when an early, unlucky sample makes the best action look bad, or when the best action changes.",
+        "Noiseless, stationary rewards rule out both, so greedy can find the optimum after one pull of each action and then stop exploring."
+      ],
+      "explanation": "The value of exploring depends on the task; the draft adds that effective nonstationarity is the usual case in reinforcement learning.",
+      "optionNotes": [
+        "Correct: one reward then reveals each true value exactly, and since nothing changes, there is nothing left to explore.",
+        "Noisier rewards make first impressions less reliable, so exploration becomes more valuable, not less.",
+        "Noiseless rewards help, but drifting values mean a neglected action may become the best; greedy selection would never notice.",
+        "This combines both reasons for exploring: noisy estimates and changing values."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.2",
+          "printedPages": [
+            36,
+            36
+          ],
+          "pdfPages": [
+            50,
+            50
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Discussion of reward variance and nonstationarity, printed p. 36."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q025",
+      "unit": "ch02",
+      "section": "2.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.2"
+        ]
+      },
+      "concepts": [
+        "ch02.greedy-action-selection",
+        "ch02.ten-armed-testbed"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: on the 10-armed testbed, the greedy method's average reward levels off below that of the $\\varepsilon$-greedy methods because, in many of the problems, its first samples of the optimal action happened to be poor and it never chose that action again.",
+      "answer": true,
+      "solution": [
+        "Greedy selection only revisits an action whose estimate is the largest. An optimal action whose first rewards were low can stay below a mediocre action's estimate forever.",
+        "The draft reports that greedy found the optimal action in only about a third of the problems."
+      ],
+      "explanation": "ε-greedy keeps sampling every action, so such an early mistake is eventually corrected.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.2",
+          "printedPages": [
+            36,
+            36
+          ],
+          "pdfPages": [
+            50,
+            50
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Explanation of the greedy method's performance in Figure 2.1, printed p. 36."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q026",
+      "unit": "ch02",
+      "section": "2.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "2.2"
+      },
+      "concepts": [
+        "ch02.incremental-update",
+        "ch02.greedy-action-selection"
+      ],
+      "type": "short-answer",
+      "category": "pseudocode",
+      "difficulty": 2,
+      "marks": 4,
+      "stem": "Write pseudocode for a complete learner for the $n$-armed bandit that uses greedy action selection and incremental sample averages (step size $1/k$). Assume a function $\\mathrm{bandit}(a)$ that performs action $a$ and returns its reward. Use arrays and simple variables only, with nothing indexed by the time step, and show how the estimates are initialised, how the step size of each action depends on how often it has been tried, and how the estimate is updated after each reward.",
+      "answer": "Initialise, for $a = 1, \\ldots, n$: $Q(a) \\leftarrow 0$ and $N(a) \\leftarrow 0$. Repeat forever (or for the number of steps wanted): $A \\leftarrow$ an action with the largest $Q(A)$, ties broken at random; $R \\leftarrow \\mathrm{bandit}(A)$; $N(A) \\leftarrow N(A) + 1$; $Q(A) \\leftarrow Q(A) + \\frac{1}{N(A)}\\big[R - Q(A)\\big]$.",
+      "solution": [
+        "Two arrays suffice: $Q(a)$ and $N(a)$, so memory does not grow with time.",
+        "After incrementing $N(A)$ to $k$, the step size $1/N(A) = 1/k$ makes $Q(A)$ the exact average of $A$'s $k$ rewards, as (2.3) shows.",
+        "Greedy selection never explores, so in practice one would make the selection ε-greedy; the exercise asks for greedy."
+      ],
+      "explanation": "This is the incremental implementation of §2.3 turned into a whole algorithm; the ε-greedy version is the lab's algorithm card.",
+      "misconceptions": [
+        {
+          "wrong": "Incrementing N(A) after the update",
+          "why": "Then the first update would divide by 0 (or use step 1/0); the count must include the reward being processed."
+        }
+      ],
+      "rubric": [
+        {
+          "point": "Initialises one estimate and one count per action (e.g. Q(a) ← 0, N(a) ← 0)",
+          "marks": 1
+        },
+        {
+          "point": "Selects an action with the largest current estimate, with a tie rule",
+          "marks": 1
+        },
+        {
+          "point": "Increments the count of the chosen action before using it as the step-size denominator",
+          "marks": 1
+        },
+        {
+          "point": "Updates only the chosen action's estimate with Q ← Q + (1/N)(R − Q), without any time index",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            51,
+            52
+          ],
+          "pdfPages": [
+            65,
+            66
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Exercise 2.2, printed pp. 51–52; the answer follows (2.3) and (2.4) on p. 37."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q027",
+      "unit": "ch02",
+      "section": "2.4",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "2.3"
+      },
+      "concepts": [
+        "ch02.recency-weighted-average",
+        "ch02.constant-step-size"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "Suppose the step size used to process the $k$-th reward of an action is $\\alpha_k$, not a constant. Show that $Q_{k+1}$ is still a weighted combination of $Q_1$ and the rewards $R_1, \\ldots, R_k$, and find the weight on $Q_1$ and on each $R_i$, generalising (2.6). Check that the weights sum to 1.",
+      "answer": "$Q_{k+1} = \\prod_{j=1}^{k}(1 - \\alpha_j)\\, Q_1 + \\sum_{i=1}^{k} \\alpha_i \\prod_{j=i+1}^{k}(1 - \\alpha_j)\\, R_i$, with an empty product equal to 1.",
+      "solution": [
+        "$Q_{k+1} = Q_k + \\alpha_k(R_k - Q_k) = \\alpha_k R_k + (1 - \\alpha_k) Q_k$.",
+        "Substitute $Q_k = \\alpha_{k-1} R_{k-1} + (1 - \\alpha_{k-1}) Q_{k-1}$ and continue down to $Q_1$: each reward $R_i$ enters with factor $\\alpha_i$ and is then multiplied by $(1 - \\alpha_j)$ at every later step $j = i+1, \\ldots, k$.",
+        "So $Q_{k+1} = \\prod_{j=1}^{k}(1 - \\alpha_j) Q_1 + \\sum_{i=1}^{k} \\alpha_i \\prod_{j=i+1}^{k}(1 - \\alpha_j) R_i$.",
+        "Sum of weights: if $Q_k$'s weights sum to 1, those of $Q_{k+1} = \\alpha_k R_k + (1-\\alpha_k) Q_k$ sum to $\\alpha_k + (1 - \\alpha_k) \\cdot 1 = 1$; and $Q_1$ alone has weight 1.",
+        "Checks: constant $\\alpha$ gives (2.6); $\\alpha_k = 1/k$ gives $Q_1$ weight 0 and every reward weight $\\frac1i \\prod_{j=i+1}^{k}\\frac{j-1}{j} = \\frac1k$, the sample average."
+      ],
+      "explanation": "The weights need not decay geometrically any more; each reward is discounted by every later step's (1 − α_j).",
+      "rubric": [
+        {
+          "point": "Writes the update as Q_{k+1} = α_k R_k + (1 − α_k) Q_k and unrolls it",
+          "marks": 1
+        },
+        {
+          "point": "Weight on Q_1 is the product of (1 − α_j) over j = 1..k",
+          "marks": 1
+        },
+        {
+          "point": "Weight on R_i is α_i times the product of (1 − α_j) over j = i+1..k",
+          "marks": 1
+        },
+        {
+          "point": "Shows the weights sum to 1 (e.g. by induction, or by noting the recursion preserves a total weight of 1)",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch02-q028",
+        "ch02-q011"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            52,
+            52
+          ],
+          "pdfPages": [
+            66,
+            66
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Exercise 2.3, printed p. 52; the special cases are checked numerically by ch02-q028."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q028",
+      "unit": "ch02",
+      "section": "2.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "Exercise 2.3",
+          "eq.ch02.recency-weighted"
+        ]
+      },
+      "concepts": [
+        "ch02.recency-weighted-average"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 4,
+      "stem": "An action's estimate starts at $Q_1$ and is updated with $Q_{k+1} = Q_k + \\alpha_k(R_k - Q_k)$ using the step sizes $\\alpha_1 = \\tfrac12$, $\\alpha_2 = \\tfrac14$, $\\alpha_3 = \\tfrac15$. Write $Q_4$ as a weighted combination of $Q_1$, $R_1$, $R_2$ and $R_3$: what are the four weights?",
+      "parts": [
+        {
+          "label": "weight on Q_1",
+          "answer": 0.3,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "weight on R_1",
+          "answer": 0.3,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "weight on R_2",
+          "answer": 0.2,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "weight on R_3",
+          "answer": 0.2,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$Q_1$: $(1 - \\tfrac12)(1 - \\tfrac14)(1 - \\tfrac15) = \\tfrac12 \\cdot \\tfrac34 \\cdot \\tfrac45 = 0.3$.",
+        "$R_1$: $\\tfrac12 \\cdot \\tfrac34 \\cdot \\tfrac45 = 0.3$.",
+        "$R_2$: $\\tfrac14 \\cdot \\tfrac45 = 0.2$.",
+        "$R_3$: $\\tfrac15 = 0.2$. The weights sum to $1$."
+      ],
+      "explanation": "Each reward keeps a share α_i of the estimate, and every later step scales that share by (1 − α_j).",
+      "related": [
+        "ch02-q027"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            52,
+            52
+          ],
+          "pdfPages": [
+            66,
+            66
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02-q028"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q029",
+      "unit": "ch02",
+      "section": "2.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "2.5"
+      },
+      "concepts": [
+        "ch02.optimistic-initial-values"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "The curves of Figure 2.2 average 2000 independent problems, so they should be smooth. Yet the optimistic greedy method ($Q_1 = 5$, $\\alpha = 0.1$) shows sharp oscillations and spikes in its early steps. What causes them, and what could make this method do particularly well or badly on particular early steps?",
+      "answer": "Optimism makes the early behaviour nearly the same in every problem. Each first pull drops that arm's estimate below 5 while all untried arms stay at 5, so the first ten steps try every arm once, in random order, and the % optimal is about 10% on each. On step 11 every arm has been tried once and has an estimate of about $4.5 + 0.1R$, so the greedy choice is the arm whose single reward was highest. That is often the optimal arm, so in many problems the optimal arm is chosen at once: a spike (about 45% in the lab against 10% on steps 1–10). Its estimate then drops again, below the others, and the learner moves on, so the curve falls back. The same synchronised cycle repeats with decreasing sharpness (a second rise around steps 20–22). The method does especially well on steps where all arms have been tried equally often and the best single-sample reward points to the optimal arm, and badly just after, when it has 'disappointed' itself into trying the others.",
+      "solution": [
+        "Steps 1–10: every arm is tried once, because each pull lowers that arm's estimate below the untried 5s.",
+        "Step 11: the comparison is between single samples, so the best arm wins often: a spike.",
+        "Then the chosen arm is disappointed again and the cycle repeats, less sharply as the problems drift out of step."
+      ],
+      "explanation": "Averaging many problems smooths random variation but not behaviour that is synchronised across problems; here the optimistic start synchronises it. The lab's Figure 2.2 preset shows the spike (check lab.bandit.optimistic-spike).",
+      "rubric": [
+        {
+          "point": "Explains that the optimistic estimates make every problem cycle through all arms in the first steps, in lockstep",
+          "marks": 1
+        },
+        {
+          "point": "Explains the spike: after each arm has been tried once (step 11), greedy picks the arm with the best sample, often the optimal one",
+          "marks": 1
+        },
+        {
+          "point": "Explains the drop and the repeating, fading oscillation: the chosen arm's estimate falls below the others, so the learner switches again",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            52,
+            52
+          ],
+          "pdfPages": [
+            66,
+            66
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "lab.bandit.optimistic-spike",
+        "note": "Exercise 2.5, printed p. 52. The spike on step 11 is reproduced by the lab and checked."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q030",
+      "unit": "ch02",
+      "section": "2.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.5",
+          "eq.ch02.recency-weighted"
+        ]
+      },
+      "concepts": [
+        "ch02.optimistic-initial-values"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "An arm starts with the optimistic estimate $Q_1 = 5$ and is updated with $\\alpha = 0.1$. Its first two rewards are $1.0$ and $0.6$. Find $Q_2$ and $Q_3$, and the weight that the initial estimate still carries in $Q_{11}$, after ten rewards.",
+      "parts": [
+        {
+          "label": "Q_2",
+          "answer": 4.6,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "Q_3",
+          "answer": 4.2,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "weight on Q_1 in Q_11",
+          "answer": 0.34868,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$Q_2 = 5 + 0.1(1.0 - 5) = 4.6$.",
+        "$Q_3 = 4.6 + 0.1(0.6 - 4.6) = 4.2$.",
+        "By (2.6) the weight on $Q_1$ after $k$ updates is $(1 - \\alpha)^k = 0.9^{10} \\approx 0.3487$."
+      ],
+      "explanation": "With a constant step size the optimistic bias fades only geometrically, so it keeps driving exploration for a while.",
+      "related": [
+        "ch02-q032"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.5",
+          "printedPages": [
+            39,
+            40
+          ],
+          "pdfPages": [
+            53,
+            54
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02-q030"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q031",
+      "unit": "ch02",
+      "section": "2.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.5"
+        ]
+      },
+      "concepts": [
+        "ch02.optimistic-initial-values"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why does the draft consider optimistic initial values a poor way to encourage exploration on a nonstationary problem?",
+      "options": [
+        "The extra exploration happens only at the start, so it cannot respond when the values change later",
+        "Optimistic estimates make the learner exploit too much",
+        "With a constant step size the optimistic bias never fades",
+        "It needs more memory than ε-greedy"
+      ],
+      "answer": 0,
+      "solution": [
+        "The beginning of time happens only once.",
+        "A method whose exploration is tied to its starting point cannot help when the task changes later."
+      ],
+      "explanation": "The draft makes the same criticism of sample averages, which also treat the beginning of time as special.",
+      "optionNotes": [
+        "Correct: once every estimate has been pulled down to realistic levels, nothing renews the drive to explore.",
+        "The opposite: optimism makes even a greedy learner explore, at first.",
+        "The bias does fade, geometrically, with weight (1 − α)^k; but the problem is that the exploration it causes is temporary.",
+        "It needs exactly the same memory: one estimate per action."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.5",
+          "printedPages": [
+            40,
+            41
+          ],
+          "pdfPages": [
+            54,
+            55
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Printed pp. 40–41."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q032",
+      "unit": "ch02",
+      "section": "2.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.5",
+          "eq.ch02.incremental-update"
+        ]
+      },
+      "concepts": [
+        "ch02.optimistic-initial-values",
+        "ch02.incremental-update"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: with sample-average estimates, the choice of initial estimate $Q_1(a)$ has no effect on $Q(a)$ once action $a$ has been selected at least once, but it can still affect which actions are selected before that.",
+      "answer": true,
+      "solution": [
+        "With step size $1/k$, the first update gives $Q_2 = Q_1 + 1 \\cdot (R_1 - Q_1) = R_1$, so $Q_1$ is forgotten.",
+        "Until then, $Q_1(a)$ is the estimate used for action selection, which is how optimistic values make a greedy learner try every action."
+      ],
+      "explanation": "For sample averages the bias disappears after one selection; for a constant α it fades but never vanishes.",
+      "related": [
+        "ch02-q030"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.5",
+          "printedPages": [
+            39,
+            40
+          ],
+          "pdfPages": [
+            53,
+            54
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Printed pp. 39–40."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q033",
+      "unit": "ch02",
+      "section": "2.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.6"
+        ]
+      },
+      "concepts": [
+        "ch02.ucb"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "In Figure 2.3, UCB ($c = 2$) on the 10-armed testbed shows a sharp spike in average reward on step 11, followed by a drop. The figure's caption asks for an explanation. Give one.",
+      "answer": "An untried action counts as maximising in (2.8), so on steps 1–10 UCB tries each of the 10 arms once, which earns the reward of a random arm, about 0 on average. On step 11 every arm has $N = 1$, so every bonus is the same, $c\\sqrt{\\ln 11}$, and UCB picks the arm with the highest single reward: quite often the best arm, which gives a jump in average reward. On step 12 that arm has $N = 2$ and a smaller bonus than the arms tried only once, whose bonuses have grown with $t$, so UCB goes back to the others and the average reward drops. With a smaller $c$ the bonus matters less relative to the estimates, so the learner keeps choosing the arm that looks best and the spike-and-drop pattern is weaker.",
+      "solution": [
+        "List what (2.8) does on steps 1–10, 11 and 12, using $N_t(a)$ and $t$.",
+        "Run the Figure 2.3 preset in the bandit laboratory and step through steps 10–12 to see the scores."
+      ],
+      "explanation": "A spike on a particular step means the methods are synchronised across problems; here the forced first pass over all arms synchronises them.",
+      "rubric": [
+        {
+          "point": "Steps 1–10 try every arm once because untried arms count as maximising",
+          "marks": 1
+        },
+        {
+          "point": "On step 11 all bonuses are equal, so the arm with the best sample is chosen, often the optimal arm: the spike",
+          "marks": 1
+        },
+        {
+          "point": "Afterwards the chosen arm's bonus is smaller than the others', so UCB switches to them: the drop",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.6",
+          "printedPages": [
+            42,
+            42
+          ],
+          "pdfPages": [
+            56,
+            56
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "lab.bandit.fig2-3",
+        "note": "Figure 2.3 caption, printed p. 42. The spike on step 11 is reproduced by lab.bandit.fig2-3."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q034",
+      "unit": "ch02",
+      "section": "2.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.ucb"
+        ]
+      },
+      "concepts": [
+        "ch02.ucb"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "With $c = 2$, an arm has been selected $N_t(a) = 20$ times. What is its UCB uncertainty term $c\\sqrt{\\ln t / N_t(a)}$ at $t = 100$? If the arm is not selected again until $t = 1000$, what is the term then?",
+      "parts": [
+        {
+          "label": "bonus at t = 100",
+          "answer": 0.9597,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "bonus at t = 1000",
+          "answer": 1.17539,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$t = 100$: $2\\sqrt{\\ln 100 / 20} = 2\\sqrt{4.6052 / 20} = 2 \\times 0.47985 \\approx 0.9597$.",
+        "$t = 1000$: $2\\sqrt{\\ln 1000 / 20} = 2\\sqrt{6.9078 / 20} = 2 \\times 0.58770 \\approx 1.1754$."
+      ],
+      "explanation": "Ten times as many steps raised the bonus by only about 22%: the logarithm makes neglected actions wait longer and longer, yet, being unbounded, never forever.",
+      "related": [
+        "ch02-q004"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.6",
+          "printedPages": [
+            41,
+            41
+          ],
+          "pdfPages": [
+            55,
+            55
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02-q034"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q035",
+      "unit": "ch02",
+      "section": "2.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.softmax-derivative"
+        ]
+      },
+      "concepts": [
+        "ch02.performance-gradient"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Three actions have preferences $H = (0, \\ln 2, 0)$, so that $\\pi = (\\tfrac14, \\tfrac12, \\tfrac14)$. Using $\\partial \\pi(b) / \\partial H(a) = \\pi(b)(\\mathbb{1}_{a=b} - \\pi(a))$, find $\\partial \\pi(2) / \\partial H(2)$ and $\\partial \\pi(1) / \\partial H(2)$.",
+      "parts": [
+        {
+          "label": "∂π(2)/∂H(2)",
+          "answer": 0.25,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "∂π(1)/∂H(2)",
+          "answer": -0.125,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$a = b = 2$: $\\pi(2)(1 - \\pi(2)) = \\tfrac12 \\cdot \\tfrac12 = 0.25$.",
+        "$a = 2$, $b = 1$: $\\pi(1)(0 - \\pi(2)) = \\tfrac14 \\cdot (-\\tfrac12) = -0.125$.",
+        "By symmetry $\\partial \\pi(3) / \\partial H(2) = -0.125$ too, and the three derivatives sum to 0."
+      ],
+      "explanation": "Raising one preference takes probability from the other actions in proportion to their size.",
+      "related": [
+        "ch02-q036"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.7",
+          "printedPages": [
+            45,
+            46
+          ],
+          "pdfPages": [
+            59,
+            60
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02-q035"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q036",
+      "unit": "ch02",
+      "section": "2.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.softmax-derivative",
+          "eq.ch02.softmax-preferences"
+        ]
+      },
+      "concepts": [
+        "ch02.performance-gradient"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Starting from the soft-max $\\pi_t(b) = e^{H_t(b)} / \\sum_c e^{H_t(c)}$, derive $\\partial \\pi_t(b) / \\partial H_t(a) = \\pi_t(b)\\big(\\mathbb{1}_{a=b} - \\pi_t(a)\\big)$.",
+      "answer": "By the quotient rule, $\\frac{\\partial \\pi_t(b)}{\\partial H_t(a)} = \\frac{\\mathbb{1}_{a=b} e^{H_t(b)} \\sum_c e^{H_t(c)} - e^{H_t(b)} e^{H_t(a)}}{(\\sum_c e^{H_t(c)})^2} = \\mathbb{1}_{a=b}\\pi_t(b) - \\pi_t(b)\\pi_t(a)$.",
+      "solution": [
+        "Numerator $f = e^{H_t(b)}$: $\\partial f / \\partial H_t(a) = \\mathbb{1}_{a=b} e^{H_t(b)}$.",
+        "Denominator $g = \\sum_c e^{H_t(c)}$: $\\partial g / \\partial H_t(a) = e^{H_t(a)}$.",
+        "Quotient rule $(f'g - fg')/g^2$, then split: $\\mathbb{1}_{a=b} f/g - (f/g)(e^{H_t(a)}/g) = \\mathbb{1}_{a=b}\\pi_t(b) - \\pi_t(b)\\pi_t(a)$."
+      ],
+      "explanation": "This identity is the last step of the draft's proof that the gradient bandit is stochastic gradient ascent.",
+      "rubric": [
+        {
+          "point": "Applies the quotient rule to the soft-max",
+          "marks": 1
+        },
+        {
+          "point": "Differentiates correctly: the numerator gives 1_{a=b} e^{H(b)}, the denominator gives e^{H(a)}",
+          "marks": 1
+        },
+        {
+          "point": "Simplifies to π(b)(1_{a=b} − π(a))",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch02-q035"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.7",
+          "printedPages": [
+            45,
+            46
+          ],
+          "pdfPages": [
+            59,
+            60
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02.softmax-derivative",
+        "note": "Derivation on printed p. 46; the identity is checked numerically."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q037",
+      "unit": "ch02",
+      "section": "2.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.exact-gradient-ascent"
+        ]
+      },
+      "concepts": [
+        "ch02.performance-gradient"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "Three actions have true values $q = (1, 2, 0)$ and soft-max probabilities $\\pi = (\\tfrac14, \\tfrac12, \\tfrac14)$. Find the expected reward $\\mathbb{E}[R_t] = \\sum_b \\pi(b) q(b)$ and the exact gradient $\\partial \\mathbb{E}[R_t] / \\partial H(2)$ that (2.11) would use.",
+      "parts": [
+        {
+          "label": "E[R_t]",
+          "answer": 1.25,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "∂E[R_t]/∂H(2)",
+          "answer": 0.375,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$\\mathbb{E}[R_t] = \\tfrac14 \\cdot 1 + \\tfrac12 \\cdot 2 + \\tfrac14 \\cdot 0 = 1.25$.",
+        "$\\frac{\\partial \\mathbb{E}[R_t]}{\\partial H(2)} = \\sum_b q(b)\\, \\pi(b)(\\mathbb{1}_{2=b} - \\pi(2)) = \\pi(2)\\big(q(2) - \\sum_b \\pi(b) q(b)\\big)$.",
+        "$= 0.5 \\times (2 - 1.25) = 0.375$."
+      ],
+      "explanation": "The gradient for an action is its probability times how far its value is above the current expected reward.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.7",
+          "printedPages": [
+            43,
+            46
+          ],
+          "pdfPages": [
+            57,
+            60
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02-q037"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q038",
+      "unit": "ch02",
+      "section": "2.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.7"
+        ]
+      },
+      "concepts": [
+        "ch02.reward-baseline"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 3,
+      "marks": 1,
+      "stem": "In the gradient-bandit update the reward is compared with a baseline $\\bar R_t$. According to the draft's derivation, what does replacing the average-reward baseline by the constant 0 change?",
+      "options": [
+        "Not the expected update, but its variance, and so the speed of learning",
+        "The expected update, so the algorithm no longer follows the gradient",
+        "Nothing at all: the updates are identical",
+        "Only the first update, after which the two coincide"
+      ],
+      "answer": 0,
+      "solution": [
+        "The baseline enters the gradient as $\\sum_b X_t\\, \\partial \\pi_t(b) / \\partial H_t(a) = X_t \\cdot 0$.",
+        "So any action-independent baseline gives the same expected update; it affects only the variance of the samples."
+      ],
+      "explanation": "The average reward is a simple, effective choice, though the draft notes it may not be the best one.",
+      "optionNotes": [
+        "Correct: any baseline that does not depend on the action leaves the expected update equal to the gradient; it changes how noisy the individual updates are. Figure 2.4 shows the effect on learning speed.",
+        "The derivation holds for any baseline that does not depend on the action, including 0, so the algorithm is still stochastic gradient ascent.",
+        "The individual updates differ: with baseline 0, every positive reward raises the chosen action's preference.",
+        "The baselines differ on every step (the average reward is generally not 0), so the updates keep differing."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.7",
+          "printedPages": [
+            46,
+            46
+          ],
+          "pdfPages": [
+            60,
+            60
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Printed p. 46."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q039",
+      "unit": "ch02",
+      "section": "2.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch02.softmax-preferences"
+        ]
+      },
+      "concepts": [
+        "ch02.gradient-bandit"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: adding 1000 to every action's preference $H_t(a)$ makes the soft-max policy (2.9) much more random.",
+      "answer": false,
+      "solution": [
+        "$e^{H(a) + 1000} / \\sum_b e^{H(b) + 1000} = e^{1000} e^{H(a)} / (e^{1000} \\sum_b e^{H(b)})$: the factor cancels.",
+        "Only differences between preferences matter."
+      ],
+      "explanation": "Preferences have no interpretation in terms of reward; only their relative sizes matter.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.7",
+          "printedPages": [
+            43,
+            43
+          ],
+          "pdfPages": [
+            57,
+            57
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Printed p. 43."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q040",
+      "unit": "ch02",
+      "section": "2.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "2.6"
+      },
+      "concepts": [
+        "ch02.associative-search"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "A two-armed bandit's true values change randomly from play to play: with probability 0.5 (case A) arms 1 and 2 are worth $0.1$ and $0.2$, and with probability 0.5 (case B) they are worth $0.9$ and $0.8$. If you cannot tell which case you face, what is the best expected reward per play you can achieve, and how should you act? If instead you are told the case on each play (but still not the values), what is the best expected reward, and how should you act?",
+      "parts": [
+        {
+          "label": "best expected reward, case unknown",
+          "answer": 0.5,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "best expected reward, case known",
+          "answer": 0.55,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "Unknown case: arm 1 is worth $0.5 \\times 0.1 + 0.5 \\times 0.9 = 0.5$ and arm 2 is worth $0.5 \\times 0.2 + 0.5 \\times 0.8 = 0.5$. Every policy, even a random one, earns $0.5$; nothing can be learned that helps.",
+        "Known case (associative search): pick the better arm in each case, arm 2 in case A ($0.2$) and arm 1 in case B ($0.9$): $0.5 \\times 0.2 + 0.5 \\times 0.9 = 0.55$.",
+        "To get there without knowing the values, learn separate action-value estimates for case A and case B (two bandits), exploring within each, and act greedily on them in the long run."
+      ],
+      "explanation": "Information about the situation is worth 0.05 per play here: it lets a policy map each situation to its own best action.",
+      "misconceptions": [
+        {
+          "wrong": "0.9 when the case is known",
+          "why": "In case A the best available arm is worth only 0.2; you cannot choose case B."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            52,
+            52
+          ],
+          "pdfPages": [
+            66,
+            66
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02-q040"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q041",
+      "unit": "ch02",
+      "section": "2.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.8"
+        ]
+      },
+      "concepts": [
+        "ch02.associative-search",
+        "ch02.n-armed-bandit"
+      ],
+      "type": "mcq",
+      "category": "scenario",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "A news site picks one of five headline styles for each visitor, sees whether the visitor clicks, and knows each visitor's device type (phone, tablet or desktop). The style shown does not change which device the next visitor uses. Which setting is this?",
+      "options": [
+        "Associative search (a contextual bandit): learn the best style for each device type",
+        "A plain n-armed bandit, because each choice only affects the immediate reward",
+        "The full reinforcement learning problem, because there are several situations",
+        "Supervised learning, because the clicks are labels"
+      ],
+      "answer": 0,
+      "solution": [
+        "Several situations, each signalled: associative.",
+        "Actions affect only the immediate reward: not the full problem."
+      ],
+      "explanation": "Associative search sits between the bandit problem and the full reinforcement learning problem.",
+      "optionNotes": [
+        "Correct: the device type is a signalled situation and the best action may depend on it, while actions affect only the immediate reward.",
+        "A plain bandit has one situation. Ignoring the device type would throw away information that can improve the policy.",
+        "The full problem also needs actions to affect the next situation, which the set-up rules out.",
+        "A click scores only the style shown; it does not say which style would have been best, so the feedback is evaluative."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.8",
+          "printedPages": [
+            46,
+            47
+          ],
+          "pdfPages": [
+            60,
+            61
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Printed pp. 46–47."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q042",
+      "unit": "ch02",
+      "section": "2.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.8"
+        ]
+      },
+      "concepts": [
+        "ch02.associative-search"
+      ],
+      "type": "true-false",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: what distinguishes associative search from the full reinforcement learning problem is that in associative search each action affects only the immediate reward, not the next situation.",
+      "answer": true,
+      "solution": [
+        "Both involve learning a policy over several situations.",
+        "If actions can also affect the next situation, the task becomes the full reinforcement learning problem."
+      ],
+      "explanation": "Chapter 3 formalises the full problem as a finite Markov decision process.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.8",
+          "printedPages": [
+            47,
+            47
+          ],
+          "pdfPages": [
+            61,
+            61
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Printed p. 47."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q043",
+      "unit": "ch02",
+      "section": "2.9",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.9"
+        ]
+      },
+      "concepts": [
+        "ch02.bayes-optimal-exploration"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "A Bayesian learner plans by looking ahead over every possible sequence of plays in a bandit with two actions, each of which can give one of two rewards. Each play branches on the action chosen and then on the reward received. How many leaves does the tree have after 3 plays? After 1000 plays the tree has $2^m$ leaves: what is $m$?",
+      "parts": [
+        {
+          "label": "leaves after 3 plays",
+          "answer": 64,
+          "tolerance": 0
+        },
+        {
+          "label": "m (log₂ of the leaves after 1000 plays)",
+          "answer": 2000,
+          "tolerance": 0
+        }
+      ],
+      "solution": [
+        "Each play has $2 \\times 2 = 4$ branches (action, then reward).",
+        "After 3 plays: $4^3 = 64$ leaves.",
+        "After 1000 plays: $4^{1000} = 2^{2000}$, so $m = 2000$, the figure the draft gives."
+      ],
+      "explanation": "Exact Bayes-optimal exploration is intractable for this reason, even though it is well defined.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.9",
+          "printedPages": [
+            49,
+            49
+          ],
+          "pdfPages": [
+            63,
+            63
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "ch02-q043"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q044",
+      "unit": "ch02",
+      "section": "2.9",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.9"
+        ]
+      },
+      "concepts": [
+        "ch02.bayes-optimal-exploration"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "The Gittins-index approach solves a certain kind of bandit problem optimally. According to the draft, what assumption does it rely on that makes it unsuitable for the full reinforcement learning problem?",
+      "options": [
+        "That the prior distribution of possible problems is known",
+        "That rewards are deterministic",
+        "That there are only two actions",
+        "That the learner never explores"
+      ],
+      "answer": 0,
+      "solution": [
+        "The draft says Gittins indices give an optimal solution assuming the prior distribution of possible problems is known.",
+        "It adds that neither the theory nor its computational tractability appears to generalise to the full problem."
+      ],
+      "explanation": "This is why the draft settles for simple methods it calls the practical state of the art.",
+      "optionNotes": [
+        "Correct: the optimality depends on knowing the prior over problems, and neither the theory nor the computation carries over to the full problem.",
+        "Gittins indices handle random rewards; that is the point of a Bayesian formulation.",
+        "The approach works for any number of arms.",
+        "Gittins indices balance exploration and exploitation; they do not avoid exploring."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.9",
+          "printedPages": [
+            49,
+            49
+          ],
+          "pdfPages": [
+            63,
+            63
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-07",
+        "note": "Printed p. 49."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q045",
+      "unit": "ch02",
+      "section": "2.9",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§2.9"
+        ]
+      },
+      "concepts": [
+        "ch02.parameter-study"
+      ],
+      "type": "multi",
+      "category": "compare-contrast",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "Which of the following conclusions does the parameter study of Figure 2.5 (average reward over the first 1000 steps on the 10-armed testbed) support? Select all that apply.",
+      "options": [
+        "Each method does best at an intermediate value of its parameter",
+        "UCB does best overall on this problem",
+        "Each method performs well over a range of parameter values spanning about an order of magnitude",
+        "The best value of ε is the smallest one tried",
+        "Because one parameter value is best, how sensitive a method is to its parameter does not matter"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "solution": [
+        "Read the shape of each curve, the highest peak and how wide each peak is."
+      ],
+      "explanation": "Summarising each learning curve by its average turns a whole family of runs into one readable plot.",
+      "optionNotes": [
+        "Correct: every curve is an inverted U.",
+        "Correct: the draft's conclusion, which the lab reproduces (2000 runs: UCB peaks at about 1.49, optimistic greedy at 1.46, the gradient bandit at 1.41, ε-greedy at 1.34).",
+        "Correct: the draft calls all the methods fairly insensitive in this sense.",
+        "No: ε-greedy peaks at ε = 1/16 and falls off on both sides.",
+        "The draft says the opposite: a method should be judged both by its best setting and by how sensitive it is to the parameter."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.9",
+          "printedPages": [
+            47,
+            48
+          ],
+          "pdfPages": [
+            61,
+            62
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "lab.bandit.fig2-5",
+        "note": "Figure 2.5 and its discussion, printed p. 48; the shape is reproduced by the lab."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch02-q046",
+      "unit": "ch02",
+      "section": "2.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "Exercise 2.4",
+          "§2.4"
+        ]
+      },
+      "concepts": [
+        "ch02.constant-step-size",
+        "ch02.incremental-update"
+      ],
+      "type": "mcq",
+      "category": "scenario",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In the bandit laboratory's Exercise 2.4 preset, all ten true values start equal and then drift by small independent random steps. Two ε-greedy learners ($\\varepsilon = 0.1$) run for 10,000 steps: one uses sample averages, the other a constant step size $\\alpha = 0.1$. Which outcome do you expect over the second half of the run, and why?",
+      "options": [
+        "The constant step size chooses the currently best arm much more often, because its estimates keep following the drift",
+        "Sample averages do better, because they use every reward ever received",
+        "Both do the same, because they explore equally",
+        "Sample averages do better at first and the gap keeps growing"
+      ],
+      "answer": 0,
+      "solution": [
+        "Sample averages weight all past rewards equally, so an arm's estimate reflects its average value over the whole run, not its current value.",
+        "A constant step size weights rewards by recency (2.6) and keeps tracking."
+      ],
+      "explanation": "Run the preset to see the curves; check lab.bandit.ex2-4 verifies this outcome.",
+      "optionNotes": [
+        "Correct: with α = 0.1 recent rewards dominate each estimate, so it tracks the moving values. In the lab (100 runs) it picks the best arm about 73% of the time in the second half, against about 43% for sample averages.",
+        "Using every reward equally is the problem: after thousands of pulls the step 1/k is tiny and the estimate barely reacts to the drift.",
+        "Both explore at the same rate, but they learn differently from what they see; exploration alone does not keep estimates current.",
+        "Early on, when little drift has accumulated, the two are close; it is the later part of the run where sample averages fall behind."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "section": "2.4",
+          "printedPages": [
+            38,
+            39
+          ],
+          "pdfPages": [
+            52,
+            53
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "2",
+          "printedPages": [
+            52,
+            52
+          ],
+          "pdfPages": [
+            66,
+            66
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-07",
+        "check": "lab.bandit.ex2-4",
+        "note": "The predicted outcome is reproduced by the lab's experiment (100 runs, 10,000 steps)."
+      },
+      "reviewed": true
     }
   ]
 }

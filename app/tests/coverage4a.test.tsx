@@ -170,7 +170,11 @@ describe("content quality checks", () => {
   });
 
   test("warnings: equations nothing uses, and lessons leaning on items outside their prerequisites", () => {
-    expect(qualityChecks(fresh(), inventory).warnings).toEqual(["equation eq.ch02.sample-average: not used by any lesson, question or explainer"]);
+    // Until Milestone 4C, (2.1) was unused; the §2.2 lesson now shows it, so the real content raises no warning.
+    expect(qualityChecks(fresh(), inventory).warnings).toEqual([]);
+    const unused = fresh();
+    unused.lessons = unused.lessons.map((l) => ({ ...l, sections: l.sections.map((s) => ({ ...s, layers: s.layers.map((ly) => ({ ...ly, refs: ly.refs?.filter((r) => r !== "eq.ch02.sample-average") })) })) }));
+    expect(qualityChecks(unused, inventory).warnings).toEqual(["equation eq.ch02.sample-average: not used by any lesson, question or explainer"]);
     const w = qualityChecks(withLesson("Text.", ["alg.ch06.q-learning"]), inventory).warnings.join("\n");
     expect(w).toMatch(/alg\.ch06\.q-learning belongs to ch06\.q-learning, outside the section's concepts/);
   });
@@ -251,7 +255,8 @@ describe("in the interface", () => {
     await settled();
     const row = (ch: string) => screen.getAllByRole("link").find((a) => a.querySelector(".num")?.textContent === ch)!;
     expect(row("10")).toHaveTextContent("Unwritten in draft");
-    expect(row("2")).toHaveTextContent("Partial");
+    expect(row("2")).toHaveTextContent("Covered"); // completed in Milestone 4C
+    expect(row("3")).toHaveTextContent("Partial");
     expect(row("7")).toHaveTextContent("Not started");
   });
 });

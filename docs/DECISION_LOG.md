@@ -236,3 +236,9 @@ The service worker activates a new version at once and deletes the old version's
 - **Monte Carlo ES uses blackjack, the draft's own example.** The model is exact (infinite deck), so dynamic programming checks Monte Carlo independently, and simulated card games check the model. Example 5.4's value and Figure 5.5's policy are reproduced exactly.
 - **Cut-off episodes are discarded, not averaged.** A truncated return is not a sample of v, so averaging it (the 3E behaviour) changed the algorithm. On the gridworld this makes ES stall, which the lab now shows as the reason the method assumes episodes end.
 - **Statistical checks state their noise.** The ES check requires agreement wherever the two actions' values differ by more than 0.1, about 3 standard errors of the difference at 500,000 episodes. The reason is written next to the threshold.
+
+## D-044: Chapter 2 completion choices (Accepted, 2026-11-07)
+- **Exercise 2.4's random walk.** The draft says only that the true values "start out equal and then take independent random walks". The lab uses normal steps with standard deviation 0.01 and labels that as our choice; the walk size is an input, so other values can be tried. The walk is shared by all methods in a run, as the problems are.
+- **Figure 2.5's ranges are read from the page image**, and the check compares peak positions (within one doubling) and shape, not the printed heights, which can only be read approximately.
+- **A question needs a section to sit under.** Questions with no section appear under "End-of-chapter exercises", so a question on the chapter opening is placed in §2.1, whose lesson covers it.
+- **Caption questions are not exercises.** Figure 2.3's caption asks a question; the bank's version is labelled "derived from the textbook", not as a textbook exercise.

@@ -74,6 +74,11 @@
     }
   },
   "exercises": {
+    "2.4": {
+      "disposition": "lab-task",
+      "lab": "bandit",
+      "note": "Programming exercise, done as a guided task in the bandit laboratory: the 'Exercise 2.4' preset gives the testbed a random walk (the draft does not give its step size; the lab uses 0.01) and compares sample averages with α = 0.1, both ε = 0.1. Check lab.bandit.ex2-4 confirms the expected outcome."
+    },
     "3.7": {
       "disposition": "placeholder",
       "note": "A placeholder in the April 2015 draft (no exercise text)."

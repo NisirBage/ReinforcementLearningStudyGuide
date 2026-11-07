@@ -604,5 +604,56 @@ Verification: the windy-gridworld investigation, blackjack (Examples 5.1, 5.3 an
 
 `npm run check` passes.
 
-#### Next: Milestone 4C
-Chapter 2 completed to the coverage criteria: lessons for every written section, equation (2.11), Figure 2.5, all six exercises (2.4 as a guided lab task), and questions for every section.
+### Milestone 4C: Chapter 2 complete (done, 2026-11-07)
+
+**Chapter 2 meets the coverage criteria: 9 of 9 sections covered, all 11 numbered equations, and all 6 exercises incorporated** (2.1, 2.2, 2.3, 2.5 and 2.6 in the question bank; 2.4, a programming exercise, as a guided lab task). The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read from the text layer, and the figures and the gradient-bandit derivation from the page images (PDF pp. 54, 56–60, 62). Findings:
+- **(2.11)** and the derivation that follows it (pp. 43–46) were not yet in the app. The derivation justifies one step with "$\mathbb{E}[R_t] = q(A_t)$", which is only true conditionally ($\mathbb{E}[R_t \mid A_t] = q(A_t)$). It is **flagged** on the equation, not corrected.
+- **Figure 2.5** labels the initial estimate $Q_0$, where the text and Figure 2.2 write $Q_1$. Flagged on the optimistic-values concept. (The PDF's text layer also reads $Q_0$ in Figure 2.2's legend, but the printed figure shows $Q_1$; the page image decided it.)
+- The gradient-bandit section promises actor–critic and policy-gradient methods "later in this book". In this draft, actor–critic is §11.1 (Chapter 11, Policy Approximation); the lesson says so.
+- One wording slip that affects meaning ("neither too large nor too big", presumably "too small") is noted in the reading guide; spelling slips are left alone.
+
+**Lessons** for every section: 2.1 (with the chapter opening on evaluative and instructive feedback), 2.2, 2.5, 2.6, 2.7, 2.8 and a reading guide for 2.9, alongside the existing 2.3 and 2.4. They use intuition, formal, mathematical, derivation, example, computation and connection layers as each section needs. Every number in a worked example was computed.
+
+**New content:**
+- **9 concepts:** evaluative feedback, the n-armed bandit problem, exploration and exploitation, the 10-armed testbed, gradient bandits as stochastic gradient ascent, the reward baseline, associative search, parameter study, and Gittins indices / Bayes-optimal exploration.
+- **3 equations:** (2.11), and the two unnumbered identities its derivation rests on: the soft-max derivative and the all-actions form of (2.10). All three checked on the page images and numerically.
+- **27 questions** (now 46 in Chapter 2), covering every section:
+  - 5 textbook exercises, reworded and labelled as such (Exercises 2.1, 2.2, 2.3, 2.5, 2.6);
+  - 22 derived from the text, its equations or its figures (including Figure 2.3's caption question about the step-11 spike, labelled as derived, since it is not a numbered exercise);
+  - 8 numeric questions, each with an answer check;
+  - 6 self-marked written answers with rubrics.
+
+**Laboratory:**
+- **Exercise 2.4, as a lab task:** the testbed can take a random walk (`walkSd`): every true value moves by an independent normal step after each play, the same walk for every method in a run. The draft does not give the walk's size; the "Exercise 2.4" preset uses 0.01 and says it is our choice. Measured (500 runs, 10,000 steps, second half): α = 0.1 earns 1.17 per step and picks the currently best arm 74% of the time; sample averages earn 0.94 and pick it 45% of the time. The step inspector shows the moving values.
+- **Figure 2.5, the parameter study:** a new panel runs all four families at the parameter ranges read from the figure (ε 1/128–1/4, α 1/32–4, c 1/16–4, Q₁ 1/4–4). With 2000 runs every curve peaks at the same parameter as the draft's:
+
+  | Method | Peak here (2000 runs) | Draft, read from the figure |
+  |---|---|---|
+  | ε-greedy | ε = 1/16, 1.336 | ε = 1/16, about 1.31 |
+  | gradient bandit | α = 1/4, 1.409 | α = 1/4, about 1.38 |
+  | UCB | c = 1/2 and 1, 1.488 | c = 1/2 and 1, about 1.47 |
+  | optimistic greedy | Q₁ = 1, 1.463 | Q₁ = 1, about 1.44 |
+
+  The gradient bandit at α = 4 gives 0.948, below the figure's axis, where the draft's line is cut off. Our values run about 0.02–0.03 higher throughout; the shapes agree. UCB's lead is small (0.025 at 2000 runs), and the check says so.
+- **Exercise 2.5's spike:** optimistic greedy picks the optimal arm about 10% of the time on each of steps 1–10 and about 45% on step 11 (2000 runs), as in Figure 2.2.
+- The line chart now draws gaps for missing values, labels categorical x positions (1/128 … 4), and puts the label of a line that stops early beside its last point.
+
+**Checks (85 in all, 15 new):**
+- the soft-max derivative against finite differences;
+- the all-actions update against both cases of (2.10);
+- the expected update against the gradient, for baselines 0, 1000 and the expected reward;
+- Figure 2.5, Exercise 2.4, the step-11 spike, and the inspector agreeing with the fast runner on the moving testbed;
+- the answer of every new numeric question.
+
+**Tests:** **25 files, 1308 tests, all passed.**
+- New: `ch02-4c` (12): the random walk, the parameter study, the chart's gaps and labels, the lab panels, the Chapter 2 lessons, coverage, exercise labels and flags.
+- Updated, because they pinned Chapter 2's previous content (same precision, new values): the question counts in practice and mock-exam setup (48 → 75, 44 → 65 without written answers), the dashboard concept count (26 → 35), the questions of §2.3 and §2.6, the written and textbook-exercise lists, Chapter 2's status in the chapter list (now Covered; Chapter 3 checked as Partial instead), and the unused-equation warning (the real content has none now, so the test removes (2.1)'s only use to show the warning still works). The short-answer practice test now also picks §2.4, to keep testing the one question it marks.
+
+**Browser review:** Chapter 2's chapter page shows all nine sections Covered; §2.7 renders with no KaTeX errors and both flags; the parameter study runs 200 runs in a few seconds, with every peak at the draft's parameter value.
+
+`npm run check` passes. One run made while the dev server and the parameter study were also running timed out while setting up six test files (the 10-second limit for loading content); the same suite passed before and after with the dev server stopped. The new checks add a few seconds of computation (Figure 2.5 at 300 runs, Exercise 2.4 at 100 runs of 10,000 steps), which adds to that load.
+
+#### Next: Milestone 4D
+Chapter 3 to the coverage criteria.

@@ -11,9 +11,18 @@
       "note": "The published edition writes the same average with indicator functions over all past steps."
     },
     "symbols": [
-      { "tex": "Q_t(a)", "meaning": "estimated value of action a on time step t" },
-      { "tex": "N_t(a)", "meaning": "number of times a was chosen prior to t" },
-      { "tex": "R_1, \\ldots, R_{N_t(a)}", "meaning": "the rewards that followed those selections of a" }
+      {
+        "tex": "Q_t(a)",
+        "meaning": "estimated value of action a on time step t"
+      },
+      {
+        "tex": "N_t(a)",
+        "meaning": "number of times a was chosen prior to t"
+      },
+      {
+        "tex": "R_1, \\ldots, R_{N_t(a)}",
+        "meaning": "the rewards that followed those selections of a"
+      }
     ],
     "intuition": "The true value of an action is its mean reward, so the natural estimate is the mean of the rewards observed when it was taken.",
     "assumptions": [
@@ -26,9 +35,31 @@
       "The rewards in the numerator are only those that followed selections of a, not every reward of the run.",
       "R_i here indexes the i-th reward for action a, not the reward at time step i."
     ],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [33, 34], "pdfPages": [47, 48] }],
-    "verification": { "method": "page-image", "on": "2026-11-04" },
-    "flags": [{ "type": "notation-unverified", "note": "2018-edition form given from general knowledge; no copy of the 2018 edition was available to check it." }]
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.2",
+        "printedPages": [
+          33,
+          34
+        ],
+        "pdfPages": [
+          47,
+          48
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04"
+    },
+    "flags": [
+      {
+        "type": "notation-unverified",
+        "note": "2018-edition form given from general knowledge; no copy of the 2018 edition was available to check it."
+      }
+    ]
   },
   {
     "id": "eq.ch02.greedy",
@@ -38,14 +69,41 @@
     "bookLabel": "(2.2)",
     "tex": "A_t = \\operatorname*{argmax}_a Q_t(a)",
     "symbols": [
-      { "tex": "A_t", "meaning": "action selected on step t" },
-      { "tex": "\\operatorname{argmax}_a", "meaning": "the value of a that maximises the expression that follows" }
+      {
+        "tex": "A_t",
+        "meaning": "action selected on step t"
+      },
+      {
+        "tex": "\\operatorname{argmax}_a",
+        "meaning": "the value of a that maximises the expression that follows"
+      }
     ],
     "intuition": "Take whichever action currently looks best.",
-    "assumptions": ["Ties between maximising actions are broken arbitrarily (Figure 2.1 breaks them at random)."],
-    "pitfalls": ["Greedy selection can lock onto a suboptimal action forever if early samples of the best action were unlucky."],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.2", "printedPages": [34, 34], "pdfPages": [48, 48] }],
-    "verification": { "method": "page-image", "on": "2026-11-04" }
+    "assumptions": [
+      "Ties between maximising actions are broken arbitrarily (Figure 2.1 breaks them at random)."
+    ],
+    "pitfalls": [
+      "Greedy selection can lock onto a suboptimal action forever if early samples of the best action were unlucky."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.2",
+        "printedPages": [
+          34,
+          34
+        ],
+        "pdfPages": [
+          48,
+          48
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04"
+    }
   },
   {
     "id": "eq.ch02.incremental-update",
@@ -55,18 +113,44 @@
     "bookLabel": "(2.3)",
     "tex": "Q_{k+1} = Q_k + \\frac{1}{k}\\Big[R_k - Q_k\\Big]",
     "symbols": [
-      { "tex": "Q_k", "meaning": "estimate for the action's k-th reward: the average of its first k − 1 rewards" },
-      { "tex": "R_k", "meaning": "the k-th reward received for the action" },
-      { "tex": "\\tfrac{1}{k}", "meaning": "step size used when processing the k-th reward" }
+      {
+        "tex": "Q_k",
+        "meaning": "estimate for the action's k-th reward: the average of its first k − 1 rewards"
+      },
+      {
+        "tex": "R_k",
+        "meaning": "the k-th reward received for the action"
+      },
+      {
+        "tex": "\\tfrac{1}{k}",
+        "meaning": "step size used when processing the k-th reward"
+      }
     ],
     "intuition": "Move the old average toward the new reward by a fraction 1/k of the gap; the more rewards already averaged, the less one new reward should change the mean.",
-    "assumptions": ["Holds for k = 1 too, giving Q_2 = R_1 whatever the initial Q_1 was."],
+    "assumptions": [
+      "Holds for k = 1 too, giving Q_2 = R_1 whatever the initial Q_1 was."
+    ],
     "derivation": [
-      { "tex": "Q_{k+1} = \\frac{1}{k}\\sum_{i=1}^{k} R_i", "why": "Definition: the average of the first k rewards." },
-      { "tex": "= \\frac{1}{k}\\Big(R_k + \\sum_{i=1}^{k-1} R_i\\Big)", "why": "Split off the newest reward." },
-      { "tex": "= \\frac{1}{k}\\Big(R_k + (k-1)Q_k + Q_k - Q_k\\Big)", "why": "The first k − 1 rewards sum to (k − 1)Q_k; add and subtract Q_k." },
-      { "tex": "= \\frac{1}{k}\\Big(R_k + kQ_k - Q_k\\Big)", "why": "Collect the Q_k terms." },
-      { "tex": "= Q_k + \\frac{1}{k}\\Big[R_k - Q_k\\Big]", "why": "Divide kQ_k by k and group what remains." }
+      {
+        "tex": "Q_{k+1} = \\frac{1}{k}\\sum_{i=1}^{k} R_i",
+        "why": "Definition: the average of the first k rewards."
+      },
+      {
+        "tex": "= \\frac{1}{k}\\Big(R_k + \\sum_{i=1}^{k-1} R_i\\Big)",
+        "why": "Split off the newest reward."
+      },
+      {
+        "tex": "= \\frac{1}{k}\\Big(R_k + (k-1)Q_k + Q_k - Q_k\\Big)",
+        "why": "The first k − 1 rewards sum to (k − 1)Q_k; add and subtract Q_k."
+      },
+      {
+        "tex": "= \\frac{1}{k}\\Big(R_k + kQ_k - Q_k\\Big)",
+        "why": "Collect the Q_k terms."
+      },
+      {
+        "tex": "= Q_k + \\frac{1}{k}\\Big[R_k - Q_k\\Big]",
+        "why": "Divide kQ_k by k and group what remains."
+      }
     ],
     "example": "With $Q_1 = 0$ and rewards $6, 2, 4$: $Q_2 = 0 + \\tfrac11(6-0) = 6$, $Q_3 = 6 + \\tfrac12(2-6) = 4$, $Q_4 = 4 + \\tfrac13(4-4) = 4$, the mean of $6, 2, 4$.",
     "significance": "Only Q_k and k need to be stored, and each update is a few arithmetic operations.",
@@ -74,8 +158,26 @@
       "The step size is 1/k for the k-th reward of that action, not 1/t for the time step.",
       "Q_k is the estimate before the k-th reward is seen, so Q_{k+1} (not Q_k) includes R_k."
     ],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [37, 37], "pdfPages": [51, 51] }],
-    "verification": { "method": "page-image", "on": "2026-11-04", "note": "Derivation steps transcribed from the page image; the identity is also checked by ch02.incremental-equals-sample-average." }
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.3",
+        "printedPages": [
+          37,
+          37
+        ],
+        "pdfPages": [
+          51,
+          51
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04",
+      "note": "Derivation steps transcribed from the page image; the identity is also checked by ch02.incremental-equals-sample-average."
+    }
   },
   {
     "id": "eq.ch02.general-update",
@@ -85,14 +187,41 @@
     "bookLabel": "(2.4)",
     "tex": "\\mathit{NewEstimate} \\leftarrow \\mathit{OldEstimate} + \\mathit{StepSize}\\Big[\\mathit{Target} - \\mathit{OldEstimate}\\Big]",
     "symbols": [
-      { "tex": "\\mathit{Target} - \\mathit{OldEstimate}", "meaning": "the error in the estimate" },
-      { "tex": "\\mathit{StepSize}", "meaning": "how far to move toward the target; written α or α_t(a)" }
+      {
+        "tex": "\\mathit{Target} - \\mathit{OldEstimate}",
+        "meaning": "the error in the estimate"
+      },
+      {
+        "tex": "\\mathit{StepSize}",
+        "meaning": "how far to move toward the target; written α or α_t(a)"
+      }
     ],
     "intuition": "Each update reduces the error by stepping toward a target that indicates a desirable direction, even if that target is noisy.",
-    "assumptions": ["The target is presumed to point in a desirable direction; it may be noisy."],
-    "pitfalls": ["The target is not the true value; in (2.3) it is just the latest reward."],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.3", "printedPages": [37, 38], "pdfPages": [51, 52] }],
-    "verification": { "method": "page-image", "on": "2026-11-04" }
+    "assumptions": [
+      "The target is presumed to point in a desirable direction; it may be noisy."
+    ],
+    "pitfalls": [
+      "The target is not the true value; in (2.3) it is just the latest reward."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.3",
+        "printedPages": [
+          37,
+          38
+        ],
+        "pdfPages": [
+          51,
+          52
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04"
+    }
   },
   {
     "id": "eq.ch02.constant-step",
@@ -102,13 +231,37 @@
     "bookLabel": "(2.5)",
     "tex": "Q_{k+1} = Q_k + \\alpha\\Big[R_k - Q_k\\Big]",
     "symbols": [
-      { "tex": "\\alpha", "meaning": "constant step-size parameter, α ∈ (0, 1] (the book's footnote: 0 < α ≤ 1)" }
+      {
+        "tex": "\\alpha",
+        "meaning": "constant step-size parameter, α ∈ (0, 1] (the book's footnote: 0 < α ≤ 1)"
+      }
     ],
     "intuition": "A fixed fraction of each new error is applied, so older rewards fade out instead of being averaged in forever.",
-    "assumptions": ["α is the same for every step."],
-    "pitfalls": ["With constant α the estimate never settles exactly; it keeps responding to recent rewards (desirable when the task is nonstationary)."],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 38], "pdfPages": [52, 52] }],
-    "verification": { "method": "page-image", "on": "2026-11-04" }
+    "assumptions": [
+      "α is the same for every step."
+    ],
+    "pitfalls": [
+      "With constant α the estimate never settles exactly; it keeps responding to recent rewards (desirable when the task is nonstationary)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.4",
+        "printedPages": [
+          38,
+          38
+        ],
+        "pdfPages": [
+          52,
+          52
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04"
+    }
   },
   {
     "id": "eq.ch02.recency-weighted",
@@ -118,18 +271,44 @@
     "bookLabel": "(2.6)",
     "tex": "Q_{k+1} = (1-\\alpha)^k Q_1 + \\sum_{i=1}^{k} \\alpha(1-\\alpha)^{k-i} R_i",
     "symbols": [
-      { "tex": "(1-\\alpha)^k", "meaning": "weight left on the initial estimate Q_1" },
-      { "tex": "\\alpha(1-\\alpha)^{k-i}", "meaning": "weight on reward R_i, which arrived k − i rewards ago" }
+      {
+        "tex": "(1-\\alpha)^k",
+        "meaning": "weight left on the initial estimate Q_1"
+      },
+      {
+        "tex": "\\alpha(1-\\alpha)^{k-i}",
+        "meaning": "weight on reward R_i, which arrived k − i rewards ago"
+      }
     ],
     "intuition": "Unrolling (2.5) shows every past reward is still in the estimate, but each is discounted by (1 − α) per newer reward.",
-    "assumptions": ["Uses the convention 0^0 = 1, so with α = 1 all weight sits on R_k."],
+    "assumptions": [
+      "Uses the convention 0^0 = 1, so with α = 1 all weight sits on R_k."
+    ],
     "derivation": [
-      { "tex": "Q_{k+1} = Q_k + \\alpha\\Big[R_k - Q_k\\Big]", "why": "Start from (2.5)." },
-      { "tex": "= \\alpha R_k + (1-\\alpha) Q_k", "why": "Collect the Q_k terms." },
-      { "tex": "= \\alpha R_k + (1-\\alpha)\\left[\\alpha R_{k-1} + (1-\\alpha) Q_{k-1}\\right]", "why": "Apply the same identity to Q_k." },
-      { "tex": "= \\alpha R_k + (1-\\alpha)\\alpha R_{k-1} + (1-\\alpha)^2 Q_{k-1}", "why": "Multiply out." },
-      { "tex": "= \\alpha R_k + (1-\\alpha)\\alpha R_{k-1} + (1-\\alpha)^2 \\alpha R_{k-2} + \\cdots + (1-\\alpha)^{k-1}\\alpha R_1 + (1-\\alpha)^k Q_1", "why": "Keep unrolling down to Q_1." },
-      { "tex": "= (1-\\alpha)^k Q_1 + \\sum_{i=1}^{k} \\alpha (1-\\alpha)^{k-i} R_i", "why": "Write the reward terms as one sum." }
+      {
+        "tex": "Q_{k+1} = Q_k + \\alpha\\Big[R_k - Q_k\\Big]",
+        "why": "Start from (2.5)."
+      },
+      {
+        "tex": "= \\alpha R_k + (1-\\alpha) Q_k",
+        "why": "Collect the Q_k terms."
+      },
+      {
+        "tex": "= \\alpha R_k + (1-\\alpha)\\left[\\alpha R_{k-1} + (1-\\alpha) Q_{k-1}\\right]",
+        "why": "Apply the same identity to Q_k."
+      },
+      {
+        "tex": "= \\alpha R_k + (1-\\alpha)\\alpha R_{k-1} + (1-\\alpha)^2 Q_{k-1}",
+        "why": "Multiply out."
+      },
+      {
+        "tex": "= \\alpha R_k + (1-\\alpha)\\alpha R_{k-1} + (1-\\alpha)^2 \\alpha R_{k-2} + \\cdots + (1-\\alpha)^{k-1}\\alpha R_1 + (1-\\alpha)^k Q_1",
+        "why": "Keep unrolling down to Q_1."
+      },
+      {
+        "tex": "= (1-\\alpha)^k Q_1 + \\sum_{i=1}^{k} \\alpha (1-\\alpha)^{k-i} R_i",
+        "why": "Write the reward terms as one sum."
+      }
     ],
     "example": "For $k = 3$, $\\alpha = 0.5$ the weights on $Q_1, R_1, R_2, R_3$ are $0.125, 0.125, 0.25, 0.5$, which sum to 1.",
     "significance": "Explains why constant-α methods track nonstationary targets: influence decays exponentially with age.",
@@ -137,8 +316,26 @@
       "The weights sum to 1 only when the weight on Q_1 is included.",
       "The exponent is k − i (how many rewards ago), not i."
     ],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [38, 39], "pdfPages": [52, 53] }],
-    "verification": { "method": "page-image", "on": "2026-11-04", "note": "Also checked numerically by ch02.recursion-matches-closed-form and ch02.recency-weights-sum-to-one." }
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.4",
+        "printedPages": [
+          38,
+          39
+        ],
+        "pdfPages": [
+          52,
+          53
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04",
+      "note": "Also checked numerically by ch02.recursion-matches-closed-form and ch02.recency-weights-sum-to-one."
+    }
   },
   {
     "id": "eq.ch02.step-size-conditions",
@@ -147,16 +344,40 @@
     "name": "Conditions on step sizes for convergence with probability 1",
     "bookLabel": "(2.7)",
     "tex": "\\sum_{k=1}^{\\infty} \\alpha_k(a) = \\infty \\qquad \\text{and} \\qquad \\sum_{k=1}^{\\infty} \\alpha_k^2(a) < \\infty",
-    "symbols": [{ "tex": "\\alpha_k(a)", "meaning": "step size used to process the reward after the k-th selection of action a" }],
+    "symbols": [
+      {
+        "tex": "\\alpha_k(a)",
+        "meaning": "step size used to process the reward after the k-th selection of action a"
+      }
+    ],
     "intuition": "The first condition keeps steps large enough to overcome any start and any noise; the second makes them shrink fast enough to settle.",
-    "assumptions": ["Stated as a known result from stochastic approximation theory; the book does not prove it."],
+    "assumptions": [
+      "Stated as a known result from stochastic approximation theory; the book does not prove it."
+    ],
     "example": "$\\alpha_k = 1/k$: $\\sum 1/k$ diverges and $\\sum 1/k^2 = \\pi^2/6$ is finite, so both hold. Constant $\\alpha$: the second sum diverges.",
     "pitfalls": [
       "Meeting (2.7) is sufficient for convergence, not a recommendation: such sequences often converge slowly and are seldom used in applications.",
       "1/k² fails the first condition (its sum is finite)."
     ],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.4", "printedPages": [39, 39], "pdfPages": [53, 53] }],
-    "verification": { "method": "page-image", "on": "2026-11-04" }
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.4",
+        "printedPages": [
+          39,
+          39
+        ],
+        "pdfPages": [
+          53,
+          53
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04"
+    }
   },
   {
     "id": "eq.ch02.ucb",
@@ -166,20 +387,48 @@
     "bookLabel": "(2.8)",
     "tex": "A_t = \\operatorname*{argmax}_a \\left[ Q_t(a) + c\\sqrt{\\frac{\\ln t}{N_t(a)}} \\right]",
     "symbols": [
-      { "tex": "\\ln t", "meaning": "natural logarithm of the time step t" },
-      { "tex": "c > 0", "meaning": "controls the degree of exploration" },
-      { "tex": "N_t(a)", "meaning": "number of times a has been selected before t" }
+      {
+        "tex": "\\ln t",
+        "meaning": "natural logarithm of the time step t"
+      },
+      {
+        "tex": "c > 0",
+        "meaning": "controls the degree of exploration"
+      },
+      {
+        "tex": "N_t(a)",
+        "meaning": "number of times a has been selected before t"
+      }
     ],
     "intuition": "The square-root term measures uncertainty in the estimate, so the bracket is a kind of upper bound on what the action might be worth.",
-    "assumptions": ["If N_t(a) = 0, a is considered a maximising action."],
+    "assumptions": [
+      "If N_t(a) = 0, a is considered a maximising action."
+    ],
     "example": "$t = 17$, $c = 2$, $Q = (1.0, 1.5, 0.8)$, $N = (5, 10, 2)$: bonuses $2\\sqrt{\\ln 17/N}$ give scores $\\approx 2.506, 2.565, 3.180$, so the rarely tried third arm is chosen despite the lowest estimate.",
     "significance": "Exploration is directed at uncertain actions instead of being spread uniformly as in ε-greedy.",
     "pitfalls": [
       "ln is the natural logarithm, not log base 10.",
       "Each selection of a reduces its bonus; selections of other actions raise it because t grows."
     ],
-    "sources": [{ "kind": "textbook", "chapter": "2", "section": "2.6", "printedPages": [41, 41], "pdfPages": [55, 55] }],
-    "verification": { "method": "page-image", "on": "2026-11-04" }
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.6",
+        "printedPages": [
+          41,
+          41
+        ],
+        "pdfPages": [
+          55,
+          55
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04"
+    }
   },
   {
     "id": "eq.ch02.softmax-preferences",
@@ -284,6 +533,187 @@
     "verification": {
       "method": "page-image",
       "on": "2026-11-05"
+    }
+  },
+  {
+    "id": "eq.ch02.exact-gradient-ascent",
+    "unit": "ch02",
+    "concept": "ch02.performance-gradient",
+    "name": "Exact gradient ascent on the expected reward",
+    "bookLabel": "(2.11)",
+    "tex": "H_{t+1}(a) = H_t(a) + \\alpha \\frac{\\partial \\mathbb{E}[R_t]}{\\partial H_t(a)}, \\qquad \\mathbb{E}[R_t] = \\sum_b \\pi_t(b)\\, q(b)",
+    "symbols": [
+      {
+        "tex": "\\mathbb{E}[R_t]",
+        "meaning": "the expected reward on step t under the soft-max probabilities, the measure of performance"
+      },
+      {
+        "tex": "\\frac{\\partial \\mathbb{E}[R_t]}{\\partial H_t(a)}",
+        "meaning": "how fast the expected reward changes as the preference for a changes"
+      },
+      {
+        "tex": "q(b)",
+        "meaning": "the true value of action b, unknown to the learner"
+      }
+    ],
+    "intuition": "Each preference moves in proportion to how much increasing it would increase the expected reward. The learner cannot compute this, because it does not know $q(b)$; the gradient-bandit update (2.10) is a sample whose expected value is exactly this step.",
+    "assumptions": [
+      "The policy is the soft-max (2.9) of the preferences.",
+      "The true values $q(b)$ do not change (a stationary bandit)."
+    ],
+    "derivation": [
+      {
+        "tex": "\\frac{\\partial \\mathbb{E}[R_t]}{\\partial H_t(a)} = \\sum_b q(b) \\frac{\\partial \\pi_t(b)}{\\partial H_t(a)} = \\sum_b \\big(q(b) - X_t\\big) \\frac{\\partial \\pi_t(b)}{\\partial H_t(a)}",
+        "why": "Differentiate the sum term by term. Any $X_t$ that does not depend on $b$ can be subtracted, because the probabilities always sum to 1, so their derivatives sum to 0."
+      },
+      {
+        "tex": "= \\sum_b \\pi_t(b) \\big(q(b) - X_t\\big) \\frac{\\partial \\pi_t(b)}{\\partial H_t(a)} \\Big/ \\pi_t(b) = \\mathbb{E}\\Big[\\big(q(A_t) - X_t\\big) \\frac{\\partial \\pi_t(A_t)}{\\partial H_t(a)} \\Big/ \\pi_t(A_t)\\Big]",
+        "why": "Multiply and divide by $\\pi_t(b)$: the sum becomes an expectation over the action $A_t \\sim \\pi_t$."
+      },
+      {
+        "tex": "= \\mathbb{E}\\Big[\\big(R_t - \\bar R_t\\big) \\frac{\\partial \\pi_t(A_t)}{\\partial H_t(a)} \\Big/ \\pi_t(A_t)\\Big]",
+        "why": "Choose $X_t = \\bar R_t$ and replace $q(A_t)$ by $R_t$, whose expected value given $A_t$ is $q(A_t)$."
+      },
+      {
+        "tex": "= \\mathbb{E}\\Big[\\big(R_t - \\bar R_t\\big)\\big(\\mathbb{1}_{a = A_t} - \\pi_t(a)\\big)\\Big]",
+        "why": "Use the soft-max derivative $\\partial \\pi_t(b) / \\partial H_t(a) = \\pi_t(b)(\\mathbb{1}_{a=b} - \\pi_t(a))$ with $b = A_t$; the $\\pi_t(A_t)$ cancels."
+      },
+      {
+        "tex": "H_{t+1}(a) = H_t(a) + \\alpha \\big(R_t - \\bar R_t\\big)\\big(\\mathbb{1}_{a = A_t} - \\pi_t(a)\\big) \\quad \\forall a",
+        "why": "Replace the expectation in (2.11) by its sample: this is the gradient-bandit update (2.10), written for all actions at once."
+      }
+    ],
+    "example": "Three actions with preferences $H = (0, \\ln 2, 0)$ have $\\pi = (\\tfrac14, \\tfrac12, \\tfrac14)$. If $q = (1, 2, 0)$, then $\\mathbb{E}[R_t] = 0.25 + 1 + 0 = 1.25$, and the gradient for action 2 is $\\pi_t(2)\\,(q(2) - \\mathbb{E}[R_t]) = 0.5 \\times 0.75 = 0.375$: raising action 2's preference raises the expected reward.",
+    "significance": "It shows that the gradient bandit is stochastic gradient ascent on expected reward, which is why the draft can say it has robust convergence properties. The same argument, with states added, underlies the policy-approximation methods of Chapter 11.",
+    "pitfalls": [
+      "Exact gradient ascent (2.11) cannot be run: it needs the unknown $q(b)$. Only its sampled form (2.10) is an algorithm.",
+      "The baseline does not change the expected step, only its variance; it is not a correction to the gradient."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.7",
+        "printedPages": [
+          43,
+          46
+        ],
+        "pdfPages": [
+          57,
+          60
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-07",
+      "note": "Equation (2.11) and the derivation on printed pp. 43–46 (PDF pp. 57–60) checked on the page images. The intermediate identities are recomputed by the checks ch02.softmax-derivative and ch02.expected-update-is-gradient."
+    },
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "In the derivation (p. 45) the draft justifies replacing $q(A_t)$ by $R_t$ with \\\"$\\mathbb{E}[R_t] = q(A_t)$\\\". Unconditionally, $\\mathbb{E}[R_t]$ is $\\sum_b \\pi_t(b) q(b)$, not $q(A_t)$; what the step needs is the conditional statement. The argument is correct once read that way.",
+        "suggestion": "Read it as $\\mathbb{E}[R_t \\mid A_t] = q(A_t)$."
+      }
+    ]
+  },
+  {
+    "id": "eq.ch02.softmax-derivative",
+    "unit": "ch02",
+    "concept": "ch02.performance-gradient",
+    "name": "Derivative of the soft-max probabilities",
+    "tex": "\\frac{\\partial \\pi_t(b)}{\\partial H_t(a)} = \\pi_t(b)\\big(\\mathbb{1}_{a=b} - \\pi_t(a)\\big)",
+    "symbols": [
+      {
+        "tex": "\\mathbb{1}_{a=b}",
+        "meaning": "1 if a = b, otherwise 0 (the draft writes it with a capital I)"
+      },
+      {
+        "tex": "\\pi_t(b)",
+        "meaning": "the soft-max probability (2.9) of action b"
+      }
+    ],
+    "intuition": "Raising one preference raises that action's probability by $\\pi(1 - \\pi)$ and lowers every other action's probability in proportion to its own size, so the total stays 1.",
+    "assumptions": [
+      "The probabilities are the soft-max (2.9) of the preferences."
+    ],
+    "derivation": [
+      {
+        "tex": "\\frac{\\partial}{\\partial H_t(a)} \\frac{e^{H_t(b)}}{\\sum_c e^{H_t(c)}} = \\frac{\\mathbb{1}_{a=b}\\, e^{H_t(a)} \\sum_c e^{H_t(c)} - e^{H_t(b)} e^{H_t(a)}}{\\big(\\sum_c e^{H_t(c)}\\big)^2}",
+        "why": "Quotient rule: the numerator depends on $H_t(a)$ only when $b = a$, and the denominator's derivative is $e^{H_t(a)}$."
+      },
+      {
+        "tex": "= \\mathbb{1}_{a=b}\\, \\pi_t(b) - \\pi_t(b)\\pi_t(a) = \\pi_t(b)\\big(\\mathbb{1}_{a=b} - \\pi_t(a)\\big)",
+        "why": "Split the fraction; when $a = b$, $e^{H_t(a)} = e^{H_t(b)}$."
+      }
+    ],
+    "example": "With $\\pi = (\\tfrac14, \\tfrac12, \\tfrac14)$: $\\partial \\pi(2) / \\partial H(2) = \\tfrac12 \\cdot \\tfrac12 = 0.25$ and $\\partial \\pi(1) / \\partial H(2) = \\tfrac14 \\cdot (0 - \\tfrac12) = -0.125$. The three derivatives with respect to $H(2)$ sum to $-0.125 + 0.25 - 0.125 = 0$.",
+    "pitfalls": [
+      "Summed over $b$ the derivatives are 0, not 1: the probabilities move, but their total cannot."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.7",
+        "printedPages": [
+          45,
+          46
+        ],
+        "pdfPages": [
+          59,
+          60
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-07",
+      "note": "Stated on printed p. 45 and derived on p. 46 (PDF pp. 59–60), checked on the page images. Also checked numerically against finite differences (check ch02.softmax-derivative)."
+    }
+  },
+  {
+    "id": "eq.ch02.gradient-bandit-indicator-form",
+    "unit": "ch02",
+    "concept": "ch02.performance-gradient",
+    "name": "Gradient bandit update for all actions at once",
+    "tex": "H_{t+1}(a) = H_t(a) + \\alpha\\big(R_t - \\bar R_t\\big)\\big(\\mathbb{1}_{a = A_t} - \\pi_t(a)\\big), \\quad \\forall a",
+    "symbols": [
+      {
+        "tex": "\\mathbb{1}_{a=A_t}",
+        "meaning": "1 for the action taken, 0 for the others"
+      },
+      {
+        "tex": "\\bar R_t",
+        "meaning": "the baseline: the average of the rewards up to and including step t"
+      }
+    ],
+    "intuition": "One formula covers both halves of (2.10): for the action taken the bracket is $1 - \\pi_t(A_t)$, for every other action it is $-\\pi_t(a)$.",
+    "assumptions": [
+      "The same quantities as (2.10)."
+    ],
+    "pitfalls": [
+      "The preferences always change by amounts that sum to zero over the actions, since $\\sum_a (\\mathbb{1}_{a = A_t} - \\pi_t(a)) = 1 - 1 = 0$."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "2",
+        "section": "2.7",
+        "printedPages": [
+          45,
+          45
+        ],
+        "pdfPages": [
+          59,
+          59
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-07",
+      "note": "Printed p. 45 (PDF p. 59), checked on the page image. Its equality with the two cases of (2.10) is checked numerically (check ch02.gradient-update-unified)."
     }
   }
 ]

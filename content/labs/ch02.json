@@ -1,116 +1,153 @@
 [
-  {
-    "id": "lab.ch02.bandit",
-    "slug": "bandit",
-    "unit": "ch02",
-    "title": "Multi-armed bandit laboratory",
-    "summary": "Run the methods of Chapter 2 on an $n$-armed bandit and watch them learn: greedy and $\\varepsilon$-greedy action selection, sample-average or constant-$\\alpha$ estimates, optimistic initial values, UCB and the gradient bandit. Step through one run update by update with every number shown, then average many runs to see the curves of Figures 2.1–2.4.",
-    "sections": [
-      "2.1",
-      "2.2",
-      "2.3",
-      "2.4",
-      "2.5",
-      "2.6",
-      "2.7"
+ {
+  "id": "lab.ch02.bandit",
+  "slug": "bandit",
+  "unit": "ch02",
+  "title": "Multi-armed bandit laboratory",
+  "summary": "Run the methods of Chapter 2 on an $n$-armed bandit and watch them learn: greedy and $\\varepsilon$-greedy action selection, sample-average or constant-$\\alpha$ estimates, optimistic initial values, UCB and the gradient bandit. Step through one run update by update with every number shown, average many runs to see the curves of Figures 2.1–2.4, make the testbed nonstationary for Exercise 2.4, and run the parameter study of Figure 2.5.",
+  "sections": [
+   "2.1",
+   "2.2",
+   "2.3",
+   "2.4",
+   "2.5",
+   "2.6",
+   "2.7",
+   "2.9"
+  ],
+  "concepts": [
+   "ch02.action-value-estimate",
+   "ch02.greedy-action-selection",
+   "ch02.epsilon-greedy",
+   "ch02.incremental-update",
+   "ch02.constant-step-size",
+   "ch02.optimistic-initial-values",
+   "ch02.ucb",
+   "ch02.gradient-bandit",
+   "ch02.ten-armed-testbed",
+   "ch02.parameter-study",
+   "ch02.reward-baseline"
+  ],
+  "implementations": [
+   "banditLab.agentStep",
+   "banditLab.runExperiment",
+   "bandit.incrementalAverages",
+   "bandit.constantStepEstimates",
+   "bandit.ucbSelect",
+   "banditLab.parameterStudy"
+  ],
+  "guide": [
+   "Step through greedy with sample averages. Notice that once one action's estimate is ahead it is chosen again and again: greedy selection never tries actions that look worse.",
+   "Switch to $\\varepsilon = 0.1$. On each step the inspector shows whether the $\\varepsilon$ branch was taken. Check the update $Q \\leftarrow Q + \\tfrac1N(R - Q)$ against the numbers shown.",
+   "Average 2000 runs of greedy, $\\varepsilon = 0.01$ and $\\varepsilon = 0.1$ (the Figure 2.1 preset). Greedy should level off near an average reward of 1 and find the optimal action in about a third of the runs.",
+   "Try the Figure 2.2 preset: optimistic greedy ($Q_1 = 5$, $\\alpha = 0.1$) starts worse than realistic $\\varepsilon$-greedy and overtakes it.",
+   "Try the Figure 2.3 preset and look at step 11 for UCB. It has just tried each of the 10 arms once and now picks the best-looking one.",
+   "Try the Figure 2.4 preset (true values centred on +4) with and without the baseline $\\bar R_t$.",
+   "Exercise 2.5: in the Figure 2.2 preset, step through optimistic greedy and watch steps 1–11. Then average 2000 runs and look at the % optimal curve around step 11. Can you explain the spike?",
+   "Exercise 2.4 (lab task): choose the Exercise 2.4 preset. Every true value starts at 0 and drifts by a small random step after each play (the draft does not say how large; the preset uses 0.01). Compare sample averages with $\\alpha = 0.1$ over 10,000 steps, then try a larger or smaller drift with the Random walk input.",
+   "Figure 2.5: run the parameter study. Each point scores one method at one parameter value by its average reward over the first 1000 steps. Check that every curve is an inverted U, and compare the best settings with the draft's."
+  ],
+  "sources": [
+   {
+    "kind": "textbook",
+    "chapter": "2",
+    "section": "2.2",
+    "printedPages": [
+     34,
+     36
     ],
-    "concepts": [
-      "ch02.action-value-estimate",
-      "ch02.greedy-action-selection",
-      "ch02.epsilon-greedy",
-      "ch02.incremental-update",
-      "ch02.constant-step-size",
-      "ch02.optimistic-initial-values",
-      "ch02.ucb",
-      "ch02.gradient-bandit"
-    ],
-    "implementations": [
-      "banditLab.agentStep",
-      "banditLab.runExperiment",
-      "bandit.incrementalAverages",
-      "bandit.constantStepEstimates",
-      "bandit.ucbSelect"
-    ],
-    "guide": [
-      "Step through greedy with sample averages. Notice that once one action's estimate is ahead it is chosen again and again: greedy selection never tries actions that look worse.",
-      "Switch to $\\varepsilon = 0.1$. On each step the inspector shows whether the $\\varepsilon$ branch was taken. Check the update $Q \\leftarrow Q + \\tfrac1N(R - Q)$ against the numbers shown.",
-      "Average 2000 runs of greedy, $\\varepsilon = 0.01$ and $\\varepsilon = 0.1$ (the Figure 2.1 preset). Greedy should level off near an average reward of 1 and find the optimal action in about a third of the runs.",
-      "Try the Figure 2.2 preset: optimistic greedy ($Q_1 = 5$, $\\alpha = 0.1$) starts worse than realistic $\\varepsilon$-greedy and overtakes it.",
-      "Try the Figure 2.3 preset and look at step 11 for UCB. It has just tried each of the 10 arms once and now picks the best-looking one.",
-      "Try the Figure 2.4 preset (true values centred on +4) with and without the baseline $\\bar R_t$."
-    ],
-    "sources": [
-      {
-        "kind": "textbook",
-        "chapter": "2",
-        "section": "2.2",
-        "printedPages": [
-          34,
-          36
-        ],
-        "pdfPages": [
-          48,
-          50
-        ]
-      },
-      {
-        "kind": "textbook",
-        "chapter": "2",
-        "section": "2.5",
-        "printedPages": [
-          39,
-          41
-        ],
-        "pdfPages": [
-          53,
-          55
-        ]
-      },
-      {
-        "kind": "textbook",
-        "chapter": "2",
-        "section": "2.6",
-        "printedPages": [
-          41,
-          42
-        ],
-        "pdfPages": [
-          55,
-          56
-        ]
-      },
-      {
-        "kind": "textbook",
-        "chapter": "2",
-        "section": "2.7",
-        "printedPages": [
-          42,
-          44
-        ],
-        "pdfPages": [
-          56,
-          58
-        ]
-      }
-    ],
-    "verification": {
-      "method": "computed",
-      "on": "2026-11-05",
-      "check": "lab.bandit.fig2-1",
-      "note": "300 seeded runs reproduce the behaviour the draft reports; further checks cover Figures 2.2–2.4."
-    },
-    "checks": [
-      "lab.bandit.best-possible",
-      "lab.bandit.fig2-2",
-      "lab.bandit.fig2-3",
-      "lab.bandit.fig2-4",
-      "lab.bandit.step-matches-fast"
-    ],
-    "flags": [
-      {
-        "type": "suspected-typo",
-        "note": "Equation (2.9) is printed with an unmatched parenthesis in the numerator (see the equation's note). The lab computes the soft-max as $e^{H_t(a)} / \\sum_b e^{H_t(b)}$."
-      }
+    "pdfPages": [
+     48,
+     50
     ]
-  }
+   },
+   {
+    "kind": "textbook",
+    "chapter": "2",
+    "section": "2.5",
+    "printedPages": [
+     39,
+     41
+    ],
+    "pdfPages": [
+     53,
+     55
+    ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "2",
+    "section": "2.6",
+    "printedPages": [
+     41,
+     42
+    ],
+    "pdfPages": [
+     55,
+     56
+    ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "2",
+    "section": "2.7",
+    "printedPages": [
+     42,
+     44
+    ],
+    "pdfPages": [
+     56,
+     58
+    ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "2",
+    "section": "2.9",
+    "printedPages": [
+     47,
+     48
+    ],
+    "pdfPages": [
+     61,
+     62
+    ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "2",
+    "printedPages": [
+     52,
+     52
+    ],
+    "pdfPages": [
+     66,
+     66
+    ]
+   }
+  ],
+  "verification": {
+   "method": "computed",
+   "on": "2026-11-05",
+   "check": "lab.bandit.fig2-1",
+   "note": "300 seeded runs reproduce the behaviour the draft reports; further checks cover Figures 2.2–2.4."
+  },
+  "checks": [
+   "lab.bandit.best-possible",
+   "lab.bandit.fig2-2",
+   "lab.bandit.fig2-3",
+   "lab.bandit.fig2-4",
+   "lab.bandit.step-matches-fast",
+   "lab.bandit.fig2-5",
+   "lab.bandit.ex2-4",
+   "lab.bandit.walk-step-matches-fast",
+   "lab.bandit.optimistic-spike"
+  ],
+  "flags": [
+   {
+    "type": "suspected-typo",
+    "note": "Equation (2.9) is printed with an unmatched parenthesis in the numerator (see the equation's note). The lab computes the soft-max as $e^{H_t(a)} / \\sum_b e^{H_t(b)}$."
+   }
+  ]
+ }
 ]
