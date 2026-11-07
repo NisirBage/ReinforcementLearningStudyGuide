@@ -23,6 +23,7 @@ const FLAG_LABEL: Record<Flag["type"], string> = {
   "extraction-uncertain": "Transcription uncertain",
   "empty-in-draft": "Empty in this draft",
   "notation-unverified": "2018-edition notation not verified",
+  "replication-discrepancy": "Measured differently from the draft",
 };
 
 export function Flags({ flags }: { flags?: Flag[] }) {

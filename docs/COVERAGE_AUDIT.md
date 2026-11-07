@@ -330,6 +330,8 @@ Title pages only in the draft. They stay marked as unwritten.
 
 ### A. Windy gridworld (Example 6.5)
 
+*Resolved in 4B (D-043): the 17 steps is reproduced exactly; the 8000-step claim is not, and is flagged. See PROGRESS.md, Milestone 4B.*
+
 **What the draft states (p. 157):**
 - Sarsa is run with ε = 0.1, α = 0.5 and Q(s, a) = 0.
 - By 8000 time steps the greedy policy "was long since optimal".
@@ -350,6 +352,8 @@ Title pages only in the draft. They stay marked as unwritten.
 - record the result in the lab and D-039, whether or not the gap closes.
 
 ### B. Monte Carlo ES cutoff
+
+*Done in 4B (D-043): blackjack is implemented exactly, Monte Carlo ES uses it, and cut-off gridworld episodes are discarded.*
 
 - **Why the cutoff exists:** Figure 5.4 assumes every episode ends. On the gridworld, a deterministic greedy policy can loop for ever, so 3E cut episodes at 50 steps.
 - **Why it changes the algorithm:** 3E averaged the truncated returns as if they were complete, which biases Q downwards for the pairs involved. That is a real departure, not just a speed limit.

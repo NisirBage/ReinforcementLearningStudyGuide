@@ -5,7 +5,8 @@
 import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages, recencyWeightedAverage, recencyWeights, ucbScores, argmaxAll } from "../lib/rl/bandit";
 import { iterativePolicyEvaluation, policyIteration, valueIteration } from "../lib/rl/dp";
 import { RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, randomWalk, windyGridworld } from "../lib/rl/envs/examples";
-import { esEpisode, mcUpdate, newEs, newPrediction, runMcPrediction } from "../lib/rl/mc";
+import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
+import { HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
 import { greedyPath, newControl, qLearningStep, rmsError, runControl, runTd0, sarsaStep, td0Update } from "../lib/rl/td";
 import { makeRng } from "../domain/random";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
@@ -404,14 +405,35 @@ export const CHECKS: Record<string, Check> = {
       return rmsError(fv, RANDOM_WALK_TRUE, states) < 0.03 && rmsError(ev, RANDOM_WALK_TRUE, states) < 0.03;
     },
   },
-  "lab.mc.es-gridworld": {
-    kind: "fact", // §5.3, Figure 5.4: Monte Carlo ES finds an optimal policy of the 4×4 gridworld (episodes cut at 50 steps; see the lab)
+  "lab.mc.es-blackjack": {
+    kind: "fact", // Example 5.3: Monte Carlo ES on blackjack, from "stick only on 20 or 21", learns the optimal policy (Figure 5.5).
+    // 500,000 episodes: at least 195 of the 200 states agree with the exact optimum, and every state whose two
+    // action values differ by more than 0.1 agrees. Closer decisions can still be wrong: each Q(s, a) averages all its
+    // returns, including those earned under earlier, worse policies, and with ~1500–2500 returns per pair the error of
+    // a difference of two Q values is about 0.03–0.04 (seeds 1–3 miss states with gaps of 0.04–0.06). Every episode
+    // ends, so none is cut off.
     run: () => {
-      let st = newEs(grid);
-      const rng = makeRng(7);
-      for (let e = 0; e < 20000; e++) st = esEpisode(grid, st, 1, rng).state;
+      const m = blackjack();
+      const vi = valueIteration(m, 1, { theta: 1e-12 });
+      const q = (i: number, a: number) => actionValue(m, vi.v, i, a, 1);
+      const r = runEs(m, 500_000, 1, makeRng(1), { starts: bjStartPairs(), policy0: stickOn20().map((row) => row.indexOf(1)) });
+      let agree = 0;
+      let clearWrong = 0;
+      for (let i = 1; i <= 200; i++) {
+        const best = q(i, BJ_STICK) >= q(i, BJ_HIT) ? BJ_STICK : BJ_HIT;
+        if (r.state.policy[i] === best) agree++;
+        else if (Math.abs(q(i, BJ_STICK) - q(i, BJ_HIT)) > 0.1) clearWrong++;
+      }
+      return r.truncated === 0 && agree >= 195 && clearWrong === 0;
+    },
+  },
+  "lab.mc.es-needs-termination": {
+    kind: "fact", // pp. 122 and 157: Monte Carlo ES assumes episodes end. On the gridworld a greedy policy can loop for ever; with
+    // cut-off episodes discarded (they are not samples of the return), most episodes are lost and the policy stops improving.
+    run: () => {
+      const r = runEs(grid, 5000, 1, makeRng(1), { maxSteps: 50 });
       const opt = valueIteration(grid, 1).policy.ties;
-      return st.policy.every((a, s) => grid.terminal[s] || opt[s].includes(a));
+      return r.truncated > 2500 && !r.state.policy.every((a, s) => grid.terminal[s] || opt[s].includes(a));
     },
   },
   "lab.td.random-walk-start": {
@@ -459,6 +481,77 @@ export const CHECKS: Record<string, Check> = {
         out.sPath.push((greedyPath(c, s.Q, c.grid.start) ?? [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]).length - 1);
       }
       return mean(out.sarsa) > mean(out.q) + 10 && out.qPath.every((n) => n === 13) && out.sPath.filter((n) => n > 13).length >= 15;
+    },
+  },
+
+  // ----- Blackjack, Examples 5.1, 5.3, 5.4 (Milestone 4B) -----
+  "bj.dynamics": {
+    kind: "fact", // the exact blackjack model: every p(·, · | s, a) sums to 1, and every state's actions are stick and hit (the deal state deals)
+    run: () => {
+      const m = blackjack();
+      const sums = m.dynamics.flatMap((row) => row.filter((o) => o.length).map((o) => o.reduce((x, y) => x + y.prob, 0)));
+      return sums.every((x) => close(x, 1, 1e-12)) && m.dynamics.slice(1, 201).every((row) => row[BJ_STICK].length > 0 && row[BJ_HIT].length > 0 && row[2].length === 0);
+    },
+  },
+  "bj.example-5-4": {
+    kind: "fact", // Example 5.4 (p. 130): under "stick only on 20 or 21", the state (dealer 2, sum 13, usable ace) has value
+    // approximately −0.27726, which the draft estimated from 10^8 episodes. Solved exactly here: −0.27720.
+    run: () => close(solveExact(blackjack(), stickOn20(), 1)![bjIndex(13, 2, true)], -0.27726, 5e-4),
+  },
+  "bj.figure-5-5": {
+    kind: "fact", // Figure 5.5: the optimal policy, read from the page image as the lowest sum at which to stick against each
+    // dealer card A, 2, …, 10. Usable ace: 19, 18 ×7, 19, 19 (the "notch" against an ace); no usable ace: 17, 13, 13, 12, 12, 12, 17 ×4.
+    // Value iteration on the exact model gives the same policy, including the notch the draft says Thorp's strategy lacks.
+    run: () => {
+      const m = blackjack();
+      const vi = valueIteration(m, 1, { theta: 1e-12 });
+      const stickFrom = (d: number, usable: boolean) => {
+        let low = 22;
+        for (let sum = 21; sum >= 12; sum--) {
+          const i = bjIndex(sum, d, usable);
+          if (actionValue(m, vi.v, i, BJ_STICK, 1) >= actionValue(m, vi.v, i, BJ_HIT, 1)) low = sum;
+          else break;
+        }
+        // and below that sum, hitting is strictly better (a threshold policy)
+        for (let sum = 12; sum < low; sum++) {
+          const i = bjIndex(sum, d, usable);
+          if (!(actionValue(m, vi.v, i, BJ_HIT, 1) > actionValue(m, vi.v, i, BJ_STICK, 1))) return -1;
+        }
+        return low;
+      };
+      const usable = Array.from({ length: 10 }, (_, k) => stickFrom(k + 1, true));
+      const hard = Array.from({ length: 10 }, (_, k) => stickFrom(k + 1, false));
+      return JSON.stringify(usable) === JSON.stringify([19, 18, 18, 18, 18, 18, 18, 18, 19, 19]) && JSON.stringify(hard) === JSON.stringify([17, 13, 13, 12, 12, 12, 17, 17, 17, 17]);
+    },
+  },
+  "lab.td.windy-17-steps": {
+    kind: "fact", // Example 6.5 (p. 157): "continued ε-greedy exploration kept the average episode length at about 17 steps, two
+    // more than the minimum of 15". Exactly: the ε-greedy (ε = 0.1) policy on q* takes 17.05 steps on average.
+    run: () => {
+      const w = windyGridworld();
+      const vi = valueIteration(w, 1, { theta: 1e-12 });
+      const nA = w.actions.length;
+      const pi = w.states.map((_, s) => {
+        if (w.terminal[s]) return w.actions.map(() => 0);
+        const q = w.actions.map((_, a) => actionValue(w, vi.v, s, a, 1));
+        const best = q.map((x, a) => [x, a]).filter(([x]) => Math.abs(x - Math.max(...q)) < 1e-9).map(([, a]) => a);
+        return w.actions.map((_, a) => 0.1 / nA + (best.includes(a) ? 0.9 / best.length : 0));
+      });
+      const len = -solveExact(w, pi, 1)![w.grid.start];
+      return close(len, 17.05, 0.01);
+    },
+  },
+  "lab.td.windy-sarsa-settles": {
+    kind: "fact", // D-043: with α = 0.1 (and ε = 0.1, Q = 0), Sarsa's episodes settle at about 17 steps, the exact 17.05 above,
+    // within 150,000 steps. With the draft's α = 0.5 they stay near 19 (the large step keeps the greedy policy moving).
+    run: () => {
+      const w = windyGridworld();
+      return [1, 2, 3].every((seed) => {
+        const r = runControl(w, w.grid.start, { method: "sarsa", alpha: 0.1, epsilon: 0.1, gamma: 1 }, makeRng(seed), { maxTotalSteps: 150_000 });
+        const ls = r.lengths.filter((_, k) => r.endedAt[k] > 140_000);
+        const mean = ls.reduce((a, b) => a + b, 0) / ls.length;
+        return mean > 16.6 && mean < 17.8;
+      });
     },
   },
 

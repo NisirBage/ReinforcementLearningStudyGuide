@@ -9,7 +9,7 @@
 import type { Rng } from "../../domain/random";
 import { argmaxRandom } from "./banditLab";
 import type { FiniteMDP, Policy } from "./mdp";
-import { generateEpisode, type Step } from "./sampling";
+import { generateEpisode, sampleStep, type Step } from "./sampling";
 
 /** G_t for every t of an episode, by G_t = R_{t+1} + γ G_{t+1} working backwards from the end. */
 export function returnsOf(steps: readonly Step[], gamma: number): number[] {
@@ -83,31 +83,44 @@ export interface EsState {
 
 const available = (mdp: FiniteMDP, s: number) => mdp.actions.map((_, a) => a).filter((a) => mdp.dynamics[s][a].length > 0);
 
-export function newEs(mdp: FiniteMDP): EsState {
+/** Q = 0 and N = 0 everywhere; π is `policy0` (Example 5.3 starts from "stick only on 20 or 21") or the first available action. */
+export function newEs(mdp: FiniteMDP, policy0?: readonly number[]): EsState {
   return {
     Q: mdp.states.map(() => mdp.actions.map(() => 0)),
     N: mdp.states.map(() => mdp.actions.map(() => 0)),
-    policy: mdp.states.map((_, s) => (mdp.terminal[s] ? -1 : available(mdp, s)[0])),
+    policy: policy0 ? [...policy0] : mdp.states.map((_, s) => (mdp.terminal[s] ? -1 : available(mdp, s)[0])),
   };
 }
 
+export interface EsOptions {
+  /** The exploring-start pairs (S_0, A_0), each equally likely. Default: every nonterminal state with every available action. */
+  starts?: readonly (readonly [number, number])[];
+  /** Episodes longer than this are cut off. A cut-off episode is not a sample of the return, so it is discarded. */
+  maxSteps?: number;
+}
+
+const startPairs = (mdp: FiniteMDP) => mdp.states.flatMap((_, s) => (mdp.terminal[s] ? [] : available(mdp, s).map((a) => [s, a] as const)));
+
 /**
- * One episode of Monte Carlo ES: a random start pair (S_0, A_0) (every pair has probability > 0), then π.
- * The draft assumes every episode ends (Figure 5.4's caption). A deterministic policy on a gridworld can loop for ever,
- * so episodes are cut at `maxSteps`, and a cut-off episode's partial returns are still averaged. With a reward of −1
- * per step they are strongly negative lower bounds that push the policy away from the loop. This departs from the
- * draft's assumption, and the lab says so; `truncated` reports when it happened.
+ * One episode of Monte Carlo ES (Figure 5.4): a random start pair (S_0, A_0), then π; Q(s, a) ← the average of the
+ * returns after first visits of (s, a); then π(s) ← argmax_a Q(s, a) for each s in the episode (ties at random).
+ *
+ * The draft assumes every episode ends (p. 122). Blackjack (Example 5.3) guarantees it. On a gridworld a
+ * deterministic π can loop for ever, so an episode that reaches `maxSteps` is cut off and **discarded**: it updates
+ * neither Q nor π, because a cut-off return is not a sample of v. (Milestone 3E averaged such partial returns;
+ * that biased Q downwards and was a departure from the algorithm, D-043.) `truncated` reports it.
  */
-export function esEpisode(mdp: FiniteMDP, st: EsState, gamma: number, rng: Rng, maxSteps = 50) {
-  const starts = mdp.states.flatMap((_, s) => (mdp.terminal[s] ? [] : available(mdp, s).map((a) => [s, a] as const)));
+export function esEpisode(mdp: FiniteMDP, st: EsState, gamma: number, rng: Rng, opts: EsOptions = {}) {
+  const starts = opts.starts ?? startPairs(mdp);
   const [s0, a0] = starts[Math.floor(rng() * starts.length)];
   const pi: Policy = mdp.states.map((_, s) => mdp.actions.map((_, a) => (st.policy[s] === a ? 1 : 0)));
-  const ep = generateEpisode(mdp, pi, s0, rng, { firstAction: a0, maxSteps });
+  const ep = generateEpisode(mdp, pi, s0, rng, { firstAction: a0, maxSteps: opts.maxSteps ?? 10_000 });
+  const updates: { s: number; a: number; G: number; before: number; after: number }[] = [];
+  if (ep.truncated) return { state: st, steps: ep.steps, truncated: true, updates };
   const Q = st.Q.map((r) => [...r]);
   const N = st.N.map((r) => [...r]);
   const G = returnsOf(ep.steps, gamma);
   const seen = new Set<string>();
-  const updates: { s: number; a: number; G: number; before: number; after: number }[] = [];
   ep.steps.forEach((x, t) => {
     const key = `${x.s},${x.a}`;
     if (seen.has(key)) return; // first occurrence of (s, a) only
@@ -123,5 +136,64 @@ export function esEpisode(mdp: FiniteMDP, st: EsState, gamma: number, rng: Rng, 
     // π(s) ← argmax_a Q(s, a), ties broken at random among tried and untried actions alike.
     policy[x.s] = av[argmaxRandom(av.map((a) => Q[x.s][a]), rng)];
   }
-  return { state: { Q, N, policy }, steps: ep.steps, truncated: ep.truncated, updates };
+  return { state: { Q, N, policy }, steps: ep.steps, truncated: false, updates };
+}
+
+/**
+ * Many episodes of Monte Carlo ES, updating in place: the same algorithm and the same random draws as repeated
+ * esEpisode calls (tested step for step), fast enough for the hundreds of thousands of episodes blackjack needs.
+ */
+export function runEs(mdp: FiniteMDP, episodes: number, gamma: number, rng: Rng, opts: EsOptions & { policy0?: readonly number[]; from?: EsState } = {}) {
+  // Continue from `from` (copied, never modified) or start afresh.
+  const st: EsState = opts.from ? { Q: opts.from.Q.map((r) => [...r]), N: opts.from.N.map((r) => [...r]), policy: [...opts.from.policy] } : newEs(mdp, opts.policy0);
+  const { Q, N, policy } = st;
+  const starts = opts.starts ?? startPairs(mdp);
+  const max = opts.maxSteps ?? 10_000;
+  const avail = mdp.states.map((_, s) => available(mdp, s));
+  let truncated = 0;
+  const S: number[] = [], A: number[] = [], R: number[] = [];
+  for (let e = 0; e < episodes; e++) {
+    const [s0, a0] = starts[Math.floor(rng() * starts.length)];
+    S.length = A.length = R.length = 0;
+    let s = s0;
+    let cut = false;
+    while (!mdp.terminal[s]) {
+      if (S.length >= max) {
+        cut = true;
+        break;
+      }
+      let a: number;
+      if (S.length === 0) a = a0;
+      else {
+        rng(); // sampleAction draws once even for a deterministic π
+        a = policy[s];
+      }
+      const { next, reward } = sampleStep(mdp, s, a, rng);
+      S.push(s);
+      A.push(a);
+      R.push(reward);
+      s = next;
+    }
+    if (cut) {
+      truncated++;
+      continue;
+    }
+    // Returns backwards; first visits are the earliest occurrence of each pair.
+    const G = new Array<number>(S.length);
+    let acc = 0;
+    for (let t = S.length - 1; t >= 0; t--) G[t] = acc = R[t] + gamma * acc;
+    const seen = new Set<number>();
+    for (let t = 0; t < S.length; t++) {
+      const key = S[t] * mdp.actions.length + A[t];
+      if (seen.has(key)) continue;
+      seen.add(key);
+      N[S[t]][A[t]] += 1;
+      Q[S[t]][A[t]] += (G[t] - Q[S[t]][A[t]]) / N[S[t]][A[t]];
+    }
+    for (let t = 0; t < S.length; t++) {
+      const av = avail[S[t]];
+      policy[S[t]] = av[argmaxRandom(av.map((a) => Q[S[t]][a]), rng)];
+    }
+  }
+  return { state: st, truncated, episodes };
 }

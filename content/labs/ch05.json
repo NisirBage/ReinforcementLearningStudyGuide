@@ -4,7 +4,7 @@
     "slug": "mc",
     "unit": "ch05",
     "title": "Monte Carlo laboratory",
-    "summary": "Generate episodes, compute their returns backwards ($G_t = R_{t+1} + \\gamma G_{t+1}$), and watch first-visit or every-visit Monte Carlo update the estimates, with sample averages or a constant step size. Then let Monte Carlo ES find an optimal policy from exploring starts.",
+    "summary": "Generate episodes, compute their returns backwards ($G_t = R_{t+1} + \\gamma G_{t+1}$), and watch first-visit or every-visit Monte Carlo update the estimates, with sample averages or a constant step size. Then let Monte Carlo ES solve blackjack from exploring starts (Example 5.3), checked against the exact optimum.",
     "sections": [
       "5.1",
       "5.3"
@@ -16,14 +16,17 @@
     "implementations": [
       "mc.mcUpdate",
       "mc.esEpisode",
-      "envs.randomWalk"
+      "mc.runEs",
+      "envs.randomWalk",
+      "envs.blackjack"
     ],
     "guide": [
       "Generate one random-walk episode and read its returns: with $\\gamma = 1$ every return is 1 if it ended on the right and 0 otherwise.",
       "Compare first-visit and every-visit: in an episode that passes C three times, every-visit makes three updates to $V(C)$ and first-visit makes one.",
       "Run 1000 episodes and watch the RMS error against the true values $1/6, \\dots, 5/6$ fall.",
       "Switch to a constant step size: the estimates keep fluctuating instead of settling.",
-      "Run Monte Carlo ES on the 4×4 gridworld. The draft assumes every episode ends, but a greedy policy can walk into a wall for ever, so the lab cuts episodes at 50 steps and still averages their (very negative) returns. That departs from the draft, and it is why the method still finds an optimal policy here."
+      "Run Monte Carlo ES on blackjack (Example 5.3): start from \"stick only on 20 or 21\" and add 500,000 episodes. The learned policy agrees with the exact optimum (value iteration on the same model, which matches the draft's Figure 5.5) in almost every state. The few that differ are close decisions, where the two actions' values are within about 0.1 and each Q still carries returns from earlier, worse policies.",
+      "Switch the problem to the 4×4 gridworld to see why the draft requires episodes that end: a greedy policy can loop for ever, cut-off episodes are discarded because they are not samples of the return, and most episodes are lost."
     ],
     "sources": [
       {
@@ -55,11 +58,15 @@
     ],
     "verification": {
       "method": "computed",
-      "on": "2026-11-05",
+      "on": "2026-11-07",
       "check": "lab.mc.random-walk-converges"
     },
     "checks": [
-      "lab.mc.es-gridworld"
+      "lab.mc.es-blackjack",
+      "lab.mc.es-needs-termination",
+      "bj.figure-5-5",
+      "bj.example-5-4",
+      "bj.dynamics"
     ]
   }
 ]

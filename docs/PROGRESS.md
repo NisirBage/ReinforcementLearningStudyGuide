@@ -550,3 +550,59 @@ The test mark made during the review was removed afterwards.
 
 #### Next: Milestone 4B
 Verification: the windy-gridworld investigation, blackjack (Examples 5.1, 5.3 and 5.4) with Monte Carlo ES moved to it, the gridworld ES variant discarding cut-off episodes, and tests of the random-number generator.
+
+### Milestone 4B: Verification of the outstanding issues (done, 2026-11-07)
+
+**A. Windy gridworld (Example 6.5): investigated and resolved as far as the source allows.**
+- **The draft's "about 17 steps" is exact.** The ε-greedy (ε = 0.1) policy around the optimal one takes **17.05** steps on average, by exact policy evaluation (`lab.td.windy-17-steps`). The best ε-greedy policy of all takes 17.048.
+- **Our implementation is not the cause.** An independent Sarsa written from (6.5) and Figure 6.9, using a different random-number generator (xorshift) and either tie rule (random or first), gives the same results as the library over 100 seeds:
+
+  | Implementation | Episodes in 8000 steps | Steps per episode near 8000 |
+  |---|---|---|
+  | Library | 158 | 26.3 |
+  | Independent, random ties | 162 | 25.6 |
+  | Independent, first-index ties | 159 | 26.1 |
+
+- **What does not reproduce** is the draft's description of its α = 0.5 run. By 8000 steps the greedy policy "was long since optimal", it says, yet only 17–22% of seeded runs here have an optimal greedy path then. Episodes stay near 19 steps even after 200,000 steps, because the large step size keeps the greedy policy moving.
+- **With α = 0.1, Sarsa settles at 17.06 steps** (29 of 30 seeds optimal), and with α = 0.05 at 17.07 (30 of 30): the exact value. A three-seed version is a check (`lab.td.windy-sarsa-settles`).
+- The TD lab now carries a new flag type, `replication-discrepancy` ("Measured differently from the draft"), with this explanation. Nothing was tuned to match.
+
+**B. Monte Carlo ES moved to blackjack; the cut-off is now honest.**
+- **Blackjack** (`lib/rl/envs/blackjack.ts`) is Example 5.1 as a finite MDP with exact dynamics. The draft's infinite deck makes every probability computable:
+  - hitting draws one card;
+  - sticking resolves against the dealer's exact final-sum distribution;
+  - a "deal" state holds the naturals and the automatic hits below 12.
+- **Three independent checks of the model:**
+  1. **Example 5.4:** exact policy evaluation gives **−0.27720** for dealer 2, sum 13, usable ace under "stick only on 20 or 21". The draft's estimate from 10⁸ episodes is −0.27726, within its sampling error.
+  2. **Figure 5.5:** value iteration gives exactly the draft's optimal policy, read from the page image, **including the "notch"** (stick from 19 against an ace with a usable ace) that the draft says Thorp's strategy lacks.
+  3. **The card game played directly:** 200,000 simulated games with random cards agree with the exact values, from the deal and from Example 5.4's state, within 4 standard errors.
+- **Monte Carlo ES on blackjack** (Example 5.3) starts from "stick only on 20 or 21", as the draft does. It reaches 195–197 of 200 optimal states after 500,000 episodes (199 after 2,000,000), and every state whose two action values differ by more than 0.1 is right. Closer decisions can still be wrong at that point, because each Q(s, a) averages returns earned under earlier, worse policies, and with about 2000 returns per pair the noise in a difference is about 0.03–0.04. No episode is ever cut off. In the browser, 500,000 episodes give 199 of 200.
+- **Cut-off episodes are now discarded.** Milestone 3E averaged the partial returns of gridworld episodes cut at 50 steps, which biased Q downwards; that departure is removed. A cut-off episode is not a sample of the return, so it updates neither Q nor π.
+- **On the gridworld, ES now stalls honestly:** about 93% of episodes loop and are discarded, and the policy stops improving (`lab.mc.es-needs-termination`). This is the draft's own point (pp. 122, 157) that Monte Carlo methods need episodes that end. The lab offers it as a labelled demonstration beside blackjack.
+- **`runEs`** runs ES in place for large experiments. It makes exactly the same updates and random draws as repeated `esEpisode` calls (tested on blackjack and the gridworld).
+- The Monte Carlo lab's ES panel now shows blackjack's learned policy as two tables, with every state that differs from the exact optimum marked, and the last episode's updates written out.
+
+**C. 2018 cross-references:** unchanged; still flagged as unverified.
+
+**Random-number generator (mulberry32), tested:**
+- reproducible per seed;
+- values in [0, 1);
+- mean and variance of a uniform distribution;
+- a chi-squared test over 20 bins (200,000 draws);
+- no lag-1 correlation;
+- the first values of seeds 1, 2, 3, … are uncorrelated and uniform, which matters because the labs seed their runs that way.
+
+**Content:**
+- the Monte Carlo and TD lab guides and checks updated;
+- the MC ES explainer now uses blackjack;
+- the coverage declarations count Example 5.3 as reproduced (Chapter 5: 1 of 5 examples);
+- 6 new checks (70 in all) and a new flag type.
+
+**Tests:** **24 files, 1173 tests, all passed.** (The existing `checks` test runs each of the 6 new checks as a test of its own.)
+- New: `verify4b` (16): the generator, the blackjack model against simulated games, ES with discarding, a looping environment (an episode that never ends makes no update) and a 400-step episode that does end (used in full), the windy findings, and the lab.
+- One changed expectation: the Monte Carlo ES interface test now selects the gridworld before checking the cut-off count (blackjack is the default), and expects "cut off at 50 steps and discarded".
+
+`npm run check` passes.
+
+#### Next: Milestone 4C
+Chapter 2 completed to the coverage criteria: lessons for every written section, equation (2.11), Figure 2.5, all six exercises (2.4 as a guided lab task), and questions for every section.

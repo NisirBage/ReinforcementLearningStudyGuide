@@ -108,6 +108,7 @@ export const FLAG_TYPES = [
   "extraction-uncertain", // the text layer was garbled; the page image was used, worth a second look
   "empty-in-draft", // the draft has a heading but no content
   "notation-unverified", // 2018-edition notation given from general knowledge; no copy of that edition was checked
+  "replication-discrepancy", // the app reproduces the setup as stated, but measures something different from what the source reports
 ] as const;
 export type FlagType = (typeof FLAG_TYPES)[number];
 export interface Flag {

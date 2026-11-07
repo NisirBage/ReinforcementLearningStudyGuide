@@ -70,13 +70,14 @@ describe("Monte Carlo laboratory", () => {
     expect(rms).toBeLessThan(0.05);
   });
 
-  test("Monte Carlo ES counts its episodes and those cut off", async () => {
+  test("Monte Carlo ES on the gridworld counts its episodes and those cut off (and, since 4B, discards them)", async () => {
     const user = userEvent.setup();
     renderApp("/lab/mc");
     await settled();
     const es = screen.getByRole("heading", { name: /Monte Carlo ES/ }).closest("section")!;
+    await user.selectOptions(within(es).getByLabelText(/^Problem/), "grid"); // blackjack is the default since Milestone 4B
     await user.click(within(es).getByRole("button", { name: "+1000 episodes" }));
-    expect(within(es).getByText(/^1000 episodes · \d+ cut off at 50 steps/)).toBeInTheDocument();
+    expect(within(es).getByText(/^1000 episodes · \d+ cut off at 50 steps and discarded/)).toBeInTheDocument();
   });
 });
 

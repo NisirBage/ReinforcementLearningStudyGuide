@@ -482,3 +482,11 @@ pre.code { max-height: 30rem; overflow: auto; padding: 10px 12px; background: va
 .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0 24px; }
 .demo-body { min-width: 0; }
 .demo-body > .card, .demo-body > section { box-shadow: none; }
+
+/* Blackjack policy tables (Milestone 4B) */
+.bj-tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 12px; }
+.bj-policy { font-size: 0.8rem; }
+.bj-policy caption { text-align: left; font-weight: 600; padding-bottom: 4px; }
+.bj-policy td { text-align: center; padding: 2px 3px; }
+.bj-policy td.stick { background: color-mix(in srgb, var(--series-1) 22%, transparent); }
+.bj-policy td.off { outline: 2px solid var(--warn); outline-offset: -2px; font-weight: 700; }

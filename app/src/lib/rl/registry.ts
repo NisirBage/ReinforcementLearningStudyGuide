@@ -5,6 +5,7 @@ import * as banditLab from "./banditLab";
 import * as recycling from "./envs/recycling";
 import * as examples from "./envs/examples";
 import * as mc from "./mc";
+import * as blackjack from "./envs/blackjack";
 import * as td from "./td";
 import * as dp from "./dp";
 import * as mdp from "./mdp";
@@ -29,6 +30,8 @@ export const IMPLEMENTATIONS = {
   "dp.valueIteration": dp.valueIteration, // (4.10), Figure 4.5
   "mc.mcUpdate": mc.mcUpdate, // first-/every-visit and constant-α MC (Figure 5.1, 6.1)
   "mc.esEpisode": mc.esEpisode, // Monte Carlo ES (Figure 5.4)
+  "mc.runEs": mc.runEs, // many ES episodes in place, equal to repeated esEpisode
+  "envs.blackjack": blackjack.blackjack, // Example 5.1, exact infinite-deck model
   "td.td0Update": td.td0Update, // TD(0) (6.2), Figure 6.1
   "td.sarsaStep": td.sarsaStep, // Sarsa (6.5), Figure 6.9
   "td.qLearningStep": td.qLearningStep, // Q-learning (6.6), Figure 6.12

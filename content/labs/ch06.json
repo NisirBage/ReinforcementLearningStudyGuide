@@ -29,7 +29,7 @@
       "Average 100 runs (the Figure 6.7 preset): TD(0) reaches a lower RMS error than constant-α MC within 100 episodes. Both start at 0.236.",
       "On cliff walking, step Sarsa and Q-learning and compare their targets: Sarsa uses $Q(S_{t+1}, A_{t+1})$ for the action it will take, Q-learning uses $\\max_a Q(S_{t+1}, a)$.",
       "Train both for 500 episodes: Q-learning's greedy path runs along the cliff edge (13 steps), Sarsa's takes the safer route, and Sarsa earns more per episode while exploring (about −25 against −50 in Figure 6.13).",
-      "On the windy gridworld, Sarsa finishes about 160 episodes in its first 8000 steps (the draft's figure shows about 170). In this app's runs, episodes after 8000 steps average about 20 steps; the draft reports about 17. The minimum is 15."
+      "On the windy gridworld (Example 6.5), Sarsa with the draft's settings (ε = 0.1, α = 0.5) finishes about 160 episodes in its first 8000 steps (the draft's figure shows about 170), and its episodes then average about 26 steps, settling near 19. The draft reports about 17, which is exactly what ε-greedy exploration costs around the optimal policy (17.05 steps). Set α to 0.1 and run longer: the episodes settle at that 17. See the note on this lab."
     ],
     "sources": [
       {
@@ -87,13 +87,21 @@
     ],
     "verification": {
       "method": "computed",
-      "on": "2026-11-05",
+      "on": "2026-11-07",
       "check": "lab.td.fig6-7"
     },
     "checks": [
       "lab.td.random-walk-start",
       "lab.td.windy-fig6-11",
+      "lab.td.windy-17-steps",
+      "lab.td.windy-sarsa-settles",
       "lab.td.cliff-fig6-13"
+    ],
+    "flags": [
+      {
+        "type": "replication-discrepancy",
+        "note": "Example 6.5 (p. 157) says that by 8000 steps the greedy policy \"was long since optimal\" and that episodes averaged about 17 steps. With the stated ε = 0.1, α = 0.5 and Q = 0, only 17–22% of seeded runs here have an optimal greedy path at 8000 steps, and episodes average about 26 steps then and about 19 even after 200,000 steps. An independent implementation with a different random-number generator and either tie rule gives the same. The 17 itself is right: the ε-greedy policy around the optimal one takes 17.05 steps, and Sarsa reaches it with α = 0.1 (D-043)."
+      }
     ]
   }
 ]

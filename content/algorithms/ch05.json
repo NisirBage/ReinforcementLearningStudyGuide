@@ -152,8 +152,8 @@
         "eq.ch02.incremental-update"
       ],
       "example": {
-        "text": "On the 4×4 gridworld, after 20,000 episodes with random start pairs, every greedy action learned by Monte Carlo ES is one of the optimal actions (with episodes cut at 50 steps, as the lab explains).",
-        "check": "lab.mc.es-gridworld"
+        "text": "Blackjack (Example 5.3), starting from \"stick only on 20 or 21\" with Q = 0: after 500,000 episodes from random start pairs, the learned policy agrees with the exact optimum in at least 195 of the 200 states, including every state where the two actions' values differ by more than 0.1. Closer decisions can still come out wrong at that point, because each Q(s, a) averages returns earned under earlier, worse policies too. Every blackjack episode ends, as the method assumes.",
+        "check": "lab.mc.es-blackjack"
       },
       "demo": "mc-es",
       "lab": "mc",
@@ -163,7 +163,7 @@
       ],
       "limitations": [
         "Exploring starts are rarely possible with a real environment.",
-        "Assumes every episode ends; a deterministic policy that loops breaks it (the lab cuts such episodes).",
+        "Assumes every episode ends. On a gridworld a deterministic policy can loop for ever; cut-off episodes are not samples and must be discarded, and then the method can stall (the lab shows this).",
         "Convergence has not been formally proved (p. 122)."
       ],
       "comparisons": [
