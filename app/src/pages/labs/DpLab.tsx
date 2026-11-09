@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { greedyPolicy, policyIteration, valueIteration } from "../../lib/rl/dp";
 import type { FiniteMDP } from "../../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../../lib/rl/envs/gridworld4x4";
-import { gamblersProblem, windyGridworld, type GridMDP } from "../../lib/rl/envs/examples";
+import { gamblersProblem, gridworld5x5, windyGridworld, type GridMDP } from "../../lib/rl/envs/examples";
 import { recyclingRobot } from "../../lib/rl/envs/recycling";
 import { RECYCLING_DEFAULTS } from "../../domain/mdpModel";
 import { GridView } from "../../components/GridView";
@@ -12,7 +12,7 @@ import { LineChart } from "../../components/LineChart";
 import { NumberInput } from "../../components/NumberInput";
 import { Tex } from "../../components/math";
 
-export type Env = "gridworld" | "gambler" | "recycling" | "windy";
+export type Env = "gridworld" | "grid5" | "gambler" | "recycling" | "windy";
 const f = (x: number, d = 2) => (Number.isFinite(x) ? x.toFixed(d) : "–");
 
 export interface Model {
@@ -20,11 +20,16 @@ export interface Model {
   gamma: number;
   kind: "grid4" | "grid" | "gambler" | "table";
   grid?: GridMDP["grid"];
+  digits?: number; // decimals shown in grid cells
 }
 
 export function model(env: Env, ph: number): Model {
   if (env === "gridworld") return { mdp: gridworld4x4(), gamma: 1, kind: "grid4" };
   if (env === "gambler") return { mdp: gamblersProblem(ph), gamma: 1, kind: "gambler" };
+  if (env === "grid5") {
+    const g = gridworld5x5();
+    return { mdp: g, gamma: 0.9, kind: "grid", grid: g.grid, digits: 1 };
+  }
   if (env === "windy") {
     const w = windyGridworld();
     return { mdp: w, gamma: 1, kind: "grid", grid: w.grid };
@@ -43,7 +48,7 @@ function ValuesView({ m, v, ties, changed }: { m: Model; v: number[]; ties: numb
   }
   if (m.kind === "grid" && m.grid) {
     const g = m.grid;
-    return <GridView rows={g.rows} cols={g.cols} stateAt={(r, c) => r * g.cols + c} label="Values and greedy actions" values={v} arrows={ties} start={g.start} goals={g.goal} terminal={m.mdp.terminal} wind={g.wind} path={changed} digits={0} />;
+    return <GridView rows={g.rows} cols={g.cols} stateAt={(r, c) => r * g.cols + c} label="Values and greedy actions" values={v} arrows={ties} start={g.start} goals={g.goal} terminal={m.mdp.terminal} wind={g.wind} path={changed} digits={m.digits ?? 0} marks={g.marks} />;
   }
   if (m.kind === "gambler") {
     const stakes = v.map((_, s) => (m.mdp.terminal[s] ? 0 : gamblerStake(ties[s])));
@@ -182,6 +187,7 @@ export function DpLab() {
             Problem{" "}
             <select value={env} onChange={(e) => setEnv(e.target.value as Env)}>
               <option value="gridworld">4×4 gridworld (Example 4.1), γ = 1</option>
+              <option value="grid5">5×5 gridworld (Examples 3.8 and 3.12), γ = 0.9</option>
               <option value="gambler">Gambler's problem (Example 4.3), γ = 1</option>
               <option value="recycling">Recycling robot (Example 3.7, sample numbers), γ = 0.9</option>
               <option value="windy">Windy gridworld (Example 6.5), γ = 1</option>

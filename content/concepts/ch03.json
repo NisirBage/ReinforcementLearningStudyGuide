@@ -6,9 +6,32 @@
     "kind": "definition",
     "summary": "The return G_t is the quantity the agent seeks to maximise in expectation: in the simplest case the sum of the rewards after t; for continuing tasks the discounted sum Σ γ^k R_{t+k+1} with discount rate 0 ≤ γ ≤ 1 (γ < 1 when the sum is infinite).",
     "prereqs": [],
-    "related": ["ch03.state-value-function"],
-    "keywords": ["G_t", "discount rate", "gamma", "discounted return", "episodic", "continuing"],
-    "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.3", "printedPages": [59, 60], "pdfPages": [73, 74] }]
+    "related": [
+      "ch03.state-value-function"
+    ],
+    "keywords": [
+      "G_t",
+      "discount rate",
+      "gamma",
+      "discounted return",
+      "episodic",
+      "continuing"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.3",
+        "printedPages": [
+          59,
+          60
+        ],
+        "pdfPages": [
+          73,
+          74
+        ]
+      }
+    ]
   },
   {
     "id": "ch03.state-value-function",
@@ -16,10 +39,33 @@
     "title": "State-value function v_π",
     "kind": "definition",
     "summary": "v_π(s) is the return you can expect, on average, if you begin in state s and then act according to π. A terminal state is worth zero.",
-    "prereqs": ["ch03.return"],
-    "related": ["ch03.bellman-equation-v"],
-    "keywords": ["value function", "expected return", "v_pi", "policy"],
-    "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.7", "printedPages": [70, 70], "pdfPages": [84, 84] }]
+    "prereqs": [
+      "ch03.return"
+    ],
+    "related": [
+      "ch03.bellman-equation-v"
+    ],
+    "keywords": [
+      "value function",
+      "expected return",
+      "v_pi",
+      "policy"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          70,
+          70
+        ],
+        "pdfPages": [
+          84,
+          84
+        ]
+      }
+    ]
   },
   {
     "id": "ch03.bellman-equation-v",
@@ -27,10 +73,33 @@
     "title": "Bellman equation for v_π",
     "kind": "equation",
     "summary": "A consistency condition that links a state's value to its successors' values: v_π(s) equals the expected immediate reward plus the discounted value of the next state, averaged over actions, next states and rewards.",
-    "prereqs": ["ch03.state-value-function"],
-    "related": ["ch04.policy-evaluation"],
-    "keywords": ["Bellman expectation equation", "consistency condition", "backup diagram", "recursive relationship"],
-    "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.7", "printedPages": [71, 72], "pdfPages": [85, 86] }]
+    "prereqs": [
+      "ch03.state-value-function"
+    ],
+    "related": [
+      "ch04.policy-evaluation"
+    ],
+    "keywords": [
+      "Bellman expectation equation",
+      "consistency condition",
+      "backup diagram",
+      "recursive relationship"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          71,
+          72
+        ],
+        "pdfPages": [
+          85,
+          86
+        ]
+      }
+    ]
   },
   {
     "id": "ch03.finite-mdp",
@@ -62,6 +131,598 @@
         "pdfPages": [
           81,
           83
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.agent-environment-interface",
+    "unit": "ch03",
+    "title": "The agent–environment interface",
+    "kind": "definition",
+    "summary": "The agent (the learner and decision-maker) and the environment (everything outside it) interact at discrete time steps: at each step the agent observes a state $S_t$, picks an action $A_t \\in \\mathcal{A}(S_t)$, and one step later receives a reward $R_{t+1}$ and a new state $S_{t+1}$. The boundary is the limit of the agent's control, not of its knowledge: whatever it cannot change at will, rewards included, belongs to the environment.",
+    "prereqs": [],
+    "related": [
+      "ch03.policy",
+      "ch03.reward-hypothesis",
+      "ch02.associative-search"
+    ],
+    "keywords": [
+      "agent",
+      "environment",
+      "interface",
+      "state",
+      "action",
+      "reward",
+      "boundary",
+      "time step"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.1",
+        "printedPages": [
+          53,
+          56
+        ],
+        "pdfPages": [
+          67,
+          70
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.policy",
+    "unit": "ch03",
+    "title": "Policy",
+    "kind": "definition",
+    "summary": "A policy maps each state to probabilities of selecting each available action: $\\pi(a|s)$ is the probability that $A_t = a$ when $S_t = s$. Reinforcement learning methods say how the agent changes its policy with experience.",
+    "prereqs": [
+      "ch03.agent-environment-interface"
+    ],
+    "related": [
+      "ch03.state-value-function"
+    ],
+    "keywords": [
+      "policy",
+      "π(a|s)",
+      "stochastic policy",
+      "mapping"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.1",
+        "printedPages": [
+          54,
+          54
+        ],
+        "pdfPages": [
+          68,
+          68
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          70,
+          70
+        ],
+        "pdfPages": [
+          84,
+          84
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.reward-hypothesis",
+    "unit": "ch03",
+    "title": "The reward hypothesis",
+    "kind": "idea",
+    "summary": "Every goal or purpose can be thought of as maximising the expected cumulative sum of a scalar reward signal. The reward says *what* the agent should achieve, never *how*: rewarding subgoals (taking pieces in chess) invites the agent to achieve them at the expense of the real goal.",
+    "prereqs": [
+      "ch03.agent-environment-interface"
+    ],
+    "related": [
+      "ch03.return"
+    ],
+    "keywords": [
+      "reward hypothesis",
+      "goal",
+      "reward design",
+      "subgoals",
+      "cumulative reward"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.2",
+        "printedPages": [
+          57,
+          59
+        ],
+        "pdfPages": [
+          71,
+          73
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.episodic-continuing",
+    "unit": "ch03",
+    "title": "Episodic and continuing tasks",
+    "kind": "definition",
+    "summary": "In an episodic task the interaction breaks into episodes, each ending in a terminal state followed by a reset; the return can be a finite sum (3.1). In a continuing task the interaction goes on without limit, so the return is discounted (3.2) to keep it finite. $\\mathcal{S}$ is the set of nonterminal states and $\\mathcal{S}^+$ adds the terminal state.",
+    "prereqs": [
+      "ch03.return"
+    ],
+    "related": [
+      "ch03.unified-return-notation"
+    ],
+    "keywords": [
+      "episodic",
+      "continuing",
+      "episode",
+      "terminal state",
+      "trial",
+      "S+"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.3",
+        "printedPages": [
+          59,
+          60
+        ],
+        "pdfPages": [
+          73,
+          74
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.unified-return-notation",
+    "unit": "ch03",
+    "title": "One return for episodic and continuing tasks",
+    "kind": "notation",
+    "summary": "Treat the end of an episode as entry into an absorbing state that only leads to itself with reward 0. Then the finite sum (3.1) and the infinite discounted sum (3.2) agree, and one formula (3.3) covers both cases, allowing $T = \\infty$ or $\\gamma = 1$ but not both. Episode indices are dropped from $S_{t,i}$ when they are not needed.",
+    "prereqs": [
+      "ch03.episodic-continuing"
+    ],
+    "related": [
+      "ch03.return"
+    ],
+    "keywords": [
+      "absorbing state",
+      "unified notation",
+      "T = ∞",
+      "γ = 1",
+      "episode index"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.4",
+        "printedPages": [
+          61,
+          62
+        ],
+        "pdfPages": [
+          75,
+          76
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.markov-property",
+    "unit": "ch03",
+    "title": "The Markov property",
+    "kind": "definition",
+    "summary": "A state signal is Markov if it keeps everything about the past that matters for the future: the probability of the next state and reward given the current state and action (3.5) equals their probability given the whole history (3.4). A checkers position is Markov; a single snapshot of a cannonball's position, without its velocity, is not. Real state signals are usually approximations to Markov states.",
+    "prereqs": [
+      "ch03.agent-environment-interface"
+    ],
+    "related": [
+      "ch03.finite-mdp"
+    ],
+    "keywords": [
+      "Markov property",
+      "Markov state",
+      "history",
+      "independence of path",
+      "hidden state"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.5",
+        "printedPages": [
+          62,
+          66
+        ],
+        "pdfPages": [
+          76,
+          80
+        ]
+      }
+    ],
+    "optional": true
+  },
+  {
+    "id": "ch03.dynamics-derived-quantities",
+    "unit": "ch03",
+    "title": "Quantities derived from the dynamics",
+    "kind": "equation",
+    "summary": "From $p(s', r | s, a)$ everything else about a finite MDP follows: the probabilities of each next state, $p(s'|s, a)$ (3.8); the reward to expect from a state–action pair, $r(s, a)$ (3.7); and the reward to expect from a particular transition, $r(s, a, s')$ (3.9). The first edition used only the last two, written $\\mathcal{P}^a_{ss'}$ and $\\mathcal{R}^a_{ss'}$.",
+    "prereqs": [
+      "ch03.finite-mdp"
+    ],
+    "related": [
+      "ch03.transition-graph"
+    ],
+    "keywords": [
+      "r(s,a)",
+      "p(s'|s,a)",
+      "r(s,a,s')",
+      "expected reward",
+      "transition probability",
+      "first edition notation"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          67,
+          67
+        ],
+        "pdfPages": [
+          81,
+          81
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.transition-graph",
+    "unit": "ch03",
+    "title": "Transition graph",
+    "kind": "idea",
+    "summary": "A picture of a finite MDP's dynamics: a large node per state, a small solid node per state–action pair, and an arrow from each action node to each possible next state, carrying two labels: how likely that transition is, $p(s'|s, a)$, and the reward it is expected to bring, $r(s, a, s')$. The probabilities on the arrows leaving an action node sum to 1 (Figure 3.3).",
+    "prereqs": [
+      "ch03.finite-mdp"
+    ],
+    "related": [
+      "ch03.backup-diagram"
+    ],
+    "keywords": [
+      "transition graph",
+      "state node",
+      "action node",
+      "Figure 3.3"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          68,
+          69
+        ],
+        "pdfPages": [
+          82,
+          83
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.action-value-function",
+    "unit": "ch03",
+    "title": "Action-value function q_π",
+    "kind": "definition",
+    "summary": "$q_\\pi(s, a)$ is the expected return from taking action $a$ in state $s$ and following $\\pi$ afterwards (3.11). It relates to the state values by $v_\\pi(s) = \\sum_a \\pi(a|s) q_\\pi(s, a)$, and both can be estimated by averaging sample returns (Monte Carlo methods, Chapter 5).",
+    "prereqs": [
+      "ch03.state-value-function",
+      "ch03.policy"
+    ],
+    "related": [
+      "ch03.optimal-value-functions"
+    ],
+    "keywords": [
+      "action value",
+      "q_π",
+      "Q-function",
+      "state-action pair"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          70,
+          71
+        ],
+        "pdfPages": [
+          84,
+          85
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.backup-diagram",
+    "unit": "ch03",
+    "title": "Backup diagram",
+    "kind": "notation",
+    "summary": "A diagram of what a backup uses: open circles are states, solid circles are state–action pairs, and time runs downward from the root whose value is updated (Figure 3.4). Unlike a transition graph, its nodes need not be distinct states. In the optimal versions (Figure 3.7) an arc at the agent's choice marks a maximum instead of an average.",
+    "prereqs": [
+      "ch03.bellman-equation-v"
+    ],
+    "related": [
+      "ch03.transition-graph",
+      "ch03.bellman-optimality-equation"
+    ],
+    "keywords": [
+      "backup diagram",
+      "backup",
+      "open circle",
+      "solid circle",
+      "Figure 3.4",
+      "Figure 3.7"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          71,
+          72
+        ],
+        "pdfPages": [
+          85,
+          86
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          76,
+          77
+        ],
+        "pdfPages": [
+          90,
+          91
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.optimal-value-functions",
+    "unit": "ch03",
+    "title": "Optimal value functions v_* and q_*",
+    "kind": "definition",
+    "summary": "Policies are partially ordered by their values: $\\pi \\ge \\pi'$ when $v_\\pi(s) \\ge v_{\\pi'}(s)$ in every state. At least one policy is at least as good as all others; every such optimal policy has the same state values $v_*(s) = \\max_\\pi v_\\pi(s)$ (3.13) and action values $q_*(s, a) = \\max_\\pi q_\\pi(s, a)$ (3.14), with $q_*$ given by $v_*$ through (3.15).",
+    "prereqs": [
+      "ch03.state-value-function",
+      "ch03.action-value-function"
+    ],
+    "related": [
+      "ch03.bellman-optimality-equation",
+      "ch03.optimal-policy-greedy"
+    ],
+    "keywords": [
+      "optimal policy",
+      "v_*",
+      "q_*",
+      "partial ordering",
+      "π_*"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          75,
+          75
+        ],
+        "pdfPages": [
+          89,
+          89
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.bellman-optimality-equation",
+    "unit": "ch03",
+    "title": "Bellman optimality equation",
+    "kind": "equation",
+    "summary": "A state's optimal value equals the expected return of its best action: $v_*(s) = \\max_a \\sum_{s', r} p(s', r|s, a)[r + \\gamma v_*(s')]$ (3.17), and similarly for $q_*$ with the maximum inside. For a finite MDP it is a system of nonlinear equations, one per state, with a unique solution.",
+    "prereqs": [
+      "ch03.optimal-value-functions",
+      "ch03.bellman-equation-v"
+    ],
+    "related": [
+      "ch03.optimal-policy-greedy",
+      "ch03.backup-diagram"
+    ],
+    "keywords": [
+      "Bellman optimality equation",
+      "v_*",
+      "q_*",
+      "max",
+      "nonlinear",
+      "fixed point"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          76,
+          78
+        ],
+        "pdfPages": [
+          90,
+          92
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.optimal-policy-greedy",
+    "unit": "ch03",
+    "title": "Optimal policies are greedy with respect to v_* and q_*",
+    "kind": "theorem",
+    "summary": "Any policy that puts probability only on actions attaining the maximum in the Bellman optimality equation is optimal. With $v_*$, a one-step look-ahead finds those actions (it needs the dynamics); with $q_*$, the agent simply picks an action maximising $q_*(s, a)$, without knowing anything about the dynamics.",
+    "prereqs": [
+      "ch03.bellman-optimality-equation"
+    ],
+    "related": [
+      "ch02.greedy-action-selection"
+    ],
+    "keywords": [
+      "greedy",
+      "optimal policy",
+      "one-step search",
+      "π_*",
+      "argmax"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          77,
+          78
+        ],
+        "pdfPages": [
+          91,
+          92
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.tabular-approximation",
+    "unit": "ch03",
+    "title": "Optimality and approximation",
+    "kind": "idea",
+    "summary": "Solving the Bellman optimality equation exactly needs accurate dynamics, enough computation and the Markov property, and the second alone rules it out for problems like backgammon. With few states, values can be kept in tables (tabular methods); otherwise they must be approximated by parameterised functions. Learning on-line lets the agent spend its effort on the states it actually meets.",
+    "prereqs": [
+      "ch03.bellman-optimality-equation"
+    ],
+    "related": [
+      "ch03.optimal-policy-greedy"
+    ],
+    "keywords": [
+      "tabular",
+      "approximation",
+      "computation",
+      "memory",
+      "TD-Gammon",
+      "on-line"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          78,
+          79
+        ],
+        "pdfPages": [
+          92,
+          93
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.9",
+        "printedPages": [
+          79,
+          80
+        ],
+        "pdfPages": [
+          93,
+          94
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch03.gridworld-5x5",
+    "unit": "ch03",
+    "title": "The 5 × 5 gridworld",
+    "kind": "example",
+    "summary": "A continuing task on a 5 × 5 grid (Example 3.8): moves are deterministic; bumping into the edge costs −1 and leaves the agent in place; every action in A gives +10 and jumps to A′, every action in B gives +5 and jumps to B′; all else gives 0. With $\\gamma = 0.9$, Figure 3.5b shows $v_\\pi$ for the random policy and Figure 3.8 shows $v_*$ and the optimal policies.",
+    "prereqs": [
+      "ch03.state-value-function"
+    ],
+    "related": [
+      "ch03.optimal-value-functions"
+    ],
+    "keywords": [
+      "gridworld",
+      "A",
+      "B",
+      "A′",
+      "B′",
+      "Figure 3.5",
+      "Figure 3.8",
+      "γ = 0.9"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          72,
+          73
+        ],
+        "pdfPages": [
+          86,
+          87
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          78,
+          79
+        ],
+        "pdfPages": [
+          92,
+          93
         ]
       }
     ]

@@ -256,7 +256,8 @@ describe("in the interface", () => {
     const row = (ch: string) => screen.getAllByRole("link").find((a) => a.querySelector(".num")?.textContent === ch)!;
     expect(row("10")).toHaveTextContent("Unwritten in draft");
     expect(row("2")).toHaveTextContent("Covered"); // completed in Milestone 4C
-    expect(row("3")).toHaveTextContent("Partial");
+    expect(row("3")).toHaveTextContent("Covered"); // completed in Milestone 4D
+    expect(row("4")).toHaveTextContent("Partial");
     expect(row("7")).toHaveTextContent("Not started");
   });
 });

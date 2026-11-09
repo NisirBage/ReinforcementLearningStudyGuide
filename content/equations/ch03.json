@@ -7,10 +7,22 @@
     "bookLabel": "(3.12)",
     "tex": "v_\\pi(s) = \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\Big[r + \\gamma v_\\pi(s')\\Big]",
     "symbols": [
-      { "tex": "\\pi(a|s)", "meaning": "chance that policy π selects action a when in state s" },
-      { "tex": "p(s',r|s,a)", "meaning": "probability of next state s′ and reward r after action a in state s" },
-      { "tex": "\\gamma", "meaning": "discount rate" },
-      { "tex": "v_\\pi(s')", "meaning": "value of the successor state under π" }
+      {
+        "tex": "\\pi(a|s)",
+        "meaning": "chance that policy π selects action a when in state s"
+      },
+      {
+        "tex": "p(s',r|s,a)",
+        "meaning": "probability of next state s′ and reward r after action a in state s"
+      },
+      {
+        "tex": "\\gamma",
+        "meaning": "discount rate"
+      },
+      {
+        "tex": "v_\\pi(s')",
+        "meaning": "value of the successor state under π"
+      }
     ],
     "intuition": "Look one step ahead: the value of s is the probability-weighted average, over every action, next state and reward, of the reward plus the discounted value of where you land.",
     "assumptions": [
@@ -18,11 +30,26 @@
       "The environment has the Markov property, so p(s′, r | s, a) describes the dynamics completely."
     ],
     "derivation": [
-      { "tex": "v_\\pi(s) = \\mathbb{E}_\\pi[G_t \\mid S_t = s]", "why": "Definition (3.10)." },
-      { "tex": "= \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} \\,\\Big|\\, S_t = s\\Big]", "why": "Write the return as the discounted sum of rewards." },
-      { "tex": "= \\mathbb{E}_\\pi\\Big[R_{t+1} + \\gamma \\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_t = s\\Big]", "why": "Separate the first reward and factor γ out of the rest." },
-      { "tex": "= \\sum_a \\pi(a|s) \\sum_{s'} \\sum_r p(s',r|s,a)\\Big[r + \\gamma \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_{t+1} = s'\\Big]\\Big]", "why": "Expand the expectation over the first action, next state and reward; by the Markov property the rest depends only on S_{t+1} = s′." },
-      { "tex": "= \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\Big[r + \\gamma v_\\pi(s')\\Big]", "why": "The inner expectation is v_π(s′); merge the two sums over s′ and r." }
+      {
+        "tex": "v_\\pi(s) = \\mathbb{E}_\\pi[G_t \\mid S_t = s]",
+        "why": "Definition (3.10)."
+      },
+      {
+        "tex": "= \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} \\,\\Big|\\, S_t = s\\Big]",
+        "why": "Write the return as the discounted sum of rewards."
+      },
+      {
+        "tex": "= \\mathbb{E}_\\pi\\Big[R_{t+1} + \\gamma \\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_t = s\\Big]",
+        "why": "Separate the first reward and factor γ out of the rest."
+      },
+      {
+        "tex": "= \\sum_a \\pi(a|s) \\sum_{s'} \\sum_r p(s',r|s,a)\\Big[r + \\gamma \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_{t+1} = s'\\Big]\\Big]",
+        "why": "Expand the expectation over the first action, next state and reward; by the Markov property the rest depends only on S_{t+1} = s′."
+      },
+      {
+        "tex": "= \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\Big[r + \\gamma v_\\pi(s')\\Big]",
+        "why": "The inner expectation is v_π(s′); merge the two sums over s′ and r."
+      }
     ],
     "example": "In Example 4.1 (γ = 1, reward −1 everywhere, four equally likely moves) state 1 (left: terminal, up: stays in 1, right: 2, down: 5) satisfies $v_\\pi(1) = -1 + \\tfrac14\\big(v_\\pi(T) + v_\\pi(1) + v_\\pi(2) + v_\\pi(5)\\big) = -1 + \\tfrac14(0 - 14 - 20 - 18) = -14$.",
     "significance": "Turned into an assignment it becomes the update of iterative policy evaluation (4.5).",
@@ -30,7 +57,775 @@
       "The terminal state has value 0; forgetting this breaks episodic examples.",
       "Every (s′, r) pair is weighted by π(a|s)·p(s′, r|s, a), not by p alone."
     ],
-    "sources": [{ "kind": "textbook", "chapter": "3", "section": "3.7", "printedPages": [71, 71], "pdfPages": [85, 85] }],
-    "verification": { "method": "page-image", "on": "2026-11-04", "note": "The worked example is checked by ch03.bellman-example-state-1." }
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          71,
+          71
+        ],
+        "pdfPages": [
+          85,
+          85
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04",
+      "note": "The worked example is checked by ch03.bellman-example-state-1."
+    }
+  },
+  {
+    "id": "eq.ch03.return-sum",
+    "unit": "ch03",
+    "concept": "ch03.return",
+    "name": "Return as a plain sum of rewards",
+    "bookLabel": "(3.1)",
+    "tex": "G_t = R_{t+1} + R_{t+2} + R_{t+3} + \\cdots + R_T",
+    "symbols": [
+      {
+        "tex": "G_t",
+        "meaning": "the return from time t"
+      },
+      {
+        "tex": "T",
+        "meaning": "the final time step of the episode"
+      }
+    ],
+    "intuition": "Add up every reward still to come in the episode. This only makes sense when the interaction ends.",
+    "assumptions": [
+      "The task is episodic: a final time step T exists."
+    ],
+    "example": "An episode with rewards $0, 0, 1$ after time 0 has $G_0 = 1$, $G_1 = 1$ and $G_2 = 1$.",
+    "pitfalls": [
+      "For a continuing task T would be ∞ and the sum could be infinite (a reward of +1 every step, for example)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.3",
+        "printedPages": [
+          59,
+          59
+        ],
+        "pdfPages": [
+          73,
+          73
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 59 (PDF p. 73), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.discounted-return",
+    "unit": "ch03",
+    "concept": "ch03.return",
+    "name": "Discounted return",
+    "bookLabel": "(3.2)",
+    "tex": "G_t = R_{t+1} + \\gamma R_{t+2} + \\gamma^2 R_{t+3} + \\cdots = \\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1}",
+    "symbols": [
+      {
+        "tex": "\\gamma",
+        "meaning": "the discount rate, 0 ≤ γ ≤ 1"
+      },
+      {
+        "tex": "\\gamma^k",
+        "meaning": "the weight on the reward k + 1 steps ahead"
+      }
+    ],
+    "intuition": "Future rewards count less the further away they are. With γ < 1 a bounded reward sequence has a finite sum; γ = 0 makes the agent myopic, and γ near 1 makes it farsighted.",
+    "assumptions": [
+      "γ < 1, or the episode terminates, so that the sum is defined."
+    ],
+    "example": "With $\\gamma = 0.9$ and rewards $1, 0, 2$: $G_t = 1 + 0.9 \\cdot 0 + 0.81 \\cdot 2 = 2.62$.",
+    "significance": "Almost every algorithm in the book estimates the expected value of this quantity.",
+    "pitfalls": [
+      "A reward k steps in the future is worth γ^{k−1} of an immediate one: R_{t+1} carries weight γ⁰ = 1.",
+      "Maximising only the next reward (γ = 0) can reduce the return when actions affect later rewards."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.3",
+        "printedPages": [
+          60,
+          60
+        ],
+        "pdfPages": [
+          74,
+          74
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 60 (PDF p. 74), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.unified-return",
+    "unit": "ch03",
+    "concept": "ch03.unified-return-notation",
+    "name": "Return for episodic and continuing tasks",
+    "bookLabel": "(3.3)",
+    "tex": "G_t = \\sum_{k=0}^{T-t-1} \\gamma^k R_{t+k+1}",
+    "symbols": [
+      {
+        "tex": "T",
+        "meaning": "the final time step, possibly ∞"
+      },
+      {
+        "tex": "\\gamma",
+        "meaning": "the discount rate, possibly 1"
+      }
+    ],
+    "intuition": "Thanks to the absorbing state with zero rewards, one formula covers both kinds of task: stop at T for an episode, or run to infinity for a continuing task.",
+    "assumptions": [
+      "T = ∞ or γ = 1 is allowed, but not both, so the sum stays finite."
+    ],
+    "pitfalls": [
+      "With T = ∞ and γ = 1 together the return may be undefined; continuing undiscounted tasks need a different formulation."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.4",
+        "printedPages": [
+          62,
+          62
+        ],
+        "pdfPages": [
+          76,
+          76
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 62 (PDF p. 76), checked on the page image. Checked numerically against (3.1) and (3.2) by ch03.absorbing-state-return."
+    },
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "Footnote 6, attached to this equation, says some ideas on continuing undiscounted tasks are discussed in Section 11.2. In this draft §11.2 is 'Eligibility Traces for Actor–Critic Methods'; the average-reward setting is treated in §11.3, on R-learning and the average-reward setting (checked in the text layer).",
+        "suggestion": "Read the cross-reference as Section 11.3."
+      }
+    ]
+  },
+  {
+    "id": "eq.ch03.general-dynamics",
+    "unit": "ch03",
+    "concept": "ch03.markov-property",
+    "name": "Dynamics conditioned on the whole history",
+    "bookLabel": "(3.4)",
+    "tex": "\\Pr\\{R_{t+1} = r, S_{t+1} = s' \\mid S_0, A_0, R_1, \\ldots, S_{t-1}, A_{t-1}, R_t, S_t, A_t\\}",
+    "symbols": [
+      {
+        "tex": "S_0, A_0, R_1, \\ldots",
+        "meaning": "everything that happened before the current step"
+      }
+    ],
+    "intuition": "In the most general (causal) case, what happens next can depend on the entire past.",
+    "assumptions": [
+      "Finitely many states and reward values, so probabilities rather than densities."
+    ],
+    "pitfalls": [
+      "This is not a quantity the agent can compute; it is the benchmark a Markov state must match."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.5",
+        "printedPages": [
+          64,
+          64
+        ],
+        "pdfPages": [
+          78,
+          78
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 64 (PDF p. 78), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.markov-dynamics",
+    "unit": "ch03",
+    "concept": "ch03.markov-property",
+    "name": "Dynamics of a Markov state",
+    "bookLabel": "(3.5)",
+    "tex": "p(s', r|s, a) = \\Pr\\{R_{t+1} = r, S_{t+1} = s' \\mid S_t, A_t\\}",
+    "symbols": [
+      {
+        "tex": "S_t, A_t",
+        "meaning": "the current state and action only"
+      }
+    ],
+    "intuition": "If the state is Markov, the current state and action already tell you everything the history could about the next state and reward.",
+    "assumptions": [
+      "The state signal has the Markov property: (3.5) equals (3.4) for every history."
+    ],
+    "pitfalls": [
+      "Markov does not mean deterministic: the next state can still be random.",
+      "Hidden information the agent never observed (the next card in a deck) does not stop a state from being Markov."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.5",
+        "printedPages": [
+          64,
+          64
+        ],
+        "pdfPages": [
+          78,
+          78
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 64 (PDF p. 78), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.mdp-dynamics",
+    "unit": "ch03",
+    "concept": "ch03.finite-mdp",
+    "name": "Dynamics of a finite MDP",
+    "bookLabel": "(3.6)",
+    "tex": "p(s', r|s, a) = \\Pr\\{S_{t+1} = s', R_{t+1} = r \\mid S_t = s, A_t = a\\}",
+    "symbols": [
+      {
+        "tex": "p(s', r|s, a)",
+        "meaning": "the probability of next state s′ and reward r after action a in state s"
+      }
+    ],
+    "intuition": "One table of probabilities, indexed by state, action, next state and reward, specifies the whole environment.",
+    "assumptions": [
+      "Finite state, action and reward sets.",
+      "The Markov property."
+    ],
+    "pitfalls": [
+      "For each (s, a) the probabilities over all (s′, r) pairs sum to 1."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          67,
+          67
+        ],
+        "pdfPages": [
+          81,
+          81
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 67 (PDF p. 81), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.expected-reward-sa",
+    "unit": "ch03",
+    "concept": "ch03.dynamics-derived-quantities",
+    "name": "Expected reward for a state–action pair",
+    "bookLabel": "(3.7)",
+    "tex": "r(s, a) = \\mathbb{E}[R_{t+1} \\mid S_t = s, A_t = a] = \\sum_{r \\in \\mathcal{R}} r \\sum_{s' \\in \\mathcal{S}} p(s', r|s, a)",
+    "symbols": [
+      {
+        "tex": "r(s, a)",
+        "meaning": "the reward expected on taking a in s"
+      }
+    ],
+    "intuition": "Average the reward over every outcome, whatever the next state.",
+    "assumptions": [
+      "The dynamics (3.6) are known."
+    ],
+    "example": "Recycling robot with $\\beta = 0.7$, $r_{\\text{search}} = 2$: $r(\\text{low}, \\text{search}) = 0.7 \\cdot 2 + 0.3 \\cdot (-3) = 0.5$.",
+    "pitfalls": [
+      "In the recycling robot, searching in low gives β r_search + (1 − β)(−3), not r_search: the rescue penalty counts."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          67,
+          67
+        ],
+        "pdfPages": [
+          81,
+          81
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 67 (PDF p. 81), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.transition-probs",
+    "unit": "ch03",
+    "concept": "ch03.dynamics-derived-quantities",
+    "name": "State-transition probabilities",
+    "bookLabel": "(3.8)",
+    "tex": "p(s'|s, a) = \\Pr\\{S_{t+1} = s' \\mid S_t = s, A_t = a\\} = \\sum_{r \\in \\mathcal{R}} p(s', r|s, a)",
+    "symbols": [
+      {
+        "tex": "p(s'|s, a)",
+        "meaning": "the probability of moving to s′, whatever the reward"
+      }
+    ],
+    "intuition": "Sum the joint dynamics over the rewards to get where you land.",
+    "assumptions": [
+      "The dynamics (3.6) are known."
+    ],
+    "pitfalls": [
+      "The three-argument p(s′|s, a) loses the distribution of rewards; it cannot replace (3.6)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          67,
+          67
+        ],
+        "pdfPages": [
+          81,
+          81
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 67 (PDF p. 81), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.expected-reward-sas",
+    "unit": "ch03",
+    "concept": "ch03.dynamics-derived-quantities",
+    "name": "Expected reward for a transition",
+    "bookLabel": "(3.9)",
+    "tex": "r(s, a, s') = \\mathbb{E}[R_{t+1} \\mid S_t = s, A_t = a, S_{t+1} = s'] = \\frac{\\sum_{r \\in \\mathcal{R}} r\\, p(s', r|s, a)}{p(s'|s, a)}",
+    "symbols": [
+      {
+        "tex": "r(s, a, s')",
+        "meaning": "the reward expected on a particular transition"
+      }
+    ],
+    "intuition": "Condition on the next state as well: of the outcomes that land in s′, what is the average reward?",
+    "assumptions": [
+      "p(s′|s, a) > 0, or the quotient is undefined."
+    ],
+    "example": "Searching in low and landing in high means the battery ran out: $r(\\text{low}, \\text{search}, \\text{high}) = -3$ (Table 3.1).",
+    "pitfalls": [
+      "Table 3.1 lists r(s, a, s′) even for zero-probability rows (e.g. waiting in high and landing in low); there the value is a convention, not a conditional expectation."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          67,
+          67
+        ],
+        "pdfPages": [
+          81,
+          81
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 67 (PDF p. 81), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.v-pi-def",
+    "unit": "ch03",
+    "concept": "ch03.state-value-function",
+    "name": "State-value function",
+    "bookLabel": "(3.10)",
+    "tex": "v_\\pi(s) = \\mathbb{E}_\\pi[G_t \\mid S_t = s] = \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} \\,\\Big|\\, S_t = s\\Big]",
+    "symbols": [
+      {
+        "tex": "\\mathbb{E}_\\pi",
+        "meaning": "expectation when the agent follows π"
+      },
+      {
+        "tex": "t",
+        "meaning": "any time step"
+      }
+    ],
+    "intuition": "The value of a state is the return you expect if you start there and follow π.",
+    "assumptions": [
+      "The expectation exists (γ < 1 or episodes end).",
+      "A terminal state has value 0."
+    ],
+    "pitfalls": [
+      "Values belong to a policy: the same state has different values under different policies."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          70,
+          70
+        ],
+        "pdfPages": [
+          84,
+          84
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 70 (PDF p. 84), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.q-pi-def",
+    "unit": "ch03",
+    "concept": "ch03.action-value-function",
+    "name": "Action-value function",
+    "bookLabel": "(3.11)",
+    "tex": "q_\\pi(s, a) = \\mathbb{E}_\\pi[G_t \\mid S_t = s, A_t = a] = \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} \\,\\Big|\\, S_t = s, A_t = a\\Big]",
+    "symbols": [
+      {
+        "tex": "q_\\pi(s, a)",
+        "meaning": "the expected return after taking a in s and following π afterwards"
+      }
+    ],
+    "intuition": "Like v_π, but the first action is fixed rather than chosen by π.",
+    "assumptions": [
+      "The first action a need not be one π would choose."
+    ],
+    "pitfalls": [
+      "v_π(s) = Σ_a π(a|s) q_π(s, a) (Exercise 3.12); q_π is not the same as the immediate reward."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          70,
+          70
+        ],
+        "pdfPages": [
+          84,
+          84
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 70 (PDF p. 84), checked on the page image. The relations to v_π are checked numerically by ch03.bellman-q-pi."
+    }
+  },
+  {
+    "id": "eq.ch03.v-star-def",
+    "unit": "ch03",
+    "concept": "ch03.optimal-value-functions",
+    "name": "Optimal state-value function",
+    "bookLabel": "(3.13)",
+    "tex": "v_*(s) = \\max_\\pi v_\\pi(s)",
+    "symbols": [
+      {
+        "tex": "v_*",
+        "meaning": "the optimal state-value function, shared by all optimal policies"
+      }
+    ],
+    "intuition": "The best value any policy can achieve from each state.",
+    "assumptions": [
+      "A finite MDP, in which an optimal policy (better than or equal to all others in every state) exists."
+    ],
+    "pitfalls": [
+      "The maximum is taken state by state, yet one policy attains it in every state at once."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          75,
+          75
+        ],
+        "pdfPages": [
+          89,
+          89
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 75 (PDF p. 89), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.q-star-def",
+    "unit": "ch03",
+    "concept": "ch03.optimal-value-functions",
+    "name": "Optimal action-value function",
+    "bookLabel": "(3.14)",
+    "tex": "q_*(s, a) = \\max_\\pi q_\\pi(s, a)",
+    "symbols": [
+      {
+        "tex": "q_*(s, a)",
+        "meaning": "the expected return for taking a in s and then behaving optimally"
+      }
+    ],
+    "intuition": "The best you can expect after committing to a first action.",
+    "assumptions": [
+      "A finite MDP."
+    ],
+    "pitfalls": [
+      "q_*(s, a) can be below v_*(s): the first action may be a poor one."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          75,
+          75
+        ],
+        "pdfPages": [
+          89,
+          89
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 75 (PDF p. 89), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.q-star-from-v-star",
+    "unit": "ch03",
+    "concept": "ch03.optimal-value-functions",
+    "name": "q_* in terms of v_*",
+    "bookLabel": "(3.15)",
+    "tex": "q_*(s, a) = \\mathbb{E}[R_{t+1} + \\gamma v_*(S_{t+1}) \\mid S_t = s, A_t = a]",
+    "symbols": [
+      {
+        "tex": "v_*(S_{t+1})",
+        "meaning": "the optimal value of the next state"
+      }
+    ],
+    "intuition": "Take the action, collect the reward, and from the next state on act optimally.",
+    "assumptions": [
+      "The dynamics determine the expectation; no policy is needed for the first step."
+    ],
+    "example": "In the 5 × 5 gridworld, below B (where $v_* \\approx 17.80$), moving up into B gives $0 + 0.9 \\times 19.42 = 17.48$, while moving left gives $0.9 \\times 19.78 = 17.80$: left is optimal.",
+    "pitfalls": [
+      "Expanding the expectation with the four-argument dynamics gives the answer to Exercise 3.19."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          75,
+          75
+        ],
+        "pdfPages": [
+          89,
+          89
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 75 (PDF p. 89), checked on the page image. Checked numerically by ch03.optimal-relations."
+    }
+  },
+  {
+    "id": "eq.ch03.bellman-optimality-v-expectation",
+    "unit": "ch03",
+    "concept": "ch03.bellman-optimality-equation",
+    "name": "Bellman optimality equation for v_* (expectation form)",
+    "bookLabel": "(3.16)",
+    "tex": "v_*(s) = \\max_a \\mathbb{E}[R_{t+1} + \\gamma v_*(S_{t+1}) \\mid S_t = s, A_t = a]",
+    "symbols": [
+      {
+        "tex": "\\max_a",
+        "meaning": "over the actions available in s"
+      }
+    ],
+    "intuition": "A state's optimal value is the expected return of its best action.",
+    "assumptions": [
+      "v_* is the value function of an optimal policy, so it satisfies (3.12) for that policy."
+    ],
+    "derivation": [
+      {
+        "tex": "v_*(s) = \\max_{a \\in \\mathcal{A}(s)} q_{\\pi_*}(s, a)",
+        "why": "An optimal policy's value is that of its best action."
+      },
+      {
+        "tex": "= \\max_a \\mathbb{E}_{\\pi_*}\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} \\,\\Big|\\, S_t = s, A_t = a\\Big]",
+        "why": "Definition of the action value."
+      },
+      {
+        "tex": "= \\max_a \\mathbb{E}_{\\pi_*}\\Big[R_{t+1} + \\gamma \\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_t = s, A_t = a\\Big]",
+        "why": "Split off the first reward."
+      },
+      {
+        "tex": "= \\max_a \\mathbb{E}[R_{t+1} + \\gamma v_*(S_{t+1}) \\mid S_t = s, A_t = a]",
+        "why": "The rest is the return from S_{t+1} under an optimal policy, whose expectation is v_*(S_{t+1})."
+      }
+    ],
+    "pitfalls": [
+      "The maximum replaces the policy's average over actions; there is no π left in the equation."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          76,
+          76
+        ],
+        "pdfPages": [
+          90,
+          90
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 76 (PDF p. 90), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch03.bellman-optimality-v",
+    "unit": "ch03",
+    "concept": "ch03.bellman-optimality-equation",
+    "name": "Bellman optimality equation for v_*",
+    "bookLabel": "(3.17)",
+    "tex": "v_*(s) = \\max_{a \\in \\mathcal{A}(s)} \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma v_*(s')\\big]",
+    "symbols": [
+      {
+        "tex": "p(s', r|s, a)",
+        "meaning": "the dynamics (3.6)"
+      }
+    ],
+    "intuition": "One equation per state, each taking the best action's expected reward plus discounted next value. Together they pin down v_* uniquely.",
+    "assumptions": [
+      "A finite MDP with known dynamics.",
+      "γ < 1, or a setting in which the values are finite."
+    ],
+    "example": "Recycling robot (Example 3.11): $v_*(\\text{high}) = \\max\\{r_s + \\gamma[\\alpha v_*(\\text{high}) + (1-\\alpha) v_*(\\text{low})],\\ r_w + \\gamma v_*(\\text{high})\\}$.",
+    "pitfalls": [
+      "The system is nonlinear because of the max, so it is not solved like (3.12) by one linear solve.",
+      "Solving it exactly is rarely practical (§3.9)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          76,
+          76
+        ],
+        "pdfPages": [
+          90,
+          90
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 76 (PDF p. 90), checked on the page image. Its solution for the 5 × 5 gridworld reproduces Figure 3.8 (ch03.fig3-8-values)."
+    }
+  },
+  {
+    "id": "eq.ch03.bellman-optimality-q",
+    "unit": "ch03",
+    "concept": "ch03.bellman-optimality-equation",
+    "name": "Bellman optimality equation for q_*",
+    "tex": "q_*(s, a) = \\mathbb{E}\\Big[R_{t+1} + \\gamma \\max_{a'} q_*(S_{t+1}, a') \\,\\Big|\\, S_t = s, A_t = a\\Big] = \\sum_{s', r} p(s', r|s, a)\\Big[r + \\gamma \\max_{a'} q_*(s', a')\\Big]",
+    "symbols": [
+      {
+        "tex": "\\max_{a'}",
+        "meaning": "the best action in the next state"
+      }
+    ],
+    "intuition": "Same idea for action values: after the first action, the agent picks the best action every time.",
+    "assumptions": [
+      "A finite MDP."
+    ],
+    "pitfalls": [
+      "The max sits inside the sum, at the next state, not outside it as in (3.17)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          76,
+          76
+        ],
+        "pdfPages": [
+          90,
+          90
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed unnumbered on p. 76 (PDF p. 90), checked on the page image. Checked numerically by ch03.optimal-relations."
+    }
   }
 ]

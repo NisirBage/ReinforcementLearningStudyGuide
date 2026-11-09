@@ -242,3 +242,8 @@ The service worker activates a new version at once and deletes the old version's
 - **Figure 2.5's ranges are read from the page image**, and the check compares peak positions (within one doubling) and shape, not the printed heights, which can only be read approximately.
 - **A question needs a section to sit under.** Questions with no section appear under "End-of-chapter exercises", so a question on the chapter opening is placed in §2.1, whose lesson covers it.
 - **Caption questions are not exercises.** Figure 2.3's caption asks a question; the bank's version is labelled "derived from the textbook", not as a textbook exercise.
+
+## D-045: Descriptive examples and the 5 × 5 gridworld (Accepted, 2026-11-09)
+- **Descriptive examples are items with no facts.** Many of the draft's examples describe how a task can be framed (bioreactor, golf) and make no numerical claim. They are Example items with an empty fact list, verified against the text layer. Their card says there is nothing to reproduce instead of offering a check button, and the validator refuses a computed verification for them. An example with numbers keeps facts backed by checks.
+- **One transcription per figure.** Printed values live in the figure items (content/figures); checks read them from there, as Figure 4.2's already did.
+- **The 5 × 5 gridworld is a library environment**, not lab-only code, so the same definition serves the checks, the DP laboratory and later chapters.

@@ -36,6 +36,7 @@ export const IMPLEMENTATIONS = {
   "td.td0Update": td.td0Update, // TD(0) (6.2), Figure 6.1
   "td.sarsaStep": td.sarsaStep, // Sarsa (6.5), Figure 6.9
   "td.qLearningStep": td.qLearningStep, // Q-learning (6.6), Figure 6.12
+  "envs.gridworld5x5": examples.gridworld5x5, // Examples 3.8 and 3.12, Figures 3.5 and 3.8
   "envs.gamblersProblem": examples.gamblersProblem, // Example 4.3
   "envs.randomWalk": examples.randomWalk, // Example 6.2
   "envs.windyGridworld": examples.windyGridworld, // Example 6.5

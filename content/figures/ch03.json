@@ -43,5 +43,145 @@
       "on": "2026-11-04",
       "note": "Branching (three actions, two outcomes each) and labels as drawn on printed p. 72; the drawing is our own."
     }
+  },
+  {
+    "id": "fig.ch03.gridworld-random-values",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.gridworld-5x5",
+      "ch03.state-value-function"
+    ],
+    "title": "State values of the random policy on the 5 × 5 gridworld",
+    "bookLabel": "Figure 3.5",
+    "spec": {
+      "kind": "value-grids",
+      "rows": 5,
+      "cols": 5,
+      "terminal": [],
+      "grids": [
+        {
+          "label": "v_π, equiprobable random policy, γ = 0.9",
+          "values": [
+            3.3,
+            8.8,
+            4.4,
+            5.3,
+            1.5,
+            1.5,
+            3.0,
+            2.3,
+            1.9,
+            0.5,
+            0.1,
+            0.7,
+            0.7,
+            0.4,
+            -0.4,
+            -1.0,
+            -0.4,
+            -0.4,
+            -0.6,
+            -1.2,
+            -1.9,
+            -1.3,
+            -1.2,
+            -1.4,
+            -2.0
+          ]
+        }
+      ]
+    },
+    "caption": "Values as printed, to one decimal. A is the second cell of the top row and B the fourth; A′ is directly below A in the bottom row, and B′ two rows below B. No state is terminal.",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          73,
+          73
+        ],
+        "pdfPages": [
+          87,
+          87
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-09",
+      "check": "ch03.fig3-5-values",
+      "note": "Transcribed from the page image (PDF p. 87) and compared with the exact solution of (3.12)."
+    }
+  },
+  {
+    "id": "fig.ch03.gridworld-optimal-values",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.gridworld-5x5",
+      "ch03.optimal-value-functions"
+    ],
+    "title": "Optimal state values on the 5 × 5 gridworld",
+    "bookLabel": "Figure 3.8",
+    "spec": {
+      "kind": "value-grids",
+      "rows": 5,
+      "cols": 5,
+      "terminal": [],
+      "grids": [
+        {
+          "label": "v_*, γ = 0.9",
+          "values": [
+            22.0,
+            24.4,
+            22.0,
+            19.4,
+            17.5,
+            19.8,
+            22.0,
+            19.8,
+            17.8,
+            16.0,
+            17.8,
+            19.8,
+            17.8,
+            16.0,
+            14.4,
+            16.0,
+            17.8,
+            16.0,
+            14.4,
+            13.0,
+            14.4,
+            16.0,
+            14.4,
+            13.0,
+            11.7
+          ]
+        }
+      ]
+    },
+    "caption": "Values of v_* as printed, to one decimal (panel b). The optimal policies of panel c are checked separately: run value iteration on the 5×5 gridworld in the dynamic programming laboratory to see them drawn.",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          79,
+          79
+        ],
+        "pdfPages": [
+          93,
+          93
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-09",
+      "check": "ch03.fig3-8-values",
+      "note": "Transcribed from the page image (PDF p. 93) and compared with the solution of (3.17)."
+    }
   }
 ]

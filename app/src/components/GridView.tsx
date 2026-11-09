@@ -18,9 +18,10 @@ interface Props {
   wind?: readonly number[];
   path?: readonly number[]; // states on a path to highlight
   digits?: number;
+  marks?: Readonly<Record<number, string>>; // a letter per state (A, B, A′, B′ of Example 3.8)
 }
 
-export function GridView({ rows, cols, stateAt, label, values, arrows, agent, start, goals = [], terminal, cliff = [], wind, path = [], digits = 1 }: Props) {
+export function GridView({ rows, cols, stateAt, label, values, arrows, agent, start, goals = [], terminal, cliff = [], wind, path = [], digits = 1, marks = {} }: Props) {
   const onPath = new Set(path);
   return (
     <div className="gridview" role="table" aria-label={label} style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
@@ -34,10 +35,11 @@ export function GridView({ rows, cols, stateAt, label, values, arrows, agent, st
         const cls = ["gcell", isCliff ? "cliff" : "", isGoal ? "goal" : "", isTerm && !isGoal ? "term" : "", s === start ? "start" : "", s !== null && onPath.has(s) ? "path" : "", s !== null && s === agent ? "agent" : ""].filter(Boolean).join(" ");
         const v = s !== null && values ? values[s] : undefined;
         const arr = s !== null && arrows && !isTerm && !isCliff ? arrows[s] ?? [] : [];
-        const name = `row ${r + 1}, column ${c + 1}${isCliff ? ", cliff" : ""}${isGoal ? ", goal" : ""}${s === start ? ", start" : ""}${s !== null && s === agent ? ", agent here" : ""}${v !== undefined && Number.isFinite(v) ? `, value ${v.toFixed(digits)}` : ""}${arr.length ? `, best ${arr.map((a) => ["up", "down", "right", "left"][a]).join(" or ")}` : ""}`;
+        const mark = s !== null ? marks[s] : undefined;
+        const name = `row ${r + 1}, column ${c + 1}${mark ? `, ${mark}` : ""}${isCliff ? ", cliff" : ""}${isGoal ? ", goal" : ""}${s === start ? ", start" : ""}${s !== null && s === agent ? ", agent here" : ""}${v !== undefined && Number.isFinite(v) ? `, value ${v.toFixed(digits)}` : ""}${arr.length ? `, best ${arr.map((a) => ["up", "down", "right", "left"][a]).join(" or ")}` : ""}`;
         return (
           <span key={i} className={cls} role="cell" aria-label={name}>
-            {isCliff ? "" : isGoal ? "G" : s === start ? <b>S</b> : null}
+            {isCliff ? "" : isGoal ? "G" : s === start ? <b>S</b> : mark ? <b>{mark}</b> : null}
             {v !== undefined && !isCliff && Number.isFinite(v) && <span className="gv">{v.toFixed(digits)}</span>}
             {arr.length > 0 && <span className="ga">{arr.map((a) => ARROW[a]).join("")}</span>}
           </span>

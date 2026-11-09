@@ -3,8 +3,8 @@
 // An answer check returns the numbers a question's answer key must equal (within the part's tolerance).
 // Printed values below are transcribed from page images of the April 2015 draft and cite their page.
 import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages, recencyWeightedAverage, recencyWeights, ucbScores, argmaxAll } from "../lib/rl/bandit";
-import { iterativePolicyEvaluation, policyIteration, valueIteration } from "../lib/rl/dp";
-import { RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, randomWalk, windyGridworld } from "../lib/rl/envs/examples";
+import { greedyPolicy, iterativePolicyEvaluation, policyIteration, qFromV, valueIteration } from "../lib/rl/dp";
+import { GRID5, RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, gridworld5x5, randomWalk, windyGridworld } from "../lib/rl/envs/examples";
 import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
 import { HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
 import { greedyPath, newControl, qLearningStep, rmsError, runControl, runTd0, sarsaStep, td0Update } from "../lib/rl/td";
@@ -12,12 +12,21 @@ import { makeRng } from "../domain/random";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
 import { FIG_2_5, TESTBED_10, expectedMaxNormal, meanOver, parameterStudy, recordRun, runExperiment, softmax, type Method } from "../lib/rl/banditLab";
 import { recyclingRandomPolicy, recyclingRobot } from "../lib/rl/envs/recycling";
-import { actionValue, backupTerms, bellmanExpectationBackup, bellmanResidual, equiprobablePolicy, greedyActions, solveExact, type FiniteMDP } from "../lib/rl/mdp";
+import { actionValue, backupTerms, bellmanExpectationBackup, bellmanResidual, equiprobablePolicy, expectedReward, expectedRewardGivenNext, greedyActions, solveExact, transitionProb, type FiniteMDP } from "../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../lib/rl/envs/gridworld4x4";
 import { robbinsMonro } from "../lib/rl/sa";
 import figuresCh04 from "../../../content/figures/ch04.json";
+import figuresCh03 from "../../../content/figures/ch03.json";
 
 export type Check = { kind: "fact"; run: () => boolean } | { kind: "answer"; run: () => number[] };
+
+/** Figure 3.5b, row by row from the top (PDF p. 87): v_π of the equiprobable random policy, to one decimal (content/figures/ch03.json). */
+const figure3 = (id: string) => (figuresCh03 as { id: string; spec: { grids: { values: number[] }[] } }[]).find((f) => f.id === id)!.spec.grids[0].values;
+const FIG_3_5B = figure3("fig.ch03.gridworld-random-values");
+/** Figure 3.8b (PDF p. 93): v_*, to one decimal (content/figures/ch03.json). */
+const FIG_3_8B = figure3("fig.ch03.gridworld-optimal-values");
+/** Figure 3.8c (PDF p. 93, read at 300 dpi): the arrows in each cell, as N, S, E, W. */
+const FIG_3_8C = ["E", "NSEW", "W", "NSEW", "W", "NE", "N", "NW", "W", "W", "NE", "N", "NW", "NW", "NW", "NE", "N", "NW", "NW", "NW", "NE", "N", "NW", "NW", "NW"];
 
 
 /** Figure 4.2 (printed p. 93, PDF p. 107), as transcribed in content/figures/ch04.json, keyed "1", "2", "3", "10", "inf". */
@@ -270,6 +279,174 @@ export const CHECKS: Record<string, Check> = {
   },
 
   // ----- Chapter 3 -----
+  // Milestone 4D. Figures 3.5b, 3.8b and 3.8c were transcribed from the page images (PDF pp. 87 and 93).
+  "ch03.fig3-5-values": {
+    kind: "fact", // Figure 3.5b: v_π of the equiprobable random policy, γ = 0.9, solved exactly from (3.12); every printed cell within 0.05
+    run: () => {
+      const g = gridworld5x5();
+      const v = solveExact(g, equiprobablePolicy(g), 0.9)!;
+      return FIG_3_5B.every((x, i) => Math.abs(v[i] - x) <= 0.05 + 1e-9);
+    },
+  },
+  "ch03.fig3-5-a-and-b": {
+    kind: "fact", // p. 73: A is the best state but worth less than its +10; B is worth more than its +5
+    run: () => {
+      const g = gridworld5x5();
+      const v = solveExact(g, equiprobablePolicy(g), 0.9)!;
+      return Math.max(...v) === v[GRID5.A] && v[GRID5.A] < 10 && v[GRID5.B] > 5 && v[GRID5.B2] > 0 && v[GRID5.A2] < 0;
+    },
+  },
+  "ch03.fig3-8-values": {
+    kind: "fact", // Figure 3.8b: v_* by solving (3.17) (value iteration to 1e−12); every printed cell within 0.05
+    run: () => {
+      const v = valueIteration(gridworld5x5(), 0.9, { theta: 1e-12 }).v;
+      return FIG_3_8B.every((x, i) => Math.abs(v[i] - x) <= 0.05 + 1e-9);
+    },
+  },
+  "ch03.fig3-8-policy": {
+    kind: "fact", // Figure 3.8c: the set of optimal actions in every cell (all ties) equals the arrows printed
+    run: () => {
+      const g = gridworld5x5();
+      const ties = greedyPolicy(g, valueIteration(g, 0.9, { theta: 1e-12 }).v, 0.9, undefined, 1e-6).ties;
+      const name = (as: number[]) => as.map((a) => "NSEW"[a]).sort().join("");
+      return FIG_3_8C.every((cell, s) => name(ties[s]) === cell.split("").sort().join(""));
+    },
+  },
+  "ch03.recycling-optimality-forms": {
+    kind: "fact", // Example 3.11 (p. 78): v_* of the recycling robot satisfies the two explicit equations printed there, for random α, β, r_s > r_w, γ < 1
+    run: () => {
+      const rng = makeRng(31);
+      for (let trial = 0; trial < 25; trial++) {
+        const [alpha, beta, gamma] = [rng(), rng(), 0.99 * rng()];
+        const rw = 3 * rng() - 1;
+        const rs = rw + 2 * rng();
+        const v = valueIteration(recyclingRobot({ alpha, beta, rSearch: rs, rWait: rw }), gamma, { theta: 1e-13 }).v;
+        const [h, l] = v;
+        const vh = Math.max(rs + gamma * (alpha * h + (1 - alpha) * l), rw + gamma * h);
+        const vl = Math.max(beta * rs - 3 * (1 - beta) + gamma * ((1 - beta) * h + beta * l), rw + gamma * l, gamma * h);
+        if (!close(h, vh, 1e-8) || !close(l, vl, 1e-8)) return false;
+      }
+      return true;
+    },
+  },
+  "ch03.recycling-q-star-forms": {
+    kind: "fact", // Exercise 3.16 (our answer): q_* of the recycling robot written out with α, β, r_s, r_w agrees with q_* computed from v_*
+    run: () => {
+      const rng = makeRng(32);
+      for (let trial = 0; trial < 25; trial++) {
+        const [alpha, beta, gamma] = [rng(), rng(), 0.99 * rng()];
+        const rw = 3 * rng() - 1;
+        const rs = rw + 2 * rng();
+        const mdp = recyclingRobot({ alpha, beta, rSearch: rs, rWait: rw });
+        const q = qFromV(mdp, valueIteration(mdp, gamma, { theta: 1e-13 }).v, gamma);
+        const mh = Math.max(q[0][0], q[0][1]);
+        const ml = Math.max(q[1][0], q[1][1], q[1][2]);
+        const forms = [
+          [0, 0, alpha * (rs + gamma * mh) + (1 - alpha) * (rs + gamma * ml)], // q*(h, s)
+          [0, 1, rw + gamma * mh], // q*(h, w)
+          [1, 0, beta * (rs + gamma * ml) + (1 - beta) * (-3 + gamma * mh)], // q*(l, s)
+          [1, 1, rw + gamma * ml], // q*(l, w)
+          [1, 2, gamma * mh], // q*(l, re)
+        ];
+        if (!forms.every(([s, a, x]) => close(q[s][a], x, 1e-8))) return false;
+      }
+      return true;
+    },
+  },
+  "ch03.bellman-q-pi": {
+    kind: "fact", // Exercises 3.8, 3.12, 3.13: v_π = Σ_a π q_π, q_π = Σ p[r + γ v_π], and q_π satisfies its own Bellman equation
+    // (q_π(s,a) = Σ p[r + γ Σ_a' π(a'|s') q_π(s',a')]), on the 5×5 gridworld and on the recycling robot, for the random policy
+    run: () => {
+      const cases: [FiniteMDP, number[][]][] = [
+        [gridworld5x5(), equiprobablePolicy(gridworld5x5())],
+        [recyclingRobot({ alpha: 0.8, beta: 0.6, rSearch: 2, rWait: 1 }), recyclingRandomPolicy()],
+      ];
+      return cases.every(([m, pi]) => {
+        const v = solveExact(m, pi, 0.9)!;
+        const q = qFromV(m, v, 0.9);
+        const vFromQ = m.states.every((_, s) => close(v[s], pi[s].reduce((t, p, a) => t + (p ? p * q[s][a] : 0), 0), 1e-9)); // only available actions (π > 0) have a q
+        const qRec = m.states.every((_, s) =>
+          m.actions.every((_, a) => m.dynamics[s][a].length === 0 || close(q[s][a], m.dynamics[s][a].reduce((t, o) => t + o.prob * (o.reward + 0.9 * pi[o.next].reduce((u, p, b) => u + (p ? p * q[o.next][b] : 0), 0)), 0), 1e-9)),
+        );
+        return vFromQ && qRec;
+      });
+    },
+  },
+  "ch03.optimal-relations": {
+    kind: "fact", // Exercises 3.18–3.21 and (3.15): v_* = max_a q_*; q_* = Σ p[r + γ v_*]; q_* satisfies its optimality equation;
+    // the policy greedy in q_* is greedy in v_*; and v_* ≥ v_π for the random policy, on the 5×5 gridworld and the recycling robot
+    run: () =>
+      [gridworld5x5() as FiniteMDP, recyclingRobot({ alpha: 0.8, beta: 0.6, rSearch: 2, rWait: 1 })].every((m) => {
+        const vstar = valueIteration(m, 0.9, { theta: 1e-13 }).v;
+        const q = qFromV(m, vstar, 0.9);
+        const avail = (s: number) => m.actions.map((_, a) => a).filter((a) => m.dynamics[s][a].length > 0);
+        const maxQ = (s: number) => Math.max(...avail(s).map((a) => q[s][a]));
+        const vIsMaxQ = m.states.every((_, s) => close(vstar[s], maxQ(s), 1e-9));
+        const qOpt = m.states.every((_, s) => avail(s).every((a) => close(q[s][a], m.dynamics[s][a].reduce((t, o) => t + o.prob * (o.reward + 0.9 * maxQ(o.next)), 0), 1e-9)));
+        const greedyQ = m.states.map((_, s) => avail(s).filter((a) => q[s][a] >= maxQ(s) - 1e-9));
+        const sameGreedy = greedyPolicy(m, vstar, 0.9).ties.every((t, s) => t.join() === greedyQ[s].join());
+        const pi = m.states.map((_, s) => m.actions.map((_, a) => (avail(s).includes(a) ? 1 / avail(s).length : 0)));
+        const dominates = solveExact(m, pi, 0.9)!.every((x, s) => vstar[s] >= x - 1e-9);
+        return vIsMaxQ && qOpt && sameGreedy && dominates;
+      }),
+  },
+  "ch03.absorbing-state-return": {
+    kind: "fact", // §3.4: with an absorbing state, (3.1) over T = 3 rewards, (3.2) over the infinite sequence and (3.3) agree, for γ = 1 and γ = 0.9
+    run: () =>
+      [1, 0.9].every((g) => {
+        const finite = [1, 1, 1];
+        const infinite = [1, 1, 1, ...new Array(200).fill(0)];
+        const eq33 = finite.reduce((s, r, k) => s + g ** k * r, 0); // Σ_{k=0}^{T−t−1} γ^k R_{t+k+1}, t = 0, T = 3
+        return close(discountedReturn(finite, g), discountedReturn(infinite, g), 1e-12) && close(eq33, discountedReturn(infinite, g), 1e-12) && (g !== 1 || discountedReturn(finite, 1) === 3);
+      }),
+  },
+  "ch03-q011": {
+    kind: "answer", // Exercise 3.4, γ = 0.9: episodic with −1 as R_{t+5} → −γ⁴; continuing with a failure every 5 steps → −γ⁴/(1 − γ⁵)
+    run: () => {
+      const once = [0, 0, 0, 0, -1];
+      const forever = Array.from({ length: 2000 }, (_, k) => ((k + 1) % 5 === 0 ? -1 : 0));
+      return [discountedReturn(once, 0.9), discountedReturn(forever, 0.9)];
+    },
+  },
+  "ch03-q020": { kind: "answer", run: () => [valueIteration(gridworld5x5(), 0.9, { theta: 1e-13 }).v[GRID5.A]] }, // Exercise 3.17: v_*(A) = 10/(1 − γ⁵)
+  "ch03-q029": { kind: "answer", run: () => returnsOfEpisode([1, 1, 1, 0, 0, 0], 0.9).filter((_, i) => i === 0 || i === 1 || i === 3) }, // G_0, G_1, G_3
+  "ch03-q033": {
+    kind: "answer", // (3.7)–(3.9) on Table 3.1 with β = 0.7, r_search = 2 (α, r_wait do not matter here)
+    run: () => {
+      const m = recyclingRobot({ alpha: 0.5, beta: 0.7, rSearch: 2, rWait: 1 });
+      return [expectedReward(m, 1, 0), transitionProb(m, 1, 0, 0), expectedRewardGivenNext(m, 1, 0, 0)!];
+    },
+  },
+  "ch03-q035": {
+    kind: "answer", // Figure 3.5b, exactly: v_π(A) and v_π(B)
+    run: () => {
+      const g = gridworld5x5();
+      const v = solveExact(g, equiprobablePolicy(g), 0.9)!;
+      return [v[GRID5.A], v[GRID5.B]];
+    },
+  },
+  "ch03-q037": {
+    kind: "answer", // q_*(s, up) and q_*(s, left) in the cell just below B (row 2, column 4 counted from 1), by (3.15)
+    run: () => {
+      const g = gridworld5x5();
+      const q = qFromV(g, valueIteration(g, 0.9, { theta: 1e-13 }).v, 0.9);
+      return [q[8][0], q[8][3]];
+    },
+  },
+  "ch03-q038": {
+    kind: "answer", // Example 3.11 with sample numbers α = 0.8, β = 0.6, r_s = 2, r_w = 1, γ = 0.9: v_*(high), v_*(low)
+    run: () => valueIteration(recyclingRobot({ alpha: 0.8, beta: 0.6, rSearch: 2, rWait: 1 }), 0.9, { theta: 1e-13 }).v,
+  },
+  "ch03.pole-balancing-returns": {
+    kind: "fact", // Example 3.4: episodic, +1 per step without failure → the return is the number of steps before failure;
+    // continuing, −1 on failure → with the failure as reward R_{t+K+1} (K steps before it), the return is −γ^K
+    run: () => {
+      const episodic = [1, 1, 1, 1, 1, 1, 1, 0]; // seven steps balanced, failure reward 0 ends the episode
+      const k = 6;
+      const continuing = [...new Array(k).fill(0), -1, ...new Array(300).fill(0)];
+      return discountedReturn(episodic, 1) === 7 && close(discountedReturn(continuing, 0.9), -(0.9 ** k), 1e-12);
+    },
+  },
   "ch03.bellman-example-state-1": {
     kind: "fact", // the worked example in eq.ch03.bellman-v: successors of state 1 are T, 1, 2, 5 with v_π = 0, −14, −20, −18
     run: () => {

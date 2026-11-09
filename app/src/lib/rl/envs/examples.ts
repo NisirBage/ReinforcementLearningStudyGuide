@@ -5,7 +5,9 @@
 //   randomWalk        Example 6.2 (printed p. 149): states A–E, start C, +1 on the right; true values 1/6 … 5/6
 //   windyGridworld    Example 6.5 (printed pp. 155–157, Figure 6.10): 7 × 10, wind 0 0 0 1 1 1 2 2 1 0, reward −1
 //   cliffWalking      Example 6.6 (printed pp. 158–159, Figure 6.13): 4 × 12, −100 into the cliff and back to start
-// Grid layouts were read from the page images of Figures 6.10 and 6.13.
+//   gridworld5x5      Examples 3.8 and 3.12 (printed pp. 72–73, 78–79, Figures 3.5 and 3.8): continuing, A → A′ (+10),
+//                     B → B′ (+5), −1 for bumping into the edge
+// Grid layouts were read from the page images of Figures 3.5, 3.8, 6.10 and 6.13.
 import type { FiniteMDP } from "../mdp";
 
 /** Grid metadata for drawing: state s sits at cells[s] = [row, col] (null for an off-grid terminal). */
@@ -17,6 +19,7 @@ export interface GridInfo {
   goal: number[];
   cliff?: [number, number][];
   wind?: number[];
+  marks?: Record<number, string>; // letters drawn in cells (A, B, A′, B′ of Example 3.8)
 }
 export type GridMDP = FiniteMDP & { grid: GridInfo };
 
@@ -120,4 +123,34 @@ export function cliffWalking(): GridMDP {
     },
     { cliff },
   );
+}
+
+/**
+ * Examples 3.8 and 3.12: the 5 × 5 gridworld of Figure 3.5a (rows from the top, state = row · 5 + column). A is at
+ * row 0, column 1 and B at row 0, column 3; every action in A gives +10 and moves to A′ (row 4, column 1), every
+ * action in B gives +5 and moves to B′ (row 2, column 3). Elsewhere a move off the grid leaves the agent in place with
+ * reward −1, and any other move gives 0. The task is continuing: no state is terminal (the draft uses γ = 0.9).
+ */
+export const GRID5 = { A: 1, B: 3, A2: 21, B2: 13 } as const;
+export function gridworld5x5(): GridMDP {
+  const n = 5;
+  const id = (r: number, c: number) => r * n + c;
+  const states = Array.from({ length: n * n }, (_, s) => `(${Math.floor(s / n)},${s % n})`);
+  const dynamics = states.map((_, s) =>
+    GRID_MOVES.map((a) => {
+      if (s === GRID5.A) return [{ next: GRID5.A2, reward: 10, prob: 1 }];
+      if (s === GRID5.B) return [{ next: GRID5.B2, reward: 5, prob: 1 }];
+      const [dr, dc] = DELTA[a];
+      const r = Math.floor(s / n) + dr;
+      const c = (s % n) + dc;
+      return r < 0 || r >= n || c < 0 || c >= n ? [{ next: s, reward: -1, prob: 1 }] : [{ next: id(r, c), reward: 0, prob: 1 }];
+    }),
+  );
+  return {
+    states,
+    terminal: states.map(() => false),
+    actions: [...GRID_MOVES],
+    dynamics,
+    grid: { rows: n, cols: n, cells: states.map((_, s) => [Math.floor(s / n), s % n]), start: -1, goal: [], marks: { [GRID5.A]: "A", [GRID5.B]: "B", [GRID5.A2]: "A′", [GRID5.B2]: "B′" } },
+  };
 }

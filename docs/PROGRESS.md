@@ -655,5 +655,54 @@ Verification: the windy-gridworld investigation, blackjack (Examples 5.1, 5.3 an
 
 `npm run check` passes. One run made while the dev server and the parameter study were also running timed out while setting up six test files (the 10-second limit for loading content); the same suite passed before and after with the dev server stopped. The new checks add a few seconds of computation (Figure 2.5 at 300 runs, Exercise 2.4 at 100 runs of 10,000 steps), which adds to that load.
 
-#### Next: Milestone 4D
-Chapter 3 to the coverage criteria.
+### Milestone 4D: Chapter 3 complete (done, 2026-11-09)
+
+**Chapter 3 meets the coverage criteria: 10 of 10 sections covered, all 17 numbered equations, all 12 examples, and all 21 exercises accounted for** (20 in the question bank; Exercise 3.7 does not exist in the draft, which says so). The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read in the text layer; every equation, Table 3.1 and Figures 3.3, 3.5, 3.6 and 3.8 were checked on the page images (PDF pp. 73–93, 100). Findings:
+- **Footnote 6 (p. 62)** sends readers to Section 11.2 for continuing undiscounted tasks. In this draft §11.2 is "Eligibility Traces for Actor–Critic Methods"; the average-reward setting is §11.3. **Flagged** on (3.3).
+- **Golf (Example 3.9)** says that off the green "the value is greater", but the values there (−2, −3, …) are lower. **Flagged** on the example.
+- Nothing else needed flagging. The printed figures are consistent with the text: every value of Figures 3.5b and 3.8b, and every arrow of Figure 3.8c, is reproduced (below).
+
+**The 5 × 5 gridworld (Examples 3.8 and 3.12), new in the library** (`gridworld5x5`). Layout read from Figure 3.5a: A at row 1, column 2 jumps to A′ in the bottom row (+10); B at row 1, column 4 jumps to B′ two rows below (+5); the edge costs −1. With γ = 0.9:
+- **Figure 3.5b:** solving (3.12) exactly reproduces all 25 printed values to one decimal. One cell lies on a rounding boundary: 2.2501, printed 2.3, which is correct.
+- **Figure 3.8b:** solving (3.17) reproduces all 25 printed values of v*.
+- **Figure 3.8c:** the set of optimal actions in every cell equals the printed arrows, ties included (read at 300 dpi).
+- **Exercise 3.17:** v*(A) = 10/(1 − 0.9⁵) = 24.419.
+- The dynamic programming laboratory offers the grid as a new problem. Policy iteration's first evaluation is Figure 3.5b; value iteration ends at Figure 3.8, with A, B, A′ and B′ marked in the cells.
+
+**Other checks (17 new, 102 in all).** Among them:
+- Example 3.11's two Bellman optimality equations for the recycling robot hold for 25 random parameter settings.
+- Our answer to Exercise 3.16, the five q* equations of the recycling robot, matches q* computed from v*.
+- The relations behind Exercises 3.8, 3.12, 3.13 and 3.18–3.21 hold numerically on the gridworld and on the recycling robot.
+- With an absorbing state, (3.1), (3.2) and (3.3) give the same return.
+- Pole-balancing returns (Example 3.4).
+- The answer of every new numeric question.
+
+**Content:**
+- **15 concepts:** the agent–environment interface, policy, the reward hypothesis, episodic and continuing tasks, the unified return notation, the Markov property, the quantities derived from the dynamics, transition graphs, q_π, backup diagrams, v* and q*, the Bellman optimality equation, greedy optimal policies, optimality and approximation, and the 5 × 5 gridworld.
+- **17 equations:** (3.1)–(3.11) and (3.13)–(3.17), plus the unnumbered Bellman optimality equation for q* (p. 76).
+- **12 examples**, as items. Seven are descriptive (the bioreactor, pick-and-place, the recycling robot, the pole-balancing state, draw poker, and both golf examples). Their cards now say they make no numerical claim and offer no check to run. The validator refuses a computed verification for an example without facts (D-045).
+- **2 figures:** Figures 3.5b and 3.8b as value grids. The checks read the transcription from these items, so it exists in one place only.
+- **10 lessons:** §3.1–3.9, and a reading guide for §3.10.
+- **36 questions** (now 43 in Chapter 3):
+  - 17 exercises, reworded and labelled as the draft's: 3.1–3.6, 3.8, 3.11 and 3.13–3.21;
+  - 19 derived from the text, its examples, equations or figures;
+  - 7 numeric questions with answer checks;
+  - 15 self-marked written answers with rubrics.
+
+**Tests:** **26 files, 1490 tests, all passed.**
+- New: `ch03-4d` (8): the environment, the DP laboratory on the 5 × 5 grid, descriptive example cards and the new validation rule, the Chapter 3 lessons, coverage, figures and flags.
+- Updated, because they pinned the previous content (same precision, new values): the question and concept counts (75 → 111 questions, 65 → 86 without written answers, 35 → 50 concepts); Chapter 3's question lists in the practice filters; the textbook-exercise list; the dependents of the Bellman equation; Chapter 3's status in the chapter list (now Covered; Chapter 4 checked as Partial instead).
+- The mock-exam selection test asked for at most 100 questions, which now cut off the comparison (111 with written answers). It now asks for 1000, so it still compares the full 86 and 111.
+
+**Browser review:**
+- Every Chapter 3 section renders with no KaTeX errors and shows Covered.
+- §3.4 and §3.7 show their flags.
+- The golf card shows its flag and the descriptive note.
+- The DP laboratory draws Figure 3.8 at phone width.
+
+`npm run check` passes.
+
+#### Next: Milestone 4E
+Chapter 4 to the coverage criteria.

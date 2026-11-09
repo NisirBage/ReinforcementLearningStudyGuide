@@ -1,0 +1,513 @@
+{
+  "unit": "ch03",
+  "sections": [
+    {
+      "id": "ch03.s3-1",
+      "section": "3.1",
+      "title": "The agent–environment interface",
+      "concepts": [
+        "ch03.agent-environment-interface",
+        "ch03.policy"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Every problem in this book is cut the same way. On one side is the **agent**, the learner and decision-maker. On the other is the **environment**, which is everything else. They take turns: the agent acts, and the environment answers with a new situation and a number saying how well things are going. The chapter opening calls this framing the reinforcement learning problem itself: any method suited to solving it counts as a reinforcement learning method."
+        },
+        {
+          "layer": "formal",
+          "body": "At each time step $t = 0, 1, 2, \\ldots$ the agent receives a state $S_t \\in \\mathcal{S}$ and selects an action $A_t \\in \\mathcal{A}(S_t)$. One step later it receives a reward $R_{t+1} \\in \\mathcal{R} \\subset \\mathbb{R}$ and finds itself in state $S_{t+1}$ (Figure 3.1). The reward is indexed $t+1$ because it arrives together with the next state. The agent's **policy** $\\pi_t(a|s)$ is the probability of choosing $a$ when in $s$; learning methods say how experience changes it. The goal, roughly, is as much reward as possible over the long run."
+        },
+        {
+          "layer": "example",
+          "body": "Three framings from the draft show how flexible this is. A **bioreactor** controller chooses target temperatures and stirring rates (vectors), sees sensor readings and ingredient descriptions, and is rewarded by the production rate (one number). A **pick-and-place** arm chooses motor voltages directly and is rewarded per object placed, minus a little for jerky motion. A **recycling robot**'s learning agent only makes high-level decisions (search, wait, recharge) from its battery level, so the rest of the robot belongs to its environment.",
+          "refs": [
+            "ex.ch03.bioreactor",
+            "ex.ch03.pick-and-place",
+            "ex.ch03.recycling-robot"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Where is the boundary? The draft's rule: whatever the agent cannot change arbitrarily lies outside it, including the robot's motors and sensors, and the reward computation itself. The boundary marks the limit of the agent's *control*, not of its *knowledge*: an agent may know exactly how its environment works (like a Rubik's cube) and still face a hard problem. Compared with Chapter 2's bandits, actions now also affect the next state, which is what makes the problem sequential."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.1",
+          "printedPages": [
+            53,
+            56
+          ],
+          "pdfPages": [
+            67,
+            70
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-2",
+      "section": "3.2",
+      "title": "Goals and rewards",
+      "concepts": [
+        "ch03.reward-hypothesis"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "How do you tell an agent what you want? In reinforcement learning, only through a stream of numbers. The agent will maximise whatever those numbers reward, so they have to describe the outcome you want, not your ideas about how to reach it."
+        },
+        {
+          "layer": "formal",
+          "body": "The **reward hypothesis**: any goal can be expressed as maximising the expected cumulative total of one scalar signal, the reward. The reward is computed in the environment, outside the agent, so the agent cannot simply declare that its goal has been reached; it may still compute internal rewards of its own."
+        },
+        {
+          "layer": "example",
+          "body": "Typical choices from the draft: reward forward motion to teach a robot to walk; give −1 per time step to make a maze runner escape quickly; give +1 per can to a recycling robot (perhaps with penalties for bumping into things); give +1 for a win, −1 for a loss and 0 otherwise in chess. In chess, rewarding the capture of pieces would be a mistake: the agent might learn to capture pieces and still lose the game."
+        },
+        {
+          "layer": "connections",
+          "body": "Prior knowledge about *how* to achieve the goal belongs in the initial policy or value function, not in the reward. Exercise 3.5 shows a reward design that silently fails, because escaping the maze slowly earns as much as escaping quickly."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.2",
+          "printedPages": [
+            57,
+            59
+          ],
+          "pdfPages": [
+            71,
+            73
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-3",
+      "section": "3.3",
+      "title": "Returns",
+      "concepts": [
+        "ch03.return",
+        "ch03.episodic-continuing"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "'As much reward as possible over the long run' needs a precise meaning. The draft defines the **return** $G_t$, a function of the rewards after time $t$, and the agent tries to maximise its expected value. When the interaction comes in episodes, adding up the rewards is enough. When it never ends, that sum can be infinite, so later rewards are discounted."
+        },
+        {
+          "layer": "formal",
+          "body": "**Episodic tasks** split into episodes (plays of a game, trips through a maze), each ending in a terminal state and then a reset; there the return can be the plain sum (3.1) up to the final step $T$. **Continuing tasks** go on without limit; there the return is the discounted sum (3.2) with discount rate $0 \\le \\gamma \\le 1$. $\\mathcal{S}$ denotes the nonterminal states and $\\mathcal{S}^+$ all states including the terminal one.",
+          "refs": [
+            "eq.ch03.return-sum",
+            "eq.ch03.discounted-return"
+          ]
+        },
+        {
+          "layer": "math",
+          "body": "If every reward lies between $-R_{\\max}$ and $R_{\\max}$ and $\\gamma < 1$, then $|G_t| \\le \\sum_k \\gamma^k R_{\\max} = R_{\\max} / (1 - \\gamma)$: discounting keeps the return finite. A constant reward $c$ on every step gives exactly $c/(1-\\gamma)$, which is 10 for $c = 1$, $\\gamma = 0.9$. Splitting off the first reward shows a useful recursion: $G_t = R_{t+1} + \\gamma G_{t+1}$. With $\\gamma = 0$ the agent is **myopic** and maximises only $R_{t+1}$; as $\\gamma \\to 1$ it becomes more farsighted."
+        },
+        {
+          "layer": "example",
+          "body": "With $\\gamma = 0.9$ and rewards $1, 0, 2$ followed by zeros, $G_t = 1 + 0.9 \\times 0 + 0.81 \\times 2 = 2.62$. **Pole-balancing** (Example 3.4) can be framed either way. As an episodic task with +1 per balanced step, the return is the number of steps before failure. As a continuing task with −1 per failure, the return is $-\\gamma^K$ when the next failure comes $K$ steps later. Either way the return is largest when the pole stays up longest.",
+          "refs": [
+            "ex.ch03.pole-balancing"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.3",
+          "printedPages": [
+            59,
+            61
+          ],
+          "pdfPages": [
+            73,
+            75
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-4",
+      "section": "3.4",
+      "title": "Unified notation for episodic and continuing tasks",
+      "concepts": [
+        "ch03.unified-return-notation"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "The book moves between episodic and continuing tasks all the time and wants one formula for the return. The trick is to pretend an episode never really stops: it falls into a special state that loops on itself and pays nothing."
+        },
+        {
+          "layer": "formal",
+          "body": "Episodes are numbered, so strictly we should write $S_{t,i}$ for the state at time $t$ of episode $i$. Since we almost always talk about a single episode, the index $i$ is dropped. Termination is treated as entry into an **absorbing state** that transitions only to itself with reward 0. Then the return is (3.3), $G_t = \\sum_{k=0}^{T-t-1} \\gamma^k R_{t+k+1}$, allowing $T = \\infty$ or $\\gamma = 1$, but not both.",
+          "refs": [
+            "eq.ch03.unified-return"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "The draft's diagram: $S_0 \\to S_1 \\to S_2 \\to$ absorbing state, with rewards $+1, +1, +1$ and then $0, 0, \\ldots$ forever. With $\\gamma = 1$ the sum of the first $T = 3$ rewards and the sum of the whole infinite sequence are both 3. With $\\gamma = 0.9$ both give $G_0 = 1 + 0.9 + 0.81 = 2.71$, and $G_1 = 1.9$. Once the episode has ended the return is 0."
+        },
+        {
+          "layer": "connections",
+          "body": "Continuing tasks *without* discounting need a different formulation, which is why (3.3) excludes $T = \\infty$ together with $\\gamma = 1$. The draft's footnote points to Section 11.2 for that case, but in this draft it is §11.3, on R-learning and the average-reward setting (flagged on the equation)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.4",
+          "printedPages": [
+            61,
+            62
+          ],
+          "pdfPages": [
+            75,
+            76
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-5",
+      "section": "3.5",
+      "title": "The Markov property (optional section)",
+      "concepts": [
+        "ch03.markov-property"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "An agent decides from its state, so the state had better carry what matters. Ideally it summarises the past compactly while keeping everything relevant for the future, like a checkers position (how the pieces got there no longer matters) or a cannonball's current position *and* velocity. That ideal is the **Markov property**. An agent is not to blame for not knowing hidden things, such as the next card or the caller on the phone; it is to blame only for forgetting something it once knew."
+        },
+        {
+          "layer": "formal",
+          "body": "In general the next state and reward may depend on the whole history (3.4). The state signal is **Markov** if conditioning only on the current state and action gives the same probabilities, (3.5), for every history. Then the one-step dynamics predict the future as well as the full history would, and the best policy based on Markov states is as good as the best policy based on complete histories.",
+          "refs": [
+            "eq.ch03.general-dynamics",
+            "eq.ch03.markov-dynamics"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "In **pole-balancing**, position and velocity of the cart, the pole's angle and its rate of change would be Markov for an idealised system; real sensors and a bending pole break that, and a crude three-way split of each variable still let early learners succeed. In **draw poker**, the Markov state is not everyone's cards (no fair player can know them) but what you can infer from your cards, the bets, the draws and your history with the other players, which is too much to remember perfectly.",
+          "refs": [
+            "ex.ch03.pole-balancing-state",
+            "ex.ch03.draw-poker"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "All the theory in the book assumes Markov states. In practice states are approximations to Markov states, and the methods still work well on many tasks whose states are not strictly Markov. The draft does not cover how to construct or learn a state signal; it takes the state as given."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.5",
+          "printedPages": [
+            62,
+            66
+          ],
+          "pdfPages": [
+            76,
+            80
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-6",
+      "section": "3.6",
+      "title": "Markov decision processes",
+      "concepts": [
+        "ch03.finite-mdp",
+        "ch03.dynamics-derived-quantities",
+        "ch03.transition-graph"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "A reinforcement learning task with the Markov property is a **Markov decision process**. If its states and actions are finite, a single table of probabilities, saying for each state and action what comes next and what it pays, describes the environment completely."
+        },
+        {
+          "layer": "formal",
+          "body": "A **finite MDP** is given by its state and action sets and its one-step dynamics $p(s', r|s, a)$ (3.6). According to the draft, finite MDPs suffice for understanding about 90% of modern reinforcement learning, and most of the book's theory assumes one.",
+          "refs": [
+            "eq.ch03.mdp-dynamics"
+          ]
+        },
+        {
+          "layer": "math",
+          "body": "Everything else follows from (3.6) by summing: the expected reward of a state–action pair (3.7), the state-transition probabilities (3.8), and the expected reward of a particular transition (3.9), which divides by $p(s'|s, a)$. The first edition described dynamics only by the last two, written $\\mathcal{P}^a_{ss'}$ and $\\mathcal{R}^a_{ss'}$; that loses the reward distribution, and this draft prefers (3.6).",
+          "refs": [
+            "eq.ch03.expected-reward-sa",
+            "eq.ch03.transition-probs",
+            "eq.ch03.expected-reward-sas"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "The **recycling robot MDP** (Example 3.7, Table 3.1, Figure 3.3). With $\\beta = 0.7$ and $r_{\\text{search}} = 2$, searching in low gives $p(\\text{high}|\\text{low}, \\text{search}) = 0.3$ (the battery ran out), $r(\\text{low}, \\text{search}, \\text{high}) = -3$ (the rescue), and $r(\\text{low}, \\text{search}) = 0.7 \\times 2 + 0.3 \\times (-3) = 0.5$. The transition graph draws each state as a large node, each state–action pair as a small solid node, and each possible next state as an arrow labelled with its probability and expected reward; the probabilities leaving an action node sum to 1.",
+          "refs": [
+            "ex.ch03.recycling-robot-mdp"
+          ]
+        },
+        {
+          "layer": "computation",
+          "body": "Build or load the recycling robot in the [MDP explorer](#/lab/mdp): it checks that every action's probabilities sum to 1, derives $r(s, a)$ and $p(s'|s, a)$, and draws the transition graph."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.6",
+          "printedPages": [
+            67,
+            69
+          ],
+          "pdfPages": [
+            81,
+            83
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-7",
+      "section": "3.7",
+      "title": "Value functions",
+      "concepts": [
+        "ch03.state-value-function",
+        "ch03.action-value-function",
+        "ch03.bellman-equation-v",
+        "ch03.backup-diagram",
+        "ch03.gridworld-5x5"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "How good is it to be here, if I keep behaving as I do? A **value function** answers that with the return you can expect. Values belong to a policy: the same state is worth more to a good player than to a bad one."
+        },
+        {
+          "layer": "formal",
+          "body": "The **state-value function** $v_\\pi(s)$ is the expected return from $s$ when following $\\pi$ (3.10); a terminal state is worth 0. The **action-value function** $q_\\pi(s, a)$ is the expected return from taking $a$ in $s$ and following $\\pi$ afterwards (3.11). Both can be estimated by averaging sample returns (Monte Carlo methods, Chapter 5), or by parameterised functions when there are too many states (Chapter 9).",
+          "refs": [
+            "eq.ch03.v-pi-def",
+            "eq.ch03.q-pi-def"
+          ]
+        },
+        {
+          "layer": "derivation",
+          "body": "Split the return into its first reward and the rest, and average over the action, the next state and the reward: this gives the **Bellman equation** (3.12), $v_\\pi(s) = \\sum_a \\pi(a|s) \\sum_{s', r} p(s', r|s, a)[r + \\gamma v_\\pi(s')]$. $v_\\pi$ is its unique solution. Its **backup diagram** (Figure 3.4a) draws the look-ahead: from the state (open circle) to each action (solid circle) to each next state; time runs downward, and nodes need not be distinct states.",
+          "refs": [
+            "eq.ch03.bellman-v",
+            "fig.ch03.backup-diagram-v"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**The 5 × 5 gridworld** (Example 3.8). Bumping into the edge costs −1, every action in A pays +10 and jumps to A′, every action in B pays +5 and jumps to B′. For the equiprobable random policy with $\\gamma = 0.9$, Figure 3.5b gives $v_\\pi$. A is the best state, yet worth only about 8.8, because A′ is near the edge, where the random policy keeps bumping; B is worth about 5.3, more than its +5, because B′ is a good place to be. Solving the 25 equations exactly reproduces every printed value. In **golf** (Example 3.9), the value under always-putt is minus the number of strokes: −1 on the green, −2 within one putt of it, and so on.",
+          "refs": [
+            "ex.ch03.gridworld",
+            "fig.ch03.gridworld-random-values",
+            "ex.ch03.golf"
+          ]
+        },
+        {
+          "layer": "computation",
+          "body": "For a fixed policy, (3.12) is a system of linear equations, one per state, so $v_\\pi$ can be found exactly by a linear solve. Choose the 5×5 gridworld in the [dynamic programming laboratory](#/lab/dp): the first evaluation of policy iteration is exactly Figure 3.5b."
+        },
+        {
+          "layer": "connections",
+          "body": "The relation $v_\\pi(s) = \\sum_a \\pi(a|s) q_\\pi(s, a)$ (Exercise 3.12) and the Bellman equation for $q_\\pi$ (Exercise 3.8, backup diagram Figure 3.4b) are the starting points of Chapter 4's dynamic programming and Chapter 6's TD methods."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.7",
+          "printedPages": [
+            70,
+            74
+          ],
+          "pdfPages": [
+            84,
+            88
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-8",
+      "section": "3.8",
+      "title": "Optimal value functions",
+      "concepts": [
+        "ch03.optimal-value-functions",
+        "ch03.bellman-optimality-equation",
+        "ch03.optimal-policy-greedy"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Solving a task means finding a policy that collects a lot of reward. For finite MDPs this can be made precise: one policy is at least as good as another if it is at least as valuable in every state, and some policy is at least as good as all the others."
+        },
+        {
+          "layer": "formal",
+          "body": "All optimal policies $\\pi_*$ share the **optimal state-value function** $v_*(s) = \\max_\\pi v_\\pi(s)$ (3.13) and the **optimal action-value function** $q_*(s, a) = \\max_\\pi q_\\pi(s, a)$ (3.14). Taking an action and then behaving optimally gives $q_*$ in terms of $v_*$ (3.15).",
+          "refs": [
+            "eq.ch03.v-star-def",
+            "eq.ch03.q-star-def",
+            "eq.ch03.q-star-from-v-star"
+          ]
+        },
+        {
+          "layer": "derivation",
+          "body": "Because $v_*$ is the value function of a policy, it satisfies a Bellman equation; because the policy is optimal, the average over actions becomes a maximum. That is the **Bellman optimality equation**, (3.16) and (3.17), with an analogous equation for $q_*$ in which the maximum moves inside, to the next state. In the backup diagrams (Figure 3.7) an arc at the agent's choice marks the maximum. For a finite MDP, (3.17) is a system of nonlinear equations, one per state, with a unique solution.",
+          "refs": [
+            "eq.ch03.bellman-optimality-v-expectation",
+            "eq.ch03.bellman-optimality-v",
+            "eq.ch03.bellman-optimality-q"
+          ]
+        },
+        {
+          "layer": "math",
+          "body": "Once $v_*$ is known, any policy that puts probability only on the actions achieving the maximum in (3.17) is optimal: a one-step look-ahead is enough, because $v_*$ already accounts for everything that follows. With $q_*$ even the look-ahead is unnecessary: choose any action maximising $q_*(s, a)$, without knowing the dynamics. $q_*$ caches the results of all one-step look-aheads."
+        },
+        {
+          "layer": "example",
+          "body": "**Solving the gridworld** (Example 3.12): $v_*(A) = 10/(1 - 0.9^5) \\approx 24.419$, because the cycle A → A′ → back up to A takes five steps (Exercise 3.17), and the arrows of Figure 3.8c lead back to A. In the cell just below B ($v_* \\approx 17.80$) moving up into B gives $0.9 \\times 19.42 = 17.48$, less than moving left, $0.9 \\times 19.78 = 17.80$: B's +5 is not worth giving up the route to A. For the **recycling robot** (Example 3.11) the two Bellman optimality equations can be written out; with $\\alpha = 0.8$, $\\beta = 0.6$, $r_s = 2$, $r_w = 1$, $\\gamma = 0.9$ they give $v_*(\\text{high}) \\approx 16.95$ (search) and $v_*(\\text{low}) \\approx 15.25$ (recharge). In **golf** (Example 3.10), $q_*(s, \\text{driver})$ shows that from the tee two drives and a putt are best.",
+          "refs": [
+            "ex.ch03.solving-gridworld",
+            "fig.ch03.gridworld-optimal-values",
+            "ex.ch03.recycling-bellman-optimality",
+            "ex.ch03.golf-optimal"
+          ]
+        },
+        {
+          "layer": "computation",
+          "body": "Run value iteration on the 5×5 gridworld in the [dynamic programming laboratory](#/lab/dp) to watch $v_*$ and the arrows of Figure 3.8 appear. Solving (3.17) exactly, though, relies on three assumptions rarely all true: accurate knowledge of the dynamics, enough computation, and the Markov property. Backgammon satisfies the first and third but has about $10^{20}$ states."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.8",
+          "printedPages": [
+            75,
+            79
+          ],
+          "pdfPages": [
+            89,
+            93
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-9",
+      "section": "3.9",
+      "title": "Optimality and approximation",
+      "concepts": [
+        "ch03.tabular-approximation"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Optimal policies are the ideal the book organises itself around, but real agents almost never reach them: even with a perfect model, computing an optimal policy is usually far too expensive. Learning agents settle for approximations, and the question becomes how to approximate well."
+        },
+        {
+          "layer": "formal",
+          "body": "Two resources limit an agent: computation per time step, and memory. With few states, values, policies and models fit in tables with one entry per state or state–action pair: the **tabular** case, the subject of Part I. With more states than any table could hold, they must be represented by compact **parameterised functions**, the subject of Part II."
+        },
+        {
+          "layer": "example",
+          "body": "Board games like chess are a tiny part of human experience, yet custom computers still cannot compute optimal moves. TD-Gammon plays backgammon at expert level although it may decide badly in board positions that never arise between experts, possibly a large share of all positions; that costs it little, because those positions are rare."
+        },
+        {
+          "layer": "connections",
+          "body": "Because reinforcement learning learns on-line, from the states it actually meets, it can put its effort where it matters, on frequently visited states, and neglect the rest. The draft names this a key property distinguishing reinforcement learning from other ways of approximately solving MDPs."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.9",
+          "printedPages": [
+            79,
+            80
+          ],
+          "pdfPages": [
+            93,
+            94
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch03.s3-10",
+      "section": "3.10",
+      "title": "Summary (reading guide)",
+      "concepts": [
+        "ch03.agent-environment-interface",
+        "ch03.optimal-value-functions"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**What this section does.** It restates the chapter: the agent–environment interface, policies, returns for episodic and continuing tasks, the Markov property, finite MDPs, value functions and optimal value functions, and why exact optimality gives way to approximation. Read pp. 80–82, the bibliographical remarks (pp. 82–84) and the twenty exercises (pp. 85–87; Exercise 3.7 does not exist, as the draft itself says). One phrase is worth noting: the summary distinguishes problems of *complete knowledge* (the agent has an accurate model of the dynamics) from problems of *incomplete knowledge*."
+        },
+        {
+          "layer": "connections",
+          "body": "**Bibliographical pointers.** MDPs come from optimal control (Chapter 1 tells the history), and the draft's presentation follows Watkins (1989). What it calls episodic and continuing tasks correspond roughly to the MDP literature's *indefinite-horizon* and *infinite-horizon* tasks; the draft prefers its terms because they describe the nature of the interaction rather than the objective. The Bellman optimality equation was Bellman's (1957) 'basic functional equation'; its continuous counterpart is the Hamilton–Jacobi–Bellman equation. Action values go back at least to Shannon's (1950) chess evaluation; Watkins's Q-learning (Chapter 6) made them central, which is why they are often called Q-functions. The draft calls its description of dynamics by $p(s', r|s, a)$ slightly unusual: the MDP literature usually uses $p(s'|s, a)$ and $r(s, a)$."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.10",
+          "printedPages": [
+            80,
+            82
+          ],
+          "pdfPages": [
+            94,
+            96
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            82,
+            84
+          ],
+          "pdfPages": [
+            96,
+            98
+          ]
+        }
+      ]
+    }
+  ]
+}

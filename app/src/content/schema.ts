@@ -721,6 +721,8 @@ export function validateBundle(b: ContentBundle, ctx: ValidationContext): string
     if (!strArr(x.concepts) || x.concepts.length === 0 || !x.concepts.every((c) => conceptIds.has(c) && sameSide(x.unit, c))) errs.push(`${at}: concepts must exist on the same side of the core/supplementary line`);
     if (!isStr(x.title) || !isStr(x.summary)) errs.push(`${at}: title and summary required`);
     if (!Array.isArray(x.facts) || !x.facts.every((f) => isObj(f) && isStr(f.claim) && isStr(f.check) && ctx.checks.has(f.check))) errs.push(`${at}: every fact needs a claim and an existing check`);
+    // A descriptive example (no facts) has nothing computed, so it cannot claim a computed verification (D-045).
+    else if (x.facts.length === 0 && isObj(x.verification) && x.verification.method === "computed") errs.push(`${at}: an example with no facts cannot be verified by computation`);
     errs.push(...validateSourceList(x.sources, `${at}.sources`, src, x.unit), ...validateFlags(x.flags, at), ...validateVerification(x.verification, at, ctx.checks, true));
   });
 

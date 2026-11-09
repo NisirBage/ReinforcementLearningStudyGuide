@@ -1,91 +1,113 @@
 [
-  {
-    "id": "lab.ch04.dp",
-    "slug": "dp",
-    "unit": "ch04",
-    "title": "Dynamic programming laboratory",
-    "summary": "Policy improvement, policy iteration and value iteration with every intermediate value function and policy shown. Step through evaluation and improvement one at a time, or value iteration sweep by sweep, and see which states change action. Fixtures from the draft: the 4×4 gridworld of Example 4.1 and the gambler's problem of Example 4.3.",
-    "sections": [
-      "4.2",
-      "4.3",
-      "4.4"
+ {
+  "id": "lab.ch04.dp",
+  "slug": "dp",
+  "unit": "ch04",
+  "title": "Dynamic programming laboratory",
+  "summary": "Policy improvement, policy iteration and value iteration with every intermediate value function and policy shown. Step through evaluation and improvement one at a time, or value iteration sweep by sweep, and see which states change action. Fixtures from the draft: the 4×4 gridworld of Example 4.1 and the gambler's problem of Example 4.3.",
+  "sections": [
+   "3.7",
+   "3.8",
+   "4.2",
+   "4.3",
+   "4.4"
+  ],
+  "concepts": [
+   "ch04.policy-improvement",
+   "ch04.policy-iteration",
+   "ch04.value-iteration",
+   "ch04.iterative-policy-evaluation",
+   "ch03.gridworld-5x5",
+   "ch03.optimal-value-functions"
+  ],
+  "implementations": [
+   "dp.greedyPolicy",
+   "dp.policyIteration",
+   "dp.valueIteration",
+   "envs.gamblersProblem",
+   "envs.recyclingRobot",
+   "envs.gridworld5x5"
+  ],
+  "guide": [
+   "Run policy iteration on the gridworld from the equiprobable random policy: one improvement already gives an optimal policy, and the second evaluation confirms it (p. 98).",
+   "Run value iteration on the gridworld and watch $v_k$ become $-1, -2, -3$ (the number of steps to a corner) in a few sweeps.",
+   "Load the gambler's problem with $p_h = 0.4$. After value iteration, $v(50) = 0.4$, $v(25) = 0.16$ and $v(75) = 0.64$: staking boldly is optimal when the coin is unfavourable.",
+   "In the gambler's problem a stake of 0 is in the draft's action set and, with $\\gamma = 1$, always ties for the maximum (it just keeps the capital). The lab therefore shows the smallest positive maximizing stake; the draft notes that the optimal policy is not unique.",
+   "Change $p_h$ to 0.55 and see how the optimal stakes change.",
+   "Choose the 5×5 gridworld of Examples 3.8 and 3.12 ($\\gamma = 0.9$). Policy iteration's first evaluation is $v_\\pi$ for the random policy, Figure 3.5b; value iteration converges to $v_*$ and the optimal arrows of Figure 3.8. Check that A is worth $10/(1 - 0.9^5) \\approx 24.419$ (Exercise 3.17)."
+  ],
+  "sources": [
+   {
+    "kind": "textbook",
+    "chapter": "4",
+    "section": "4.2",
+    "printedPages": [
+     95,
+     96
     ],
-    "concepts": [
-      "ch04.policy-improvement",
-      "ch04.policy-iteration",
-      "ch04.value-iteration",
-      "ch04.iterative-policy-evaluation"
-    ],
-    "implementations": [
-      "dp.greedyPolicy",
-      "dp.policyIteration",
-      "dp.valueIteration",
-      "envs.gamblersProblem",
-      "envs.recyclingRobot"
-    ],
-    "guide": [
-      "Run policy iteration on the gridworld from the equiprobable random policy: one improvement already gives an optimal policy, and the second evaluation confirms it (p. 98).",
-      "Run value iteration on the gridworld and watch $v_k$ become $-1, -2, -3$ (the number of steps to a corner) in a few sweeps.",
-      "Load the gambler's problem with $p_h = 0.4$. After value iteration, $v(50) = 0.4$, $v(25) = 0.16$ and $v(75) = 0.64$: staking boldly is optimal when the coin is unfavourable.",
-      "In the gambler's problem a stake of 0 is in the draft's action set and, with $\\gamma = 1$, always ties for the maximum (it just keeps the capital). The lab therefore shows the smallest positive maximizing stake; the draft notes that the optimal policy is not unique.",
-      "Change $p_h$ to 0.55 and see how the optimal stakes change."
-    ],
-    "sources": [
-      {
-        "kind": "textbook",
-        "chapter": "4",
-        "section": "4.2",
-        "printedPages": [
-          95,
-          96
-        ],
-        "pdfPages": [
-          109,
-          110
-        ]
-      },
-      {
-        "kind": "textbook",
-        "chapter": "4",
-        "section": "4.3",
-        "printedPages": [
-          96,
-          98
-        ],
-        "pdfPages": [
-          110,
-          112
-        ]
-      },
-      {
-        "kind": "textbook",
-        "chapter": "4",
-        "section": "4.4",
-        "printedPages": [
-          98,
-          101
-        ],
-        "pdfPages": [
-          112,
-          115
-        ]
-      }
-    ],
-    "verification": {
-      "method": "computed",
-      "on": "2026-11-05",
-      "check": "lab.dp.gridworld-optimal"
-    },
-    "checks": [
-      "lab.dp.gambler-bold-play",
-      "lab.dp.recycling-optimal-consistent"
-    ],
-    "flags": [
-      {
-        "type": "source-acknowledged-issue",
-        "note": "Figure 4.3's policy iteration may never stop when equally good policies alternate (its caption says so).",
-        "suggestion": "The lab keeps an action while it is still among the maximizers, so it always stops."
-      }
+    "pdfPages": [
+     109,
+     110
     ]
-  }
+   },
+   {
+    "kind": "textbook",
+    "chapter": "4",
+    "section": "4.3",
+    "printedPages": [
+     96,
+     98
+    ],
+    "pdfPages": [
+     110,
+     112
+    ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "4",
+    "section": "4.4",
+    "printedPages": [
+     98,
+     101
+    ],
+    "pdfPages": [
+     112,
+     115
+    ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "3",
+    "section": "3.8",
+    "printedPages": [
+     78,
+     79
+    ],
+    "pdfPages": [
+     92,
+     93
+    ]
+   }
+  ],
+  "verification": {
+   "method": "computed",
+   "on": "2026-11-05",
+   "check": "lab.dp.gridworld-optimal"
+  },
+  "checks": [
+   "lab.dp.gambler-bold-play",
+   "lab.dp.recycling-optimal-consistent",
+   "ch03.fig3-5-values",
+   "ch03.fig3-8-values",
+   "ch03.fig3-8-policy"
+  ],
+  "flags": [
+   {
+    "type": "source-acknowledged-issue",
+    "note": "Figure 4.3's policy iteration may never stop when equally good policies alternate (its caption says so).",
+    "suggestion": "The lab keeps an action while it is still among the maximizers, so it always stops."
+   }
+  ]
+ }
 ]

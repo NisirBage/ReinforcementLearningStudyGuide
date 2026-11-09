@@ -35,7 +35,7 @@ describe("practice setup", () => {
     await user.click(screen.getByRole("link", { name: /Practice/ }));
     expect(await ready()).toHaveTextContent("Practice");
     // With nothing ticked, every 2015-draft question matches and supplementary ones do not.
-    expect(screen.getByText(/^75 questions match/)).toBeInTheDocument(); // 2015-draft questions in content/questions (Milestone 4C added 27)
+    expect(screen.getByText(/^111 questions match/)).toBeInTheDocument(); // 2015-draft questions in content/questions (Milestone 4D added 36)
     await user.click(screen.getByLabelText(/Zhao: stochastic approximation/));
     expect(screen.getByText(/^2 questions match/)).toBeInTheDocument();
     // The quick starts show the learner's real (empty) history.
@@ -47,7 +47,7 @@ describe("practice setup", () => {
     renderApp("/practice");
     await ready();
     await user.click(screen.getByLabelText(/Chapter 3: Finite Markov Decision Processes/));
-    expect(screen.getByText(/^7 questions match/)).toBeInTheDocument();
+    expect(screen.getByText(/^43 questions match/)).toBeInTheDocument(); // Chapter 3 since Milestone 4D
     await user.click(screen.getByText("Sections, topics, question types and sources"));
     await user.click(screen.getByLabelText("New application question"));
     expect(screen.getByText(/^0 questions match/)).toBeInTheDocument();

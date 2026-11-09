@@ -466,6 +466,2088 @@
         "note": "Definition (3.10), printed p. 70."
       },
       "reviewed": true
+    },
+    {
+      "id": "ch03-q008",
+      "unit": "ch03",
+      "section": "3.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.1"
+      },
+      "concepts": [
+        "ch03.agent-environment-interface"
+      ],
+      "type": "short-answer",
+      "category": "scenario",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "Devise three tasks of your own that fit the reinforcement learning framework, as different from one another as you can make them. For each, name the states, the actions and the rewards. Make at least one of them stretch the framework in some way.",
+      "answer": "Example answer. (1) A thermostat: state = indoor and outdoor temperature and time of day; action = heating power level; reward = minus energy cost, minus a penalty for each degree outside a comfort band. (2) A tutoring app: state = the learner's recent answers and topic; action = which exercise to show next; reward = +1 when the learner later answers a review question correctly. (3) Stretching the framework: an agent that chooses what to attend to: state = a summary of what it currently knows about a scene; action = where to look next (a purely internal, attentional action); reward = +1 when it correctly identifies an object. Each has numeric rewards that define the goal, actions the agent controls, and states on which to base decisions.",
+      "solution": [
+        "For each task, say what the agent observes (state), what it chooses (action) and what number defines success (reward).",
+        "Vary the level: motor-level, decision-level and mental or computational actions are all allowed (§3.1)."
+      ],
+      "explanation": "The framework is abstract: time steps can be decision stages, actions can be mental, and states can include memory.",
+      "rubric": [
+        {
+          "point": "Three tasks, each with clearly identified states, actions and rewards",
+          "marks": 1
+        },
+        {
+          "point": "The tasks differ substantially (e.g. physical control, high-level decisions, informational or mental actions)",
+          "marks": 1
+        },
+        {
+          "point": "At least one stretches the framework (e.g. mental actions, delayed or sparse rewards, an unusual agent boundary) and says how",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            85,
+            85
+          ],
+          "pdfPages": [
+            99,
+            99
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 3.1, printed p. 85."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q009",
+      "unit": "ch03",
+      "section": "3.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.2"
+      },
+      "concepts": [
+        "ch03.agent-environment-interface",
+        "ch03.reward-hypothesis"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Can every goal-directed learning task be represented usefully within the reinforcement learning framework? Are there clear exceptions?",
+      "answer": "Not obviously. The framework reduces every task to states, actions and a scalar reward, and the draft itself says it may not be sufficient for all decision-learning problems, only widely useful. Possible exceptions: goals that cannot be expressed as a single cumulative scalar (several incomparable objectives, or constraints that must never be violated); tasks where the relevant state can never be made even approximately Markov; goals that change in ways the reward cannot anticipate; tasks where the learner must be told *how* to act (imitation of a demonstrated style), which reward alone conveys poorly. Each can sometimes be squeezed into the framework, but at a cost.",
+      "solution": [
+        "Recall the three signals of §3.1 and the reward hypothesis of §3.2.",
+        "Look for goals or information that do not fit a scalar reward or a usable state."
+      ],
+      "explanation": "The draft claims usefulness and wide applicability, not universality.",
+      "rubric": [
+        {
+          "point": "Takes a position and recognises the framework's reduction to three signals, with a single scalar reward",
+          "marks": 1
+        },
+        {
+          "point": "Gives at least one concrete, plausible exception or hard case",
+          "marks": 1
+        },
+        {
+          "point": "Explains why it is hard to represent usefully (not just impossible in principle)",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            85,
+            85
+          ],
+          "pdfPages": [
+            99,
+            99
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 3.2, printed p. 85; §3.1, printed p. 56."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q010",
+      "unit": "ch03",
+      "section": "3.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.3"
+      },
+      "concepts": [
+        "ch03.agent-environment-interface"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "In driving, the actions could be defined at the pedals and steering wheel, farther out (tyre torques on the road), farther in (muscle twitches), or at a high level (choices of where to drive). Where should the line between agent and environment be drawn? Is there a fundamental reason to prefer one place, or is it a free choice?",
+      "answer": "There is no single right place; the boundary is chosen to suit the decision-making task of interest. The draft's guide is that whatever the agent cannot change arbitrarily belongs to the environment, and that the boundary marks the limit of its control. In practice one prefers the level at which (a) the actions are things the agent really can choose directly and reliably, (b) a useful state is available, and (c) learning is tractable: pedals and wheel for learning to drive, destinations for route planning. Several agents at different levels can coexist, a higher one's decisions forming part of a lower one's state. So it is a design choice, but a principled one.",
+      "solution": [
+        "The boundary is determined once states, actions and rewards are chosen (§3.1).",
+        "Different purposes, different boundaries; hierarchies are possible."
+      ],
+      "explanation": "The agent–environment boundary is about control, not about the body or about knowledge.",
+      "rubric": [
+        {
+          "point": "Says the boundary is a choice that depends on the task of interest, not a fixed physical fact",
+          "marks": 1
+        },
+        {
+          "point": "Uses the draft's criterion: the environment is what the agent cannot change arbitrarily (the limit of its control)",
+          "marks": 1
+        },
+        {
+          "point": "Gives practical criteria (direct control, available state, tractable learning) or mentions hierarchies of agents",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            85,
+            85
+          ],
+          "pdfPages": [
+            99,
+            99
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 3.3, printed p. 85; §3.1, printed p. 55."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q011",
+      "unit": "ch03",
+      "section": "3.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.4"
+      },
+      "concepts": [
+        "ch03.return",
+        "ch03.episodic-continuing"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "Treat pole-balancing as an episodic task with discounting: every reward is 0 except −1 on failure. What is the return at each time? Compute it for $\\gamma = 0.9$ when the failure is the reward $R_{t+5}$. Then compare with the continuing formulation, in which balancing restarts after each failure and the −1 rewards keep coming: suppose a failure occurs every 5 steps forever (rewards $R_{t+5}, R_{t+10}, \\ldots$ are −1). What is $G_t$ then?",
+      "parts": [
+        {
+          "label": "episodic G_t",
+          "answer": -0.6561,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "continuing G_t",
+          "answer": -1.60216,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "Episodic: only the single failure reward counts. If it is $R_{t+K+1}$, then $G_t = -\\gamma^K$. Here $K = 4$: $G_t = -0.9^4 = -0.6561$.",
+        "Continuing: every later failure also counts: $G_t = -\\sum_{j \\ge 0} \\gamma^{4 + 5j} = -\\gamma^4 / (1 - \\gamma^5) = -0.6561 / 0.40951 \\approx -1.6022$.",
+        "Difference: the episodic return depends only on the time to the next failure; the continuing return also penalises all future failures, so it rewards policies that fail rarely over the long run, not just later this time."
+      ],
+      "explanation": "Both formulations make longer balancing better; they differ in whether failures after the next one count.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            85,
+            85
+          ],
+          "pdfPages": [
+            99,
+            99
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03-q011"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q012",
+      "unit": "ch03",
+      "section": "3.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.5"
+      },
+      "concepts": [
+        "ch03.reward-hypothesis",
+        "ch03.return"
+      ],
+      "type": "short-answer",
+      "category": "scenario",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "A maze robot gets +1 for escaping and 0 at all other times. The task is episodic and you maximise the expected total reward (3.1), without discounting. After a while the robot shows no improvement in how it escapes. What is going wrong? Have you told it what you actually want?",
+      "answer": "Every episode that eventually escapes has return exactly +1, however long it takes, so with (3.1) and no discount a slow escape is as good as a fast one. Once the robot escapes at all, it has no reason to improve. What you want is a quick escape, and the reward never said so. Fixes: a reward of −1 per time step until escape, or discounting (γ < 1) so that an earlier +1 is worth more.",
+      "solution": [
+        "Compute (3.1) for an escape after 10 steps and after 1000 steps: both are 1.",
+        "The reward must state what you want achieved (§3.2)."
+      ],
+      "explanation": "The reward specifies what to achieve; here it specifies only escaping, not escaping quickly.",
+      "rubric": [
+        {
+          "point": "Notes that every successful episode earns the same return of +1, regardless of its length",
+          "marks": 1
+        },
+        {
+          "point": "Concludes that the reward does not communicate the real goal (escaping quickly)",
+          "marks": 1
+        },
+        {
+          "point": "Proposes a fix: a per-step penalty or discounting",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            85,
+            85
+          ],
+          "pdfPages": [
+            99,
+            99
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 3.5, printed p. 85."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q013",
+      "unit": "ch03",
+      "section": "3.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.6"
+      },
+      "concepts": [
+        "ch03.markov-property"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "You are a vision system. When switched on, an image floods into your camera: you see much of the scene, but not occluded objects or anything behind you. After this first image, is the Markov state of the environment available to you? If the camera were broken all day and no image ever arrived, would the Markov state be available then?",
+      "answer": "After the first image: no, not in general. Hidden objects matter for what you will see next (when you turn around, or when something moves out from behind an occluder), and the image does not determine them. You have only an approximation to a Markov state, though a state built up from successive images would get closer. With a broken camera: in one sense yes. If you never receive any sensation, there is nothing for a better state to remember; the draft's point is that an agent is faulted only for forgetting what it knew, not for not knowing what it never sensed. Your (empty) state then carries everything your observations could tell you about the future, which is nothing, so it is Markov with respect to what you can observe, trivially.",
+      "solution": [
+        "Use the draft's definition: the state should summarise past sensations without losing anything relevant for predicting the future.",
+        "Ask in each case what the history of sensations contains."
+      ],
+      "explanation": "The Markov property is relative to the information the agent has received, not to everything that is true of the world.",
+      "rubric": [
+        {
+          "point": "First case: not Markov, because occluded and unseen parts of the scene affect future observations",
+          "marks": 1
+        },
+        {
+          "point": "Second case: argues that with no observations the empty history is summarised perfectly, so the state is (trivially) Markov",
+          "marks": 1
+        },
+        {
+          "point": "Grounds the argument in the definition: Markov means retaining all relevant information from the history of sensations",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            85,
+            86
+          ],
+          "pdfPages": [
+            99,
+            100
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 3.6, printed pp. 85–86; §3.5, printed p. 63."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q014",
+      "unit": "ch03",
+      "section": "3.7",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.8"
+      },
+      "concepts": [
+        "ch03.action-value-function",
+        "ch03.bellman-equation-v"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "Derive the Bellman equation for action values: write $q_\\pi(s, a)$ using only the action values $q_\\pi(s', a')$ of the possible successor pairs, following the same sequence of steps as the derivation of (3.12). (Its backup diagram is Figure 3.4b.)",
+      "answer": "$q_\\pi(s, a) = \\sum_{s', r} p(s', r|s, a)\\Big[r + \\gamma \\sum_{a'} \\pi(a'|s')\\, q_\\pi(s', a')\\Big]$.",
+      "solution": [
+        "$q_\\pi(s, a) = \\mathbb{E}_\\pi[G_t \\mid S_t = s, A_t = a] = \\mathbb{E}_\\pi\\big[R_{t+1} + \\gamma \\sum_{k \\ge 0} \\gamma^k R_{t+k+2} \\mid S_t = s, A_t = a\\big]$.",
+        "$= \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma\\, \\mathbb{E}_\\pi[G_{t+1} \\mid S_{t+1} = s']\\big]$: the first action is given, so only the dynamics are averaged.",
+        "$\\mathbb{E}_\\pi[G_{t+1} \\mid S_{t+1} = s'] = v_\\pi(s') = \\sum_{a'} \\pi(a'|s')\\, q_\\pi(s', a')$.",
+        "So $q_\\pi(s, a) = \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma \\sum_{a'} \\pi(a'|s') q_\\pi(s', a')\\big]$."
+      ],
+      "explanation": "The backup diagram for q_π starts at a state–action pair, branches on (s′, r), then on the next action a′.",
+      "rubric": [
+        {
+          "point": "Starts from the definition q_π(s,a) = E_π[G_t | S_t = s, A_t = a] and splits off R_{t+1}",
+          "marks": 1
+        },
+        {
+          "point": "Averages over next state and reward with p(s′, r | s, a); no π for the first action",
+          "marks": 1
+        },
+        {
+          "point": "Replaces the expected remaining return from s′ by v_π(s′) = Σ_{a′} π(a′|s′) q_π(s′, a′)",
+          "marks": 1
+        },
+        {
+          "point": "States the final equation correctly",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch03-q006",
+        "ch03-q016"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            86,
+            86
+          ],
+          "pdfPages": [
+            100,
+            100
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03.bellman-q-pi",
+        "note": "Exercise 3.8, printed p. 86. The equation is checked numerically on the 5×5 gridworld and the recycling robot."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q015",
+      "unit": "ch03",
+      "section": "3.4",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.11"
+      },
+      "concepts": [
+        "ch03.return",
+        "ch03.episodic-continuing"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "In a continuing discounted task, adding a constant $c$ to every reward adds the same constant to every state's value (Exercise 3.10). Now add a constant $c$ to every reward of an *episodic* task such as maze running. Does this change the task, or leave it unchanged as in the continuing case? Why? Give an example.",
+      "answer": "It can change the task. In an episodic task the number of rewards collected depends on how long the episode lasts, so adding c adds c times the episode's length (discounted if γ < 1) to the return, and that differs between policies. Example: a maze with −1 per step; escaping in 3 steps returns −3 and in 5 steps −5, so the short path is better. Add c = +2: the rewards become +1 per step, the returns become 3 and 5, and now the longer path is better: the agent is rewarded for staying in the maze. In the continuing case every policy collects infinitely many rewards with the same discount weights, so the shift adds c/(1−γ) to all values alike.",
+      "solution": [
+        "Write the episodic return with the shift: Σ_k γ^k (R_{t+k+1} + c) = G_t + c Σ_{k=0}^{T−t−1} γ^k.",
+        "The added term depends on T, which depends on the policy."
+      ],
+      "explanation": "Only the relative values matter in the continuing case; in the episodic case, episode length becomes part of what is rewarded.",
+      "rubric": [
+        {
+          "point": "Says the task can change",
+          "marks": 1
+        },
+        {
+          "point": "Explains why: the shift is multiplied by the (policy-dependent) length of the episode",
+          "marks": 1
+        },
+        {
+          "point": "Gives a concrete example in which the preferred behaviour changes",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch03-q005"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            86,
+            86
+          ],
+          "pdfPages": [
+            100,
+            100
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 3.11, printed p. 86."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q016",
+      "unit": "ch03",
+      "section": "3.7",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.13"
+      },
+      "concepts": [
+        "ch03.action-value-function",
+        "ch03.state-value-function"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "An action value depends on the expected next reward and on the expected sum of the rewards after it. Give the equation for $q_\\pi(s, a)$ in terms of $R_{t+1}$ and $v_\\pi(S_{t+1})$, given $S_t = s$ and $A_t = a$. Then write it out explicitly with $p(s', r|s, a)$, with no expectation notation left.",
+      "answer": "$q_\\pi(s, a) = \\mathbb{E}[R_{t+1} + \\gamma v_\\pi(S_{t+1}) \\mid S_t = s, A_t = a] = \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma v_\\pi(s')\\big]$.",
+      "solution": [
+        "After taking a, the reward and next state come from the dynamics; from S_{t+1} on, π is followed, worth v_π(S_{t+1}) in expectation.",
+        "Expand the expectation over $(s', r)$ with $p(s', r|s, a)$."
+      ],
+      "explanation": "This is (3.15)'s pattern with v_π in place of v_*.",
+      "rubric": [
+        {
+          "point": "First equation: the conditional expectation of R_{t+1} + γ v_π(S_{t+1})",
+          "marks": 1
+        },
+        {
+          "point": "Notes that no policy expectation is needed for this first step (the action is given)",
+          "marks": 1
+        },
+        {
+          "point": "Second equation written out with p(s′, r | s, a)",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch03-q014",
+        "ch03-q006"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            86,
+            87
+          ],
+          "pdfPages": [
+            100,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03.bellman-q-pi",
+        "note": "Exercise 3.13, printed pp. 86–87; checked numerically."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q017",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.14"
+      },
+      "concepts": [
+        "ch03.optimal-value-functions"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Describe the optimal state-value function $v_*$ for the golf example (Example 3.9, Figure 3.6), where each stroke costs −1 and the choice is between putter and driver.",
+      "answer": "$v_*(s)$ is minus the fewest strokes needed from s, choosing the best club each time. On the green, putting is best: $v_* = -1$ everywhere on it (one putt), which is better than $q_*(s, \\text{driver})$ there except perhaps in the tiny region where the driver also holes out. Off the green, $v_*(s) = \\max\\{q_*(s, \\text{putter}), q_*(s, \\text{driver})\\}$: since the driver reaches the green from far away, $v_*$ is −2 over the whole region from which one drive reaches the green (much larger than the putting −2 band), −3 from where two drives reach it, including the tee. So $v_*$ looks like the driver's contours $q_*(s, \\text{driver})$ off the green and −1 on it. Sand traps are no longer −∞, because the driver can get out of them.",
+      "solution": [
+        "Use v_*(s) = max_a q_*(s, a) and the two panels of Figure 3.6.",
+        "Ask, for each region, which club gets the ball in with fewer strokes."
+      ],
+      "explanation": "v_* combines the best of both clubs: the putter on the green, the driver off it.",
+      "rubric": [
+        {
+          "point": "Defines v_* as the maximum over the clubs of q_*, i.e. minus the fewest strokes with the best club",
+          "marks": 1
+        },
+        {
+          "point": "On the green: −1 (putt)",
+          "marks": 1
+        },
+        {
+          "point": "Off the green: follows the driver's contours (−2 within one drive of the green, −3 including the tee); sand no longer −∞",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch03-q018"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            87,
+            87
+          ],
+          "pdfPages": [
+            101,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 3.14, printed p. 87; Example 3.10 and Figure 3.6, printed pp. 74–75."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q018",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.15"
+      },
+      "concepts": [
+        "ch03.optimal-value-functions"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Sketch in words $q_*(s, \\text{putter})$, the best achievable value when the first stroke is a putt, in the golf example: the value of putting first and then playing optimally.",
+      "answer": "$q_*(s, \\text{putter}) = -1 + v_*(s')$, where $s'$ is where the putt leaves the ball, since after the putt the best club is used. On the green the putt holes out: $-1$. Within putting range of the green the putt reaches the green and one more putt finishes: $-2$. Farther out, a putt moves the ball only a short way and the driver takes over, so $q_*(s, \\text{putter})$ is one stroke worse than $v_*$ at the nearby landing point: typically $-4$ at the tee, where $v_* = -3$. In a sand trap the putt does not get the ball out, so the stroke is wasted: the value is one less than $v_*$ in the trap.",
+      "solution": [
+        "Use (3.15): after the first action, play optimally.",
+        "The putt only moves the ball a short distance, so compare with v_* just ahead of s."
+      ],
+      "explanation": "q_* commits to the first action only; afterwards the best club is used.",
+      "rubric": [
+        {
+          "point": "Writes q_*(s, putter) = −1 + v_*(landing point of the putt)",
+          "marks": 1
+        },
+        {
+          "point": "On the green −1, and −2 within putting range of the green",
+          "marks": 1
+        },
+        {
+          "point": "Far from the green: one stroke worse than optimal from the putt's landing point (the driver takes over after the putt); sand handled sensibly",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch03-q017"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            87,
+            87
+          ],
+          "pdfPages": [
+            101,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 3.15, printed p. 87."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q019",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.16"
+      },
+      "concepts": [
+        "ch03.bellman-optimality-equation"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "Give the Bellman optimality equation for $q_*$ for the recycling robot (Example 3.7, Table 3.1): one equation for each of the five pairs (high, search), (high, wait), (low, search), (low, wait), (low, recharge). Abbreviate as in Example 3.11.",
+      "answer": "With $m(\\text{h}) = \\max\\{q_*(\\text{h}, \\text{s}), q_*(\\text{h}, \\text{w})\\}$ and $m(\\text{l}) = \\max\\{q_*(\\text{l}, \\text{s}), q_*(\\text{l}, \\text{w}), q_*(\\text{l}, \\text{re})\\}$: $q_*(\\text{h}, \\text{s}) = \\alpha[r_s + \\gamma m(\\text{h})] + (1-\\alpha)[r_s + \\gamma m(\\text{l})]$; $q_*(\\text{h}, \\text{w}) = r_w + \\gamma m(\\text{h})$; $q_*(\\text{l}, \\text{s}) = \\beta[r_s + \\gamma m(\\text{l})] + (1-\\beta)[-3 + \\gamma m(\\text{h})]$; $q_*(\\text{l}, \\text{w}) = r_w + \\gamma m(\\text{l})$; $q_*(\\text{l}, \\text{re}) = \\gamma m(\\text{h})$.",
+      "solution": [
+        "Write the q_* optimality equation, taking the transition probabilities and expected rewards from Table 3.1.",
+        "Zero-probability rows drop out.",
+        "The maximum at high excludes recharge, which is not available there."
+      ],
+      "explanation": "Five equations in five unknowns; the max makes them nonlinear.",
+      "rubric": [
+        {
+          "point": "Writes each equation as a probability-weighted sum, over next states, of the expected reward plus γ times the best q_* there, with numbers from Table 3.1",
+          "marks": 1
+        },
+        {
+          "point": "High-state equations correct (search with α, wait staying high)",
+          "marks": 1
+        },
+        {
+          "point": "Low search equation correct, including the −3 rescue that returns the robot to high",
+          "marks": 1
+        },
+        {
+          "point": "Low wait and recharge equations correct, with the max over only the available actions",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            87,
+            87
+          ],
+          "pdfPages": [
+            101,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03.recycling-q-star-forms",
+        "note": "Exercise 3.16, printed p. 87. The five equations are checked against q_* computed by value iteration for random parameters."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q020",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.17"
+      },
+      "concepts": [
+        "ch03.optimal-value-functions",
+        "ch03.gridworld-5x5"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "In Figure 3.8 the best state, A, is printed with optimal value 24.4. Using the optimal policy and (3.2), express this value symbolically, then compute it to three decimal places ($\\gamma = 0.9$).",
+      "parts": [
+        {
+          "label": "v_*(A)",
+          "answer": 24.419,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "From A every action gives +10 and moves to A′. The optimal policy from A′ goes straight back up to A: four moves with reward 0.",
+        "So from A the agent collects +10 on every fifth step and nothing in between.",
+        "$v_*(A) = 10(1 + \\gamma^5 + \\gamma^{10} + \\cdots) = \\dfrac{10}{1 - \\gamma^5} = \\dfrac{10}{1 - 0.59049} = 24.419$."
+      ],
+      "explanation": "The value of A is a geometric series over the five-step cycle.",
+      "misconceptions": [
+        {
+          "wrong": "10/(1 − γ) = 100",
+          "why": "The +10 is collected only once every five steps, not every step."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            87,
+            87
+          ],
+          "pdfPages": [
+            101,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03-q020"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q021",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.18"
+      },
+      "concepts": [
+        "ch03.optimal-value-functions"
+      ],
+      "type": "short-answer",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "Define the optimal state-value function $v_*$ using only the optimal action-value function $q_*$.",
+      "answer": "$v_*(s) = \\max_{a \\in \\mathcal{A}(s)} q_*(s, a)$.",
+      "solution": [
+        "Acting optimally from s means taking the best first action and then acting optimally.",
+        "That is the first line of (3.16) with q_{π*} = q_*."
+      ],
+      "explanation": "v_* is q_* with the first action chosen optimally.",
+      "rubric": [
+        {
+          "point": "Maximum over actions of q_*(s, a)",
+          "marks": 1
+        },
+        {
+          "point": "The maximum ranges over the actions available in s",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            87,
+            87
+          ],
+          "pdfPages": [
+            101,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03.optimal-relations",
+        "note": "Exercise 3.18, printed p. 87; checked numerically."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q022",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.19"
+      },
+      "concepts": [
+        "ch03.optimal-value-functions"
+      ],
+      "type": "short-answer",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "Express the optimal action values $q_*$ through the optimal state values $v_*$ and the dynamics of the environment.",
+      "answer": "$q_*(s, a) = \\mathbb{E}[R_{t+1} + \\gamma v_*(S_{t+1}) \\mid S_t = s, A_t = a] = \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma v_*(s')\\big]$.",
+      "solution": [
+        "This is (3.15), written out with the dynamics."
+      ],
+      "explanation": "Unlike v_* from q_*, this direction needs the dynamics.",
+      "rubric": [
+        {
+          "point": "Expected immediate reward plus discounted optimal value of the next state",
+          "marks": 1
+        },
+        {
+          "point": "Written with p(s′, r | s, a) (or as the conditional expectation (3.15))",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            87,
+            87
+          ],
+          "pdfPages": [
+            101,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03.optimal-relations",
+        "note": "Exercise 3.19, printed p. 87; checked numerically."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q023",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.20"
+      },
+      "concepts": [
+        "ch03.optimal-policy-greedy"
+      ],
+      "type": "short-answer",
+      "category": "definition",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Define an optimal policy $\\pi_*$ using only the optimal action-value function $q_*$.",
+      "answer": "Any policy that, in every state s, gives positive probability only to actions in $\\arg\\max_a q_*(s, a)$; for example the deterministic $\\pi_*(s) = \\arg\\max_a q_*(s, a)$, ties broken arbitrarily.",
+      "solution": [
+        "Greedy with respect to q_* is optimal (§3.8); no knowledge of the dynamics is needed."
+      ],
+      "explanation": "q_* caches the one-step look-ahead, so the agent only compares numbers.",
+      "rubric": [
+        {
+          "point": "Probability only on actions maximising q_*(s, a)",
+          "marks": 1
+        },
+        {
+          "point": "Notes that ties allow several optimal policies (any split among maximising actions)",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            87,
+            87
+          ],
+          "pdfPages": [
+            101,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03.optimal-relations",
+        "note": "Exercise 3.20, printed p. 87; checked numerically (the greedy actions in q_* and in v_* coincide)."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q024",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "3.21"
+      },
+      "concepts": [
+        "ch03.optimal-policy-greedy"
+      ],
+      "type": "short-answer",
+      "category": "definition",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Define an optimal policy $\\pi_*$ using the optimal state-value function $v_*$ and the dynamics $p(s', r|s, a)$.",
+      "answer": "Any policy that gives positive probability only to actions in $\\arg\\max_a \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma v_*(s')\\big]$ in every state.",
+      "solution": [
+        "One-step search with v_* finds the optimal actions (§3.8)."
+      ],
+      "explanation": "The look-ahead requires a model of the environment.",
+      "rubric": [
+        {
+          "point": "Greedy with respect to the one-step look-ahead using v_* and the dynamics",
+          "marks": 1
+        },
+        {
+          "point": "Notes that this needs p(s′, r | s, a), unlike the definition through q_*",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "printedPages": [
+            87,
+            87
+          ],
+          "pdfPages": [
+            101,
+            101
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03.optimal-relations",
+        "note": "Exercise 3.21, printed p. 87; checked numerically."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q025",
+      "unit": "ch03",
+      "section": "3.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.1"
+        ]
+      },
+      "concepts": [
+        "ch03.agent-environment-interface"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "A learning agent controls a robot arm by choosing motor voltages. According to the draft's general rule, where do the arm's motors, mechanical linkages and sensors belong?",
+      "options": [
+        "To the environment, because the agent cannot change them arbitrarily",
+        "To the agent, because they are inside the robot's body",
+        "To the agent, because the agent knows exactly how they work",
+        "Nowhere: the framework has no place for hardware"
+      ],
+      "answer": 0,
+      "solution": [
+        "Whatever the agent cannot alter at will lies in its environment (§3.1)."
+      ],
+      "explanation": "The same reasoning puts rewards outside the agent.",
+      "optionNotes": [
+        "Correct: the boundary is drawn at the limit of the agent's control; the hardware responds to the voltages but is not under arbitrary control.",
+        "The boundary is usually closer to the agent than the physical body.",
+        "Knowledge does not decide the boundary: an agent may know its environment perfectly.",
+        "Hardware is part of the environment that responds to actions."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.1",
+          "printedPages": [
+            55,
+            55
+          ],
+          "pdfPages": [
+            69,
+            69
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 55."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q026",
+      "unit": "ch03",
+      "section": "3.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch03.bioreactor"
+        ]
+      },
+      "concepts": [
+        "ch03.agent-environment-interface"
+      ],
+      "type": "multi",
+      "category": "scenario",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "In the bioreactor example, which statements are correct? Select all that apply.",
+      "options": [
+        "The actions are target temperatures and stirring rates passed to lower-level controllers",
+        "A state is a vector of sensor readings plus symbolic inputs",
+        "The reward is a vector: one number per chemical",
+        "The heating elements are switched directly by the learning agent"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "solution": [
+        "States and actions can be structured vectors; the reward is a scalar."
+      ],
+      "explanation": "The example shows a high-level agent sitting on top of conventional controllers.",
+      "optionNotes": [
+        "Correct: the agent sets targets, and lower-level controllers act on them.",
+        "Correct: structured states are typical.",
+        "Rewards are always single numbers; here the production rate.",
+        "The agent passes targets on; lower-level control systems drive the heaters and motors."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.1",
+          "printedPages": [
+            56,
+            56
+          ],
+          "pdfPages": [
+            70,
+            70
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Example 3.1, printed p. 56."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q027",
+      "unit": "ch03",
+      "section": "3.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.2"
+        ]
+      },
+      "concepts": [
+        "ch03.reward-hypothesis"
+      ],
+      "type": "mcq",
+      "category": "scenario",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "You are designing rewards for a chess-playing agent. Which design follows the draft's advice?",
+      "options": [
+        "+1 for a win, −1 for a loss, 0 for a draw and for every other position",
+        "+1 for each opponent piece captured, plus +10 for a win",
+        "+0.1 for controlling the centre on each move, plus +1 for a win",
+        "−1 for every move, so that games are won quickly"
+      ],
+      "answer": 0,
+      "solution": [
+        "The reward communicates what to achieve, not how (§3.2)."
+      ],
+      "explanation": "Prior knowledge about good play belongs in the initial policy or value function.",
+      "optionNotes": [
+        "Correct: reward only what you actually want, winning.",
+        "Rewarding captures invites the agent to take pieces even at the cost of losing.",
+        "Rewarding a subgoal can be pursued at the expense of the real goal.",
+        "This rewards short games, not winning, and can make losing fast attractive."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.2",
+          "printedPages": [
+            58,
+            58
+          ],
+          "pdfPages": [
+            72,
+            72
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 58."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q028",
+      "unit": "ch03",
+      "section": "3.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.2"
+        ]
+      },
+      "concepts": [
+        "ch03.reward-hypothesis",
+        "ch03.agent-environment-interface"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: in this framework the reward is computed inside the learning agent, since for animals pleasure and pain are sensed inside the body.",
+      "answer": false,
+      "solution": [
+        "The reward source is placed outside the agent, even if it is inside the robot or animal.",
+        "Otherwise the agent could simply declare that it has been rewarded."
+      ],
+      "explanation": "The agent's boundary is the limit of its control; it may still compute internal rewards of its own.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.2",
+          "printedPages": [
+            58,
+            59
+          ],
+          "pdfPages": [
+            72,
+            73
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed pp. 58–59."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q029",
+      "unit": "ch03",
+      "section": "3.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch03.unified-return"
+        ]
+      },
+      "concepts": [
+        "ch03.unified-return-notation"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 3,
+      "stem": "An episode gives rewards $R_1 = R_2 = R_3 = +1$ and then enters the absorbing state, which gives 0 forever. With $\\gamma = 0.9$, find $G_0$, $G_1$ and $G_3$.",
+      "parts": [
+        {
+          "label": "G_0",
+          "answer": 2.71,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "G_1",
+          "answer": 1.9,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "G_3",
+          "answer": 0,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$G_0 = 1 + 0.9 + 0.81 = 2.71$ (the zeros add nothing).",
+        "$G_1 = 1 + 0.9 = 1.9$.",
+        "$G_3$: only zeros remain, so $G_3 = 0$."
+      ],
+      "explanation": "With the absorbing state, the finite sum (3.1)/(3.3) and the infinite sum (3.2) agree.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.4",
+          "printedPages": [
+            62,
+            62
+          ],
+          "pdfPages": [
+            76,
+            76
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03-q029"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q030",
+      "unit": "ch03",
+      "section": "3.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch03.unified-return"
+        ]
+      },
+      "concepts": [
+        "ch03.unified-return-notation"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "The unified return (3.3) allows $T = \\infty$ or $\\gamma = 1$, but not both. Why not both?",
+      "options": [
+        "An endless, undiscounted sum of rewards can be infinite or undefined",
+        "Because the absorbing state would then give nonzero rewards",
+        "Because γ = 1 is only allowed for continuing tasks",
+        "Because T = ∞ makes every reward zero"
+      ],
+      "answer": 0,
+      "solution": [
+        "The sum converges if it has finitely many terms (T < ∞) or geometric weights (γ < 1)."
+      ],
+      "explanation": "Continuing undiscounted tasks need another formulation (average reward, §11.3 of this draft).",
+      "optionNotes": [
+        "Correct: with infinitely many terms and no discount, a reward of +1 per step already sums to infinity.",
+        "The absorbing state gives zero rewards by construction.",
+        "It is the reverse: γ = 1 is fine when episodes terminate.",
+        "T = ∞ just means the sum never stops."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.4",
+          "printedPages": [
+            62,
+            62
+          ],
+          "pdfPages": [
+            76,
+            76
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 62."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q031",
+      "unit": "ch03",
+      "section": "3.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.5"
+        ]
+      },
+      "concepts": [
+        "ch03.markov-property"
+      ],
+      "type": "multi",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Which of these state signals have the Markov property, as the draft describes it? Select all that apply.",
+      "options": [
+        "The current configuration of all pieces in a game of checkers",
+        "A cannonball's current position and velocity",
+        "A cannonball's current position only",
+        "The last word heard in a conversation, with nothing about what was asked before"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "solution": [
+        "Markov: the state keeps everything from the history that matters for predicting the future."
+      ],
+      "explanation": "This is sometimes called independence of path.",
+      "optionNotes": [
+        "Correct: how the position arose no longer matters for the rest of the game.",
+        "Correct: position and velocity determine the future flight.",
+        "Position alone does not determine where it goes next; the velocity is lost.",
+        "The meaning of 'yes' depends on the earlier question, which this state forgets."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.5",
+          "printedPages": [
+            63,
+            64
+          ],
+          "pdfPages": [
+            77,
+            78
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed pp. 63–64."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q032",
+      "unit": "ch03",
+      "section": "3.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch03.draw-poker"
+        ]
+      },
+      "concepts": [
+        "ch03.markov-property"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "True or false: in draw poker, a Markov state for a player must include the cards in every other player's hand and the order of the remaining deck.",
+      "answer": false,
+      "solution": [
+        "In a fair game no player can determine those from past observations.",
+        "The Markov state is about what the history of observations can tell you: your cards, the bets, the draws, and what you know about the players."
+      ],
+      "explanation": "Hidden information the agent could never have sensed is not something it is expected to have.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.5",
+          "printedPages": [
+            66,
+            66
+          ],
+          "pdfPages": [
+            80,
+            80
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Example 3.6, printed p. 66."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q033",
+      "unit": "ch03",
+      "section": "3.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch03.expected-reward-sa",
+          "eq.ch03.transition-probs",
+          "eq.ch03.expected-reward-sas"
+        ]
+      },
+      "concepts": [
+        "ch03.dynamics-derived-quantities"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "In the recycling robot MDP (Table 3.1) take $\\beta = 0.7$ and $r_{\\text{search}} = 2$. For searching in the low state, find $r(\\text{low}, \\text{search})$ by (3.7), $p(\\text{high} \\mid \\text{low}, \\text{search})$ by (3.8), and $r(\\text{low}, \\text{search}, \\text{high})$ by (3.9).",
+      "parts": [
+        {
+          "label": "r(low, search)",
+          "answer": 0.5,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "p(high | low, search)",
+          "answer": 0.3,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "r(low, search, high)",
+          "answer": -3,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "Outcomes: stay low with probability 0.7 and reward 2; run down, be rescued (reward −3) and end up high with probability 0.3.",
+        "(3.7): $0.7 \\times 2 + 0.3 \\times (-3) = 0.5$.",
+        "(3.8): $p(\\text{high}|\\text{low}, \\text{search}) = 1 - \\beta = 0.3$.",
+        "(3.9): of the outcomes landing in high, the reward is always −3."
+      ],
+      "explanation": "r(s, a) averages over both outcomes; r(s, a, s′) conditions on the landing state.",
+      "misconceptions": [
+        {
+          "wrong": "r(low, search) = r_search = 2",
+          "why": "The rescue penalty on the depleted-battery outcome must be averaged in."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.6",
+          "printedPages": [
+            67,
+            69
+          ],
+          "pdfPages": [
+            81,
+            83
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03-q033"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q034",
+      "unit": "ch03",
+      "section": "3.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.6"
+        ]
+      },
+      "concepts": [
+        "ch03.dynamics-derived-quantities",
+        "ch03.finite-mdp"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "The first edition described dynamics only by transition probabilities $p(s'|s, a)$ plus expected rewards $r(s, a, s')$ (written $\\mathcal{P}^a_{ss'}$ and $\\mathcal{R}^a_{ss'}$). What does the four-argument $p(s', r|s, a)$ capture that they do not?",
+      "options": [
+        "The whole distribution of rewards, not only their expected values",
+        "The policy",
+        "Which actions are available in each state",
+        "The discount rate"
+      ],
+      "answer": 0,
+      "solution": [
+        "(3.8) and (3.9) follow from (3.6), but not the other way round: expectations lose information about the reward distribution."
+      ],
+      "explanation": "The draft also cites the excess of sub- and superscripts as a weakness of the old notation.",
+      "optionNotes": [
+        "Correct: the draft names this weakness of the older notation.",
+        "Dynamics never include the policy.",
+        "Both notations are indexed by available actions.",
+        "γ is part of the objective, not of the dynamics."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.6",
+          "printedPages": [
+            67,
+            67
+          ],
+          "pdfPages": [
+            81,
+            81
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 67."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q035",
+      "unit": "ch03",
+      "section": "3.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch03.gridworld",
+          "fig.ch03.gridworld-random-values"
+        ]
+      },
+      "concepts": [
+        "ch03.gridworld-5x5",
+        "ch03.state-value-function"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "In the 5 × 5 gridworld with the equiprobable random policy and $\\gamma = 0.9$, solving (3.12) exactly gives the values Figure 3.5b prints to one decimal. What are the exact values of A and B (to three decimals)? The dynamic programming laboratory can solve it for you.",
+      "parts": [
+        {
+          "label": "v_π(A)",
+          "answer": 8.789,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "v_π(B)",
+          "answer": 5.322,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "Every action in A gives 10 and moves to A′: $v_\\pi(A) = 10 + 0.9\\, v_\\pi(A')$, and $v_\\pi(A') \\approx -1.345$ (printed −1.3), so $v_\\pi(A) \\approx 10 - 1.211 = 8.789$.",
+        "Likewise $v_\\pi(B) = 5 + 0.9\\, v_\\pi(B') \\approx 5 + 0.9 \\times 0.358 = 5.322$.",
+        "A is worth less than its reward because A′ is near the bottom edge; B more than its reward because B′ has positive value."
+      ],
+      "explanation": "One step from A or B is deterministic, so their values follow from A′ and B′ directly.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.7",
+          "printedPages": [
+            72,
+            73
+          ],
+          "pdfPages": [
+            86,
+            87
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03-q035"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q036",
+      "unit": "ch03",
+      "section": "3.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "fig.ch03.backup-diagram-v"
+        ]
+      },
+      "concepts": [
+        "ch03.backup-diagram"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "How does a backup diagram differ from a transition graph?",
+      "options": [
+        "Its nodes need not be distinct states, and time runs downward from the root being updated",
+        "It shows only deterministic transitions",
+        "It has no nodes for actions",
+        "It labels each arrow with a transition probability and an expected reward"
+      ],
+      "answer": 0,
+      "solution": [
+        "A backup diagram shows what a single backup uses, not the structure of the MDP."
+      ],
+      "explanation": "Backup diagrams summarise algorithms throughout the book.",
+      "optionNotes": [
+        "Correct: a state can appear as its own successor, and arrowheads are omitted because time always flows down.",
+        "Branches show every possible outcome, random or not.",
+        "Solid circles are state–action pairs.",
+        "That describes the transition graph of Figure 3.3."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.7",
+          "printedPages": [
+            72,
+            72
+          ],
+          "pdfPages": [
+            86,
+            86
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 72."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q037",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch03.q-star-from-v-star",
+          "ex.ch03.solving-gridworld"
+        ]
+      },
+      "concepts": [
+        "ch03.optimal-value-functions",
+        "ch03.gridworld-5x5"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "In the 5 × 5 gridworld ($\\gamma = 0.9$), consider the cell directly below B. Its upper neighbour is B, with $v_*(B) \\approx 19.419$, and its left neighbour has $v_*(s) \\approx 19.780$. Using (3.15), find $q_*(s, \\text{up})$ and $q_*(s, \\text{left})$ for this cell. Which is optimal?",
+      "parts": [
+        {
+          "label": "q_*(s, up)",
+          "answer": 17.477,
+          "tolerance": 0.001
+        },
+        {
+          "label": "q_*(s, left)",
+          "answer": 17.802,
+          "tolerance": 0.001
+        }
+      ],
+      "solution": [
+        "Both moves stay on the grid and give reward 0, so $q_*(s, a) = 0.9\\, v_*(s')$.",
+        "Up: $0.9 \\times 19.419 = 17.477$. Left: $0.9 \\times 19.780 = 17.802$.",
+        "Left is optimal, as the single arrow in Figure 3.8c shows: heading towards A beats taking B's +5."
+      ],
+      "explanation": "The greedy choice with v_* needs the one-step look-ahead; with q_* it is just a comparison.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.8",
+          "printedPages": [
+            75,
+            79
+          ],
+          "pdfPages": [
+            89,
+            93
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03-q037"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q038",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch03.recycling-bellman-optimality"
+        ]
+      },
+      "concepts": [
+        "ch03.bellman-optimality-equation"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "Take the recycling robot with $\\alpha = 0.8$, $\\beta = 0.6$, $r_{\\text{search}} = 2$, $r_{\\text{wait}} = 1$ and $\\gamma = 0.9$ (sample numbers; the draft leaves them symbolic). Solve the two Bellman optimality equations of Example 3.11 for $v_*(\\text{high})$ and $v_*(\\text{low})$. (Hint: guess the optimal actions, solve the resulting linear equations, then check that no other action does better.)",
+      "parts": [
+        {
+          "label": "v_*(high)",
+          "answer": 16.949,
+          "tolerance": 0.001
+        },
+        {
+          "label": "v_*(low)",
+          "answer": 15.254,
+          "tolerance": 0.001
+        }
+      ],
+      "solution": [
+        "Guess search in high and recharge in low: $v_h = 2 + 0.9(0.8 v_h + 0.2 v_l)$ and $v_l = 0.9 v_h$.",
+        "Substituting: $v_h = 2 + 0.72 v_h + 0.162 v_h$, so $v_h = 2 / 0.118 \\approx 16.949$ and $v_l \\approx 15.254$.",
+        "Check high: wait gives $1 + 0.9 \\times 16.949 = 16.254 < 16.949$. Check low: search gives $0.6 \\times 2 - 3 \\times 0.4 + 0.9(0.4 \\times 16.949 + 0.6 \\times 15.254) = 14.339$; wait gives $1 + 0.9 \\times 15.254 = 14.729$; both below $15.254$. The guess is optimal."
+      ],
+      "explanation": "The max makes the system nonlinear, but once the optimal actions are fixed it is linear.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.8",
+          "printedPages": [
+            78,
+            78
+          ],
+          "pdfPages": [
+            92,
+            92
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch03-q038"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q039",
+      "unit": "ch03",
+      "section": "3.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.8"
+        ]
+      },
+      "concepts": [
+        "ch03.optimal-policy-greedy"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why does knowing $q_*$ make choosing optimal actions easier than knowing $v_*$?",
+      "options": [
+        "With q_* the agent just picks an action maximising q_*(s, a), without knowing the dynamics or the successor states",
+        "q_* is always larger than v_*",
+        "q_* gives deterministic policies, v_* only stochastic ones",
+        "q_* does not depend on the discount rate"
+      ],
+      "answer": 0,
+      "solution": [
+        "Greedy in v_* requires Σ p(s′, r|s, a)[r + γ v_*(s′)], i.e. a model; greedy in q_* requires only a comparison."
+      ],
+      "explanation": "The price is storing a value per state–action pair instead of per state.",
+      "optionNotes": [
+        "Correct: q_* caches the results of every one-step look-ahead.",
+        "max_a q_*(s, a) equals v_*(s); individual q_* values can be smaller.",
+        "Both give the same set of optimal policies.",
+        "Both depend on γ."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.8",
+          "printedPages": [
+            77,
+            78
+          ],
+          "pdfPages": [
+            91,
+            92
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed pp. 77–78."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q040",
+      "unit": "ch03",
+      "section": "3.9",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.9"
+        ]
+      },
+      "concepts": [
+        "ch03.tabular-approximation"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "TD-Gammon plays backgammon at a high level even though it may choose badly in many board positions. Why does this cost it little, according to the draft?",
+      "options": [
+        "Those positions almost never occur in games against experts, and on-line learning concentrates effort on the positions that do occur",
+        "Backgammon has few enough states to be solved exactly",
+        "Bad decisions in backgammon cannot change the result",
+        "Its value function is computed exactly by dynamic programming"
+      ],
+      "answer": 0,
+      "solution": [
+        "Rare states contribute little to the reward actually received."
+      ],
+      "explanation": "The draft names this a key property distinguishing reinforcement learning from other approximate MDP methods.",
+      "optionNotes": [
+        "Correct: approximating well where it matters is the opportunity on-line learning offers.",
+        "About 10^20 states rule out exact solution.",
+        "Decisions matter; the bad ones are just rare.",
+        "Exact DP is impossible at this scale."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.9",
+          "printedPages": [
+            80,
+            80
+          ],
+          "pdfPages": [
+            94,
+            94
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 80."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q041",
+      "unit": "ch03",
+      "section": "3.9",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.8",
+          "§3.9"
+        ]
+      },
+      "concepts": [
+        "ch03.tabular-approximation"
+      ],
+      "type": "multi",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Solving the Bellman optimality equation explicitly relies on assumptions that are rarely all true. Which of the following are among them, according to the draft? Select all that apply.",
+      "options": [
+        "The dynamics of the environment are known accurately",
+        "There is enough computation to complete the solution",
+        "The states have the Markov property",
+        "Rewards are deterministic",
+        "There are only two actions in each state"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "solution": [
+        "The draft lists exactly three assumptions: known dynamics, enough computation, the Markov property."
+      ],
+      "explanation": "Backgammon satisfies the first and third but not the second.",
+      "optionNotes": [
+        "Correct.",
+        "Correct: backgammon fails this one, with about 10^20 states.",
+        "Correct.",
+        "The dynamics may be random.",
+        "Any finite number of actions is fine."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.8",
+          "printedPages": [
+            78,
+            79
+          ],
+          "pdfPages": [
+            92,
+            93
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed pp. 78–79."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q042",
+      "unit": "ch03",
+      "section": "3.10",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.10"
+        ]
+      },
+      "concepts": [
+        "ch03.agent-environment-interface"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "The MDP literature distinguishes finite-horizon, indefinite-horizon and infinite-horizon tasks. How does the draft relate its own terms to these?",
+      "options": [
+        "Episodic tasks are similar to indefinite-horizon tasks, and continuing tasks to infinite-horizon tasks",
+        "Episodic tasks are finite-horizon tasks, and continuing tasks are indefinite-horizon tasks",
+        "The terms are synonyms: episodic means finite-horizon",
+        "The draft does not discuss these terms"
+      ],
+      "answer": 0,
+      "solution": [
+        "Indefinite horizon: may last arbitrarily long but must end. Infinite horizon: never ends."
+      ],
+      "explanation": "The draft treats the usual pairing of episodic with undiscounted and continuing with discounted objectives as a common coincidence.",
+      "optionNotes": [
+        "Correct: and it prefers its own terms because they describe the nature of the interaction.",
+        "A finite-horizon task ends after a fixed number of steps; an episode can last arbitrarily long.",
+        "Episodes have no fixed length.",
+        "The bibliographical remarks for §3.3–3.4 discuss them."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.10",
+          "printedPages": [
+            82,
+            83
+          ],
+          "pdfPages": [
+            96,
+            97
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Bibliographical remarks, printed pp. 82–83."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch03-q043",
+      "unit": "ch03",
+      "section": "3.10",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§3.10"
+        ]
+      },
+      "concepts": [
+        "ch03.optimal-value-functions"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: a finite MDP has a unique optimal state-value function, but it may have many optimal policies.",
+      "answer": true,
+      "solution": [
+        "v_* and q_* are unique; any policy greedy with respect to them is optimal, and ties allow several.",
+        "In the gridworld, every action is optimal in A and in B (Figure 3.8c)."
+      ],
+      "explanation": "Optimal policies differ only in how they break ties among optimal actions.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "3",
+          "section": "3.10",
+          "printedPages": [
+            81,
+            81
+          ],
+          "pdfPages": [
+            95,
+            95
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Summary, printed p. 81."
+      },
+      "reviewed": true
     }
   ]
 }

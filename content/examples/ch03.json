@@ -1,0 +1,442 @@
+[
+  {
+    "id": "ex.ch03.bioreactor",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.agent-environment-interface"
+    ],
+    "title": "Bioreactor",
+    "bookLabel": "Example 3.1",
+    "summary": "Choosing temperatures and stirring rates for a vat of nutrients and bacteria. The actions are *targets* handed to lower-level controllers; the states are (filtered, delayed) sensor readings plus symbolic descriptions of the ingredients and the target chemical; the reward is the moment-to-moment production rate. States and actions are vectors, but the reward is always a single number.",
+    "facts": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.1",
+        "printedPages": [
+          56,
+          56
+        ],
+        "pdfPages": [
+          70,
+          70
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-09",
+      "note": "Descriptive example, printed pp. 56–56; read in the text layer."
+    }
+  },
+  {
+    "id": "ex.ch03.pick-and-place",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.agent-environment-interface"
+    ],
+    "title": "Pick-and-place robot",
+    "bookLabel": "Example 3.2",
+    "summary": "Learning fast, smooth arm movements. Here the agent works at the lowest level: actions are motor voltages at each joint and states are the latest joint angles and velocities. The reward is +1 per object placed, plus a small negative reward each step for jerky motion, which encourages smoothness.",
+    "facts": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.1",
+        "printedPages": [
+          56,
+          56
+        ],
+        "pdfPages": [
+          70,
+          70
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-09",
+      "note": "Descriptive example, printed pp. 56–56; read in the text layer."
+    }
+  },
+  {
+    "id": "ex.ch03.recycling-robot",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.agent-environment-interface"
+    ],
+    "title": "Recycling robot",
+    "bookLabel": "Example 3.3",
+    "summary": "A can-collecting robot whose high-level decisions (search, wait, or go and recharge) are made by a learning agent from the battery's charge level. The agent is not the whole robot: its environment includes the rest of the robot as well as the office. Example 3.7 turns this into a finite MDP.",
+    "facts": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.1",
+        "printedPages": [
+          57,
+          57
+        ],
+        "pdfPages": [
+          71,
+          71
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-09",
+      "note": "Descriptive example, printed pp. 57–57; read in the text layer."
+    }
+  },
+  {
+    "id": "ex.ch03.pole-balancing",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.episodic-continuing",
+      "ch03.return"
+    ],
+    "title": "Pole-balancing",
+    "bookLabel": "Example 3.4",
+    "summary": "Keeping a pole upright on a moving cart. As an episodic task (one episode per attempt) a reward of +1 per step without failure makes the return the number of steps until failure. As a continuing task with discounting, a reward of −1 on each failure and 0 otherwise makes the return depend on $\\gamma^K$, K being the number of steps before failure. Either way, the return is largest when the pole stays up longest.",
+    "facts": [
+      {
+        "claim": "Episodic, +1 per step: the return is the number of steps balanced. Continuing, −1 on failure: with the failure as reward $R_{t+K+1}$, the return is $-\\gamma^K$.",
+        "check": "ch03.pole-balancing-returns"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.3",
+        "printedPages": [
+          60,
+          61
+        ],
+        "pdfPages": [
+          74,
+          75
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-09",
+      "check": "ch03.pole-balancing-returns",
+      "note": "The draft says the continuing return is 'related to' −γ^K; counting K as the steps before the failure step makes it exactly −γ^K."
+    }
+  },
+  {
+    "id": "ex.ch03.pole-balancing-state",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.markov-property"
+    ],
+    "title": "Pole-balancing state",
+    "bookLabel": "Example 3.5",
+    "summary": "The cart's position and velocity, the pole's angle and its angular velocity would make a Markov state for an idealised cart–pole. Real sensors add noise and delay, and effects such as the pole bending break the Markov property. Yet early learners solved the task easily with only three coarse regions per variable, a clearly non-Markov state; the coarseness may even have helped, by hiding useless distinctions.",
+    "facts": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.5",
+        "printedPages": [
+          65,
+          66
+        ],
+        "pdfPages": [
+          79,
+          80
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-09",
+      "note": "Descriptive example, printed pp. 65–66; read in the text layer."
+    }
+  },
+  {
+    "id": "ex.ch03.draw-poker",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.markov-property"
+    ],
+    "title": "Draw poker",
+    "bookLabel": "Example 3.6",
+    "summary": "A Markov state for a poker player is not the contents of every hand and the deck, which no fair player could know. It is what can be inferred from the player's own cards, the bets, the numbers of cards the others drew, and in principle everything ever observed about the opponents. Nobody can remember all that, so people play from non-Markov states, and still play well.",
+    "facts": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.5",
+        "printedPages": [
+          66,
+          66
+        ],
+        "pdfPages": [
+          80,
+          80
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-09",
+      "note": "Descriptive example, printed pp. 66–66; read in the text layer."
+    }
+  },
+  {
+    "id": "ex.ch03.recycling-robot-mdp",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.finite-mdp",
+      "ch03.transition-graph",
+      "ch03.dynamics-derived-quantities"
+    ],
+    "title": "Recycling robot MDP",
+    "bookLabel": "Example 3.7",
+    "summary": "States high and low; $\\mathcal{A}(\\text{high}) = \\{$search, wait$\\}$ and $\\mathcal{A}(\\text{low}) = \\{$search, wait, recharge$\\}$. Searching keeps the battery high with probability $\\alpha$ and keeps it low with probability $\\beta$; otherwise the battery runs down, the robot is rescued (reward −3) and recharged to high. Each can collected is worth +1; $r_{\\text{search}} > r_{\\text{wait}}$ are the expected cans. For every transition, Table 3.1 gives its probability $p(s'|s, a)$ and, separately, its expected reward $r(s, a, s')$; Figure 3.3 draws the transition graph. The draft leaves $\\alpha$, $\\beta$, $r_{\\text{search}}$ and $r_{\\text{wait}}$ symbolic.",
+    "facts": [
+      {
+        "claim": "With sample numbers for the four parameters, Table 3.1 defines a valid finite MDP, and its exact $v_\\pi$ for the random policy satisfies (3.12).",
+        "check": "lab.mdp.recycling-consistent"
+      },
+      {
+        "claim": "The relations between $v_\\pi$ and $q_\\pi$ (Exercises 3.12 and 3.13) hold on it, including the unavailable recharge action in high.",
+        "check": "ch03.bellman-q-pi"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.6",
+        "printedPages": [
+          67,
+          69
+        ],
+        "pdfPages": [
+          81,
+          83
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-09",
+      "check": "lab.mdp.recycling-consistent",
+      "note": "Table 3.1 and Figure 3.3 checked on the page image (PDF p. 83)."
+    }
+  },
+  {
+    "id": "ex.ch03.gridworld",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.gridworld-5x5",
+      "ch03.state-value-function",
+      "ch03.bellman-equation-v"
+    ],
+    "title": "Gridworld",
+    "bookLabel": "Example 3.8",
+    "summary": "The 5 × 5 grid of Figure 3.5a: moves are deterministic, bumping into the edge costs −1, every action in A gives +10 and jumps to A′, every action in B gives +5 and jumps to B′. Figure 3.5b shows $v_\\pi$ of the equiprobable random policy with $\\gamma = 0.9$, found by solving (3.12). Values near the bottom edge are negative; A is the best state but worth less than 10, because A′ sits near the edge; B is worth more than 5, because B′ is a good place to be.",
+    "facts": [
+      {
+        "claim": "Solving (3.12) exactly reproduces every one of the 25 printed values of Figure 3.5b to one decimal.",
+        "check": "ch03.fig3-5-values"
+      },
+      {
+        "claim": "A is the most valuable state, yet $v_\\pi(A) < 10$; $v_\\pi(B) > 5$; $v_\\pi(B') > 0$ and $v_\\pi(A') < 0$.",
+        "check": "ch03.fig3-5-a-and-b"
+      },
+      {
+        "claim": "Exercise 3.9: with the printed neighbour values, the centre cell's equation gives 0.675, consistent with its printed 0.7.",
+        "check": "lab.bellman.ex3-9"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          72,
+          73
+        ],
+        "pdfPages": [
+          86,
+          87
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-09",
+      "check": "ch03.fig3-5-values",
+      "note": "Figure 3.5 transcribed from the page image (PDF p. 87)."
+    }
+  },
+  {
+    "id": "ex.ch03.golf",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.state-value-function"
+    ],
+    "title": "Golf",
+    "bookLabel": "Example 3.9",
+    "summary": "Playing a hole of golf: −1 per stroke until the ball is in the hole, the state is the ball's position, and the choice is between putter and driver. Under the always-putt policy, every point of the green is worth −1 (one putt), the band from which a putt reaches the green −2, and so on outward; sand traps, from which putting never escapes, are worth −∞. From the tee, putting takes six strokes (Figure 3.6, top).",
+    "facts": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.7",
+        "printedPages": [
+          73,
+          74
+        ],
+        "pdfPages": [
+          87,
+          88
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-09",
+      "note": "Descriptive example, printed pp. 73–74; read in the text layer."
+    },
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The draft says that off the green 'the value is greater'. The values there are −2, −3, … , which are smaller (more negative) than the green's −1; only their magnitude is greater.",
+        "suggestion": "Read it as 'the value is lower' (more negative)."
+      }
+    ]
+  },
+  {
+    "id": "ex.ch03.golf-optimal",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.optimal-value-functions"
+    ],
+    "title": "Optimal value functions for golf",
+    "bookLabel": "Example 3.10",
+    "summary": "Figure 3.6 (bottom) shows $q_*(s, \\text{driver})$: the value of driving first and then playing optimally. The driver hits farther but less accurately, so the −1 contour covers only a small part of the green; with two strokes the hole can be reached from much farther away, since the drive only has to land on the green; the −3 contour includes the tee. Best play from the tee is two drives and a putt.",
+    "facts": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          75,
+          75
+        ],
+        "pdfPages": [
+          89,
+          89
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-09",
+      "note": "Descriptive example, printed pp. 75–75; read in the text layer."
+    }
+  },
+  {
+    "id": "ex.ch03.recycling-bellman-optimality",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.bellman-optimality-equation"
+    ],
+    "title": "Bellman optimality equations for the recycling robot",
+    "bookLabel": "Example 3.11",
+    "summary": "Writing (3.17) out for the recycling robot gives two equations: $v_*(\\text{h}) = \\max\\{r_s + \\gamma[\\alpha v_*(\\text{h}) + (1-\\alpha) v_*(\\text{l})],\\ r_w + \\gamma v_*(\\text{h})\\}$ and $v_*(\\text{l}) = \\max\\{\\beta r_s - 3(1-\\beta) + \\gamma[(1-\\beta) v_*(\\text{h}) + \\beta v_*(\\text{l})],\\ r_w + \\gamma v_*(\\text{l}),\\ \\gamma v_*(\\text{h})\\}$. For any parameters with $0 \\le \\gamma < 1$ exactly one pair of numbers solves them.",
+    "facts": [
+      {
+        "claim": "For 25 random parameter settings, the $v_*$ found by value iteration satisfies both printed equations.",
+        "check": "ch03.recycling-optimality-forms"
+      },
+      {
+        "claim": "Exercise 3.16: the corresponding equations for $q_*$ agree with $q_*$ computed from $v_*$.",
+        "check": "ch03.recycling-q-star-forms"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          78,
+          78
+        ],
+        "pdfPages": [
+          92,
+          92
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-09",
+      "check": "ch03.recycling-optimality-forms",
+      "note": "Equations checked on the page image (PDF p. 92)."
+    }
+  },
+  {
+    "id": "ex.ch03.solving-gridworld",
+    "unit": "ch03",
+    "concepts": [
+      "ch03.gridworld-5x5",
+      "ch03.optimal-value-functions",
+      "ch03.optimal-policy-greedy"
+    ],
+    "title": "Solving the gridworld",
+    "bookLabel": "Example 3.12",
+    "summary": "Solving the Bellman optimality equation for the gridworld of Example 3.8 gives $v_*$ (Figure 3.8b) and the optimal policies (Figure 3.8c): from A and B every action is optimal (each jumps away with its bonus); elsewhere the arrows head back towards A, the more valuable jump. $v_*(A) = 10/(1 - 0.9^5) \\approx 24.419$, because the cycle A → A′ → back to A takes five steps.",
+    "facts": [
+      {
+        "claim": "Value iteration reproduces every one of the 25 printed values of Figure 3.8b to one decimal.",
+        "check": "ch03.fig3-8-values"
+      },
+      {
+        "claim": "The set of optimal actions in every cell equals the arrows of Figure 3.8c, ties included.",
+        "check": "ch03.fig3-8-policy"
+      },
+      {
+        "claim": "$v_*$ equals the largest $q_*$ in every state, and the policy greedy in $q_*$ is the policy greedy in $v_*$ (Exercises 3.18–3.21).",
+        "check": "ch03.optimal-relations"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "3",
+        "section": "3.8",
+        "printedPages": [
+          78,
+          79
+        ],
+        "pdfPages": [
+          92,
+          93
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-09",
+      "check": "ch03.fig3-8-values",
+      "note": "Figure 3.8 transcribed from the page image (PDF p. 93; arrows read at 300 dpi)."
+    }
+  }
+]

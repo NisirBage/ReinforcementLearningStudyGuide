@@ -172,22 +172,29 @@ export function ExampleCard({ x }: { x: Example }) {
         </Link>
       </header>
       <Md text={x.summary} />
-      <h4>What the book claims, and what our code reproduces</h4>
-      <ul className="facts">
-        {x.facts.map((f) => (
-          <li key={f.check}>
-            {results ? <span className={results[f.check] ? "ok" : "bad"}>{results[f.check] ? "✓" : "✗"}</span> : <span className="muted">•</span>}{" "}
-            <MdInline text={f.claim} />
-          </li>
-        ))}
-      </ul>
-      <button
-        type="button"
-        className="btn btn-small"
-        onClick={() => setResults(Object.fromEntries(x.facts.map((f) => [f.check, (CHECKS[f.check] as { run: () => boolean }).run()])))}
-      >
-        {results ? "Re-run the checks" : "Run the checks in your browser"}
-      </button>
+      {x.facts.length === 0 ? (
+        // A descriptive example (how a task can be framed) makes no numerical claim, so there is nothing to recompute.
+        <p className="muted small">This example describes how a task can be framed. It makes no numerical claim, so there is nothing for our code to reproduce.</p>
+      ) : (
+        <>
+          <h4>What the book claims, and what our code reproduces</h4>
+          <ul className="facts">
+            {x.facts.map((f) => (
+              <li key={f.check}>
+                {results ? <span className={results[f.check] ? "ok" : "bad"}>{results[f.check] ? "✓" : "✗"}</span> : <span className="muted">•</span>}{" "}
+                <MdInline text={f.claim} />
+              </li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="btn btn-small"
+            onClick={() => setResults(Object.fromEntries(x.facts.map((f) => [f.check, (CHECKS[f.check] as { run: () => boolean }).run()])))}
+          >
+            {results ? "Re-run the checks" : "Run the checks in your browser"}
+          </button>
+        </>
+      )}
       <Flags flags={x.flags} />
       <Sources refs={x.sources} />
     </section>
