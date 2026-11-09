@@ -498,3 +498,10 @@ pre.code { max-height: 30rem; overflow: auto; padding: 10px 12px; background: va
 .jack-grid td { border: 1px solid var(--border); color: var(--text); }
 .jack-grid th { color: var(--muted); font-weight: 400; }
 
+/* Racetrack (Exercise 5.9): the track drawn cell by cell; numbers mark a trajectory. */
+.track-grid { border-collapse: collapse; font-size: 0.55rem; font-variant-numeric: tabular-nums; margin: 8px 0; }
+.track-grid td { width: 1.2em; height: 1.2em; padding: 0; text-align: center; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); }
+.track-grid td.off { border-color: transparent; background: transparent; }
+.track-grid td.finish { background: color-mix(in srgb, var(--ok) 35%, var(--surface-2)); }
+.track-grid td.startline { background: color-mix(in srgb, var(--accent) 25%, var(--surface-2)); }
+

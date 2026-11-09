@@ -65,9 +65,9 @@ describe("mock exam setup", () => {
     await ready();
     await go(screen.getByRole("link", { name: /Mock exams/ }));
     expect(await ready()).toHaveTextContent("Mock exams");
-    expect(screen.getByText(/^102 questions available/)).toBeInTheDocument(); // 133 core minus 31 written (Milestone 4E added 22 and 6)
+    expect(screen.getByText(/^120 questions available/)).toBeInTheDocument(); // 160 core minus 40 written (Milestone 4F added 27 and 9)
     await user.click(screen.getByLabelText(/Include written answers/));
-    expect(screen.getByText(/^133 questions available/)).toBeInTheDocument();
+    expect(screen.getByText(/^160 questions available/)).toBeInTheDocument();
     // Starting from the form: Chapter 4, Beginner, written answers off again: 7 questions since Milestone 4E.
     await user.click(screen.getByLabelText(/Include written answers/));
     await user.click(screen.getByLabelText(/Chapter 4: Dynamic Programming/));

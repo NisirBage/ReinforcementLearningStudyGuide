@@ -1,72 +1,113 @@
 [
-  {
-    "id": "lab.ch05.mc",
-    "slug": "mc",
-    "unit": "ch05",
-    "title": "Monte Carlo laboratory",
-    "summary": "Generate episodes, compute their returns backwards ($G_t = R_{t+1} + \\gamma G_{t+1}$), and watch first-visit or every-visit Monte Carlo update the estimates, with sample averages or a constant step size. Then let Monte Carlo ES solve blackjack from exploring starts (Example 5.3), checked against the exact optimum.",
-    "sections": [
-      "5.1",
-      "5.3"
+ {
+  "id": "lab.ch05.mc",
+  "slug": "mc",
+  "unit": "ch05",
+  "title": "Monte Carlo laboratory",
+  "summary": "Generate episodes, compute their returns backwards ($G_t = R_{t+1} + \\gamma G_{t+1}$), and watch first-visit or every-visit Monte Carlo update the estimates, with sample averages or a constant step size. Then let Monte Carlo ES solve blackjack from exploring starts (Example 5.3), checked against the exact optimum.",
+  "sections": [
+   "5.1",
+   "5.3",
+   "5.5",
+   "5.6",
+   "5.7"
+  ],
+  "concepts": [
+   "ch05.mc-prediction",
+   "ch05.mc-es",
+   "ch05.importance-sampling",
+   "ch05.off-policy-mc-control",
+   "ch05.racetrack"
+  ],
+  "implementations": [
+   "mc.mcUpdate",
+   "mc.esEpisode",
+   "mc.runEs",
+   "envs.randomWalk",
+   "envs.blackjack",
+   "offPolicy.isEstimates",
+   "offPolicy.offPolicyControlEpisode",
+   "envs.racetrack"
+  ],
+  "guide": [
+   "Generate one random-walk episode and read its returns: with $\\gamma = 1$ every return is 1 if it ended on the right and 0 otherwise.",
+   "Compare first-visit and every-visit: in an episode that passes C three times, every-visit makes three updates to $V(C)$ and first-visit makes one.",
+   "Run 1000 episodes and watch the RMS error against the true values $1/6, \\dots, 5/6$ fall.",
+   "Switch to a constant step size: the estimates keep fluctuating instead of settling.",
+   "Run Monte Carlo ES on blackjack (Example 5.3): start from \"stick only on 20 or 21\" and add 500,000 episodes. The learned policy agrees with the exact optimum (value iteration on the same model, which matches the draft's Figure 5.5) in almost every state. The few that differ are close decisions, where the two actions' values are within about 0.1 and each Q still carries returns from earlier, worse policies.",
+   "Switch the problem to the 4×4 gridworld to see why the draft requires episodes that end: a greedy policy can loop for ever, cut-off episodes are discarded because they are not samples of the return, and most episodes are lost.",
+   "Importance sampling (Example 5.4): run 100 runs of 1000 episodes. Ordinary importance sampling follows its exact error $10.156/n$; weighted importance sampling starts much lower, rises for a few episodes, then falls (Exercise 5.5).",
+   "Infinite variance (Example 5.5): switch the example and run 100,000 episodes. The ordinary estimates jump and drift below 1 for a long time; the weighted estimate is exactly 1.",
+   "Racetrack (Exercise 5.9, lab task): learn 200,000 episodes on the left track and compare the learned expected returns with the optimum. Starts far from the turn improve last: why does off-policy Monte Carlo control learn slowly there?"
+  ],
+  "sources": [
+   {
+    "kind": "textbook",
+    "chapter": "5",
+    "section": "5.1",
+    "printedPages": [
+     114,
+     116
     ],
-    "concepts": [
-      "ch05.mc-prediction",
-      "ch05.mc-es"
-    ],
-    "implementations": [
-      "mc.mcUpdate",
-      "mc.esEpisode",
-      "mc.runEs",
-      "envs.randomWalk",
-      "envs.blackjack"
-    ],
-    "guide": [
-      "Generate one random-walk episode and read its returns: with $\\gamma = 1$ every return is 1 if it ended on the right and 0 otherwise.",
-      "Compare first-visit and every-visit: in an episode that passes C three times, every-visit makes three updates to $V(C)$ and first-visit makes one.",
-      "Run 1000 episodes and watch the RMS error against the true values $1/6, \\dots, 5/6$ fall.",
-      "Switch to a constant step size: the estimates keep fluctuating instead of settling.",
-      "Run Monte Carlo ES on blackjack (Example 5.3): start from \"stick only on 20 or 21\" and add 500,000 episodes. The learned policy agrees with the exact optimum (value iteration on the same model, which matches the draft's Figure 5.5) in almost every state. The few that differ are close decisions, where the two actions' values are within about 0.1 and each Q still carries returns from earlier, worse policies.",
-      "Switch the problem to the 4×4 gridworld to see why the draft requires episodes that end: a greedy policy can loop for ever, cut-off episodes are discarded because they are not samples of the return, and most episodes are lost."
-    ],
-    "sources": [
-      {
-        "kind": "textbook",
-        "chapter": "5",
-        "section": "5.1",
-        "printedPages": [
-          114,
-          116
-        ],
-        "pdfPages": [
-          128,
-          130
-        ]
-      },
-      {
-        "kind": "textbook",
-        "chapter": "5",
-        "section": "5.3",
-        "printedPages": [
-          120,
-          123
-        ],
-        "pdfPages": [
-          134,
-          137
-        ]
-      }
-    ],
-    "verification": {
-      "method": "computed",
-      "on": "2026-11-07",
-      "check": "lab.mc.random-walk-converges"
-    },
-    "checks": [
-      "lab.mc.es-blackjack",
-      "lab.mc.es-needs-termination",
-      "bj.figure-5-5",
-      "bj.example-5-4",
-      "bj.dynamics"
+    "pdfPages": [
+     128,
+     130
     ]
-  }
+   },
+   {
+    "kind": "textbook",
+    "chapter": "5",
+    "section": "5.3",
+    "printedPages": [
+     120,
+     123
+    ],
+    "pdfPages": [
+     134,
+     137
+    ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "5",
+    "section": "5.5",
+    "printedPages": [
+     127,
+     132
+    ],
+    "pdfPages": [
+     141,
+     146
+    ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "5",
+    "section": "5.7",
+    "printedPages": [
+     135,
+     136
+    ],
+    "pdfPages": [
+     149,
+     150
+    ]
+   }
+  ],
+  "verification": {
+   "method": "computed",
+   "on": "2026-11-07",
+   "check": "lab.mc.random-walk-converges"
+  },
+  "checks": [
+   "lab.mc.es-blackjack",
+   "lab.mc.es-needs-termination",
+   "bj.figure-5-5",
+   "bj.example-5-4",
+   "bj.dynamics",
+   "ch05.fig5-7",
+   "ch05.fig5-8",
+   "lab.mc.racetrack"
+  ]
+ }
 ]

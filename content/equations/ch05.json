@@ -1,0 +1,440 @@
+[
+  {
+    "id": "eq.ch05.greedy-from-q",
+    "unit": "ch05",
+    "concept": "ch05.mc-es",
+    "name": "Greedy policy from action values",
+    "bookLabel": "(5.1)",
+    "tex": "\\pi(s) = \\arg\\max_a q(s, a)",
+    "symbols": [
+      {
+        "tex": "q(s, a)",
+        "meaning": "the current action-value function"
+      }
+    ],
+    "intuition": "With action values, improvement needs no model: just pick the action with the largest value.",
+    "assumptions": [
+      "Ties broken arbitrarily."
+    ],
+    "pitfalls": [
+      "With state values instead, the same step would need p(s′, r|s, a) for a one-step look-ahead."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.3",
+        "printedPages": [
+          121,
+          121
+        ],
+        "pdfPages": [
+          135,
+          135
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 121 (PDF p. 135), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch05.epsilon-greedy-improvement",
+    "unit": "ch05",
+    "concept": "ch05.on-policy-epsilon-soft",
+    "name": "ε-greedy improvement over an ε-soft policy",
+    "bookLabel": "(5.2)",
+    "tex": "q_\\pi(s, \\pi'(s)) = \\sum_a \\pi'(a|s) q_\\pi(s, a) = \\frac{\\epsilon}{|\\mathcal{A}(s)|}\\sum_a q_\\pi(s, a) + (1 - \\epsilon)\\max_a q_\\pi(s, a)",
+    "symbols": [
+      {
+        "tex": "\\pi'",
+        "meaning": "the ε-greedy policy for q_π"
+      },
+      {
+        "tex": "\\epsilon",
+        "meaning": "the exploration probability"
+      }
+    ],
+    "intuition": "The ε-greedy policy spreads ε uniformly and puts the rest on the best action; that is at least the value of any ε-soft policy's own average, so the policy improvement theorem applies.",
+    "assumptions": [
+      "π is ε-soft: π(a|s) ≥ ε/|A(s)| for every action."
+    ],
+    "derivation": [
+      {
+        "tex": "(1 - \\epsilon)\\max_a q_\\pi(s, a) \\ge (1 - \\epsilon)\\sum_a \\frac{\\pi(a|s) - \\frac{\\epsilon}{|\\mathcal{A}(s)|}}{1 - \\epsilon}\\, q_\\pi(s, a)",
+        "why": "The weights (π(a|s) − ε/|A(s)|)/(1 − ε) are nonnegative (π is ε-soft) and sum to 1, so their average is at most the maximum."
+      },
+      {
+        "tex": "q_\\pi(s, \\pi'(s)) \\ge \\frac{\\epsilon}{|\\mathcal{A}(s)|}\\sum_a q_\\pi(s, a) - \\frac{\\epsilon}{|\\mathcal{A}(s)|}\\sum_a q_\\pi(s, a) + \\sum_a \\pi(a|s) q_\\pi(s, a) = v_\\pi(s)",
+        "why": "Add the uniform part back; it cancels, leaving π's own average of its action values."
+      }
+    ],
+    "pitfalls": [
+      "The improvement only reaches the best ε-soft policy, not π_*."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.4",
+        "printedPages": [
+          125,
+          125
+        ],
+        "pdfPages": [
+          139,
+          139
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 125 (PDF p. 139), checked on the page image. Checked numerically by ch05.epsilon-greedy-improvement."
+    }
+  },
+  {
+    "id": "eq.ch05.is-ratio",
+    "unit": "ch05",
+    "concept": "ch05.importance-sampling",
+    "name": "Importance-sampling ratio",
+    "bookLabel": "(5.3)",
+    "tex": "\\rho_t^T = \\frac{\\prod_{k=t}^{T-1} \\pi(A_k|S_k) p(S_{k+1}|S_k, A_k)}{\\prod_{k=t}^{T-1} \\mu(A_k|S_k) p(S_{k+1}|S_k, A_k)} = \\prod_{k=t}^{T-1} \\frac{\\pi(A_k|S_k)}{\\mu(A_k|S_k)}",
+    "symbols": [
+      {
+        "tex": "\\pi",
+        "meaning": "the target policy"
+      },
+      {
+        "tex": "\\mu",
+        "meaning": "the behavior policy"
+      },
+      {
+        "tex": "T",
+        "meaning": "the end of the episode"
+      }
+    ],
+    "intuition": "How much more (or less) likely the observed trajectory is under the target policy than under the behavior policy. The unknown transition probabilities cancel.",
+    "assumptions": [
+      "Coverage: π(a|s) > 0 implies µ(a|s) > 0."
+    ],
+    "example": "In Example 5.4 the behavior picks hit or stick with probability 1/2 and the target is deterministic, so a game that follows the target for three decisions has $\\rho = 2^3 = 8$; any game where the behavior deviates has $\\rho = 0$.",
+    "pitfalls": [
+      "If the target is deterministic, ρ is 0 as soon as the behavior takes an action the target would not."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.5",
+        "printedPages": [
+          128,
+          128
+        ],
+        "pdfPages": [
+          142,
+          142
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 128 (PDF p. 142), checked on the page image. The cancellation is checked by ch05.is-ratio-model-free."
+    }
+  },
+  {
+    "id": "eq.ch05.ordinary-is",
+    "unit": "ch05",
+    "concept": "ch05.importance-sampling",
+    "name": "Ordinary importance sampling",
+    "bookLabel": "(5.4)",
+    "tex": "V(s) = \\frac{\\sum_{t \\in \\mathfrak{T}(s)} \\rho_t^{T(t)} G_t}{|\\mathfrak{T}(s)|}",
+    "symbols": [
+      {
+        "tex": "\\mathfrak{T}(s)",
+        "meaning": "the time steps at which s is visited (first visits only, for a first-visit method)"
+      },
+      {
+        "tex": "T(t)",
+        "meaning": "the first termination after t"
+      }
+    ],
+    "intuition": "Scale each return by its ratio and take a plain average.",
+    "assumptions": [
+      "Time steps are numbered across episodes, so each visit has its own t."
+    ],
+    "pitfalls": [
+      "Unbiased, but the variance can be infinite (Example 5.5)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.5",
+        "printedPages": [
+          128,
+          128
+        ],
+        "pdfPages": [
+          142,
+          142
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 128 (PDF p. 142), checked on the page image. Unbiasedness checked by ch05.ordinary-is-unbiased."
+    }
+  },
+  {
+    "id": "eq.ch05.weighted-is",
+    "unit": "ch05",
+    "concept": "ch05.importance-sampling",
+    "name": "Weighted importance sampling",
+    "bookLabel": "(5.5)",
+    "tex": "V(s) = \\frac{\\sum_{t \\in \\mathfrak{T}(s)} \\rho_t^{T(t)} G_t}{\\sum_{t \\in \\mathfrak{T}(s)} \\rho_t^{T(t)}}",
+    "symbols": [
+      {
+        "tex": "\\rho_t^{T(t)}",
+        "meaning": "the ratio for the return after t"
+      }
+    ],
+    "intuition": "Use the ratios as weights in a weighted average. After one return the estimate is just that return.",
+    "assumptions": [
+      "Defined as 0 when the denominator is 0."
+    ],
+    "pitfalls": [
+      "Biased (after one return its expectation is v_µ(s)), but the bias vanishes as returns accumulate, and with bounded returns its variance goes to zero."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.5",
+        "printedPages": [
+          129,
+          129
+        ],
+        "pdfPages": [
+          143,
+          143
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 129 (PDF p. 143), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch05.weighted-average",
+    "unit": "ch05",
+    "concept": "ch05.incremental-weighted-average",
+    "name": "Weighted average of returns",
+    "bookLabel": "(5.6)",
+    "tex": "V_n = \\frac{\\sum_{k=1}^{n-1} W_k G_k}{\\sum_{k=1}^{n-1} W_k}, \\quad n \\ge 2",
+    "symbols": [
+      {
+        "tex": "W_k",
+        "meaning": "the weight of the k-th return, e.g. its importance-sampling ratio"
+      }
+    ],
+    "intuition": "The estimate after n − 1 returns, each with its own weight.",
+    "assumptions": [
+      "At least one nonzero weight."
+    ],
+    "pitfalls": [
+      "With every W_k = 1 this is the sample average of Chapter 2."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.6",
+        "printedPages": [
+          133,
+          133
+        ],
+        "pdfPages": [
+          147,
+          147
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 133 (PDF p. 147), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch05.weighted-incremental",
+    "unit": "ch05",
+    "concept": "ch05.incremental-weighted-average",
+    "name": "Incremental weighted-average update",
+    "bookLabel": "(5.7)",
+    "tex": "V_{n+1} = V_n + \\frac{W_n}{C_n}\\big[G_n - V_n\\big], \\quad n \\ge 1, \\qquad C_{n+1} = C_n + W_{n+1}, \\; C_0 = 0",
+    "symbols": [
+      {
+        "tex": "C_n",
+        "meaning": "the sum of the first n weights"
+      }
+    ],
+    "intuition": "Move the estimate toward the new return by its share of the total weight so far.",
+    "assumptions": [
+      "V_1 is arbitrary."
+    ],
+    "example": "Returns $1$ and $-1$ with weights $2$ and $6$: $C_1 = 2$, $V_2 = 0 + \\tfrac22(1 - 0) = 1$; $C_2 = 8$, $V_3 = 1 + \\tfrac68(-1 - 1) = -0.5$, which is $(2 \\cdot 1 + 6 \\cdot (-1))/8$.",
+    "pitfalls": [
+      "A return with weight 0 leaves V unchanged."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.6",
+        "printedPages": [
+          133,
+          133
+        ],
+        "pdfPages": [
+          147,
+          147
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 133 (PDF p. 147), checked on the page image. Checked against the batch average by ch05.incremental-weighted."
+    }
+  },
+  {
+    "id": "eq.ch05.flat-partial-decomposition",
+    "unit": "ch05",
+    "concept": "ch05.truncated-is",
+    "name": "A return as a sum of flat partial returns",
+    "tex": "\\bar G_t^h = R_{t+1} + \\cdots + R_h, \\qquad G_t = \\gamma^{T-t-1}\\bar G_t^T + (1 - \\gamma)\\sum_{h=t+1}^{T-1} \\gamma^{h-t-1} \\bar G_t^h",
+    "symbols": [
+      {
+        "tex": "\\bar G_t^h",
+        "meaning": "the flat (undiscounted) partial return up to horizon h"
+      }
+    ],
+    "intuition": "Discounting is read as a chance of stopping: the return stops after one step with weight 1 − γ, after two with (1 − γ)γ, and so on.",
+    "assumptions": [
+      "0 ≤ γ < 1, an episode ending at T."
+    ],
+    "example": "$\\gamma = 0.5$, rewards $1, 2, 3$: $\\bar G^1 = 1$, $\\bar G^2 = 3$, $\\bar G^3 = 6$, and $0.25 \\cdot 6 + 0.5(1 + 0.5 \\cdot 3) = 2.75 = 1 + 0.5 \\cdot 2 + 0.25 \\cdot 3$.",
+    "pitfalls": [
+      "The weights sum to 1: (1 − γ)(1 + γ + … + γ^{T−t−2}) + γ^{T−t−1} = 1."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.8",
+        "printedPages": [
+          137,
+          137
+        ],
+        "pdfPages": [
+          151,
+          151
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed unnumbered on p. 137 (PDF p. 151), checked on the page image. The identity is checked by ch05.flat-partial-returns."
+    }
+  },
+  {
+    "id": "eq.ch05.truncated-ordinary-is",
+    "unit": "ch05",
+    "concept": "ch05.truncated-is",
+    "name": "Ordinary importance sampling on truncated returns",
+    "bookLabel": "(5.8)",
+    "tex": "V(s) = \\frac{\\sum_{t \\in \\mathfrak{T}(s)} \\Big(\\gamma^{T(t)-t-1}\\rho_t^{T(t)} \\bar G_t^{T(t)} + (1 - \\gamma)\\sum_{h=t+1}^{T(t)-1} \\gamma^{h-t-1}\\rho_t^h \\bar G_t^h\\Big)}{|\\mathfrak{T}(s)|}",
+    "symbols": [
+      {
+        "tex": "\\rho_t^h",
+        "meaning": "the ratio of the steps up to horizon h only"
+      }
+    ],
+    "intuition": "Each flat partial return is scaled only by the ratios of the actions that produced it.",
+    "assumptions": [
+      "γ < 1; with γ = 1 it reduces to (5.4)."
+    ],
+    "pitfalls": [
+      "The truncated ratios matter most when γ is small and episodes long."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.8",
+        "printedPages": [
+          137,
+          137
+        ],
+        "pdfPages": [
+          151,
+          151
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 137 (PDF p. 151), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch05.truncated-weighted-is",
+    "unit": "ch05",
+    "concept": "ch05.truncated-is",
+    "name": "Weighted importance sampling on truncated returns",
+    "bookLabel": "(5.9)",
+    "tex": "V(s) = \\frac{\\sum_{t \\in \\mathfrak{T}(s)} \\Big(\\gamma^{T(t)-t-1}\\rho_t^{T(t)} \\bar G_t^{T(t)} + (1 - \\gamma)\\sum_{h=t+1}^{T(t)-1} \\gamma^{h-t-1}\\rho_t^h \\bar G_t^h\\Big)}{\\sum_{t \\in \\mathfrak{T}(s)} \\Big(\\gamma^{T(t)-t-1}\\rho_t^{T(t)} + (1 - \\gamma)\\sum_{h=t+1}^{T(t)-1} \\gamma^{h-t-1}\\rho_t^h\\Big)}",
+    "symbols": [
+      {
+        "tex": "\\rho_t^h",
+        "meaning": "truncated ratio"
+      }
+    ],
+    "intuition": "The weighted counterpart: the same numerator, divided by the same combination of truncated ratios.",
+    "assumptions": [
+      "γ < 1."
+    ],
+    "pitfalls": [
+      "Exercise 5.10 asks for the action-value version inside off-policy control."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.8",
+        "printedPages": [
+          137,
+          137
+        ],
+        "pdfPages": [
+          151,
+          151
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10",
+      "note": "Printed p. 137 (PDF p. 151), checked on the page image."
+    }
+  }
+]

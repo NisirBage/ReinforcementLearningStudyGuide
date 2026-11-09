@@ -76,9 +76,12 @@ describe("coverage", () => {
 
   test("a section is covered only with a lesson, its equations, its examples and a question", () => {
     expect(sec("2.3").status).toBe("covered");
-    // §4.2 was the partial example until Milestone 4E covered Chapter 4; §5.3 still lacks a lesson and (5.1).
-    expect(sec("5.3")).toMatchObject({ status: "partial" });
-    expect(sec("5.3").missing).toEqual(["no lesson", "equations missing: (5.1)"]);
+    // A partial section, made on a fresh copy so the test does not depend on how far Milestone 4 has got (it used
+    // §4.2, then §5.3): without its lesson, §2.3 is partial and the lesson is the only thing missing.
+    const noLesson = fresh();
+    noLesson.lessons = noLesson.lessons.map((l) => ({ ...l, sections: l.sections.filter((s) => s.section !== "2.3") }));
+    const s23 = computeCoverage(noLesson, inventory, declarations).flatMap((c) => c.sections).find((s) => s.id === "2.3")!;
+    expect(s23).toMatchObject({ status: "partial", missing: ["no lesson"] });
     expect(sec("7.1")).toMatchObject({ status: "not-started" });
     // Chapter 4's opening equations are covered now; removing (4.1) shows that a missing one is still reported.
     expect(cov.find((c) => c.id === "4")!.intro.missing).toEqual([]);
@@ -262,7 +265,8 @@ describe("in the interface", () => {
     expect(row("2")).toHaveTextContent("Covered"); // completed in Milestone 4C
     expect(row("3")).toHaveTextContent("Covered"); // completed in Milestone 4D
     expect(row("4")).toHaveTextContent("Covered"); // completed in Milestone 4E
-    expect(row("5")).toHaveTextContent("Partial");
+    expect(row("5")).toHaveTextContent("Covered"); // completed in Milestone 4F
+    expect(row("6")).toHaveTextContent("Partial");
     expect(row("7")).toHaveTextContent("Not started");
   });
 });

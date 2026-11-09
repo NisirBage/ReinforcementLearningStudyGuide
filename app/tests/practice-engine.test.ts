@@ -27,11 +27,11 @@ describe("the question bank", () => {
     expect(new Set(all.map((q) => q.difficulty))).toEqual(new Set([1, 2, 3, 4]));
     expect(new Set(all.map((q) => q.provenance.kind))).toEqual(new Set(["textbook-exercise", "textbook-derived", "generated", "supplementary"]));
   });
-  test("textbook-exercise questions are exactly the reworded exercises 2.1–2.3, 2.5, 2.6, 3.1–3.6, 3.8–3.21, 4.1–4.4, 4.6–4.8 and 4.10", () => {
+  test("textbook-exercise questions are exactly the reworded exercises 2.1–2.3, 2.5, 2.6, 3.1–3.6, 3.8–3.21, 4.1–4.4, 4.6–4.8, 4.10, 5.1–5.8 and 5.10", () => {
     const ex = all.filter((q) => q.provenance.kind === "textbook-exercise").map((q) => (q.provenance as { exercise: string }).exercise).sort();
     // Exercise 2.4 is a programming exercise, done as a lab task (content/coverage/coverage.json), not a bank question;
-    // Exercise 3.7 does not exist in the draft (a placeholder); Exercises 4.5 and 4.9 are programming exercises done as lab tasks.
-    expect(ex).toEqual(["2.1", "2.2", "2.3", "2.5", "2.6", "3.1", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15", "3.16", "3.17", "3.18", "3.19", "3.2", "3.20", "3.21", "3.3", "3.4", "3.5", "3.6", "3.8", "3.9", "4.1", "4.10", "4.2", "4.3", "4.4", "4.6", "4.7", "4.8"]);
+    // Exercise 3.7 does not exist in the draft (a placeholder); Exercises 4.5, 4.9 and 5.9 are programming exercises done as lab tasks.
+    expect(ex).toEqual(["2.1", "2.2", "2.3", "2.5", "2.6", "3.1", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15", "3.16", "3.17", "3.18", "3.19", "3.2", "3.20", "3.21", "3.3", "3.4", "3.5", "3.6", "3.8", "3.9", "4.1", "4.10", "4.2", "4.3", "4.4", "4.6", "4.7", "4.8", "5.1", "5.10", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8"]);
   });
   test("every self-marked question has a model answer and a rubric adding up to its marks", () => {
     for (const q of all.filter((x) => x.type === "derivation" || x.type === "short-answer")) {
@@ -111,12 +111,14 @@ describe("selection", () => {
       "ch03-q008", "ch03-q009", "ch03-q010", "ch03-q012", "ch03-q005", "ch03-q015", "ch03-q013", "ch03-q006", "ch03-q014", "ch03-q016",
       "ch03-q017", "ch03-q018", "ch03-q019", "ch03-q021", "ch03-q022", "ch03-q023", "ch03-q024",
       "ch04-q018", "ch04-q019", "ch04-q020", "ch04-q021", "ch04-q022", "ch04-q023",
+      "ch05-q012", "ch05-q013", "ch05-q014", "ch05-q015", "ch05-q016", "ch05-q017", "ch05-q018", "ch05-q019", "ch05-q020",
     ]); // by section, then file order
     expect(ids({ provenance: ["textbook-exercise"] })).toEqual([
       "ch02-q023", "ch02-q026", "ch02-q027", "ch02-q029", "ch02-q040",
       "ch03-q008", "ch03-q009", "ch03-q010", "ch03-q012", "ch03-q005", "ch03-q011", "ch03-q015", "ch03-q013", "ch03-q004", "ch03-q006", "ch03-q014", "ch03-q016",
       "ch03-q017", "ch03-q018", "ch03-q019", "ch03-q020", "ch03-q021", "ch03-q022", "ch03-q023", "ch03-q024",
       "ch04-q001", "ch04-q004", "ch04-q018", "ch04-q019", "ch04-q020", "ch04-q021", "ch04-q022", "ch04-q023",
+      "ch05-q012", "ch05-q013", "ch05-q014", "ch05-q015", "ch05-q016", "ch05-q017", "ch05-q018", "ch05-q019", "ch05-q020",
     ]); // §3.3 before §3.7
     expect(ids({ units: ["ch03"], provenance: ["generated"] })).toEqual([]);
   });

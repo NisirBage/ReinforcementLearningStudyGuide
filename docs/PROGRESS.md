@@ -762,5 +762,74 @@ The validator reports no problems and no warnings.
 
 `npm run check` passes.
 
-#### Next: Milestone 4F
-Chapter 5 to the coverage criteria.
+### Milestone 4F: Chapter 5 complete (done, 2026-11-10)
+
+**Chapter 5 meets the coverage criteria:**
+- all 9 sections are covered;
+- all 9 numbered equations are present;
+- all 5 examples are covered;
+- all 10 exercises are accounted for: 9 in the question bank, and the racetrack (Exercise 5.9, a programming exercise) as a laboratory task.
+
+The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read in the text layer. Equations (5.1)–(5.9), the unnumbered flat-return identity, Figures 5.7, 5.8, 5.10 and 5.11 were checked on the page images. Two items are **flagged**:
+- **Figure 5.10 (off-policy MC control)** multiplies W by 1/µ(A_t|S_t) and then exits "if W = 0", which can never happen. With a greedy target, the loop should stop at the first non-greedy action going backwards. Our implementation does so, and the flag gives the correction.
+- **p. 119** says the Monte Carlo action-value estimates "converge quadratically, as before". Nothing before says that; p. 115 gives the 1/√n behaviour of averages.
+- Minor wording slips ("Monte Carto", "do not convergence") are not flagged.
+
+**Reproductions:**
+- **Figure 5.2 (Example 5.1).** First-visit MC on "stick on 20 or 21" approaches the exact values from the 4B blackjack model: RMS error 0.010 (no usable ace) and 0.035 (usable ace) after 500,000 games. The usable-ace estimates are the noisier ones, as the draft says. No state recurs within a game, so first-visit and every-visit MC coincide.
+- **Example 5.2 (soap bubble).** Random walks from the centre of a 9 × 9 grid average to the relaxation solution within 0.02.
+- **Figure 5.7 (Example 5.4).**
+  - The exact variance of the scaled return is Var(ρG) = 10.156, so ordinary importance sampling's expected squared error is 10.156/n: about 3.4 at 3 episodes and 1.0 at 10, as the figure shows.
+  - Weighted importance sampling's error rises from about 0.21 to about 0.44 over the first ten episodes, then falls. This is what Exercise 5.5 asks about.
+  - Ordinary importance sampling is unbiased: its first moment equals the exact −0.27720.
+- **Figure 5.8 (Example 5.5).**
+  - E[ρG] = 1, while E[(ρG)²] = 0.2 Σ 1.8^k diverges, checked by enumerating episode lengths.
+  - Ordinary importance sampling is still between 0.74 and 1.04 after a million episodes (10 runs).
+  - Weighted importance sampling is exactly 1 after the first episode that ends with "back".
+- **(5.2).** On the 5 × 5 gridworld, ε-greedy improvement never makes things worse, and its fixed point equals the optimum of the "ε moved inside the environment" construction (p. 126).
+
+**Racetrack (Exercise 5.9, laboratory task):**
+- **The tracks.** Both tracks of Figure 5.11, read at 300 dpi, are finite MDPs (7,451 and 12,876 states), so value iteration gives the true optimum to compare against.
+- **What the draft leaves open, and our reading,** stated in the lab:
+  - "forward" means up;
+  - a move that would stop the car instead sets the upward speed to 1;
+  - a move follows the straight line between cells;
+  - a car that would leave the track moves one cell up, or right, instead.
+- **The learning method:** off-policy MC control (Figure 5.10, corrected), with an ε-greedy behaviour policy (ε = 0.1).
+- **Speed.** Sampling the behaviour policy only at the states actually visited makes an episode take about 10 µs, about 400 times faster than building the policy for every state.
+- **Results on the left track after 200,000 episodes:** the learned greedy policy is within about 1.3 steps of the optimum from the three start cells nearest the turn, but still 4–12 steps worse from the far end (seeds 59–61), improving with more episodes. This is the draft's warning in §5.7: the method learns only from the tails of episodes after their last exploratory action. The lab and the lesson say so rather than hide it.
+
+**Laboratory.** Two new panels in the Monte Carlo laboratory: importance sampling (Examples 5.4 and 5.5, with the exact error shown beside the measured one), and the racetrack (train, compare each start cell with the optimum, draw the learned trajectory). New library code: `lib/rl/offPolicy.ts` and `lib/rl/envs/racetrack.ts`.
+
+**Content:**
+- **12 concepts:** Monte Carlo methods; first-visit and every-visit MC; MC action values; exploring starts; on-policy ε-soft control; off-policy learning; importance sampling; the incremental weighted average; off-policy MC control; truncated returns; blackjack; and the racetrack.
+- **10 equations:** (5.1)–(5.9) and the flat-partial-return identity.
+- **4 example items:** Examples 5.1, 5.2, 5.4 and 5.5. Example 5.3 was already reproduced by a laboratory check.
+- **9 lessons:** §5.1 also teaches the chapter opening; §5.9 is a reading guide.
+- **27 questions** (now 31 in Chapter 5):
+  - 9 exercises, reworded and labelled as the draft's: 5.1–5.8 and 5.10. Exercises 5.3 and 5.4 ask essentially the same thing in the draft; both are kept, and each says so.
+  - 18 derived from the text;
+  - 7 numeric questions with answer checks;
+  - 9 written answers marked against rubrics.
+
+**Checks:** 18 new, 132 in all.
+
+**Tests:** **28 files, 1709 tests, all passed.**
+- **New: `ch05-4f` (9).** Importance sampling, the racetrack model and the corrected control algorithm, the two laboratory panels, the Chapter 5 lessons, coverage and flags.
+- **Updated, because they pinned the previous content:**
+  - question counts 133 → 160 (102 → 120 without written answers);
+  - concept count 60 → 72;
+  - the written-answer and textbook-exercise lists;
+  - Chapter 5's status in the chapter list.
+- **The coverage test's example of a partial section** no longer depends on progress (it used §4.2, then §5.3). It removes §2.3's lesson from a fresh copy of the content and expects "partial, no lesson".
+
+**Browser review:**
+- all Chapter 5 sections render with no KaTeX errors;
+- the racetrack panel trains 50,000 episodes in a few seconds and draws the track and trajectory at phone width without horizontal scrolling.
+
+`npm run check` passes.
+
+#### Next: Milestone 4G
+Chapter 6 to the coverage criteria.

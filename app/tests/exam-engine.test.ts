@@ -34,8 +34,8 @@ describe("choosing exam questions", () => {
     expect(auto.every((q) => !q.unit.startsWith("sup-"))).toBe(true);
     const withWritten = examQuestions(stubs, cfg({ count: 1000, includeWritten: true }), p, unitOrder);
     // ch02: q010, q011, q022, q026, q027, q029, q033, q036 (4C added six); ch03: q005, q006, and fifteen added in 4D;
-    // ch04: q018–q023, added in 4E
-    expect(withWritten.length - auto.length).toBe(31);
+    // ch04: q018–q023, added in 4E; ch05: q012–q020, added in 4F
+    expect(withWritten.length - auto.length).toBe(40);
     expect(examQuestions(stubs, cfg({ units: ["sup-zhao-06"], count: 100 }), p, unitOrder).sort()).toEqual(["sup-zhao-06-q001", "sup-zhao-06-q002"]);
   });
   test("chapters, difficulty and count apply; the same seed gives the same paper", () => {

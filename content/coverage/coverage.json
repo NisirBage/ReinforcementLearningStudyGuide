@@ -93,6 +93,11 @@
       "lab": "dp",
       "note": "Programming exercise: choose the gambler's problem in the dynamic programming laboratory and set p_h to 0.25 or 0.55; check lab.dp.gambler-ex4-9 confirms bold play for 0.25 and timid play (stake 1) for 0.55."
     },
+    "5.9": {
+      "disposition": "lab-task",
+      "lab": "mc",
+      "note": "Racetrack (programming): the Monte Carlo laboratory's racetrack panel uses both tracks of Figure 5.11, learns by off-policy MC control (Figure 5.10, corrected) and compares the result with value iteration's optimum; the rules the draft leaves open are stated in the lab. Check lab.mc.racetrack."
+    },
     "8.1": {
       "disposition": "placeholder",
       "note": "A placeholder in the April 2015 draft (no exercise text)."

@@ -234,6 +234,1552 @@
         "check": "ch05-q004"
       },
       "reviewed": true
+    },
+    {
+      "id": "ch05-q005",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch05.is-ratio",
+          "ex.ch05.off-policy-blackjack"
+        ]
+      },
+      "concepts": [
+        "ch05.importance-sampling"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "In Example 5.4 the behavior policy hits or sticks with probability 1/2 each, and the target policy sticks only on 20 or 21. From sum 13 (usable ace, dealer showing 2) one game hits and draws a 3 (soft 16), hits again and draws a 4 (soft 20), then sticks. Another game sticks at once on 13. What is the importance-sampling ratio (5.3) of each game?",
+      "parts": [
+        {
+          "label": "ρ, first game",
+          "answer": 8,
+          "tolerance": 0
+        },
+        {
+          "label": "ρ, second game",
+          "answer": 0,
+          "tolerance": 0
+        }
+      ],
+      "solution": [
+        "First game: three decisions, each the one the target makes (hit at 13, hit at 16, stick at 20), each with ratio $1/0.5 = 2$: $\\rho = 2^3 = 8$.",
+        "Second game: sticking at 13 has target probability 0, so $\\rho = 0$."
+      ],
+      "explanation": "The ratio depends only on the policies; the card probabilities cancel.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.5",
+          "printedPages": [
+            128,
+            130
+          ],
+          "pdfPages": [
+            142,
+            144
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05-q005"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q006",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch05.ordinary-is",
+          "eq.ch05.weighted-is"
+        ]
+      },
+      "concepts": [
+        "ch05.importance-sampling"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Three first visits to a state give returns $G = (1, -1, -1)$ with importance-sampling ratios $\\rho = (8, 0, 2)$. What are the ordinary (5.4) and the weighted (5.5) importance-sampling estimates?",
+      "parts": [
+        {
+          "label": "ordinary",
+          "answer": 2,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "weighted",
+          "answer": 0.6,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "Numerator: $8 \\cdot 1 + 0 \\cdot (-1) + 2 \\cdot (-1) = 6$.",
+        "Ordinary: $6 / 3 = 2$, outside the range of possible returns.",
+        "Weighted: $6 / (8 + 0 + 2) = 0.6$."
+      ],
+      "explanation": "Ordinary IS can produce estimates no return could have, which is where its large variance shows; weighted IS always stays within the range of the returns.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.5",
+          "printedPages": [
+            128,
+            129
+          ],
+          "pdfPages": [
+            142,
+            143
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05-q006"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q007",
+      "unit": "ch05",
+      "section": "5.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch05.weighted-incremental"
+        ]
+      },
+      "concepts": [
+        "ch05.incremental-weighted-average"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "Using the incremental rule (5.7) with $V_1 = 0$ and $C_0 = 0$, process the returns $G_1 = 1$ and $G_2 = -1$ with weights $W_1 = 2$ and $W_2 = 6$. What are $V_2$ and $V_3$?",
+      "parts": [
+        {
+          "label": "V_2",
+          "answer": 1,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "V_3",
+          "answer": -0.5,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$C_1 = 2$: $V_2 = 0 + \\tfrac22(1 - 0) = 1$.",
+        "$C_2 = 8$: $V_3 = 1 + \\tfrac68(-1 - 1) = -0.5$.",
+        "Check: $(2 \\cdot 1 + 6 \\cdot (-1))/8 = -0.5$."
+      ],
+      "explanation": "The step size is the new return's share of all the weight so far.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.6",
+          "printedPages": [
+            133,
+            133
+          ],
+          "pdfPages": [
+            147,
+            147
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05-q007"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q008",
+      "unit": "ch05",
+      "section": "5.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch05.epsilon-greedy-improvement"
+        ]
+      },
+      "concepts": [
+        "ch05.on-policy-epsilon-soft"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "A state has four actions and $q_\\pi(s, \\cdot) = (1, 2, 3, 4)$. The ε-greedy policy π′ with ε = 0.2 is formed from these values. What probability does π′ give the greedy action, and each other action? What is $q_\\pi(s, \\pi'(s)) = \\sum_a \\pi'(a|s) q_\\pi(s, a)$?",
+      "parts": [
+        {
+          "label": "greedy action",
+          "answer": 0.85,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "each other action",
+          "answer": 0.05,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "q_π(s, π′(s))",
+          "answer": 3.7,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "Each action gets $\\epsilon/|\\mathcal{A}(s)| = 0.05$; the greedy action also gets $1 - \\epsilon = 0.8$: total 0.85.",
+        "$0.05(1 + 2 + 3) + 0.85 \\cdot 4 = 0.3 + 3.4 = 3.7$, equivalently $0.05 \\cdot 10 + 0.8 \\cdot 4$ as in (5.2)."
+      ],
+      "explanation": "If π is any ε-soft policy, (5.2) shows its own average of these action values is at most 3.7.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.4",
+          "printedPages": [
+            125,
+            125
+          ],
+          "pdfPages": [
+            139,
+            139
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05-q008"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q009",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch05.infinite-variance"
+        ]
+      },
+      "concepts": [
+        "ch05.importance-sampling"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "In Example 5.5 (target always 'back', behavior 50/50), the scaled return of an episode with $k$ returns to $s$ before ending is $\\rho G = 2^{k+1}$, and that episode has probability $0.5^{k+1}\\, 0.9^k\\, 0.1$ under the behavior. What is $\\mathbb{E}[\\rho G]$? How much do the episodes with $k = 0, 1, 2$ contribute to $\\mathbb{E}[(\\rho G)^2]$?",
+      "parts": [
+        {
+          "label": "E[ρG]",
+          "answer": 1,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "contribution of k = 0, 1, 2 to E[(ρG)²]",
+          "answer": 1.208,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$\\mathbb{E}[\\rho G] = \\sum_k 0.5^{k+1} 0.9^k 0.1 \\cdot 2^{k+1} = 0.1 \\sum_k 0.9^k = 1$.",
+        "Squares: $0.5^{k+1} 0.9^k 0.1 \\cdot 4^{k+1} = 0.2 \\cdot 1.8^k$; for $k = 0, 1, 2$: $0.2(1 + 1.8 + 3.24) = 1.208$.",
+        "The full sum $0.2 \\sum_k 1.8^k$ diverges: infinite variance."
+      ],
+      "explanation": "Each extra loop doubles the ratio and squares to a factor of 4, which outgrows the halving and 0.9 of its probability.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.5",
+          "printedPages": [
+            131,
+            132
+          ],
+          "pdfPages": [
+            145,
+            146
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05-q009"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q010",
+      "unit": "ch05",
+      "section": "5.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch05.flat-partial-decomposition"
+        ]
+      },
+      "concepts": [
+        "ch05.truncated-is"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "An episode from time 0 has rewards $R_1 = 1$, $R_2 = 2$, $R_3 = 3$ and ends at $T = 3$; γ = 0.5. What is the flat partial return $\\bar G_0^2$? Use the decomposition of §5.8 into flat partial returns to compute $G_0$.",
+      "parts": [
+        {
+          "label": "Ḡ_0^2",
+          "answer": 3,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "G_0",
+          "answer": 2.75,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "$\\bar G_0^1 = 1$, $\\bar G_0^2 = 1 + 2 = 3$, $\\bar G_0^3 = 6$.",
+        "$G_0 = \\gamma^2 \\bar G_0^3 + (1 - \\gamma)(\\bar G_0^1 + \\gamma \\bar G_0^2) = 0.25 \\cdot 6 + 0.5(1 + 1.5) = 2.75$.",
+        "Direct: $1 + 0.5 \\cdot 2 + 0.25 \\cdot 3 = 2.75$."
+      ],
+      "explanation": "Discounting read as a chance of stopping turns one discounted return into a mixture of undiscounted partial returns.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.8",
+          "printedPages": [
+            137,
+            137
+          ],
+          "pdfPages": [
+            151,
+            151
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05-q010"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q011",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch05.off-policy-blackjack"
+        ]
+      },
+      "concepts": [
+        "ch05.importance-sampling"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "In Example 5.4 the scaled returns $\\rho G$ of single episodes have variance $\\mathrm{Var}(\\rho G) \\approx 10.156$ (computed exactly from the blackjack model). Ordinary importance sampling averages $n$ independent scaled returns. What is its expected squared error after 10 episodes, and after 100?",
+      "parts": [
+        {
+          "label": "after 10",
+          "answer": 1.0156,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "after 100",
+          "answer": 0.10156,
+          "tolerance": 5e-05
+        }
+      ],
+      "solution": [
+        "The estimate is unbiased, so its expected squared error is its variance, $\\mathrm{Var}(\\rho G)/n$.",
+        "$10.156/10 \\approx 1.016$ and $10.156/100 \\approx 0.102$; Figure 5.7's ordinary curve passes about 1.2 at 10 episodes, within the noise of 100 runs."
+      ],
+      "explanation": "Weighted importance sampling trades a little bias for a much smaller variance early on.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.5",
+          "printedPages": [
+            129,
+            130
+          ],
+          "pdfPages": [
+            143,
+            144
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05-q011"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q012",
+      "unit": "ch05",
+      "section": "5.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.1"
+      },
+      "concepts": [
+        "ch05.blackjack",
+        "ch05.mc-prediction"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Look at the right-hand diagrams of Figure 5.2 (values of 'stick only on 20 or 21'). Why do the estimated values jump up for the last two rows at the back (player sums 20 and 21)? Why do they drop for the whole last row on the left (dealer showing an ace)? Why are the values at the front higher in the upper diagrams (usable ace) than in the lower ones?",
+      "answer": "Sums 20 and 21 are where this policy sticks, and sticking on 20 or 21 usually wins, so those values are high; at 19 and below the policy keeps hitting and often busts, so values there are low. A dealer showing an ace is the dealer's strongest card (often a high total, sometimes a natural), so every player state is worth less against it. With a usable ace the player cannot bust on the next card (the ace can drop to 1), so hitting from a low sum is safer and the values are higher than for the same sum without a usable ace.",
+      "solution": [
+        "Think about what the policy does in each state, and what the dealer's showing card implies.",
+        "The laboratory's exact values make the pattern visible."
+      ],
+      "explanation": "The value function reflects the policy being evaluated as much as the game itself.",
+      "rubric": [
+        {
+          "point": "Jump at 20–21: the policy sticks there and usually wins; below, it hits and often busts",
+          "marks": 1
+        },
+        {
+          "point": "Drop for the dealer's ace: the strongest showing card for the dealer",
+          "marks": 1
+        },
+        {
+          "point": "Usable ace higher: the ace can count as 1, so the next hit cannot bust the player",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            140,
+            140
+          ],
+          "pdfPages": [
+            154,
+            154
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 5.1, printed p. 140; Figure 5.2, printed p. 116."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q013",
+      "unit": "ch05",
+      "section": "5.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.2"
+      },
+      "concepts": [
+        "ch05.mc-action-values",
+        "ch03.backup-diagram"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Sketch in words the backup diagram of Monte Carlo estimation when the values being learned are action values $q_\\pi$.",
+      "answer": "The root is a state–action pair (a solid node); below it, one whole sampled trajectory: the next state, the action π took there, the next state, and so on, alternating state and action nodes, down to the terminal state. Like Figure 5.3, it is a single episode to the end rather than all one-step transitions.",
+      "solution": [
+        "Start from Figure 5.3 (for v_π) and change the root."
+      ],
+      "explanation": "Monte Carlo backups use one sampled episode all the way to the end.",
+      "rubric": [
+        {
+          "point": "Root is a state–action pair, not a state",
+          "marks": 1
+        },
+        {
+          "point": "Below it, one complete sampled episode down to termination, alternating states and actions",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            140,
+            140
+          ],
+          "pdfPages": [
+            154,
+            154
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 5.2, printed p. 140."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q014",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.3"
+      },
+      "concepts": [
+        "ch05.importance-sampling",
+        "ch05.mc-action-values"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Returns are generated by the behavior policy µ. Give the Monte Carlo estimate of an action value $Q(s, a)$ by weighted importance sampling, the counterpart of (5.5). Pay attention to which actions the ratio should include.",
+      "answer": "$Q(s, a) = \\dfrac{\\sum_{t \\in \\mathfrak{T}(s, a)} \\rho_{t+1}^{T(t)} G_t}{\\sum_{t \\in \\mathfrak{T}(s, a)} \\rho_{t+1}^{T(t)}}$, where $\\mathfrak{T}(s, a)$ is the set of times at which $a$ was taken in $s$, and $\\rho_{t+1}^{T(t)} = \\prod_{k=t+1}^{T(t)-1} \\pi(A_k|S_k)/\\mu(A_k|S_k)$ (1 if the episode ends right after $t$).",
+      "solution": [
+        "An action value conditions on A_t = a, so π(a|s)/µ(a|s) must not be included.",
+        "Otherwise follow (5.5)."
+      ],
+      "explanation": "Exercise 5.4 asks essentially the same question; the answer is the same.",
+      "rubric": [
+        {
+          "point": "Sums over visits to the pair (s, a), not to the state",
+          "marks": 1
+        },
+        {
+          "point": "The ratio starts at t + 1: the first action is given, so its probability does not enter",
+          "marks": 1
+        },
+        {
+          "point": "Weighted form: the same ratios in the denominator",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch05-q015"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            140,
+            141
+          ],
+          "pdfPages": [
+            154,
+            155
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 5.3, printed pp. 140–141."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q015",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.4"
+      },
+      "concepts": [
+        "ch05.importance-sampling"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Give the action-value version $Q(s, a)$ of the weighted estimator (5.5), replacing its state-value form $V(s)$.",
+      "answer": "$Q(s, a) = \\dfrac{\\sum_{t \\in \\mathfrak{T}(s, a)} \\rho_{t+1}^{T(t)} G_t}{\\sum_{t \\in \\mathfrak{T}(s, a)} \\rho_{t+1}^{T(t)}}$, with the ratio starting after the first action (an empty product is 1).",
+      "solution": [
+        "Exactly as for Exercise 5.3: the action at time t is fixed, so only later actions are reweighted."
+      ],
+      "explanation": "In the draft, Exercises 5.3 and 5.4 ask for the same estimate in slightly different words.",
+      "rubric": [
+        {
+          "point": "Visits to (s, a)",
+          "marks": 1
+        },
+        {
+          "point": "Ratio from t + 1 to T(t) − 1",
+          "marks": 1
+        },
+        {
+          "point": "Weighted average form",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch05-q014"
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            141,
+            141
+          ],
+          "pdfPages": [
+            155,
+            155
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 5.4, printed p. 141."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q016",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.5"
+      },
+      "concepts": [
+        "ch05.importance-sampling"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "In Figure 5.7 the error of ordinary importance sampling falls steadily, but the error of weighted importance sampling first rises and then falls. Why might that happen?",
+      "answer": "At first many runs have seen no episode with a nonzero ratio (the random behavior soon deviates from the target), and weighted IS then reports 0, which happens to be fairly close to the true value −0.277, so the early error is small. As episodes consistent with the target arrive, the weighted estimate equals the average of a few returns, each +1, 0 or −1: far from −0.277, so the error rises. With more returns their weighted average approaches the true value and the error falls. Its bias also shrinks as it averages more returns.",
+      "solution": [
+        "Ask what the weighted estimate is after 0, 1 and a few consistent episodes.",
+        "The laboratory shows the curve and, beside it, ordinary IS's exact error."
+      ],
+      "explanation": "In our runs the weighted error goes from about 0.21 to 0.44 over the first ten episodes, then falls.",
+      "rubric": [
+        {
+          "point": "Early on the weighted estimate is often 0 (no nonzero ratio yet), close to the true value",
+          "marks": 1
+        },
+        {
+          "point": "Once a few consistent returns arrive, the estimate is an average of a few ±1 values, far from the truth: error rises",
+          "marks": 1
+        },
+        {
+          "point": "With more returns the average (and the bias) settles: error falls",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            141,
+            141
+          ],
+          "pdfPages": [
+            155,
+            155
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05.fig5-7",
+        "note": "Exercise 5.5, printed p. 141; the rise and fall are reproduced by the check."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q017",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.6"
+      },
+      "concepts": [
+        "ch05.importance-sampling",
+        "ch05.first-every-visit"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Example 5.5 and Figure 5.8 used first-visit Monte Carlo. Would the estimator's variance still be infinite with every-visit Monte Carlo? Why?",
+      "answer": "Yes. Every-visit MC adds, for each episode, one scaled return per visit to s; every episode that follows the target from its first visit still contributes the first-visit term with ratio $2^{k+1}$, whose second moment already diverges ($0.2\\sum 1.8^k$). The extra terms (from later visits, all with return 1 and positive ratios) only add positive amounts; they cannot cancel it. So the expected square of what is averaged is still infinite.",
+      "solution": [
+        "List what an every-visit estimator adds for an episode that loops k times."
+      ],
+      "explanation": "Weighted importance sampling avoids the problem in both variants.",
+      "rubric": [
+        {
+          "point": "Says the variance is still infinite",
+          "marks": 1
+        },
+        {
+          "point": "Notes the first-visit term (with its divergent second moment) is still among the terms",
+          "marks": 1
+        },
+        {
+          "point": "Notes the added terms are positive and cannot cancel the divergence",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            141,
+            141
+          ],
+          "pdfPages": [
+            155,
+            155
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 5.6, printed p. 141; the divergence is checked by ch05.fig5-8."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q018",
+      "unit": "ch05",
+      "section": "5.6",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.7"
+      },
+      "concepts": [
+        "ch05.mc-prediction",
+        "ch02.incremental-update"
+      ],
+      "type": "short-answer",
+      "category": "pseudocode",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "Rewrite first-visit Monte Carlo policy evaluation (Figure 5.1) so that it keeps incremental averages, as in Chapter 2, instead of lists of returns.",
+      "answer": "Initialise $V(s)$ arbitrarily and $N(s) \\leftarrow 0$ for all s. Repeat: generate an episode with π; for each state s appearing in it: $G \\leftarrow$ the return after the first occurrence of s; $N(s) \\leftarrow N(s) + 1$; $V(s) \\leftarrow V(s) + \\frac{1}{N(s)}[G - V(s)]$.",
+      "solution": [
+        "Each Returns(s) list only ever produced its average, so a count and the incremental mean (2.3) replace it."
+      ],
+      "explanation": "Memory per state becomes constant.",
+      "rubric": [
+        {
+          "point": "Replaces Returns(s) by a count N(s)",
+          "marks": 1
+        },
+        {
+          "point": "Increments the count before using 1/N(s)",
+          "marks": 1
+        },
+        {
+          "point": "Updates V(s) ← V(s) + (1/N(s))(G − V(s)) once per episode, for first visits only",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            141,
+            141
+          ],
+          "pdfPages": [
+            155,
+            155
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 5.7, printed p. 141."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q019",
+      "unit": "ch05",
+      "section": "5.6",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.8"
+      },
+      "concepts": [
+        "ch05.incremental-weighted-average"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Derive the incremental weighted-average rule (5.7) from the definition (5.6), following the pattern of the derivation of (2.3).",
+      "answer": "$V_{n+1} = \\frac{\\sum_{k=1}^{n} W_k G_k}{C_n} = \\frac{W_n G_n + C_{n-1} V_n}{C_n} = \\frac{W_n G_n + (C_n - W_n) V_n}{C_n} = V_n + \\frac{W_n}{C_n}(G_n - V_n)$, with $C_n = \\sum_{k=1}^n W_k$.",
+      "solution": [
+        "The same three moves as for (2.3): split off the newest term, rewrite the old sum through the old average, collect."
+      ],
+      "explanation": "With all weights 1 it reduces to (2.3).",
+      "rubric": [
+        {
+          "point": "Writes V_{n+1} as the weighted sum over the first n returns divided by C_n",
+          "marks": 1
+        },
+        {
+          "point": "Separates the newest return and replaces the old sum by C_{n−1} V_n",
+          "marks": 1
+        },
+        {
+          "point": "Uses C_{n−1} = C_n − W_n to reach V_n + (W_n/C_n)(G_n − V_n)",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            141,
+            141
+          ],
+          "pdfPages": [
+            155,
+            155
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch05.incremental-weighted",
+        "note": "Exercise 5.8, printed p. 141; the rule is checked against the batch average."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q020",
+      "unit": "ch05",
+      "section": "5.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "5.10"
+      },
+      "concepts": [
+        "ch05.truncated-is",
+        "ch05.off-policy-mc-control"
+      ],
+      "type": "short-answer",
+      "category": "pseudocode",
+      "difficulty": 4,
+      "marks": 4,
+      "stem": "(Starred in the draft.) Change the off-policy control algorithm of Figure 5.10 so that it uses the truncated weighted-average estimator (5.9). You will first need an action-value version of (5.9).",
+      "answer": "Action-value version: for each visit $t$ to $(s, a)$, use the flat partial returns $\\bar G_t^h$ and truncated ratios $\\rho_{t+1}^h$ (starting after the given action): numerator term $\\gamma^{T-t-1}\\rho_{t+1}^T \\bar G_t^T + (1-\\gamma)\\sum_{h=t+1}^{T-1}\\gamma^{h-t-1}\\rho_{t+1}^h \\bar G_t^h$, denominator term the same without the $\\bar G$s. In the algorithm, process each episode backwards as in Figure 5.10, but for each step keep, besides the episode's rewards, the running products of ratios from $t+1$ to each horizon; add the numerator and denominator terms to running sums $N(S_t, A_t)$ and $D(S_t, A_t)$, set $Q(S_t, A_t) \\leftarrow N/D$, make π greedy, and stop at the first step (going backwards) whose action is not greedy, since all ratios through it are then 0. With a greedy target, the truncated ratios are 1 up to the first non-greedy action and 0 after it, so the estimator mixes partial returns over the horizons the target agrees with.",
+      "solution": [
+        "First convert (5.9) to action values (as in Exercise 5.4).",
+        "Then replace the single weight W of Figure 5.10 by the per-horizon weights."
+      ],
+      "explanation": "A demanding exercise; the payoff is lower variance when γ < 1 and episodes are long.",
+      "rubric": [
+        {
+          "point": "Writes the action-value form of (5.9), with ratios starting after the first action",
+          "marks": 1
+        },
+        {
+          "point": "Accumulates numerator and denominator per (s, a) and sets Q to their quotient",
+          "marks": 1
+        },
+        {
+          "point": "Keeps the backward pass and greedy improvement of Figure 5.10, stopping at a non-greedy action",
+          "marks": 1
+        },
+        {
+          "point": "Notes that with a greedy target the truncated ratios are 1 up to the first non-greedy action, 1/µ products on the behavior side included consistently",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            142,
+            142
+          ],
+          "pdfPages": [
+            156,
+            156
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 5.10, printed p. 142."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q021",
+      "unit": "ch05",
+      "section": "5.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.1"
+        ]
+      },
+      "concepts": [
+        "ch05.monte-carlo-methods",
+        "ch04.bootstrapping"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why is the cost of estimating the value of one state by Monte Carlo independent of the number of states?",
+      "options": [
+        "Its estimate for a state does not build on any other state's estimate: it only averages returns observed from that state",
+        "It uses a model that is the same size for any problem",
+        "It updates every state in every episode",
+        "It only works on problems with few states"
+      ],
+      "answer": 0,
+      "solution": [
+        "DP's backups tie each state to its successors; Monte Carlo's averages are independent."
+      ],
+      "explanation": "The draft counts this as a third advantage over DP, after learning from actual and from simulated experience.",
+      "optionNotes": [
+        "Correct: Monte Carlo does not bootstrap, so one state can be evaluated alone.",
+        "Monte Carlo uses no model at all.",
+        "It updates only the states that occur, and can generate episodes from just the state of interest.",
+        "The point is that it scales well when only a few states matter."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.1",
+          "printedPages": [
+            117,
+            117
+          ],
+          "pdfPages": [
+            131,
+            131
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 117."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q022",
+      "unit": "ch05",
+      "section": "5.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.2"
+        ]
+      },
+      "concepts": [
+        "ch05.mc-action-values"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why are action values, rather than state values, the main target of Monte Carlo control?",
+      "options": [
+        "Without a model, state values cannot tell which action to take; action values can",
+        "Action values converge faster",
+        "State values cannot be estimated from episodes",
+        "Action values need fewer episodes because there are fewer of them"
+      ],
+      "answer": 0,
+      "solution": [
+        "Greedy improvement with q needs only max_a q(s, a) (5.1)."
+      ],
+      "explanation": "This is why Monte Carlo control estimates q_* rather than v_*.",
+      "optionNotes": [
+        "Correct: choosing by state values needs a one-step look-ahead through p(s′, r|s, a).",
+        "Nothing guarantees faster convergence; there are more of them.",
+        "Section 5.1 estimates state values from episodes.",
+        "There are more action values than state values."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.2",
+          "printedPages": [
+            119,
+            119
+          ],
+          "pdfPages": [
+            133,
+            133
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 119."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q023",
+      "unit": "ch05",
+      "section": "5.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.2"
+        ]
+      },
+      "concepts": [
+        "ch05.exploring-starts"
+      ],
+      "type": "true-false",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: with exploring starts, every state–action pair has a nonzero probability of being an episode's first pair, so every pair is visited infinitely often in the limit of infinitely many episodes.",
+      "answer": true,
+      "solution": [
+        "That is the definition and the reason for the assumption."
+      ],
+      "explanation": "It is rarely available outside simulation, which motivates §5.4 and §5.5.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.2",
+          "printedPages": [
+            120,
+            120
+          ],
+          "pdfPages": [
+            134,
+            134
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 120."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q024",
+      "unit": "ch05",
+      "section": "5.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.3"
+        ]
+      },
+      "concepts": [
+        "ch05.mc-es"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "True or false: according to the draft, it is known, with a proof, that Monte Carlo ES always reaches an optimal policy.",
+      "answer": false,
+      "solution": [
+        "The draft argues it cannot converge to a suboptimal policy, but a proof of convergence was still missing, and it counts that among the most basic open problems of the theory (citing a partial solution by Tsitsiklis, 2002)."
+      ],
+      "explanation": "Convergence 'seems inevitable' but was not formally proved as of the draft.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.3",
+          "printedPages": [
+            122,
+            123
+          ],
+          "pdfPages": [
+            136,
+            137
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed pp. 122–123."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q025",
+      "unit": "ch05",
+      "section": "5.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.4"
+        ]
+      },
+      "concepts": [
+        "ch05.on-policy-epsilon-soft",
+        "ch05.off-policy-learning"
+      ],
+      "type": "multi",
+      "category": "definition",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Which statements are correct? Select all that apply.",
+      "options": [
+        "On-policy methods learn about, and improve, the same policy that chooses the actions",
+        "Monte Carlo ES is an on-policy method",
+        "An ε-soft policy gives every action probability at least ε/|A(s)|",
+        "On-policy ε-greedy MC control converges to an optimal policy π_*",
+        "Off-policy methods must use a deterministic behavior policy"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "solution": [
+        "Recall the definitions on pp. 124–125 and the limitation stated on p. 126."
+      ],
+      "explanation": "Off-policy methods learn about a policy different from the one that generates the data.",
+      "optionNotes": [
+        "Correct.",
+        "Correct: the draft classes it as on-policy.",
+        "Correct: the definition.",
+        "Only to the best ε-soft policy.",
+        "The behavior policy must be soft (for coverage); it is the target that may be deterministic."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.4",
+          "printedPages": [
+            124,
+            125
+          ],
+          "pdfPages": [
+            138,
+            139
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed pp. 124–126."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q026",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.5"
+        ]
+      },
+      "concepts": [
+        "ch05.off-policy-learning"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "What does the coverage assumption require of the behavior policy µ and the target policy π?",
+      "options": [
+        "Every action with π(a|s) > 0 must also have µ(a|s) > 0",
+        "µ and π must be equal",
+        "π must be stochastic",
+        "µ must be greedy"
+      ],
+      "answer": 0,
+      "solution": [
+        "The ratio π/µ must be defined for every action the target uses."
+      ],
+      "explanation": "It follows that µ is stochastic in every state where it is not identical to π.",
+      "optionNotes": [
+        "Correct: otherwise some returns the target could produce are never observed.",
+        "Then the problem would be on-policy.",
+        "The target may be deterministic, a case of special interest.",
+        "The behavior must be stochastic where it differs from π."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.5",
+          "printedPages": [
+            127,
+            127
+          ],
+          "pdfPages": [
+            141,
+            141
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 127."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q027",
+      "unit": "ch05",
+      "section": "5.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch05.ordinary-is",
+          "eq.ch05.weighted-is"
+        ]
+      },
+      "concepts": [
+        "ch05.importance-sampling"
+      ],
+      "type": "multi",
+      "category": "compare-contrast",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Compare ordinary importance sampling (5.4) with weighted importance sampling (5.5). Select all correct statements.",
+      "options": [
+        "Ordinary importance sampling is unbiased",
+        "Weighted importance sampling's estimate after one return equals that return (if its ratio is nonzero)",
+        "The variance of ordinary importance sampling can be infinite",
+        "Weighted importance sampling is unbiased after any number of returns",
+        "With bounded returns, the variance of weighted importance sampling goes to zero even when the ratios have infinite variance"
+      ],
+      "answer": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "solution": [
+        "Ordinary: unbiased, high variance. Weighted: biased, low variance, preferred in practice."
+      ],
+      "explanation": "This is a bias–variance trade-off.",
+      "optionNotes": [
+        "Correct.",
+        "Correct: the ratio cancels.",
+        "Correct: Example 5.5.",
+        "It is biased (towards v_µ after one return); the bias vanishes asymptotically.",
+        "Correct (Precup, Sutton and Dasgupta, 2001, cited by the draft)."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.5",
+          "printedPages": [
+            129,
+            129
+          ],
+          "pdfPages": [
+            143,
+            143
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 129."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q028",
+      "unit": "ch05",
+      "section": "5.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.6"
+        ]
+      },
+      "concepts": [
+        "ch05.incremental-weighted-average"
+      ],
+      "type": "true-false",
+      "category": "algorithm-trace",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: if the target and behavior policies are the same, the weight W in the incremental algorithm of Figure 5.9 is always 1, and the algorithm is ordinary every-visit Monte Carlo evaluation.",
+      "answer": true,
+      "solution": [
+        "Every ratio π/µ is 1, so W stays 1 and the step size W/C is 1/(number of returns)."
+      ],
+      "explanation": "The draft says the algorithm applies to the on-policy case this way.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.6",
+          "printedPages": [
+            134,
+            134
+          ],
+          "pdfPages": [
+            148,
+            148
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Figure 5.9 caption, printed p. 134."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q029",
+      "unit": "ch05",
+      "section": "5.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.7"
+        ]
+      },
+      "concepts": [
+        "ch05.off-policy-mc-control"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 3,
+      "marks": 1,
+      "stem": "Why can off-policy Monte Carlo control (Figure 5.10) learn slowly for states early in long episodes?",
+      "options": [
+        "An episode contributes only from its last non-greedy action onward, because earlier steps have ratio 0 under the greedy target",
+        "Because importance sampling cannot be used for control",
+        "Because the behavior policy must be greedy",
+        "Because Q is only updated at the start of the episode"
+      ],
+      "answer": 0,
+      "solution": [
+        "With a soft behavior, non-greedy actions are frequent, so the useful tails are short."
+      ],
+      "explanation": "The draft suggests TD learning (Chapter 6) or truncated returns (§5.8) as remedies.",
+      "optionNotes": [
+        "Correct: the draft calls this learning only from the tails of episodes; our racetrack runs show it.",
+        "Weighted importance sampling is used for control in Figure 5.10.",
+        "The behavior must be soft.",
+        "Updates go backwards from the end of the episode."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.7",
+          "printedPages": [
+            135,
+            135
+          ],
+          "pdfPages": [
+            149,
+            149
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 135."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q030",
+      "unit": "ch05",
+      "section": "5.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.8"
+        ]
+      },
+      "concepts": [
+        "ch05.truncated-is"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 3,
+      "marks": 1,
+      "stem": "With γ = 0 and episodes of 100 steps, the return from time 0 is just $R_1$. Why does ordinary importance sampling with the full ratio do worse than necessary here?",
+      "options": [
+        "The 99 later factors of the ratio have expected value 1 and do not change the expected estimate, but they add variance",
+        "The later factors bias the estimate",
+        "The first factor should be dropped",
+        "With γ = 0 importance sampling is impossible"
+      ],
+      "answer": 0,
+      "solution": [
+        "Weight each part of the return only by the ratios of the actions that produced it."
+      ],
+      "explanation": "In some cases the extra factors even make the variance infinite.",
+      "optionNotes": [
+        "Correct: only π(A_0|S_0)/µ(A_0|S_0) matters for R_1.",
+        "They are independent of the return and have expectation 1, so they do not bias it.",
+        "The first action's ratio is exactly the one needed.",
+        "It works; it is just wastefully noisy."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.8",
+          "printedPages": [
+            136,
+            136
+          ],
+          "pdfPages": [
+            150,
+            150
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 136."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch05-q031",
+      "unit": "ch05",
+      "section": "5.9",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§5.9"
+        ]
+      },
+      "concepts": [
+        "ch05.monte-carlo-methods"
+      ],
+      "type": "multi",
+      "category": "compare-contrast",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Which of these does the summary list as advantages of Monte Carlo methods over DP? Select all that apply.",
+      "options": [
+        "They can learn optimal behavior from interaction, with no model of the dynamics",
+        "They can learn from simulated episodes when an explicit model is hard to build",
+        "They can focus cheaply on a small set of states",
+        "Because they do not bootstrap, violations of the Markov property may hurt them less",
+        "They update estimates step by step, before an episode ends"
+      ],
+      "answer": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "solution": [
+        "The summary lists four advantages; the fifth option describes TD methods."
+      ],
+      "explanation": "The next chapter keeps learning from experience and adds bootstrapping.",
+      "optionNotes": [
+        "Correct.",
+        "Correct.",
+        "Correct.",
+        "Correct: the fourth advantage.",
+        "Monte Carlo updates only at the end of an episode; that is TD's strength (Chapter 6)."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.9",
+          "printedPages": [
+            138,
+            138
+          ],
+          "pdfPages": [
+            152,
+            152
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 138."
+      },
+      "reviewed": true
     }
   ]
 }

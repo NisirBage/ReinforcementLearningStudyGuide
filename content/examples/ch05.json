@@ -1,0 +1,162 @@
+[
+  {
+    "id": "ex.ch05.blackjack",
+    "unit": "ch05",
+    "concepts": [
+      "ch05.blackjack",
+      "ch05.mc-prediction"
+    ],
+    "title": "Blackjack",
+    "bookLabel": "Example 5.1",
+    "summary": "Evaluating the policy that sticks only on 20 or 21 by first-visit Monte Carlo over simulated games (Figure 5.2). With an infinite deck a state never recurs within a game, so first-visit and every-visit coincide; the estimates for usable-ace states are less regular, because those states are rarer. The draft notes that DP would need $p(s', r|s, a)$, which is awkward to work out for blackjack, while simulating games is easy. Here the exact model was worked out anyway (Milestone 4B), so the Monte Carlo estimates can be compared with the true values.",
+    "facts": [
+      {
+        "claim": "After 100,000 games the estimates are within 0.03 RMS of the exact values without a usable ace and within 0.1 with one; the usable-ace estimates are the less accurate (after 500,000 games: 0.010 and 0.035).",
+        "check": "ch05.fig5-2-accuracy"
+      },
+      {
+        "claim": "No state recurs within a game, so first-visit and every-visit MC coincide.",
+        "check": "ch05.blackjack-no-revisits"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.1",
+        "printedPages": [
+          115,
+          117
+        ],
+        "pdfPages": [
+          129,
+          131
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch05.fig5-2-accuracy"
+    }
+  },
+  {
+    "id": "ex.ch05.soap-bubble",
+    "unit": "ch05",
+    "concepts": [
+      "ch05.monte-carlo-methods"
+    ],
+    "title": "Soap bubble",
+    "bookLabel": "Example 5.2",
+    "summary": "The height of a soap film on a wire loop: every interior point is the average of its neighbours, and the boundary matches the wire. Iterative relaxation over a grid solves it like iterative policy evaluation; alternatively, the height at one point is the expected boundary height where a random walk from that point first hits the boundary, which Monte Carlo can estimate from that point alone.",
+    "facts": [
+      {
+        "claim": "On a 9 × 9 grid, the average boundary height reached by 20,000 random walks from the centre agrees with relaxation within 0.02.",
+        "check": "ch05.soap-bubble"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.1",
+        "printedPages": [
+          118,
+          119
+        ],
+        "pdfPages": [
+          132,
+          133
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch05.soap-bubble"
+    }
+  },
+  {
+    "id": "ex.ch05.off-policy-blackjack",
+    "unit": "ch05",
+    "concepts": [
+      "ch05.importance-sampling",
+      "ch05.blackjack"
+    ],
+    "title": "Off-policy estimation of a blackjack state value",
+    "bookLabel": "Example 5.4",
+    "summary": "The state with the dealer showing 2 and the player at 13 with a usable ace, evaluated for 'stick only on 20 or 21' from games in which the player hits or sticks at random. Figure 5.7: weighted importance sampling has much lower error early on; both are close after 1000 episodes. The draft's reference value is −0.27726 from 10⁸ games; the exact value is −0.27720.",
+    "facts": [
+      {
+        "claim": "Ordinary importance sampling is unbiased here: E_µ[ρG] equals the exact value.",
+        "check": "ch05.ordinary-is-unbiased"
+      },
+      {
+        "claim": "Over 100 runs, weighted IS has lower error for the first 10 episodes, its error first rises and then falls, both are within 0.03 MSE after 1000 episodes, and ordinary IS matches its exact error Var(ρG)/n with Var(ρG) = 10.156.",
+        "check": "ch05.fig5-7"
+      },
+      {
+        "claim": "The draft's −0.27726 agrees with the exact −0.27720 within its sampling error.",
+        "check": "bj.example-5-4"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.5",
+        "printedPages": [
+          130,
+          130
+        ],
+        "pdfPages": [
+          144,
+          144
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch05.fig5-7",
+      "note": "Figure 5.7 read from the page image (PDF p. 144)."
+    }
+  },
+  {
+    "id": "ex.ch05.infinite-variance",
+    "unit": "ch05",
+    "concepts": [
+      "ch05.importance-sampling"
+    ],
+    "title": "Infinite variance",
+    "bookLabel": "Example 5.5",
+    "summary": "One state with 'back' (return with probability 0.9, otherwise end with +1) and 'end'. The target always goes back, so $v_\\pi(s) = 1$; the behavior picks each action with probability 1/2. The scaled returns have mean 1 but infinite variance, so ordinary importance sampling never settles (Figure 5.8), while weighted importance sampling is exactly 1 after the first episode that ends with 'back'.",
+    "facts": [
+      {
+        "claim": "E[ρG] is 1 while E[(ρG)²] = 0.2 Σ 1.8^k diverges; weighted IS equals 1 from the first consistent episode on, in 10 runs.",
+        "check": "ch05.fig5-8"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.5",
+        "printedPages": [
+          131,
+          132
+        ],
+        "pdfPages": [
+          145,
+          146
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch05.fig5-8",
+      "note": "Figure 5.8 read from the page image (PDF p. 145)."
+    }
+  }
+]

@@ -35,7 +35,7 @@ describe("practice setup", () => {
     await user.click(screen.getByRole("link", { name: /Practice/ }));
     expect(await ready()).toHaveTextContent("Practice");
     // With nothing ticked, every 2015-draft question matches and supplementary ones do not.
-    expect(screen.getByText(/^133 questions match/)).toBeInTheDocument(); // 2015-draft questions in content/questions (Milestone 4E added 22)
+    expect(screen.getByText(/^160 questions match/)).toBeInTheDocument(); // 2015-draft questions in content/questions (Milestone 4F added 27)
     await user.click(screen.getByLabelText(/Zhao: stochastic approximation/));
     expect(screen.getByText(/^2 questions match/)).toBeInTheDocument();
     // The quick starts show the learner's real (empty) history.

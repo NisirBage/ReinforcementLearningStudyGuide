@@ -1,0 +1,417 @@
+{
+  "unit": "ch05",
+  "sections": [
+    {
+      "id": "ch05.s5-1",
+      "section": "5.1",
+      "title": "Monte Carlo prediction",
+      "concepts": [
+        "ch05.monte-carlo-methods",
+        "ch05.mc-prediction",
+        "ch05.first-every-visit",
+        "ch05.blackjack"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Dynamic programming needed the full model $p(s', r|s, a)$. **Monte Carlo methods** need only experience: play episodes, real or simulated, and average the returns that actually followed each state. A state's value is an expected return, so the average of many sampled returns approaches it. Because a return is known only when the episode ends, these methods are defined for episodic tasks and update episode by episode."
+        },
+        {
+          "layer": "formal",
+          "body": "Each occurrence of $s$ in an episode is a **visit**. **First-visit MC** estimates $v_\\pi(s)$ by averaging the returns that follow the first visit to $s$ in each episode (Figure 5.1); **every-visit MC** averages the returns after every visit. Both converge to $v_\\pi(s)$ as the number of visits grows. For first-visit MC each return is an independent, unbiased sample with finite variance, so by the law of large numbers the average converges, and its error shrinks in proportion to $1/\\sqrt{n}$, measured as a standard deviation.",
+          "refs": [
+            "alg.ch05.first-visit-mc"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Blackjack** (Example 5.1): 200 states (the player's sum 12–21, the dealer's showing card, a usable ace or not), rewards +1, 0, −1 at the end, γ = 1, an infinite deck. A state never recurs within a game, so first-visit and every-visit MC coincide. Evaluating 'stick only on 20 or 21' by simulating games reproduces Figure 5.2: against the exact values, the RMS error after 500,000 games is 0.010 without a usable ace and 0.035 with one; the usable-ace states are rarer, hence noisier. In the **soap bubble** (Example 5.2) the height of a film at one point is the expected boundary height reached by a random walk from it, so Monte Carlo can estimate that one point without solving for the whole surface.",
+          "refs": [
+            "ex.ch05.blackjack",
+            "ex.ch05.soap-bubble"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "The backup diagram of Monte Carlo is one whole sampled episode from the root state to termination, where DP's (Figure 3.4a) is all possible one-step transitions. Monte Carlo does not bootstrap: each state's estimate stands alone, so its cost does not depend on the number of states, and one state can be evaluated by itself. Try both variants in the [Monte Carlo laboratory](#/lab/mc)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            113,
+            114
+          ],
+          "pdfPages": [
+            127,
+            128
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.1",
+          "printedPages": [
+            114,
+            119
+          ],
+          "pdfPages": [
+            128,
+            133
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch05.s5-2",
+      "section": "5.2",
+      "title": "Monte Carlo estimation of action values",
+      "concepts": [
+        "ch05.mc-action-values",
+        "ch05.exploring-starts"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "With a model, state values are enough to act: look one step ahead. Without one, they are not: you would not know where each action leads. So model-free control estimates **action values** $q_\\pi(s, a)$ directly."
+        },
+        {
+          "layer": "formal",
+          "body": "A state–action pair is visited when the state occurs and the action is taken there; first-visit and every-visit MC average returns after such visits, exactly as for states. The complication: under a deterministic policy only one action per state is ever tried, so the others never get estimates. Exploration must be maintained. One way is **exploring starts**: each episode begins with a state–action pair chosen so that every pair has a nonzero probability. The usual alternative is a stochastic policy that tries every action (§5.4–5.5)."
+        },
+        {
+          "layer": "connections",
+          "body": "This is Chapter 2's exploration problem again, now spread over many states. The draft says these estimates 'converge quadratically, as before'; it can only mean the convergence of averages described on p. 115 (flagged on the concept)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.2",
+          "printedPages": [
+            119,
+            120
+          ],
+          "pdfPages": [
+            133,
+            134
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch05.s5-3",
+      "section": "5.3",
+      "title": "Monte Carlo control",
+      "concepts": [
+        "ch05.mc-es"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Control follows GPI: evaluate the current policy's action values from episodes, make the policy greedy with respect to them, and repeat. With action values the greedy step needs no model."
+        },
+        {
+          "layer": "formal",
+          "body": "Improvement uses (5.1), $\\pi(s) = \\arg\\max_a q(s, a)$. With exact evaluation, the policy improvement theorem applies, since $q_{\\pi_k}(s, \\pi_{k+1}(s)) = \\max_a q_{\\pi_k}(s, a) \\ge v_{\\pi_k}(s)$. Evaluation need not be completed: **Monte Carlo ES** (Figure 5.4) alternates evaluation and improvement episode by episode, averaging all returns for each pair regardless of the policy in force. It cannot converge to a suboptimal policy, but whether it always converges was still unproved, a question the draft ranks among the most basic open problems of the theory.",
+          "refs": [
+            "eq.ch05.greedy-from-q",
+            "alg.ch05.mc-es"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Solving blackjack** (Example 5.3) from 'stick on 20 or 21' with exploring starts: in our laboratory, Monte Carlo ES reaches 195–199 of the 200 states of the optimal policy after 500,000 episodes, and value iteration on the exact model gives Figure 5.5 exactly, including the 'notch' the draft says Thorp's strategy lacks. Decisions whose two action values differ by less than about 0.1 are the slowest to settle."
+        },
+        {
+          "layer": "computation",
+          "body": "Run it in the [Monte Carlo laboratory](#/lab/mc). The gridworld option shows why the method assumes episodes end: most episodes of an untrained greedy policy loop and are discarded."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.3",
+          "printedPages": [
+            120,
+            124
+          ],
+          "pdfPages": [
+            134,
+            138
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch05.s5-4",
+      "section": "5.4",
+      "title": "Monte Carlo control without exploring starts",
+      "concepts": [
+        "ch05.on-policy-epsilon-soft"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Exploring starts are rarely available in real interaction. The alternative is to keep exploring for ever. **On-policy** methods improve the very policy that generates the data, so that policy must keep a little randomness; **off-policy** methods (§5.5) learn about one policy while following another."
+        },
+        {
+          "layer": "formal",
+          "body": "An **ε-soft** policy gives every action at least $\\epsilon / |\\mathcal{A}(s)|$. On-policy MC control keeps the policy ε-greedy with respect to its current action values (Figure 5.6). By (5.2), the ε-greedy policy for $q_\\pi$ is at least as good as any ε-soft π, so improvement is monotone. Equality holds only for the best ε-soft policy: imagine an environment that, with probability ε, replaces the chosen action by a random one; the best policy there is the best ε-soft policy here, and its Bellman equation is the one an unimprovable ε-soft policy satisfies.",
+          "refs": [
+            "eq.ch05.epsilon-greedy-improvement"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "With four actions and ε = 0.2, ε-greedy gives the greedy action $1 - 0.2 + 0.05 = 0.85$ and each other action 0.05. If $q_\\pi(s, \\cdot) = (1, 2, 3, 4)$, then $q_\\pi(s, \\pi'(s)) = 0.05 \\cdot 10 + 0.8 \\cdot 4 = 3.7$. On the 5×5 gridworld, repeated ε-greedy improvement reaches exactly the optimum of the 'ε inside' environment (checked)."
+        },
+        {
+          "layer": "connections",
+          "body": "The price: the result is optimal only among ε-soft policies. Sarsa (Chapter 6) is the step-by-step version of the same on-policy idea."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.4",
+          "printedPages": [
+            124,
+            127
+          ],
+          "pdfPages": [
+            138,
+            141
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch05.s5-5",
+      "section": "5.5",
+      "title": "Off-policy prediction via importance sampling",
+      "concepts": [
+        "ch05.off-policy-learning",
+        "ch05.importance-sampling"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Suppose the episodes come from a **behavior policy** µ, but we want the values of a different **target policy** π, for instance a greedy one. Returns that π would make more likely should count more, and returns π would never produce should not count at all. That is **importance sampling**."
+        },
+        {
+          "layer": "formal",
+          "body": "**Coverage** is required: $\\pi(a|s) > 0$ implies $\\mu(a|s) > 0$. The **importance-sampling ratio** (5.3) is the relative probability of the trajectory under π and µ; the transition probabilities cancel, so it needs only the policies. **Ordinary importance sampling** (5.4) averages the scaled returns $\\rho G$: unbiased, but possibly of infinite variance. **Weighted importance sampling** (5.5) divides by the sum of the ratios: after one return it simply equals that return (biased towards $v_\\mu$), but its variance is far lower, and it is preferred in practice.",
+          "refs": [
+            "eq.ch05.is-ratio",
+            "eq.ch05.ordinary-is",
+            "eq.ch05.weighted-is"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Example 5.4**: the blackjack state 'dealer 2, sum 13, usable ace', target 'stick on 20 or 21', behavior random. A game that follows the target for three decisions has $\\rho = 2^3 = 8$; one where the behavior sticks at 13 has $\\rho = 0$. The variance of $\\rho G$ is 10.156, so ordinary IS has expected squared error $10.156/n$; weighted IS starts near 0.2, rises to about 0.45 over the first ten episodes, then falls (Figure 5.7). **Example 5.5**: in a one-state loop the scaled return has mean 1 but $\\mathbb{E}[(\\rho G)^2] = 0.2\\sum_k 1.8^k = \\infty$, so ordinary IS never settles (in our runs it is still between 0.74 and 1.04 after a million episodes), while weighted IS is exactly 1 (Figure 5.8).",
+          "refs": [
+            "ex.ch05.off-policy-blackjack",
+            "ex.ch05.infinite-variance"
+          ]
+        },
+        {
+          "layer": "computation",
+          "body": "Both examples run in the [Monte Carlo laboratory](#/lab/mc)'s importance-sampling panel, with the exact error of ordinary IS shown beside the measured one."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.5",
+          "printedPages": [
+            127,
+            132
+          ],
+          "pdfPages": [
+            141,
+            146
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch05.s5-6",
+      "section": "5.6",
+      "title": "Incremental implementation",
+      "concepts": [
+        "ch05.incremental-weighted-average"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Averages of returns can be updated one return at a time, as Chapter 2 did for rewards. Ordinary importance sampling just averages scaled returns; weighted importance sampling needs a weighted average, which has its own incremental form."
+        },
+        {
+          "layer": "formal",
+          "body": "For returns $G_k$ with weights $W_k$, the estimate (5.6) is kept by (5.7): $V_{n+1} = V_n + \\frac{W_n}{C_n}[G_n - V_n]$ with $C_n$ the running sum of weights. Figure 5.9 uses it for off-policy evaluation of $q_\\pi$, processing each episode backwards: the return G accumulates, the weight W picks up one more ratio per step, and the loop can stop once W is 0. With π = µ, W is always 1 and this is ordinary on-policy every-visit MC.",
+          "refs": [
+            "eq.ch05.weighted-average",
+            "eq.ch05.weighted-incremental"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "Returns 1 and −1 with weights 2 and 6: $V_2 = 0 + \\tfrac22(1 - 0) = 1$ and $V_3 = 1 + \\tfrac68(-1 - 1) = -0.5$, the same as $(2 - 6)/8$. Exercise 5.8 derives (5.7) from (5.6)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.6",
+          "printedPages": [
+            133,
+            134
+          ],
+          "pdfPages": [
+            147,
+            148
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch05.s5-7",
+      "section": "5.7",
+      "title": "Off-policy Monte Carlo control",
+      "concepts": [
+        "ch05.off-policy-mc-control",
+        "ch05.racetrack"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Separate the two jobs: behave with a soft policy that keeps exploring, and learn about the greedy target policy, which can become a deterministic optimal policy."
+        },
+        {
+          "layer": "formal",
+          "body": "Figure 5.10 estimates $q_*$ by weighted importance sampling: the target π is greedy with respect to Q; the behavior µ is any soft policy. Processing an episode backwards, each step updates Q and π, and the weight grows by $1/\\mu(A_t|S_t)$. Because the greedy target gives probability 0 to any other action, the update must stop at the latest non-greedy action. **As printed, the figure never stops**: it tests 'W = 0' after multiplying by $1/\\mu$, which cannot be 0 (flagged). Our laboratory stops when $A_t \\ne \\pi(S_t)$."
+        },
+        {
+          "layer": "example",
+          "body": "**The racetrack** (Exercise 5.9), on the left track of Figure 5.11: after 200,000 episodes the learned greedy policy is within about 1.3 steps of the optimum (found by value iteration, which our exact model allows) from the three start cells nearest the turn, but still 4–12 steps worse from the far end, improving with more episodes. This is the draft's warning in action: only the end portion of each episode, after its final exploratory action, teaches this method anything, so states early in long episodes learn slowly."
+        },
+        {
+          "layer": "computation",
+          "body": "Train it in the [Monte Carlo laboratory](#/lab/mc)'s racetrack panel and compare the learned and optimal expected returns start by start. The draft suggests TD learning (Chapter 6) or, with γ < 1, truncated returns (§5.8) as remedies."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.7",
+          "printedPages": [
+            135,
+            136
+          ],
+          "pdfPages": [
+            149,
+            150
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch05.s5-8",
+      "section": "5.8",
+      "title": "Importance sampling on truncated returns (optional section)",
+      "concepts": [
+        "ch05.truncated-is"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "With heavy discounting, most of a return is decided early, yet the ratio multiplies factors for every later action too. Those later factors have expectation 1 and change nothing on average, but they add variance, possibly infinite. Better to weight each piece of the return only by the actions that produced it."
+        },
+        {
+          "layer": "formal",
+          "body": "Think of γ as a probability of continuing. The **flat partial return** $\\bar G_t^h$ is the undiscounted sum of the rewards up to horizon $h$, and the full return is a weighted sum of them (the unnumbered identity on p. 137). Scaling each $\\bar G_t^h$ by the truncated ratio $\\rho_t^h$ gives the ordinary (5.8) and weighted (5.9) estimators.",
+          "refs": [
+            "eq.ch05.flat-partial-decomposition",
+            "eq.ch05.truncated-ordinary-is",
+            "eq.ch05.truncated-weighted-is"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "With γ = 0 and 100-step episodes, the return is just $R_1$, and only the first ratio $\\pi(A_0|S_0)/\\mu(A_0|S_0)$ is relevant; the other 99 factors only add noise. With γ = 0.5 and rewards 1, 2, 3, the flat partial returns are 1, 3 and 6, and $0.25 \\cdot 6 + 0.5(1 + 0.5 \\cdot 3) = 2.75$, the discounted return."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.8",
+          "printedPages": [
+            136,
+            137
+          ],
+          "pdfPages": [
+            150,
+            151
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch05.s5-9",
+      "section": "5.9",
+      "title": "Summary (reading guide)",
+      "concepts": [
+        "ch05.monte-carlo-methods",
+        "ch05.off-policy-learning"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**What this section does.** It lists four advantages of Monte Carlo over DP: learning from actual interaction without a model; learning from simulation when an explicit model is hard to build; focusing on a few states of interest cheaply; and, because they do not bootstrap, being less harmed by violations of the Markov property. It recaps GPI with sampled evaluation, the need to maintain exploration (exploring starts, on-policy ε-soft methods, off-policy methods), and ordinary versus weighted importance sampling. It notes that off-policy Monte Carlo remained 'unsettled'. Read pp. 138–139, the bibliographical remarks (pp. 139–140) and the exercises (pp. 140–142); Exercise 5.9 (racetrack) is a laboratory task here, and Exercise 5.10 is starred."
+        },
+        {
+          "layer": "connections",
+          "body": "**Bibliographical pointers.** 'Monte Carlo' dates from 1940s Los Alamos. Michie and Chambers (1968) used averaged episode durations to estimate action values for pole balancing. Singh and Sutton (1996) distinguished first-visit and every-visit MC. The blackjack example follows Widrow, Gupta and Maitra (1973); the soap bubble is a Dirichlet problem whose Monte Carlo solution is due to Kakutani (1945). Monte Carlo ES first appeared in the 1998 edition. Weighted importance sampling is also called normalized importance sampling; truncated returns follow Sutton, Mahmood, Precup and van Hasselt (2014). The next chapter combines learning from experience, as here, with bootstrapping, as in DP."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "section": "5.9",
+          "printedPages": [
+            138,
+            139
+          ],
+          "pdfPages": [
+            152,
+            153
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "5",
+          "printedPages": [
+            139,
+            140
+          ],
+          "pdfPages": [
+            153,
+            154
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -68,5 +68,440 @@
         ]
       }
     ]
+  },
+  {
+    "id": "ch05.monte-carlo-methods",
+    "unit": "ch05",
+    "title": "Monte Carlo methods",
+    "kind": "idea",
+    "summary": "Learning value functions and policies from complete sample episodes, by averaging the returns that follow states or state–action pairs. No model of the dynamics is needed, only experience, real or simulated; estimates change only at the end of an episode, so the task must be episodic. Each state is like a bandit whose payoffs depend on later choices.",
+    "prereqs": [
+      "ch03.return",
+      "ch04.gpi"
+    ],
+    "related": [
+      "ch05.mc-prediction",
+      "ch04.bootstrapping"
+    ],
+    "keywords": [
+      "Monte Carlo",
+      "sample episodes",
+      "experience",
+      "complete returns",
+      "model-free"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "printedPages": [
+          113,
+          114
+        ],
+        "pdfPages": [
+          127,
+          128
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch05.first-every-visit",
+    "unit": "ch05",
+    "title": "First-visit and every-visit Monte Carlo",
+    "kind": "definition",
+    "summary": "Each occurrence of a state in an episode is a visit. First-visit MC averages only the returns after the first visit in each episode; every-visit MC averages the returns after all visits. Both converge to $v_\\pi(s)$; first-visit averages independent samples, so its error's standard deviation falls as $1/\\sqrt{n}$.",
+    "prereqs": [
+      "ch05.mc-prediction"
+    ],
+    "related": [
+      "ch05.monte-carlo-methods"
+    ],
+    "keywords": [
+      "first visit",
+      "every visit",
+      "law of large numbers",
+      "1/√n",
+      "unbiased"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.1",
+        "printedPages": [
+          114,
+          115
+        ],
+        "pdfPages": [
+          128,
+          129
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch05.mc-action-values",
+    "unit": "ch05",
+    "title": "Monte Carlo estimation of action values",
+    "kind": "idea",
+    "summary": "Without a model, state values cannot pick actions (that needs a one-step look-ahead through the dynamics), so Monte Carlo methods estimate $q_\\pi(s, a)$ by averaging returns after visits to state–action pairs. A deterministic policy never tries the other actions, so exploration has to be maintained.",
+    "prereqs": [
+      "ch05.mc-prediction",
+      "ch03.action-value-function"
+    ],
+    "related": [
+      "ch05.exploring-starts"
+    ],
+    "keywords": [
+      "action values",
+      "state-action pair",
+      "maintaining exploration",
+      "model-free control"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.2",
+        "printedPages": [
+          119,
+          120
+        ],
+        "pdfPages": [
+          133,
+          134
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The draft says these methods 'converge quadratically, as before' (p. 119). Nothing earlier speaks of quadratic convergence; what was said before (p. 115) is that averages of returns converge, with an error whose standard deviation falls as 1/√n.",
+        "suggestion": "Read it as 'converge, as before', in the 1/√n sense of p. 115."
+      }
+    ]
+  },
+  {
+    "id": "ch05.exploring-starts",
+    "unit": "ch05",
+    "title": "Exploring starts",
+    "kind": "definition",
+    "summary": "The assumption that every episode starts in a state–action pair drawn at random in a way that never rules out any pair as the first one. It guarantees every pair is visited infinitely often, which policy evaluation for action values needs; it is often possible in simulation but rarely when learning from real interaction.",
+    "prereqs": [
+      "ch05.mc-action-values"
+    ],
+    "related": [
+      "ch05.mc-es"
+    ],
+    "keywords": [
+      "exploring starts",
+      "ES",
+      "start state-action pair",
+      "coverage"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.2",
+        "printedPages": [
+          120,
+          120
+        ],
+        "pdfPages": [
+          134,
+          134
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch05.on-policy-epsilon-soft",
+    "unit": "ch05",
+    "title": "On-policy MC control with ε-soft policies",
+    "kind": "algorithm",
+    "summary": "On-policy methods evaluate and improve the policy that generates the data. Keeping the policy ε-soft ($\\pi(a|s) \\ge \\epsilon/|\\mathcal{A}(s)|$) and improving it only to the ε-greedy policy of its action values gives monotone improvement by the policy improvement theorem (5.2), converging to the best ε-soft policy, without exploring starts (Figure 5.6).",
+    "prereqs": [
+      "ch05.mc-es",
+      "ch04.policy-improvement-theorem"
+    ],
+    "related": [
+      "ch02.epsilon-greedy",
+      "ch05.off-policy-learning"
+    ],
+    "keywords": [
+      "on-policy",
+      "ε-soft",
+      "ε-greedy",
+      "Figure 5.6",
+      "best ε-soft policy"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.4",
+        "printedPages": [
+          124,
+          126
+        ],
+        "pdfPages": [
+          138,
+          140
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch05.off-policy-learning",
+    "unit": "ch05",
+    "title": "Off-policy learning",
+    "kind": "definition",
+    "summary": "Learning about a target policy π from episodes generated by a different behavior policy µ. It requires coverage: every action π might take must have nonzero probability under µ, so µ must be stochastic wherever it differs from π. Typically π is greedy (and deterministic) while µ keeps exploring.",
+    "prereqs": [
+      "ch05.mc-prediction"
+    ],
+    "related": [
+      "ch05.importance-sampling",
+      "ch05.on-policy-epsilon-soft"
+    ],
+    "keywords": [
+      "off-policy",
+      "target policy",
+      "behavior policy",
+      "coverage",
+      "µ"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.5",
+        "printedPages": [
+          127,
+          127
+        ],
+        "pdfPages": [
+          141,
+          141
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch05.importance-sampling",
+    "unit": "ch05",
+    "title": "Importance sampling: ordinary and weighted",
+    "kind": "idea",
+    "summary": "Returns observed under µ are weighted by the importance-sampling ratio ρ (5.3), the relative probability of the trajectory under π and µ, which depends only on the two policies. Ordinary importance sampling averages the scaled returns (5.4): unbiased, but its variance can be infinite. Weighted importance sampling divides by the sum of the ratios (5.5): biased at first, but with far lower variance; it is preferred in practice.",
+    "prereqs": [
+      "ch05.off-policy-learning"
+    ],
+    "related": [
+      "ch05.incremental-weighted-average"
+    ],
+    "keywords": [
+      "importance sampling",
+      "ratio ρ",
+      "ordinary",
+      "weighted",
+      "unbiased",
+      "variance"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.5",
+        "printedPages": [
+          128,
+          130
+        ],
+        "pdfPages": [
+          142,
+          144
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch05.incremental-weighted-average",
+    "unit": "ch05",
+    "title": "Incremental weighted average",
+    "kind": "equation",
+    "summary": "A weighted average of returns can be kept up to date with constant work per return: $V_{n+1} = V_n + \\frac{W_n}{C_n}[G_n - V_n]$, with $C_n$ the cumulative weight (5.7). With all weights 1 it is the sample average of Chapter 2; Figure 5.9 uses it for off-policy evaluation with weighted importance sampling.",
+    "prereqs": [
+      "ch05.importance-sampling",
+      "ch02.incremental-update"
+    ],
+    "related": [],
+    "keywords": [
+      "incremental",
+      "weighted average",
+      "cumulative weight C",
+      "Figure 5.9"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.6",
+        "printedPages": [
+          133,
+          134
+        ],
+        "pdfPages": [
+          147,
+          148
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch05.off-policy-mc-control",
+    "unit": "ch05",
+    "title": "Off-policy Monte Carlo control",
+    "kind": "algorithm",
+    "summary": "GPI with a greedy target policy and a soft behavior policy, estimating $q_*$ by weighted importance sampling (Figure 5.10). Because the target is greedy, a return contributes only for the tail of the episode after the last non-greedy action, so learning can be slow for states early in long episodes.",
+    "prereqs": [
+      "ch05.importance-sampling",
+      "ch05.incremental-weighted-average"
+    ],
+    "related": [
+      "ch05.on-policy-epsilon-soft"
+    ],
+    "keywords": [
+      "off-policy control",
+      "Figure 5.10",
+      "tails of episodes",
+      "weighted importance sampling",
+      "q_*"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.7",
+        "printedPages": [
+          135,
+          136
+        ],
+        "pdfPages": [
+          149,
+          150
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "Figure 5.10 (p. 136, checked on the page image) updates W ← W · 1/µ(A_t|S_t) and then stops 'if W = 0', which can never happen. With a greedy target, π(A_t|S_t) is 0 whenever A_t is not the greedy action, and the ratio should then end the backward loop; as printed, the algorithm would keep weighting earlier steps by returns the target policy could not produce.",
+        "suggestion": "Before multiplying, exit the loop if A_t ≠ π(S_t); then W ← W/µ(A_t|S_t). The laboratory implements it this way."
+      }
+    ]
+  },
+  {
+    "id": "ch05.truncated-is",
+    "unit": "ch05",
+    "title": "Importance sampling on truncated returns",
+    "kind": "idea",
+    "summary": "With γ < 1, a discounted return can be written as a weighted sum of flat (undiscounted) partial returns, each ending at a horizon h, with weights $(1-\\gamma)\\gamma^{h-t-1}$ and $\\gamma^{T-t-1}$ for the full return. Each partial return needs only the ratio up to its horizon, which removes factors that add variance but not information (5.8)–(5.9).",
+    "prereqs": [
+      "ch05.importance-sampling"
+    ],
+    "related": [],
+    "keywords": [
+      "truncated returns",
+      "flat partial return",
+      "horizon",
+      "discounting as termination",
+      "variance reduction"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.8",
+        "printedPages": [
+          136,
+          137
+        ],
+        "pdfPages": [
+          150,
+          151
+        ]
+      }
+    ],
+    "optional": true
+  },
+  {
+    "id": "ch05.blackjack",
+    "unit": "ch05",
+    "title": "Blackjack",
+    "kind": "example",
+    "summary": "The casino game played against a dealer who sticks on 17 or more, as an undiscounted episodic MDP with 200 states (the player's sum 12–21, the dealer's showing card, and whether the player holds a usable ace), rewards +1, 0 and −1 at the end, and an infinite deck (Example 5.1). Monte Carlo evaluates and solves it from simulated games (Examples 5.1, 5.3, 5.4).",
+    "prereqs": [
+      "ch05.mc-prediction"
+    ],
+    "related": [
+      "ch05.mc-es",
+      "ch05.importance-sampling"
+    ],
+    "keywords": [
+      "blackjack",
+      "usable ace",
+      "dealer",
+      "Figure 5.2",
+      "Figure 5.5",
+      "200 states"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.1",
+        "printedPages": [
+          115,
+          117
+        ],
+        "pdfPages": [
+          129,
+          131
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch05.racetrack",
+    "unit": "ch05",
+    "title": "The racetrack",
+    "kind": "example",
+    "summary": "Drive a car around a right turn on a grid as fast as possible (Exercise 5.9): the state is position and velocity, the actions change each velocity component by −1, 0 or +1, each step costs −1 and trying to leave the track −5, and half the time the car slips one extra cell. Monte Carlo control learns a fast policy from episodes alone.",
+    "prereqs": [
+      "ch05.off-policy-mc-control"
+    ],
+    "related": [],
+    "keywords": [
+      "racetrack",
+      "velocity",
+      "Exercise 5.9",
+      "Figure 5.11"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "5",
+        "section": "5.9",
+        "printedPages": [
+          141,
+          142
+        ],
+        "pdfPages": [
+          155,
+          156
+        ]
+      }
+    ]
   }
 ]

@@ -6,7 +6,10 @@ import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages,
 import { deterministic, greedyPolicy, iterativePolicyEvaluation, policyIteration, qFromV, valueIteration } from "../lib/rl/dp";
 import { GRID5, RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, gridworld5x5, randomWalk, windyGridworld } from "../lib/rl/envs/examples";
 import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
-import { HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
+import { DEAL_STATE as BJ_DEAL, END as BJ_END, HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
+import { INFINITE_VARIANCE_BEHAVIOUR, INFINITE_VARIANCE_TARGET, importanceRatio, infiniteVarianceMdp, isEstimates, newOffPolicyControl, offPolicyControlEpisode, weightedIncremental } from "../lib/rl/offPolicy";
+import { TRACK_LEFT, greedyTrajectory, racetrack } from "../lib/rl/envs/racetrack";
+import { generateEpisode } from "../lib/rl/sampling";
 import { greedyPath, newControl, qLearningStep, rmsError, runControl, runTd0, sarsaStep, td0Update } from "../lib/rl/td";
 import { makeRng } from "../domain/random";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
@@ -76,6 +79,27 @@ function oneTransition(method: "sarsa" | "q-learning", gamma: number) {
     return method === "sarsa" ? s.detail : qLearningStep(m, st, cfg, makeRng(seed), 0).detail;
   }
   throw new Error("no seed picks the worse next action");
+}
+
+
+// ----- Chapter 5 helpers (Milestone 4F) -----
+/** Example 5.4's state and policies: dealer 2, sum 13, usable ace; target sticks on 20 or 21; behaviour 50/50. */
+const BJ_EX54 = () => {
+  const m = blackjack();
+  const target = stickOn20();
+  const behaviour = target.map((row, i) => (i === BJ_DEAL || i === BJ_END ? row : [0.5, 0.5, 0]));
+  return { m, target, behaviour, s: bjIndex(13, 2, true) };
+};
+/** E_µ[(ρG)^k] from state s for a deterministic target in the blackjack model, by recursion: k = 1 or 2. */
+function bjIsMoment(m: FiniteMDP, target: number[][], s: number, k: 1 | 2, memo = new Map<number, number>()): number {
+  if (memo.has(s)) return memo.get(s)!;
+  const a = target[s][BJ_STICK] === 1 ? BJ_STICK : BJ_HIT;
+  // µ picks a with probability 1/2, so each decision contributes (π/µ)^k · µ = 2^k · 1/2 = 2^(k−1).
+  let x = 0;
+  for (const o of m.dynamics[s][a]) x += o.prob * (o.next === BJ_END ? o.reward ** k : bjIsMoment(m, target, o.next, k, memo));
+  x *= 2 ** (k - 1);
+  memo.set(s, x);
+  return x;
 }
 
 export const CHECKS: Record<string, Check> = {
@@ -775,6 +799,279 @@ export const CHECKS: Record<string, Check> = {
     run: () => {
       const v = valueIteration(gamblersProblem(0.25), 1, { theta: 1e-12 }).v;
       return [v[25], v[50]];
+    },
+  },
+  // ----- Chapter 5, Milestone 4F -----
+  "ch05.fig5-2-accuracy": {
+    kind: "fact", // Example 5.1, Figure 5.2: first-visit MC on "stick on 20 or 21" (100,000 games) is close to the exact values,
+    // and the usable-ace states, being rarer, are estimated less accurately
+    run: () => {
+      const m = blackjack();
+      const pi = stickOn20();
+      const exact = solveExact(m, pi, 1)!;
+      const rng = makeRng(52);
+      let st = newPrediction(m.states.length);
+      for (let e = 0; e < 100_000; e++) st = mcUpdate(st, generateEpisode(m, pi, BJ_DEAL, rng).steps, 1, true).state;
+      const rms = (lo: number, hi: number) => Math.sqrt(Array.from({ length: hi - lo + 1 }, (_, i) => (st.V[lo + i] - exact[lo + i]) ** 2).reduce((a, b) => a + b, 0) / (hi - lo + 1));
+      const plain = rms(1, 100);
+      const usable = rms(101, 200);
+      return plain < 0.03 && usable < 0.1 && usable > plain;
+    },
+  },
+  "ch05.blackjack-no-revisits": {
+    kind: "fact", // p. 116: a state never recurs within a game, so first-visit and every-visit MC coincide (20,000 sampled games)
+    run: () => {
+      const m = blackjack();
+      const rng = makeRng(53);
+      const pi = stickOn20();
+      for (let e = 0; e < 20_000; e++) {
+        const seen = new Set<number>();
+        for (const x of generateEpisode(m, pi, BJ_DEAL, rng).steps) {
+          if (seen.has(x.s)) return false;
+          seen.add(x.s);
+        }
+      }
+      return true;
+    },
+  },
+  "ch05.soap-bubble": {
+    kind: "fact", // Example 5.2: on a 9×9 grid with fixed boundary heights, relaxation (each point the mean of its four neighbours) and the
+    // average boundary height reached by random walks from the centre (20,000 walks) agree within 0.02
+    run: () => {
+      const n = 9;
+      const edge = (r: number, c: number) => r === 0 || c === 0 || r === n - 1 || c === n - 1;
+      const height = (r: number, c: number) => Math.sin(r) + 0.5 * c; // the wire frame
+      let h = Array.from({ length: n }, (_, r) => Array.from({ length: n }, (_, c) => (edge(r, c) ? height(r, c) : 0)));
+      for (let k = 0; k < 2000; k++) h = h.map((row, r) => row.map((x, c) => (edge(r, c) ? x : (h[r - 1][c] + h[r + 1][c] + h[r][c - 1] + h[r][c + 1]) / 4)));
+      const rng = makeRng(54);
+      let total = 0;
+      const walks = 20_000;
+      for (let w = 0; w < walks; w++) {
+        let r = 4;
+        let c = 4;
+        while (!edge(r, c)) {
+          const d = Math.floor(rng() * 4);
+          if (d === 0) r--;
+          else if (d === 1) r++;
+          else if (d === 2) c--;
+          else c++;
+        }
+        total += height(r, c);
+      }
+      return Math.abs(total / walks - h[4][4]) < 0.02;
+    },
+  },
+  "ch05.epsilon-greedy-improvement": {
+    kind: "fact", // (5.2): for random ε-soft policies π on the 5×5 gridworld, the ε-greedy policy for q_π is at least as good in every state;
+    // repeating the step reaches the best ε-soft value ṽ*, the optimum of the environment with ε "moved inside" (p. 126)
+    run: () => {
+      const m = gridworld5x5();
+      const eps = 0.1;
+      const nA = m.actions.length;
+      const epsGreedy = (q: number[][]) => q.map((row) => {
+        const best = row.indexOf(Math.max(...row));
+        return row.map((_, a) => eps / nA + (a === best ? 1 - eps : 0));
+      });
+      const rng = makeRng(55);
+      for (let trial = 0; trial < 10; trial++) {
+        const pi = m.states.map(() => {
+          const raw = m.actions.map(() => rng());
+          const sum = raw.reduce((a, b) => a + b, 0);
+          return raw.map((x) => eps / nA + ((1 - eps) * x) / sum);
+        });
+        const v = solveExact(m, pi, 0.9)!;
+        const v2 = solveExact(m, epsGreedy(qFromV(m, v, 0.9)), 0.9)!;
+        if (!v2.every((x, s) => x >= v[s] - 1e-9)) return false;
+      }
+      // Iterate to the fixed point and compare with value iteration on the "ε inside" environment.
+      let pi = equiprobablePolicy(m);
+      for (let k = 0; k < 50; k++) pi = epsGreedy(qFromV(m, solveExact(m, pi, 0.9)!, 0.9));
+      const vFix = solveExact(m, pi, 0.9)!;
+      const inside: FiniteMDP = { ...m, dynamics: m.dynamics.map((row) => row.map((outs) => [
+        ...outs.map((o) => ({ ...o, prob: o.prob * (1 - eps) })),
+        ...row.flatMap((o2) => o2.map((o) => ({ ...o, prob: (o.prob * eps) / nA }))),
+      ])) };
+      const vInside = valueIteration(inside, 0.9, { theta: 1e-12 }).v;
+      return vFix.every((x, s) => close(x, vInside[s], 1e-6));
+    },
+  },
+  "ch05.is-ratio-model-free": {
+    kind: "fact", // (5.3): the ratio of trajectory probabilities, transition probabilities included, equals the product of policy ratios
+    run: () => {
+      const { m, target, behaviour, s } = BJ_EX54();
+      const rng = makeRng(56);
+      for (let e = 0; e < 2000; e++) {
+        const { steps } = generateEpisode(m, behaviour, s, rng);
+        let num = 1;
+        let den = 1;
+        for (const x of steps) {
+          const p = m.dynamics[x.s][x.a].filter((o) => o.next === x.next).reduce((a, o) => a + o.prob, 0);
+          num *= target[x.s][x.a] * p;
+          den *= behaviour[x.s][x.a] * p;
+        }
+        if (!close(num / den, importanceRatio(steps, target, behaviour), 1e-12)) return false;
+      }
+      return true;
+    },
+  },
+  "ch05.ordinary-is-unbiased": {
+    kind: "fact", // §5.5: E_µ[ρG] = v_π: for Example 5.4's state the first moment, computed exactly, equals the exact value −0.27720
+    run: () => {
+      const { m, target, s } = BJ_EX54();
+      return close(bjIsMoment(m, target, s, 1), solveExact(m, target, 1)![s], 1e-12);
+    },
+  },
+  "ch05.fig5-7": {
+    kind: "fact", // Example 5.4, Figure 5.7 (100 runs × 1000 episodes): weighted IS has lower error at first; its error first rises, then falls
+    // (Exercise 5.5); both are accurate after 1000 episodes; ordinary IS follows its exact error Var(ρG)/n, with Var(ρG) = 10.156
+    run: () => {
+      const { m, target, behaviour, s } = BJ_EX54();
+      const truth = solveExact(m, target, 1)![s];
+      const R = 100;
+      const N = 1000;
+      const mseO = new Float64Array(N);
+      const mseW = new Float64Array(N);
+      for (let r = 0; r < R; r++) {
+        const c = isEstimates(m, target, behaviour, s, N, 1, makeRng(1000 + r));
+        for (let n = 0; n < N; n++) {
+          mseO[n] += (c.ordinary[n] - truth) ** 2 / R;
+          mseW[n] += (c.weighted[n] - truth) ** 2 / R;
+        }
+      }
+      const variance = bjIsMoment(m, target, s, 2) - truth ** 2;
+      const rises = Math.max(...Array.from(mseW.slice(1, 30))) > 1.5 * mseW[0];
+      const early = Array.from({ length: 10 }, (_, n) => n).every((n) => mseW[n] < mseO[n]);
+      return close(variance, 10.156, 0.001) && rises && early && mseO[N - 1] < 0.03 && mseW[N - 1] < 0.03 && mseO[9] > variance / 10 / 2 && mseO[9] < (2 * variance) / 10;
+    },
+  },
+  "ch05.fig5-8": {
+    kind: "fact", // Example 5.5, Figure 5.8: E[ρG] = 1, but E[(ρG)²] = 0.2 Σ 1.8^k diverges (episodes enumerated by length, up to 40);
+    // weighted IS is exactly 1 from the first episode that ends with "back", in 10 runs
+    run: () => {
+      let mean = 0;
+      let square = 0;
+      for (let k = 0; k < 40; k++) {
+        const p = 0.5 ** (k + 1) * 0.9 ** k * 0.1; // k returns to s, then back to termination, each action chosen by µ with 1/2
+        const rho = 2 ** (k + 1);
+        mean += p * rho;
+        square += p * rho * rho;
+        if (!close(square, 0.2 * Array.from({ length: k + 1 }, (_, j) => 1.8 ** j).reduce((a, b) => a + b, 0), 1e-6 * square)) return false;
+      }
+      const runs = Array.from({ length: 10 }, (_, r) => isEstimates(infiniteVarianceMdp(), INFINITE_VARIANCE_TARGET, INFINITE_VARIANCE_BEHAVIOUR, 0, 2000, 1, makeRng(77 + r)));
+      const weightedOne = runs.every((c) => {
+        const first = Array.from(c.weighted).findIndex((x) => x !== 0);
+        return first >= 0 && Array.from(c.weighted.slice(first)).every((x) => close(x, 1, 1e-12));
+      });
+      return close(mean, 1 - 0.9 ** 40, 1e-9) && square > 1e9 && weightedOne; // the mean is 1 in the limit: Σ 0.1·0.9^k
+    },
+  },
+  "ch05.incremental-weighted": {
+    kind: "fact", // (5.6)–(5.7): the incremental update V_{n+1} = V_n + (W_n/C_n)(G_n − V_n) equals the batch weighted average
+    run: () => {
+      const rng = makeRng(57);
+      const G = Array.from({ length: 50 }, () => 10 * rng() - 5);
+      const W = Array.from({ length: 50 }, () => (rng() < 0.2 ? 0 : 3 * rng()));
+      const inc = weightedIncremental(G, W, 0);
+      return G.every((_, n) => {
+        const den = W.slice(0, n + 1).reduce((a, b) => a + b, 0);
+        if (den === 0) return true;
+        return close(inc[n + 1], W.slice(0, n + 1).reduce((a, w, k) => a + w * G[k], 0) / den, 1e-9);
+      });
+    },
+  },
+  "ch05.flat-partial-returns": {
+    kind: "fact", // §5.8: G_t = γ^{T−t−1} Ḡ_t^T + (1 − γ) Σ_{h=t+1}^{T−1} γ^{h−t−1} Ḡ_t^h, for random rewards and γ
+    run: () => {
+      const rng = makeRng(58);
+      for (let trial = 0; trial < 50; trial++) {
+        const T = 1 + Math.floor(rng() * 12);
+        const R = Array.from({ length: T }, () => 4 * rng() - 2); // R[k] = R_{k+1}
+        const g = rng();
+        const flat = (h: number) => R.slice(0, h).reduce((a, b) => a + b, 0); // Ḡ_0^h
+        let rhs = g ** (T - 1) * flat(T);
+        for (let h = 1; h <= T - 1; h++) rhs += (1 - g) * g ** (h - 1) * flat(h);
+        if (!close(discountedReturn(R, g), rhs, 1e-9)) return false;
+      }
+      return true;
+    },
+  },
+  "ch05-q005": {
+    kind: "answer", // (5.3) in Example 5.4: a game following the target for three decisions, and one where the behaviour sticks at 13
+    run: () => {
+      const { target, behaviour, s } = BJ_EX54();
+      const s2 = bjIndex(16, 2, true);
+      const s3 = bjIndex(20, 2, true); // soft 16 plus a 4 is soft 20
+      const follow = [{ t: 0, s, a: BJ_HIT, r: 0, next: s2 }, { t: 1, s: s2, a: BJ_HIT, r: 0, next: s3 }, { t: 2, s: s3, a: BJ_STICK, r: 1, next: BJ_END }];
+      const deviate = [{ t: 0, s, a: BJ_STICK, r: -1, next: BJ_END }];
+      return [importanceRatio(follow, target, behaviour), importanceRatio(deviate, target, behaviour)];
+    },
+  },
+  "ch05-q006": {
+    kind: "answer", // (5.4) and (5.5) for ratios (8, 0, 2) and returns (1, −1, −1)
+    run: () => {
+      const rho = [8, 0, 2];
+      const G = [1, -1, -1];
+      const num = rho.reduce((a, r, i) => a + r * G[i], 0);
+      return [num / rho.length, num / rho.reduce((a, b) => a + b, 0)];
+    },
+  },
+  "ch05-q007": { kind: "answer", run: () => weightedIncremental([1, -1], [2, 6], 0).slice(1) }, // (5.7): V_2, V_3
+  "ch05-q008": {
+    kind: "answer", // ε-greedy with 4 actions, ε = 0.2: greedy and other probabilities; Σ π'(a|s) q(s,a) for q = (1, 2, 3, 4)
+    run: () => {
+      const p = [1, 2, 3, 4].map((_, a) => 0.2 / 4 + (a === 3 ? 0.8 : 0));
+      return [p[3], p[0], p.reduce((acc, x, a) => acc + x * (a + 1), 0)];
+    },
+  },
+  "ch05-q009": {
+    kind: "answer", // Example 5.5: E[ρG] (all lengths) and the contribution of episodes of length 1–3 to E[(ρG)²]
+    run: () => {
+      let mean = 0;
+      let sq = 0;
+      for (let k = 0; k < 400; k++) {
+        const p = 0.5 ** (k + 1) * 0.9 ** k * 0.1;
+        mean += p * 2 ** (k + 1);
+        if (k < 3) sq += p * 4 ** (k + 1);
+      }
+      return [mean, sq];
+    },
+  },
+  "ch05-q010": {
+    kind: "answer", // §5.8, γ = 0.5, rewards 1, 2, 3: the flat partial return Ḡ_0^2 and the full return from the decomposition
+    run: () => {
+      const R = [1, 2, 3];
+      const flat = (h: number) => R.slice(0, h).reduce((a, b) => a + b, 0);
+      return [flat(2), 0.5 ** 2 * flat(3) + 0.5 * (flat(1) + 0.5 * flat(2))];
+    },
+  },
+  "ch05-q011": {
+    kind: "answer", // Example 5.4: exact expected squared error of ordinary IS after 10 and 100 episodes, Var(ρG)/n
+    run: () => {
+      const { m, target, s } = BJ_EX54();
+      const v = solveExact(m, target, 1)![s];
+      const variance = bjIsMoment(m, target, s, 2) - v * v;
+      return [variance / 10, variance / 100];
+    },
+  },
+  "lab.mc.racetrack": {
+    kind: "fact", // Exercise 5.9 (lab task), left track of Figure 5.11. Every policy ends (random policy, 2000 episodes). After 200,000
+    // episodes of off-policy MC control (Figure 5.10, corrected), the learned greedy policy, evaluated exactly with the noise, is within
+    // 1.5 steps of the value-iteration optimum from the three leftmost start cells, within 5 steps on average over the start line, and its
+    // noise-free runs all reach the finish. From the right end of the start line it is still several steps worse (measured over seeds
+    // 59–61: 4–12 steps at 200,000 episodes, shrinking by 500,000): episodes there are long, and this method learns only from the tails
+    // of episodes after their last non-greedy action (§5.7).
+    run: () => {
+      const m = racetrack(TRACK_LEFT);
+      const rng = makeRng(59);
+      const random = equiprobablePolicy(m);
+      for (let e = 0; e < 2000; e++) if (generateEpisode(m, random, m.starts[e % m.starts.length], rng, { maxSteps: 1000 }).truncated) return false;
+      const vstar = valueIteration(m, 1, { theta: 1e-9 }).v;
+      const st = newOffPolicyControl(m);
+      for (let e = 0; e < 200_000; e++) offPolicyControlEpisode(m, st, m.starts[Math.floor(rng() * m.starts.length)], 1, 0.1, rng);
+      const learned = iterativePolicyEvaluation(m, deterministic(m, st.pi), 1, { theta: 1e-9 }).v;
+      const gaps = m.starts.map((s) => vstar[s] - learned[s]);
+      const finishes = m.starts.every((s) => greedyTrajectory(m, st.pi, s).finished);
+      return gaps.every((g) => g >= -1e-6) && gaps.slice(0, 3).every((g) => g < 1.5) && gaps.reduce((a, b) => a + b, 0) / gaps.length < 5 && finishes;
     },
   },
   "lab.mdp.gridworld-exact": {

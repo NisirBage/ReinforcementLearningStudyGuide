@@ -5,6 +5,8 @@ import * as banditLab from "./banditLab";
 import * as recycling from "./envs/recycling";
 import * as examples from "./envs/examples";
 import * as jack from "./envs/jacksCarRental";
+import * as offPolicy from "./offPolicy";
+import * as racetrackEnv from "./envs/racetrack";
 import * as mc from "./mc";
 import * as blackjack from "./envs/blackjack";
 import * as td from "./td";
@@ -39,6 +41,9 @@ export const IMPLEMENTATIONS = {
   "td.qLearningStep": td.qLearningStep, // Q-learning (6.6), Figure 6.12
   "envs.gridworld5x5": examples.gridworld5x5, // Examples 3.8 and 3.12, Figures 3.5 and 3.8
   "envs.jackPolicyIteration": jack.jackPolicyIteration, // Example 4.2 (Figure 4.4) and Exercise 4.5
+  "offPolicy.isEstimates": offPolicy.isEstimates, // ordinary and weighted importance sampling (5.4)–(5.5), Examples 5.4–5.5
+  "offPolicy.offPolicyControlEpisode": offPolicy.offPolicyControlEpisode, // Figure 5.10, corrected
+  "envs.racetrack": racetrackEnv.racetrack, // Exercise 5.9, Figure 5.11
   "envs.gamblersProblem": examples.gamblersProblem, // Example 4.3
   "envs.randomWalk": examples.randomWalk, // Example 6.2
   "envs.windyGridworld": examples.windyGridworld, // Example 6.5

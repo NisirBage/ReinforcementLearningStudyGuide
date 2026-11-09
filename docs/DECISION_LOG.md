@@ -252,3 +252,9 @@ The service worker activates a new version at once and deletes the old version's
 - **Jack's car rental gets a dedicated, factored solver** rather than a generic FiniteMDP. Probabilities are exact (folded Poisson tails). The within-day order of events (move, rent, then returns) is our reading of the draft and is stated in the lab.
 - **The unexplained value-axis difference in Figure 4.4 is flagged, not tuned away.** The policies agree with the figure.
 - **Tests do not depend on how many questions a filter happens to give.** As the bank grows, a test that needs a specific paper puts it in place through the engine (`startExam`), and the setup form is tested separately.
+
+## D-047: Off-policy Monte Carlo and the racetrack (Accepted, 2026-11-10)
+- **Figure 5.10 is implemented with the correction its own logic requires.** The backward loop stops at a non-greedy action. The printed version is flagged, not reproduced.
+- **The racetrack is a finite MDP.** This makes value iteration's optimum available to judge Monte Carlo control. The rules the draft leaves open are chosen once and stated in the lab.
+- **Where an exact quantity exists, checks use it rather than a noisy average.** Examples: Var(ρG) for Figure 5.7, and the enumerated moments for Figure 5.8.
+- **Tests that need an example of a partial section build it from a fresh copy of the content,** so they do not change at every milestone.

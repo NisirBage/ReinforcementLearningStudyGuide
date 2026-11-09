@@ -15,6 +15,7 @@ import { GridView } from "../../components/GridView";
 import { LineChart } from "../../components/LineChart";
 import { NumberInput } from "../../components/NumberInput";
 import { Tex } from "../../components/math";
+import { ImportanceSampling, Racetrack } from "./OffPolicyPanels";
 
 type Env = "walk" | "grid";
 const f = (x: number, d = 3) => (Number.isFinite(x) ? x.toFixed(d) : "–");
@@ -438,6 +439,8 @@ export function McLab() {
     <>
       <Prediction />
       <ExploringStarts />
+      <ImportanceSampling />
+      <Racetrack />
     </>
   );
 }
