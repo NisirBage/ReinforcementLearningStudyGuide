@@ -5,10 +5,32 @@
     "title": "Policy evaluation (the prediction problem)",
     "kind": "definition",
     "summary": "Computing v_π for a given policy π. With known dynamics, the Bellman equation is a system of |S| linear equations in |S| unknowns; v_π exists and is unique if γ < 1 or every state eventually terminates under π.",
-    "prereqs": ["ch03.bellman-equation-v"],
-    "related": ["ch04.iterative-policy-evaluation"],
-    "keywords": ["prediction", "linear system", "existence and uniqueness"],
-    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [90, 90], "pdfPages": [104, 104] }]
+    "prereqs": [
+      "ch03.bellman-equation-v"
+    ],
+    "related": [
+      "ch04.iterative-policy-evaluation"
+    ],
+    "keywords": [
+      "prediction",
+      "linear system",
+      "existence and uniqueness"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          90,
+          90
+        ],
+        "pdfPages": [
+          104,
+          104
+        ]
+      }
+    ]
   },
   {
     "id": "ch04.iterative-policy-evaluation",
@@ -16,10 +38,36 @@
     "title": "Iterative policy evaluation",
     "kind": "algorithm",
     "summary": "Start from an arbitrary v_0 (terminal value 0) and repeatedly apply the Bellman equation as an update to every state (a full backup) until the largest change in a sweep falls below a small threshold θ. The in-place version overwrites values as it goes and usually converges faster.",
-    "prereqs": ["ch04.policy-evaluation"],
-    "related": ["ch04.gridworld-4x4"],
-    "keywords": ["full backup", "sweep", "in-place", "two arrays", "theta", "stopping condition", "fixed point"],
-    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [90, 92], "pdfPages": [104, 106] }]
+    "prereqs": [
+      "ch04.policy-evaluation"
+    ],
+    "related": [
+      "ch04.gridworld-4x4"
+    ],
+    "keywords": [
+      "full backup",
+      "sweep",
+      "in-place",
+      "two arrays",
+      "theta",
+      "stopping condition",
+      "fixed point"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          90,
+          92
+        ],
+        "pdfPages": [
+          104,
+          106
+        ]
+      }
+    ]
   },
   {
     "id": "ch04.gridworld-4x4",
@@ -27,10 +75,32 @@
     "title": "4×4 gridworld under the equiprobable random policy",
     "kind": "example",
     "summary": "Fourteen nonterminal states, one terminal state drawn in two corners, deterministic moves that stay put at the edge, reward −1 per step, undiscounted. Iterative policy evaluation converges to v_π, the negated expected number of steps to termination.",
-    "prereqs": ["ch04.iterative-policy-evaluation"],
+    "prereqs": [
+      "ch04.iterative-policy-evaluation"
+    ],
     "related": [],
-    "keywords": ["gridworld", "Example 4.1", "Figure 4.2", "equiprobable random policy", "expected steps to termination"],
-    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [92, 93], "pdfPages": [106, 107] }]
+    "keywords": [
+      "gridworld",
+      "Example 4.1",
+      "Figure 4.2",
+      "equiprobable random policy",
+      "expected steps to termination"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          92,
+          93
+        ],
+        "pdfPages": [
+          106,
+          107
+        ]
+      }
+    ]
   },
   {
     "id": "ch04.policy-improvement",
@@ -132,6 +202,379 @@
         "pdfPages": [
           112,
           115
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.dynamic-programming",
+    "unit": "ch04",
+    "title": "Dynamic programming",
+    "kind": "idea",
+    "summary": "A family of algorithms that compute optimal policies when a perfect model of the environment, a finite MDP, is available. They turn Bellman equations into update rules. Their need for a model and their computational cost limit them in practice, but every later method in the book can be seen as trying to achieve the same effect with less computation and without a perfect model.",
+    "prereqs": [
+      "ch03.bellman-optimality-equation"
+    ],
+    "related": [
+      "ch04.policy-evaluation",
+      "ch04.bootstrapping"
+    ],
+    "keywords": [
+      "dynamic programming",
+      "DP",
+      "perfect model",
+      "Bellman equations as updates"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "printedPages": [
+          89,
+          90
+        ],
+        "pdfPages": [
+          103,
+          104
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.full-backup",
+    "unit": "ch04",
+    "title": "Full backup",
+    "kind": "definition",
+    "summary": "A backup that replaces a state's (or state–action pair's) value by an expectation over *all* possible next states and rewards, weighted by their probabilities, using the current values of the successors. All DP backups are full backups; the learning methods of later chapters use sample backups instead.",
+    "prereqs": [
+      "ch04.iterative-policy-evaluation",
+      "ch03.backup-diagram"
+    ],
+    "related": [
+      "ch04.bootstrapping"
+    ],
+    "keywords": [
+      "full backup",
+      "expected update",
+      "sweep",
+      "two arrays",
+      "in place"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          91,
+          92
+        ],
+        "pdfPages": [
+          105,
+          106
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.policy-improvement-theorem",
+    "unit": "ch04",
+    "title": "Policy improvement theorem",
+    "kind": "theorem",
+    "summary": "If two deterministic policies satisfy $q_\\pi(s, \\pi'(s)) \\ge v_\\pi(s)$ in every state (4.7), then $v_{\\pi'}(s) \\ge v_\\pi(s)$ in every state (4.8); and strict inequality in (4.7) somewhere gives strict inequality in (4.8) somewhere. It also holds for stochastic policies, with $q_\\pi(s, \\pi'(s)) = \\sum_a \\pi'(a|s) q_\\pi(s, a)$.",
+    "prereqs": [
+      "ch04.policy-evaluation",
+      "ch03.action-value-function"
+    ],
+    "related": [
+      "ch04.policy-improvement"
+    ],
+    "keywords": [
+      "policy improvement theorem",
+      "monotone improvement",
+      "strict improvement"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.2",
+        "printedPages": [
+          94,
+          96
+        ],
+        "pdfPages": [
+          108,
+          110
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.jacks-car-rental",
+    "unit": "ch04",
+    "title": "Jack's car rental",
+    "kind": "example",
+    "summary": "Two rental locations with at most 20 cars each, Poisson rental requests and returns, $10 per rental and $2 per car moved overnight (at most 5): a continuing finite MDP with 441 states and γ = 0.9 (Example 4.2). Policy iteration from 'never move a car' finds the optimal policy after four improvements (Figure 4.4).",
+    "prereqs": [
+      "ch04.policy-iteration"
+    ],
+    "related": [
+      "ch04.gpi"
+    ],
+    "keywords": [
+      "Jack's car rental",
+      "Poisson",
+      "Figure 4.4",
+      "policy iteration",
+      "Exercise 4.5"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.3",
+        "printedPages": [
+          98,
+          98
+        ],
+        "pdfPages": [
+          112,
+          112
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.4",
+        "printedPages": [
+          99,
+          99
+        ],
+        "pdfPages": [
+          113,
+          113
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.gamblers-problem",
+    "unit": "ch04",
+    "title": "The gambler's problem",
+    "kind": "example",
+    "summary": "Bet integer stakes on coin flips until reaching $100 or going broke; reward +1 only on reaching the goal, so the value of a capital level is the probability of winning (Example 4.3). With $p_h = 0.4$ value iteration finds a family of optimal policies built around bold bets at 25, 50 and 75 (Figure 4.6).",
+    "prereqs": [
+      "ch04.value-iteration"
+    ],
+    "related": [],
+    "keywords": [
+      "gambler's problem",
+      "coin flips",
+      "stake",
+      "capital",
+      "Figure 4.6",
+      "bold play"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.4",
+        "printedPages": [
+          100,
+          101
+        ],
+        "pdfPages": [
+          114,
+          115
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.5",
+        "printedPages": [
+          102,
+          102
+        ],
+        "pdfPages": [
+          116,
+          116
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.truncated-policy-iteration",
+    "unit": "ch04",
+    "title": "Truncated policy iteration",
+    "kind": "idea",
+    "summary": "Policy evaluation inside policy iteration can be stopped early without losing convergence to an optimal policy. Stopping after one sweep is value iteration; in general one can mix policy-evaluation sweeps and value-iteration sweeps, which differ only by the max over actions.",
+    "prereqs": [
+      "ch04.value-iteration"
+    ],
+    "related": [
+      "ch04.gpi"
+    ],
+    "keywords": [
+      "truncated policy iteration",
+      "modified policy iteration",
+      "one sweep"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.4",
+        "printedPages": [
+          98,
+          100
+        ],
+        "pdfPages": [
+          112,
+          114
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.asynchronous-dp",
+    "unit": "ch04",
+    "title": "Asynchronous dynamic programming",
+    "kind": "idea",
+    "summary": "In-place DP that backs up states in any order, some more often than others, instead of in systematic sweeps. It still converges as long as every state keeps being backed up; it lets computation focus on relevant states and be mixed with real-time interaction, for example by backing up the states an agent visits.",
+    "prereqs": [
+      "ch04.value-iteration"
+    ],
+    "related": [
+      "ch04.gpi"
+    ],
+    "keywords": [
+      "asynchronous DP",
+      "sweepless",
+      "in place",
+      "focusing",
+      "real-time"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.5",
+        "printedPages": [
+          101,
+          103
+        ],
+        "pdfPages": [
+          115,
+          117
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.gpi",
+    "unit": "ch04",
+    "title": "Generalized policy iteration (GPI)",
+    "kind": "idea",
+    "summary": "Evaluation (bringing the values into line with the current policy) and improvement (making the policy greedy for the current values), interleaved at any granularity. When both stop changing, the Bellman optimality equation holds. Almost all reinforcement learning methods are GPI.",
+    "prereqs": [
+      "ch04.policy-iteration"
+    ],
+    "related": [
+      "ch04.asynchronous-dp",
+      "ch04.truncated-policy-iteration"
+    ],
+    "keywords": [
+      "GPI",
+      "generalized policy iteration",
+      "evaluation",
+      "improvement",
+      "Figure 4.7"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.6",
+        "printedPages": [
+          104,
+          106
+        ],
+        "pdfPages": [
+          118,
+          120
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.dp-efficiency",
+    "unit": "ch04",
+    "title": "Efficiency of dynamic programming",
+    "kind": "idea",
+    "summary": "DP finds an optimal policy in time polynomial in the numbers of states n and actions m, although there are $m^n$ deterministic policies, so it is exponentially faster than direct search in policy space. Large state sets (the curse of dimensionality) are hard for any method; DP handles them better than direct search or linear programming, and can solve MDPs with millions of states.",
+    "prereqs": [
+      "ch04.policy-iteration"
+    ],
+    "related": [
+      "ch04.asynchronous-dp"
+    ],
+    "keywords": [
+      "efficiency",
+      "polynomial time",
+      "curse of dimensionality",
+      "linear programming",
+      "m^n"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.7",
+        "printedPages": [
+          106,
+          107
+        ],
+        "pdfPages": [
+          120,
+          121
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch04.bootstrapping",
+    "unit": "ch04",
+    "title": "Bootstrapping",
+    "kind": "definition",
+    "summary": "Updating estimates of values on the basis of other estimates, the successors' current values, as every DP method does. Monte Carlo methods (Chapter 5) neither need a model nor bootstrap; TD methods (Chapter 6) need no model but do bootstrap.",
+    "prereqs": [
+      "ch04.iterative-policy-evaluation"
+    ],
+    "related": [
+      "ch04.full-backup"
+    ],
+    "keywords": [
+      "bootstrapping",
+      "estimates from estimates",
+      "DP",
+      "Monte Carlo",
+      "TD"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.8",
+        "printedPages": [
+          108,
+          108
+        ],
+        "pdfPages": [
+          122,
+          122
         ]
       }
     ]

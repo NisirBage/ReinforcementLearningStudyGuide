@@ -76,11 +76,15 @@ describe("coverage", () => {
 
   test("a section is covered only with a lesson, its equations, its examples and a question", () => {
     expect(sec("2.3").status).toBe("covered");
-    expect(sec("4.2")).toMatchObject({ status: "partial" });
-    expect(sec("4.2").missing).toEqual(["no lesson", "equations missing: (4.6), (4.7), (4.8)", "no questions"]);
+    // §4.2 was the partial example until Milestone 4E covered Chapter 4; §5.3 still lacks a lesson and (5.1).
+    expect(sec("5.3")).toMatchObject({ status: "partial" });
+    expect(sec("5.3").missing).toEqual(["no lesson", "equations missing: (5.1)"]);
     expect(sec("7.1")).toMatchObject({ status: "not-started" });
-    const ch4 = cov.find((c) => c.id === "4")!;
-    expect(ch4.intro.missing).toEqual(["introduction: equation (4.1) missing", "introduction: equation (4.2) missing"]);
+    // Chapter 4's opening equations are covered now; removing (4.1) shows that a missing one is still reported.
+    expect(cov.find((c) => c.id === "4")!.intro.missing).toEqual([]);
+    const without41 = fresh();
+    without41.equations = without41.equations.filter((e) => e.bookLabel !== "(4.1)");
+    expect(computeCoverage(without41, inventory, declarations).find((c) => c.id === "4")!.intro.missing).toEqual(["introduction: equation (4.1) missing"]);
   });
 
   test("removing a section's questions makes it partial; declarations alone never make a section covered", () => {
@@ -257,7 +261,8 @@ describe("in the interface", () => {
     expect(row("10")).toHaveTextContent("Unwritten in draft");
     expect(row("2")).toHaveTextContent("Covered"); // completed in Milestone 4C
     expect(row("3")).toHaveTextContent("Covered"); // completed in Milestone 4D
-    expect(row("4")).toHaveTextContent("Partial");
+    expect(row("4")).toHaveTextContent("Covered"); // completed in Milestone 4E
+    expect(row("5")).toHaveTextContent("Partial");
     expect(row("7")).toHaveTextContent("Not started");
   });
 });

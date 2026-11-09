@@ -4,6 +4,7 @@ import * as bandit from "./bandit";
 import * as banditLab from "./banditLab";
 import * as recycling from "./envs/recycling";
 import * as examples from "./envs/examples";
+import * as jack from "./envs/jacksCarRental";
 import * as mc from "./mc";
 import * as blackjack from "./envs/blackjack";
 import * as td from "./td";
@@ -37,6 +38,7 @@ export const IMPLEMENTATIONS = {
   "td.sarsaStep": td.sarsaStep, // Sarsa (6.5), Figure 6.9
   "td.qLearningStep": td.qLearningStep, // Q-learning (6.6), Figure 6.12
   "envs.gridworld5x5": examples.gridworld5x5, // Examples 3.8 and 3.12, Figures 3.5 and 3.8
+  "envs.jackPolicyIteration": jack.jackPolicyIteration, // Example 4.2 (Figure 4.4) and Exercise 4.5
   "envs.gamblersProblem": examples.gamblersProblem, // Example 4.3
   "envs.randomWalk": examples.randomWalk, // Example 6.2
   "envs.windyGridworld": examples.windyGridworld, // Example 6.5

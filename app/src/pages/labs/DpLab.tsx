@@ -11,6 +11,7 @@ import { GridView } from "../../components/GridView";
 import { LineChart } from "../../components/LineChart";
 import { NumberInput } from "../../components/NumberInput";
 import { Tex } from "../../components/math";
+import { JackPanel } from "./JackPanel";
 
 export type Env = "gridworld" | "grid5" | "gambler" | "recycling" | "windy";
 const f = (x: number, d = 2) => (Number.isFinite(x) ? x.toFixed(d) : "–");
@@ -217,6 +218,7 @@ export function DpLab() {
         )}
       </section>
       {algo === "pi" && env !== "gambler" ? <PolicyIterationPanel key={`${env}-${ph}`} m={m} /> : <ValueIterationPanel key={`${env}-${ph}`} m={m} />}
+      <JackPanel />
     </>
   );
 }

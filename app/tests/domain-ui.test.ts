@@ -48,7 +48,7 @@ describe("content indexes", () => {
     expect(s.equations.map((e) => e.bookLabel)).toEqual(["(2.3)", "(2.4)"]);
     // Questions are placed by their declared section (D-033), in file order.
     expect(s.questions.map((x) => x.id)).toEqual(["ch02-q001", "ch02-q012", "ch02-q013", "ch02-q026"]); // q026: Exercise 2.2 (Milestone 4C)
-    expect(ix.sectionContent("ch04", "4.1").questions.map((x) => x.id)).toEqual(["ch04-q001", "ch04-q002", "ch04-q003", "ch04-q004", "ch04-q005", "ch04-q006", "ch04-q007", "ch04-q008"]);
+    expect(ix.sectionContent("ch04", "4.1").questions.map((x) => x.id)).toEqual(["ch04-q001", "ch04-q002", "ch04-q003", "ch04-q004", "ch04-q005", "ch04-q006", "ch04-q007", "ch04-q008", "ch04-q018", "ch04-q019", "ch04-q024"]); // q018–q024 added in 4E
     expect(ix.sectionContent("ch04", "4.1").figures.map((f) => f.bookLabel)).toEqual(["Figure 4.2"]);
   });
   test("questions with no section are chapter-level; questions with a section are not", () => {

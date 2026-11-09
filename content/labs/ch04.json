@@ -18,7 +18,9 @@
    "ch04.value-iteration",
    "ch04.iterative-policy-evaluation",
    "ch03.gridworld-5x5",
-   "ch03.optimal-value-functions"
+   "ch03.optimal-value-functions",
+   "ch04.jacks-car-rental",
+   "ch04.gamblers-problem"
   ],
   "implementations": [
    "dp.greedyPolicy",
@@ -26,7 +28,8 @@
    "dp.valueIteration",
    "envs.gamblersProblem",
    "envs.recyclingRobot",
-   "envs.gridworld5x5"
+   "envs.gridworld5x5",
+   "envs.jackPolicyIteration"
   ],
   "guide": [
    "Run policy iteration on the gridworld from the equiprobable random policy: one improvement already gives an optimal policy, and the second evaluation confirms it (p. 98).",
@@ -34,7 +37,10 @@
    "Load the gambler's problem with $p_h = 0.4$. After value iteration, $v(50) = 0.4$, $v(25) = 0.16$ and $v(75) = 0.64$: staking boldly is optimal when the coin is unfavourable.",
    "In the gambler's problem a stake of 0 is in the draft's action set and, with $\\gamma = 1$, always ties for the maximum (it just keeps the capital). The lab therefore shows the smallest positive maximizing stake; the draft notes that the optimal policy is not unique.",
    "Change $p_h$ to 0.55 and see how the optimal stakes change.",
-   "Choose the 5×5 gridworld of Examples 3.8 and 3.12 ($\\gamma = 0.9$). Policy iteration's first evaluation is $v_\\pi$ for the random policy, Figure 3.5b; value iteration converges to $v_*$ and the optimal arrows of Figure 3.8. Check that A is worth $10/(1 - 0.9^5) \\approx 24.419$ (Exercise 3.17)."
+   "Choose the 5×5 gridworld of Examples 3.8 and 3.12 ($\\gamma = 0.9$). Policy iteration's first evaluation is $v_\\pi$ for the random policy, Figure 3.5b; value iteration converges to $v_*$ and the optimal arrows of Figure 3.8. Check that A is worth $10/(1 - 0.9^5) \\approx 24.419$ (Exercise 3.17).",
+   "Jack's car rental (Example 4.2): step through π₀ … π₄ in the panel at the bottom and compare them with Figure 4.4. Each improvement changes fewer states.",
+   "Exercise 4.5 (lab task): switch the panel to the Exercise 4.5 variant, with one free shuttle and a parking charge above 10 cars. Where does the new policy move a single car, and why does it avoid leaving more than 10 cars at a location?",
+   "Exercise 4.9 (lab task): choose the gambler's problem and set $p_h = 0.25$, then $0.55$. With 0.25 the policy keeps the bold shape of Figure 4.6; with 0.55 the best stake is 1 everywhere. How many sweeps does value iteration need in each case?"
   ],
   "sources": [
    {
@@ -88,6 +94,18 @@
      92,
      93
     ]
+   },
+   {
+    "kind": "textbook",
+    "chapter": "4",
+    "printedPages": [
+     110,
+     111
+    ],
+    "pdfPages": [
+     124,
+     125
+    ]
    }
   ],
   "verification": {
@@ -100,7 +118,10 @@
    "lab.dp.recycling-optimal-consistent",
    "ch03.fig3-5-values",
    "ch03.fig3-8-values",
-   "ch03.fig3-8-policy"
+   "ch03.fig3-8-policy",
+   "ch04.jack-figure-4-4",
+   "lab.dp.jack-ex4-5",
+   "lab.dp.gambler-ex4-9"
   ],
   "flags": [
    {

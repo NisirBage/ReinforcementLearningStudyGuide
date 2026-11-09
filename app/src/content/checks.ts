@@ -3,7 +3,7 @@
 // An answer check returns the numbers a question's answer key must equal (within the part's tolerance).
 // Printed values below are transcribed from page images of the April 2015 draft and cite their page.
 import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages, recencyWeightedAverage, recencyWeights, ucbScores, argmaxAll } from "../lib/rl/bandit";
-import { greedyPolicy, iterativePolicyEvaluation, policyIteration, qFromV, valueIteration } from "../lib/rl/dp";
+import { deterministic, greedyPolicy, iterativePolicyEvaluation, policyIteration, qFromV, valueIteration } from "../lib/rl/dp";
 import { GRID5, RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, gridworld5x5, randomWalk, windyGridworld } from "../lib/rl/envs/examples";
 import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
 import { HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
@@ -12,6 +12,7 @@ import { makeRng } from "../domain/random";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
 import { FIG_2_5, TESTBED_10, expectedMaxNormal, meanOver, parameterStudy, recordRun, runExperiment, softmax, type Method } from "../lib/rl/banditLab";
 import { recyclingRandomPolicy, recyclingRobot } from "../lib/rl/envs/recycling";
+import { JACK_EXAMPLE, JACK_EXERCISE_4_5, jackModel, jackPolicyIteration, locationTable } from "../lib/rl/envs/jacksCarRental";
 import { actionValue, backupTerms, bellmanExpectationBackup, bellmanResidual, equiprobablePolicy, expectedReward, expectedRewardGivenNext, greedyActions, solveExact, transitionProb, type FiniteMDP } from "../lib/rl/mdp";
 import { gridworld4x4, toCells } from "../lib/rl/envs/gridworld4x4";
 import { robbinsMonro } from "../lib/rl/sa";
@@ -667,6 +668,113 @@ export const CHECKS: Record<string, Check> = {
       const [opt] = runExperiment(TESTBED_10, [{ kind: "epsilon-greedy", epsilon: 0, q1: 5, step: { kind: "constant", alpha: 0.1 } }], 300, 20, 12);
       const first10 = Array.from(opt.pctOptimal.slice(0, 10));
       return first10.every((x) => x > 0.04 && x < 0.17) && opt.pctOptimal[10] > 0.3 && opt.pctOptimal[10] > opt.pctOptimal[12] + 0.15;
+    },
+  },
+  // ----- Chapter 4, Milestone 4E -----
+  "ch04.jack-figure-4-4": {
+    kind: "fact", // Figure 4.4 (p. 99): policy iteration from "never move" gives π0…π4, π4 stable; moves span −4…5; each step a strict
+    // improvement; the top row (20 cars at the first location) and bottom row (0 cars) of π4 equal the figure, read at 500 dpi
+    run: () => {
+      const r = jackPolicyIteration(JACK_EXAMPLE);
+      const pis = r.iterations.map((it) => Array.from(it.policy));
+      const pi4 = pis[4];
+      const row = (c1: number) => pi4.slice(c1 * 21, c1 * 21 + 21);
+      const top = [5, 5, 5, 5, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1, 0, 0, 0];
+      const bottom = [0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -2, -2, -2, -3, -3, -3, -3, -3, -4, -4, -4];
+      const improving = r.iterations.every((it, k) => k === 0 || (it.v.every((x, s) => x >= r.iterations[k - 1].v[s] - 1e-6) && it.v.some((x, s) => x > r.iterations[k - 1].v[s] + 1e-3)));
+      return r.stable && pis.length === 5 && pis[0].every((a) => a === 0) && Math.min(...pi4) === -4 && Math.max(...pi4) === 5 &&
+        row(20).every((a, i) => a === top[i]) && row(0).every((a, i) => a === bottom[i]) && improving;
+    },
+  },
+  "ch04.jack-value-range": {
+    kind: "fact", // Figure 4.4's v4 axis is labelled 420 at the bottom; the smallest value of v4 is 421.4 (within 2 of 420)
+    run: () => Math.abs(Math.min(...jackPolicyIteration(JACK_EXAMPLE).iterations[4].v) - 420) < 2,
+  },
+  "ch04.policy-improvement-theorem": {
+    kind: "fact", // (4.7)–(4.8): the policy greedy with respect to v_π is at least as good in every state, and strictly better somewhere
+    // unless π is already optimal; tested from 30 random deterministic policies on the 5×5 gridworld and the recycling robot
+    run: () => {
+      const rng = makeRng(41);
+      const mdps: FiniteMDP[] = [gridworld5x5(), recyclingRobot({ alpha: 0.8, beta: 0.6, rSearch: 2, rWait: 1 })];
+      return mdps.every((m) => {
+        const vstar = valueIteration(m, 0.9, { theta: 1e-12 }).v;
+        for (let trial = 0; trial < 15; trial++) {
+          const acts = m.states.map((_, s) => {
+            const av = m.actions.map((_, a) => a).filter((a) => m.dynamics[s][a].length > 0);
+            return av[Math.floor(rng() * av.length)];
+          });
+          const pi = deterministic(m, acts);
+          const v = solveExact(m, pi, 0.9)!;
+          const greedy = greedyPolicy(m, v, 0.9, acts).actions;
+          const q = qFromV(m, v, 0.9);
+          if (!m.states.every((_, s) => q[s][greedy[s]] >= v[s] - 1e-9)) return false; // (4.7)
+          const v2 = solveExact(m, deterministic(m, greedy), 0.9)!;
+          if (!v2.every((x, s) => x >= v[s] - 1e-9)) return false; // (4.8)
+          const optimal = v.every((x, s) => close(x, vstar[s], 1e-6));
+          if (!optimal && !v2.some((x, s) => x > v[s] + 1e-9)) return false;
+        }
+        return true;
+      });
+    },
+  },
+  "ch04.q-evaluation-converges": {
+    kind: "fact", // Exercise 4.3 (our answer): q_{k+1}(s,a) = Σ p[r + γ Σ_a' π(a'|s') q_k(s',a')] converges to q_π, on the 5×5 gridworld
+    run: () => {
+      const m = gridworld5x5();
+      const pi = equiprobablePolicy(m);
+      const target = qFromV(m, solveExact(m, pi, 0.9)!, 0.9);
+      let q = m.states.map(() => m.actions.map(() => 0));
+      for (let k = 0; k < 400; k++) q = m.states.map((_, s) => m.actions.map((_, a) => m.dynamics[s][a].reduce((t, o) => t + o.prob * (o.reward + 0.9 * pi[o.next].reduce((u, p, b) => u + p * q[o.next][b], 0)), 0)));
+      return q.every((row, s) => row.every((x, a) => close(x, target[s][a], 1e-9)));
+    },
+  },
+  "ch04.q-value-iteration-converges": {
+    kind: "fact", // Exercise 4.10 (our answer): q_{k+1}(s,a) = Σ p[r + γ max_a' q_k(s',a')] converges to q_*, on the 5×5 gridworld
+    run: () => {
+      const m = gridworld5x5();
+      const target = qFromV(m, valueIteration(m, 0.9, { theta: 1e-13 }).v, 0.9);
+      let q = m.states.map(() => m.actions.map(() => 0));
+      for (let k = 0; k < 400; k++) q = m.states.map((_, s) => m.actions.map((_, a) => m.dynamics[s][a].reduce((t, o) => t + o.prob * (o.reward + 0.9 * Math.max(...q[o.next])), 0)));
+      return q.every((row, s) => row.every((x, a) => close(x, target[s][a], 1e-9)));
+    },
+  },
+  "lab.dp.jack-ex4-5": {
+    kind: "fact", // Exercise 4.5 (lab task): the variant converges to a stable policy, and the free shuttle and parking costs change it:
+    // more states move exactly one car from the first location to the second than in the original problem
+    run: () => {
+      const orig = jackPolicyIteration(JACK_EXAMPLE).iterations.at(-1)!.policy;
+      const r = jackPolicyIteration(JACK_EXERCISE_4_5);
+      const pol = r.iterations.at(-1)!.policy;
+      const ones = (p: ArrayLike<number>) => Array.from(p).filter((a) => a === 1).length;
+      return r.stable && r.iterations.length <= 10 && ones(pol) > ones(orig) && Array.from(pol).some((a, s) => a !== orig[s]);
+    },
+  },
+  "lab.dp.gambler-ex4-9": {
+    kind: "fact", // Exercise 4.9 (lab task): p_h = 0.25 → v*(50) = 0.25, v*(25) = 0.0625, stake 50 optimal at 50 (bold play);
+    // p_h = 0.55 → a stake of 1 is optimal in every state and v*(50) = (1 − r^50)/(1 − r^100) with r = 0.45/0.55 (timid play)
+    run: () => {
+      const low = valueIteration(gamblersProblem(0.25), 1, { theta: 1e-12 });
+      const high = valueIteration(gamblersProblem(0.55), 1, { theta: 1e-12 });
+      const r = 0.45 / 0.55;
+      const timid = high.policy.ties.every((t, s) => s === 0 || s === 100 || t.includes(1));
+      return close(low.v[50], 0.25, 1e-9) && close(low.v[25], 0.0625, 1e-9) && low.policy.ties[50].includes(50) && timid && close(high.v[50], (1 - r ** 50) / (1 - r ** 100), 1e-6);
+    },
+  },
+  "ch04-q013": {
+    kind: "answer", // Example 4.2: one location with 2 cars in the morning and Poisson(3) requests: expected rentals, expected credit
+    run: () => {
+      const e = locationTable(3, 3, 20).rented[2];
+      return [e, 10 * e];
+    },
+  },
+  "ch04-q014": { kind: "answer", run: () => [jackModel(JACK_EXAMPLE).n ** 2, 11] }, // states, actions in the largest A(s)
+  "ch04-q015": { kind: "answer", run: () => [4 ** 14] }, // deterministic policies of the 4×4 gridworld: 4 actions in each of 14 states
+  "ch04-q017": { kind: "answer", run: () => [1e20 / 1e6 / (365.25 * 24 * 3600)] }, // years for one backgammon sweep at a million backups a second (p. 101)
+  "ch04-q016": {
+    kind: "answer", // Exercise 4.9 numbers: v*(25) and v*(50) with p_h = 0.25
+    run: () => {
+      const v = valueIteration(gamblersProblem(0.25), 1, { theta: 1e-12 }).v;
+      return [v[25], v[50]];
     },
   },
   "lab.mdp.gridworld-exact": {

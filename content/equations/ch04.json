@@ -7,8 +7,14 @@
     "bookLabel": "(4.5)",
     "tex": "v_{k+1}(s) = \\sum_a \\pi(a|s) \\sum_{s',r} p(s',r|s,a)\\Big[r + \\gamma v_k(s')\\Big]",
     "symbols": [
-      { "tex": "v_k", "meaning": "the k-th approximation of v_π" },
-      { "tex": "v_{k+1}(s)", "meaning": "new value of s, computed from the old values of its successors" }
+      {
+        "tex": "v_k",
+        "meaning": "the k-th approximation of v_π"
+      },
+      {
+        "tex": "v_{k+1}(s)",
+        "meaning": "new value of s, computed from the old values of its successors"
+      }
     ],
     "intuition": "Use the Bellman equation as an assignment: replace each state's value by the one-step lookahead computed from the current approximation, and repeat.",
     "assumptions": [
@@ -21,8 +27,26 @@
       "Written with v_k on the right, the update is the two-array version; an in-place sweep can use some new values in the same sweep.",
       "Convergence is only in the limit; in practice the loop stops when the largest change falls below θ."
     ],
-    "sources": [{ "kind": "textbook", "chapter": "4", "section": "4.1", "printedPages": [91, 91], "pdfPages": [105, 105] }],
-    "verification": { "method": "page-image", "on": "2026-11-04", "note": "The example values are checked by ch04-q002 and ch04.fig4-2-two-array-iterates." }
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          91,
+          91
+        ],
+        "pdfPages": [
+          105,
+          105
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-04",
+      "note": "The example values are checked by ch04-q002 and ch04.fig4-2-two-array-iterates."
+    }
   },
   {
     "id": "eq.ch04.greedy-improvement",
@@ -110,6 +134,351 @@
     "verification": {
       "method": "page-image",
       "on": "2026-11-05"
+    }
+  },
+  {
+    "id": "eq.ch04.bellman-optimality-v",
+    "unit": "ch04",
+    "concept": "ch04.dynamic-programming",
+    "name": "Bellman optimality equation for v_* (as restated for DP)",
+    "bookLabel": "(4.1)",
+    "tex": "v_*(s) = \\max_a \\mathbb{E}[R_{t+1} + \\gamma v_*(S_{t+1}) \\mid S_t = s, A_t = a] = \\max_a \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma v_*(s')\\big]",
+    "symbols": [
+      {
+        "tex": "v_*",
+        "meaning": "the optimal state-value function"
+      }
+    ],
+    "intuition": "The equation of (3.16)–(3.17), restated as the target that value iteration turns into an update rule.",
+    "assumptions": [
+      "A finite MDP with known dynamics p(s′, r | s, a)."
+    ],
+    "pitfalls": [
+      "Value iteration (4.10) is this equation with v_k on the right and v_{k+1} on the left."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "printedPages": [
+          90,
+          90
+        ],
+        "pdfPages": [
+          104,
+          104
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 90 (PDF p. 104), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch04.bellman-optimality-q",
+    "unit": "ch04",
+    "concept": "ch04.dynamic-programming",
+    "name": "Bellman optimality equation for q_* (as restated for DP)",
+    "bookLabel": "(4.2)",
+    "tex": "q_*(s, a) = \\mathbb{E}\\Big[R_{t+1} + \\gamma \\max_{a'} q_*(S_{t+1}, a') \\,\\Big|\\, S_t = s, A_t = a\\Big] = \\sum_{s', r} p(s', r|s, a)\\Big[r + \\gamma \\max_{a'} q_*(s', a')\\Big]",
+    "symbols": [
+      {
+        "tex": "q_*",
+        "meaning": "the optimal action-value function"
+      }
+    ],
+    "intuition": "The same idea for action values; it is the target of value iteration on q (Exercise 4.10).",
+    "assumptions": [
+      "A finite MDP with known dynamics."
+    ],
+    "pitfalls": [
+      "The max is inside the sum, at the next state."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "printedPages": [
+          90,
+          90
+        ],
+        "pdfPages": [
+          104,
+          104
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 90 (PDF p. 104), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch04.v-pi-expectation",
+    "unit": "ch04",
+    "concept": "ch04.policy-evaluation",
+    "name": "v_π as a one-step expectation",
+    "bookLabel": "(4.3)",
+    "tex": "v_\\pi(s) = \\mathbb{E}_\\pi\\big[R_{t+1} + \\gamma R_{t+2} + \\gamma^2 R_{t+3} + \\cdots \\mid S_t = s\\big] = \\mathbb{E}_\\pi[R_{t+1} + \\gamma v_\\pi(S_{t+1}) \\mid S_t = s]",
+    "symbols": [
+      {
+        "tex": "\\mathbb{E}_\\pi",
+        "meaning": "expectation when π is followed"
+      }
+    ],
+    "intuition": "A state's value is the expected next reward plus the discounted value of where you land.",
+    "assumptions": [
+      "v_π exists: γ < 1, or termination is guaranteed from every state under π."
+    ],
+    "pitfalls": [
+      "Under a policy that can loop for ever with γ = 1, v_π may not exist (Exercise 4.4)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          90,
+          90
+        ],
+        "pdfPages": [
+          104,
+          104
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 90 (PDF p. 104), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch04.v-pi-bellman",
+    "unit": "ch04",
+    "concept": "ch04.policy-evaluation",
+    "name": "Bellman equation for v_π, written out",
+    "bookLabel": "(4.4)",
+    "tex": "v_\\pi(s) = \\sum_a \\pi(a|s) \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma v_\\pi(s')\\big]",
+    "symbols": [
+      {
+        "tex": "\\pi(a|s)",
+        "meaning": "probability of a in s under π"
+      }
+    ],
+    "intuition": "With known dynamics, these are |S| linear equations in |S| unknowns.",
+    "assumptions": [
+      "Known dynamics; existence as for (4.3)."
+    ],
+    "pitfalls": [
+      "A direct linear solve is possible; DP prefers iteration (4.5) because it scales and generalises."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.1",
+        "printedPages": [
+          90,
+          90
+        ],
+        "pdfPages": [
+          104,
+          104
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 90 (PDF p. 104), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch04.q-pi-from-v-pi",
+    "unit": "ch04",
+    "concept": "ch04.policy-improvement",
+    "name": "Value of trying one action, then following π",
+    "bookLabel": "(4.6)",
+    "tex": "q_\\pi(s, a) = \\mathbb{E}_\\pi[R_{t+1} + \\gamma v_\\pi(S_{t+1}) \\mid S_t = s, A_t = a] = \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma v_\\pi(s')\\big]",
+    "symbols": [
+      {
+        "tex": "q_\\pi(s, a)",
+        "meaning": "the value of taking a in s and following π afterwards"
+      }
+    ],
+    "intuition": "To decide whether to change π at s, compare this with v_π(s): is one deviation worth it?",
+    "assumptions": [
+      "v_π is known, together with the dynamics."
+    ],
+    "example": "In the 4×4 gridworld under the random policy, from state 1 moving left reaches the terminal state: $q_\\pi(1, \\text{left}) = -1 + 0 = -1$, far above $v_\\pi(1) = -14$.",
+    "pitfalls": [
+      "The first action a need not be π(s); that is the point of the comparison."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.2",
+        "printedPages": [
+          94,
+          94
+        ],
+        "pdfPages": [
+          108,
+          108
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 94 (PDF p. 108), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch04.improvement-condition",
+    "unit": "ch04",
+    "concept": "ch04.policy-improvement-theorem",
+    "name": "Condition of the policy improvement theorem",
+    "bookLabel": "(4.7)",
+    "tex": "q_\\pi(s, \\pi'(s)) \\ge v_\\pi(s)",
+    "symbols": [
+      {
+        "tex": "\\pi'(s)",
+        "meaning": "the action the new policy takes in s"
+      }
+    ],
+    "intuition": "In every state, following π′ for one step and then π is at least as good as following π throughout.",
+    "assumptions": [
+      "π and π′ deterministic (the stochastic case uses Σ_a π′(a|s) q_π(s, a))",
+      "Holds for all s ∈ S."
+    ],
+    "pitfalls": [
+      "The condition is about one step of π′; the theorem's conclusion is about following π′ for ever."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.2",
+        "printedPages": [
+          94,
+          94
+        ],
+        "pdfPages": [
+          108,
+          108
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 94 (PDF p. 108), checked on the page image. Checked numerically by ch04.policy-improvement-theorem."
+    }
+  },
+  {
+    "id": "eq.ch04.improvement-conclusion",
+    "unit": "ch04",
+    "concept": "ch04.policy-improvement-theorem",
+    "name": "Conclusion of the policy improvement theorem",
+    "bookLabel": "(4.8)",
+    "tex": "v_{\\pi'}(s) \\ge v_\\pi(s)",
+    "symbols": [
+      {
+        "tex": "v_{\\pi'}",
+        "meaning": "the value function of the new policy"
+      }
+    ],
+    "intuition": "If (4.7) holds everywhere, π′ is at least as good as π everywhere.",
+    "assumptions": [
+      "(4.7) holds in every state."
+    ],
+    "derivation": [
+      {
+        "tex": "v_\\pi(s) \\le q_\\pi(s, \\pi'(s)) = \\mathbb{E}_{\\pi'}[R_{t+1} + \\gamma v_\\pi(S_{t+1}) \\mid S_t = s]",
+        "why": "(4.7), then (4.6) with the action chosen by π′."
+      },
+      {
+        "tex": "\\le \\mathbb{E}_{\\pi'}[R_{t+1} + \\gamma q_\\pi(S_{t+1}, \\pi'(S_{t+1})) \\mid S_t = s]",
+        "why": "Apply (4.7) again at the next state."
+      },
+      {
+        "tex": "= \\mathbb{E}_{\\pi'}[R_{t+1} + \\gamma R_{t+2} + \\gamma^2 v_\\pi(S_{t+2}) \\mid S_t = s]",
+        "why": "Expand q_π with (4.6) once more."
+      },
+      {
+        "tex": "\\le \\cdots \\le \\mathbb{E}_{\\pi'}[R_{t+1} + \\gamma R_{t+2} + \\gamma^2 R_{t+3} + \\cdots \\mid S_t = s] = v_{\\pi'}(s)",
+        "why": "Keep going: every step replaces π by π′ one step further out."
+      }
+    ],
+    "pitfalls": [
+      "Strict inequality in (4.7) at some state gives strict inequality in (4.8) at some state, not necessarily the same one."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.2",
+        "printedPages": [
+          94,
+          94
+        ],
+        "pdfPages": [
+          108,
+          108
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed p. 94 (PDF p. 108), checked on the page image."
+    }
+  },
+  {
+    "id": "eq.ch04.stochastic-improvement",
+    "unit": "ch04",
+    "concept": "ch04.policy-improvement-theorem",
+    "name": "One-step value of a stochastic policy",
+    "tex": "q_\\pi(s, \\pi'(s)) = \\sum_a \\pi'(a|s)\\, q_\\pi(s, a)",
+    "symbols": [
+      {
+        "tex": "\\pi'(a|s)",
+        "meaning": "probability of a in s under the new policy"
+      }
+    ],
+    "intuition": "For stochastic policies the theorem uses this average in place of q_π(s, π′(s)).",
+    "assumptions": [
+      "π′ may be stochastic."
+    ],
+    "pitfalls": [
+      "When several actions tie in (4.9), any split of probability among them is greedy; submaximal actions must get zero."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "4",
+        "section": "4.2",
+        "printedPages": [
+          96,
+          96
+        ],
+        "pdfPages": [
+          110,
+          110
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-09",
+      "note": "Printed unnumbered on p. 96 (PDF p. 110), checked on the page image."
     }
   }
 ]

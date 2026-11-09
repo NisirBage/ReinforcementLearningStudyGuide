@@ -1,0 +1,403 @@
+{
+  "unit": "ch04",
+  "sections": [
+    {
+      "id": "ch04.s4-1",
+      "section": "4.1",
+      "title": "Policy evaluation",
+      "concepts": [
+        "ch04.dynamic-programming",
+        "ch04.policy-evaluation",
+        "ch04.iterative-policy-evaluation",
+        "ch04.full-backup",
+        "ch04.gridworld-4x4"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**Dynamic programming** (DP) assumes we know the environment exactly, as a finite MDP, and computes value functions and optimal policies from that model. Its central trick is to take a Bellman equation, which says what the true values must satisfy, and use it as an assignment: put the right-hand side's current estimate on the left, and repeat. The first job is **policy evaluation**: for a fixed policy π, how good is each state?",
+          "refs": [
+            "eq.ch04.bellman-optimality-v",
+            "eq.ch04.bellman-optimality-q"
+          ]
+        },
+        {
+          "layer": "formal",
+          "body": "$v_\\pi$ satisfies (4.3)–(4.4), a system of $|\\mathcal{S}|$ linear equations, and exists uniquely when $\\gamma < 1$ or every state is sure to terminate under π. **Iterative policy evaluation** starts from any $v_0$ (terminal state 0) and applies (4.5) to every state, sweep after sweep; $v_k \\to v_\\pi$ under the same conditions. Each step is a **full backup**: it uses all possible next states, weighted by their probabilities, not a sample.",
+          "refs": [
+            "eq.ch04.v-pi-expectation",
+            "eq.ch04.v-pi-bellman",
+            "eq.ch04.policy-evaluation-update"
+          ]
+        },
+        {
+          "layer": "computation",
+          "body": "With two arrays, every new value is computed from the old ones (in the literature, a Jacobi-style or synchronous algorithm). With one array updated in place, new values are used as soon as they exist (Gauss–Seidel style); this also converges to $v_\\pi$, usually faster, and the order of the states in the sweep matters. Figure 4.1 is the in-place version, stopped when the largest change in a sweep, Δ, falls below a small θ.",
+          "refs": [
+            "alg.ch04.iterative-policy-evaluation"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**The 4×4 gridworld** (Example 4.1): states 1–14, one terminal state shown in two corners, four deterministic moves, −1 per move, γ = 1, equiprobable random policy. Figure 4.2 shows $v_k$: all −1 after one sweep, and at $k = \\infty$ the values −14, −18, −20 and −22, minus the expected number of steps to finish. Every printed value is recomputed by our code. The greedy policies with respect to $v_k$ are already optimal from $k = 3$.",
+          "refs": [
+            "ex.ch04.gridworld-4x4",
+            "fig.ch04.policy-evaluation-grids"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Policy evaluation is the **prediction problem**; Monte Carlo (Chapter 5) and TD (Chapter 6) methods solve it from experience, without the model. The [dynamic programming laboratory](#/lab/dp) runs both versions on the gridworld and shows every sweep."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            89,
+            90
+          ],
+          "pdfPages": [
+            103,
+            104
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.1",
+          "printedPages": [
+            90,
+            94
+          ],
+          "pdfPages": [
+            104,
+            108
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch04.s4-2",
+      "section": "4.2",
+      "title": "Policy improvement",
+      "concepts": [
+        "ch04.policy-improvement",
+        "ch04.policy-improvement-theorem"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Knowing $v_\\pi$, ask in one state: what if I took a different action here once, and then went back to following π? If that is better than $v_\\pi(s)$, it should be better still to take that action every time. Doing this in every state at once, choosing the best-looking action everywhere, gives a policy at least as good as π."
+        },
+        {
+          "layer": "formal",
+          "body": "The value of deviating once is $q_\\pi(s, a)$ (4.6). The **policy improvement theorem**: if $q_\\pi(s, \\pi'(s)) \\ge v_\\pi(s)$ in every state (4.7), then $v_{\\pi'}(s) \\ge v_\\pi(s)$ in every state (4.8), strictly somewhere if (4.7) is strict somewhere. The **greedy** policy (4.9) satisfies (4.7) by construction, so it is never worse.",
+          "refs": [
+            "eq.ch04.q-pi-from-v-pi",
+            "eq.ch04.improvement-condition",
+            "eq.ch04.improvement-conclusion",
+            "eq.ch04.greedy-improvement"
+          ]
+        },
+        {
+          "layer": "derivation",
+          "body": "Start from (4.7) and keep substituting it one step further into the future: $v_\\pi(s) \\le q_\\pi(s, \\pi'(s)) = \\mathbb{E}_{\\pi'}[R_{t+1} + \\gamma v_\\pi(S_{t+1})] \\le \\mathbb{E}_{\\pi'}[R_{t+1} + \\gamma R_{t+2} + \\gamma^2 v_\\pi(S_{t+2})] \\le \\cdots$, which ends at $v_{\\pi'}(s)$. And if the greedy policy is no better than π, then $v_\\pi$ satisfies the Bellman optimality equation (4.1), so π was already optimal. For stochastic policies the same holds with $q_\\pi(s, \\pi'(s)) = \\sum_a \\pi'(a|s) q_\\pi(s, a)$; ties may share probability in any way, as long as submaximal actions get none.",
+          "refs": [
+            "eq.ch04.improvement-conclusion",
+            "eq.ch04.stochastic-improvement"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "In the 4×4 gridworld, the policy greedy with respect to the random policy's values (bottom of Figure 4.2) is optimal: its values are −1, −2 or −3 everywhere, while the random policy's are at most −14. From state 1, moving left finishes at once: $q_\\pi(1, \\text{left}) = -1$, far above $v_\\pi(1) = -14$. In general only an improvement is guaranteed, not optimality in one step."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.2",
+          "printedPages": [
+            94,
+            96
+          ],
+          "pdfPages": [
+            108,
+            110
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch04.s4-3",
+      "section": "4.3",
+      "title": "Policy iteration",
+      "concepts": [
+        "ch04.policy-iteration",
+        "ch04.jacks-car-rental"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Evaluate, improve, evaluate the new policy, improve again. Each policy is strictly better than the last unless it is already optimal, and a finite MDP has only finitely many policies, so the process must end at an optimal policy."
+        },
+        {
+          "layer": "formal",
+          "body": "$\\pi_0 \\xrightarrow{E} v_{\\pi_0} \\xrightarrow{I} \\pi_1 \\xrightarrow{E} v_{\\pi_1} \\xrightarrow{I} \\pi_2 \\cdots \\xrightarrow{I} \\pi_* \\xrightarrow{E} v_*$, with E a policy evaluation and I a policy improvement (Figure 4.3). Each evaluation starts from the previous value function, which speeds it up a lot. The draft notes that Figure 4.3 has a bug: if equally good policies keep alternating, the stopping test never succeeds; keeping the current action whenever it ties for best fixes it, and our laboratory does so.",
+          "refs": [
+            "alg.ch04.policy-iteration"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Jack's car rental** (Example 4.2): two locations, at most 20 cars each, Poisson rental requests (means 3 and 4) and returns (3 and 2), $10 per rental, $2 per car moved overnight, at most 5, γ = 0.9: 441 states. From 'never move', policy iteration finds four improvements and then stops (Figure 4.4). In our implementation the evaluations take 96, 76, 70, 52 and 17 in-place sweeps (θ = 10⁻⁶), and the improvements change 318, 272, 79 and 8 states: big changes first, then refinements. The optimal policy moves cars from the first location when it has many more cars than the second, and back when it has very few.",
+          "refs": [
+            "ex.ch04.jacks-car-rental"
+          ]
+        },
+        {
+          "layer": "computation",
+          "body": "Run it in the [dynamic programming laboratory](#/lab/dp): the Jack's car rental panel steps through π₀ … π₄ as Figure 4.4 draws them, and also solves Exercise 4.5's variant with a free shuttle and a parking charge. Policy iteration on the 4×4 gridworld needs a single improvement."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.3",
+          "printedPages": [
+            96,
+            98
+          ],
+          "pdfPages": [
+            110,
+            112
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.4",
+          "printedPages": [
+            99,
+            99
+          ],
+          "pdfPages": [
+            113,
+            113
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch04.s4-4",
+      "section": "4.4",
+      "title": "Value iteration",
+      "concepts": [
+        "ch04.value-iteration",
+        "ch04.truncated-policy-iteration",
+        "ch04.gamblers-problem"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Policy iteration evaluates each policy to convergence before improving it, which is often wasted effort: in Figure 4.2 the greedy policy stops changing after three sweeps. **Value iteration** stops evaluation after a single sweep and folds the improvement into it, by taking the best action in every backup."
+        },
+        {
+          "layer": "formal",
+          "body": "Value iteration applies (4.10), $v_{k+1}(s) = \\max_a \\sum_{s', r} p(s', r|s, a)[r + \\gamma v_k(s')]$, which is the Bellman optimality equation (4.1) turned into an update; from any $v_0$ it converges to $v_*$. It stops when a sweep changes the values by less than θ and outputs the greedy policy (Figure 4.5). More generally, **truncated policy iteration** mixes evaluation sweeps and max sweeps; all such schemes converge for discounted finite MDPs.",
+          "refs": [
+            "eq.ch04.value-iteration",
+            "alg.ch04.value-iteration"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**The gambler's problem** (Example 4.3): stake whole dollars on coin flips until reaching $100 (reward +1) or going broke. The value of a capital level is the probability of winning. With $p_h = 0.4$, value iteration gives $v_*(25) = 0.16$, $v_*(50) = 0.4$ and $v_*(75) = 0.64$, and the optimal stakes have the odd saw-tooth shape of Figure 4.6, with all-in bets at 50. The policy is not unique: several stakes tie for the best. Exercise 4.8 asks why the shape makes sense."
+        },
+        {
+          "layer": "computation",
+          "body": "Try it in the [dynamic programming laboratory](#/lab/dp): choose the gambler's problem and watch the value estimates sweep by sweep. For Exercise 4.9, change $p_h$ to 0.25 (the same bold shape) and to 0.55, where the best stake is 1 everywhere and value iteration needs about 2,250 sweeps instead of about 20."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.4",
+          "printedPages": [
+            98,
+            101
+          ],
+          "pdfPages": [
+            112,
+            115
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch04.s4-5",
+      "section": "4.5",
+      "title": "Asynchronous dynamic programming",
+      "concepts": [
+        "ch04.asynchronous-dp"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Sweeping every state is impossible for big problems. Asynchronous DP gives up the sweeps: back up states in any order, as often or as rarely as useful, using whatever values the other states currently have."
+        },
+        {
+          "layer": "formal",
+          "body": "Asynchronous DP algorithms are in-place algorithms with no fixed sweep order. To converge they must keep backing up every state; they cannot ignore one for ever. Example: back up one state $s_k$ at each step $k$ with (4.10); with $0 \\le \\gamma < 1$ this converges to $v_*$ as long as every state appears infinitely often in $\\{s_k\\}$, even in random order. Policy-evaluation and value-iteration backups can also be interleaved."
+        },
+        {
+          "layer": "example",
+          "body": "Backgammon has over $10^{20}$ states. At a million backups a second, one sweep takes $10^{14}$ seconds, about 3.2 million years; the draft's 'over a thousand years' is true and understated. Asynchronous methods do not reduce the total work automatically, but they need not be stuck in a hopeless sweep before making progress."
+        },
+        {
+          "layer": "connections",
+          "body": "The real payoff: computation can be focused, for example on the states an agent actually visits while acting, so DP and real-time interaction can run together. Chapter 8 develops ways of choosing which states to back up; focusing like this is a recurring theme of reinforcement learning."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.5",
+          "printedPages": [
+            101,
+            103
+          ],
+          "pdfPages": [
+            115,
+            117
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch04.s4-6",
+      "section": "4.6",
+      "title": "Generalized policy iteration",
+      "concepts": [
+        "ch04.gpi"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Policy iteration alternates two processes: making the values match the policy, and making the policy greedy with respect to the values. Nothing requires each to finish before the other starts. Value iteration interleaves them after every sweep; asynchronous DP after every single state. The common pattern is **generalized policy iteration** (GPI)."
+        },
+        {
+          "layer": "formal",
+          "body": "If both processes stop changing anything, the value function is consistent with the policy and the policy is greedy with respect to it, so the Bellman optimality equation (4.1) holds: both are optimal. The two processes compete, since each change makes the other's work out of date, yet together they converge to the joint solution (Figure 4.7)."
+        },
+        {
+          "layer": "connections",
+          "body": "Almost every reinforcement learning method in the book is GPI with some evaluation and some improvement process: Monte Carlo control (Chapter 5), Sarsa and Q-learning (Chapter 6), and the actor–critic methods of Chapter 11."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.6",
+          "printedPages": [
+            104,
+            106
+          ],
+          "pdfPages": [
+            118,
+            120
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch04.s4-7",
+      "section": "4.7",
+      "title": "Efficiency of dynamic programming",
+      "concepts": [
+        "ch04.dp-efficiency"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "DP can look expensive, but compared with the alternatives it is efficient: its worst-case running time is polynomial in the numbers of states and actions, while the number of policies is exponential."
+        },
+        {
+          "layer": "formal",
+          "body": "With $n$ states and $m$ actions there are $m^n$ deterministic policies, yet DP finds an optimal one in polynomial time, exponentially faster than direct search through policies. Linear programming can also solve MDPs, sometimes with better worst-case guarantees, but becomes impractical at about a hundredth of the state-set size DP handles. The **curse of dimensionality** (the number of states grows exponentially with the number of state variables) is a difficulty of the problem, not of DP."
+        },
+        {
+          "layer": "example",
+          "body": "The 4×4 gridworld already has $4^{14} \\approx 2.7 \\times 10^8$ deterministic policies, while policy iteration needs one improvement. In practice DP solves MDPs with millions of states, usually much faster than its worst case, especially from good initial values or policies; for the largest problems, asynchronous methods are preferred."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.7",
+          "printedPages": [
+            106,
+            107
+          ],
+          "pdfPages": [
+            120,
+            121
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch04.s4-8",
+      "section": "4.8",
+      "title": "Summary (reading guide)",
+      "concepts": [
+        "ch04.bootstrapping",
+        "ch04.gpi"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**What this section does.** It sums up DP: policy evaluation, policy improvement, policy iteration and value iteration; full backups as Bellman equations turned into assignments, one for each of the four value functions $v_\\pi$, $v_*$, $q_\\pi$ and $q_*$; GPI as the common view; asynchronous DP as a fine-grained form of GPI. Its last point is the most important for what follows: DP **bootstraps**, updating estimates from other estimates. Monte Carlo methods (Chapter 5) need no model and do not bootstrap; TD methods (Chapter 6) need no model and do bootstrap. Read pp. 107–108, the bibliographical remarks (pp. 108–109) and the ten exercises (pp. 110–111); Exercises 4.5 and 4.9 are programming exercises, done here as laboratory tasks."
+        },
+        {
+          "layer": "connections",
+          "body": "**Bibliographical pointers.** 'Dynamic programming' is Bellman's term (1957); the policy improvement theorem and policy iteration are due to Bellman and to Howard (1960). Value iteration as truncated policy iteration follows Puterman and Shin's *modified policy iteration* (1978). The two-array and in-place versions are the Jacobi and Gauss–Seidel styles of solving linear systems. Asynchronous DP is due to Bertsekas (1982, 1983); §4.7 is based on Littman, Dean and Kaelbling (1995). Watkins (1989) called a class of reinforcement learning methods 'incremental dynamic programming'."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.8",
+          "printedPages": [
+            107,
+            108
+          ],
+          "pdfPages": [
+            121,
+            122
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            108,
+            109
+          ],
+          "pdfPages": [
+            122,
+            123
+          ]
+        }
+      ]
+    }
+  ]
+}

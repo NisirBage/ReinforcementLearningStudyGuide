@@ -9,6 +9,9 @@ import { decodeSaved, STORAGE_KEY } from "../src/store/persistence";
 import { memoryStore } from "../src/store/idb";
 import { SLOT_PREFIX } from "../src/store/ProgressContext";
 import { preloadAll, renderApp } from "./helpers";
+import { startExam } from "../src/domain/exam";
+import { buildIndexes } from "../src/content/indexes";
+import { loadBundle } from "../../tools/content_loader.ts";
 
 beforeAll(preloadAll);
 afterEach(cleanup);
@@ -31,15 +34,22 @@ function testClock() {
   return { now: () => t, advance: (ms: number) => (t += ms) };
 }
 
-/** Chapter 4, Beginner only: exactly ch04-q003 (ordering) and ch04-q007 (true/false), in seeded order. */
-async function startCh04Beginner(user: ReturnType<typeof userEvent.setup>, minutes = 10) {
-  await user.click(screen.getByLabelText(/Chapter 4: Dynamic Programming/));
-  await user.click(screen.getByLabelText("Beginner"));
-  expect(screen.getByText(/^2 questions available/)).toBeInTheDocument();
-  const m = screen.getByLabelText("Duration (minutes)");
-  await user.clear(m);
-  await user.type(m, String(minutes));
-  await go(screen.getByRole("button", { name: "Start exam" }));
+/**
+ * The paper these tests take: ch04-q003 (ordering, 2 marks) and ch04-q007 (true/false, 1 mark). Until Milestone 4E
+ * these were the only Chapter 4 Beginner questions, and the tests started the exam from that filter. The bank grows
+ * with every chapter, so the paper is now put in place with the exam engine's own startExam, exactly as the page
+ * stores an exam it has started; the page then resumes it. Starting a paper from the setup form is tested in
+ * "mock exam setup".
+ */
+const idx = buildIndexes(loadBundle());
+async function seedCh04Paper(store: ReturnType<typeof memoryStore>, now: () => number, minutes = 10) {
+  const cfg = { units: ["ch04"], difficulties: [1], count: 2, minutes, includeWritten: false, seed: 7 };
+  const e = startExam(`e-${now()}-7`, "Mock exam: Chapter 4", cfg, ["ch04-q003", "ch04-q007"], (id) => idx.question(id)!, now());
+  await store.set(SLOT_PREFIX + "exam", JSON.stringify(e));
+}
+async function openSeeded(store: ReturnType<typeof memoryStore>, now: () => number, minutes = 10) {
+  await seedCh04Paper(store, now, minutes);
+  renderApp("/exam", store, now);
   expect(await screen.findByRole("timer")).toHaveTextContent(`${String(minutes).padStart(2, "0")}:00`);
 }
 /** Answers the true/false question (False is right) wherever it is in the paper. */
@@ -55,9 +65,17 @@ describe("mock exam setup", () => {
     await ready();
     await go(screen.getByRole("link", { name: /Mock exams/ }));
     expect(await ready()).toHaveTextContent("Mock exams");
-    expect(screen.getByText(/^86 questions available/)).toBeInTheDocument(); // 111 core minus 25 written (Milestone 4D added 36 and 15)
+    expect(screen.getByText(/^102 questions available/)).toBeInTheDocument(); // 133 core minus 31 written (Milestone 4E added 22 and 6)
     await user.click(screen.getByLabelText(/Include written answers/));
-    expect(screen.getByText(/^111 questions available/)).toBeInTheDocument();
+    expect(screen.getByText(/^133 questions available/)).toBeInTheDocument();
+    // Starting from the form: Chapter 4, Beginner, written answers off again: 7 questions since Milestone 4E.
+    await user.click(screen.getByLabelText(/Include written answers/));
+    await user.click(screen.getByLabelText(/Chapter 4: Dynamic Programming/));
+    await user.click(screen.getByLabelText("Beginner"));
+    expect(screen.getByText(/^7 questions available/)).toBeInTheDocument();
+    await go(screen.getByRole("button", { name: "Start exam" }));
+    expect(await screen.findByRole("timer")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /^Question \d/ })).toHaveLength(7); // the palette: one button per question
   });
 
   test("on a phone-width layout, Search, Progress and Settings sit under More", async () => {
@@ -79,9 +97,7 @@ describe("taking an exam", () => {
   test("the countdown follows the clock; the palette shows answered, unanswered and marked questions", async () => {
     const user = userEvent.setup();
     const clock = testClock();
-    renderApp("/exam", memoryStore(), clock.now);
-    await ready();
-    await startCh04Beginner(user);
+    await openSeeded(memoryStore(), clock.now);
     clock.advance(61_000);
     await waitFor(() => expect(screen.getByRole("timer")).toHaveTextContent("08:59"));
     await answerTrueFalse(user, "False");
@@ -95,9 +111,7 @@ describe("taking an exam", () => {
   test("leaving the exam keeps the clock running and shows a banner; returning keeps the answers", async () => {
     const user = userEvent.setup();
     const clock = testClock();
-    renderApp("/exam", memoryStore(), clock.now);
-    await ready();
-    await startCh04Beginner(user);
+    await openSeeded(memoryStore(), clock.now);
     await answerTrueFalse(user, "False");
     await go(screen.getByRole("link", { name: /Learn/ }));
     expect(await ready()).toHaveTextContent("Learn");
@@ -113,9 +127,7 @@ describe("taking an exam", () => {
     const user = userEvent.setup();
     const clock = testClock();
     const store = memoryStore();
-    renderApp("/exam", store, clock.now);
-    await ready();
-    await startCh04Beginner(user, 5);
+    await openSeeded(store, clock.now, 5);
     await answerTrueFalse(user, "False");
     await waitFor(() => expect(slot(store)).not.toBeNull());
     cleanup();
@@ -137,9 +149,7 @@ describe("taking an exam", () => {
     const user = userEvent.setup();
     const clock = testClock();
     const store = memoryStore();
-    renderApp("/exam", store, clock.now);
-    await ready();
-    await startCh04Beginner(user, 1);
+    await openSeeded(store, clock.now, 1);
     await answerTrueFalse(user, "False");
     clock.advance(MIN);
     expect(await screen.findByText(/submitted automatically when time ran out/)).toBeInTheDocument();
@@ -151,9 +161,7 @@ describe("taking an exam", () => {
     const user = userEvent.setup();
     const clock = testClock();
     const store = memoryStore();
-    renderApp("/exam", store, clock.now);
-    await ready();
-    await startCh04Beginner(user);
+    await openSeeded(store, clock.now);
     await answerTrueFalse(user, "True"); // wrong
     clock.advance(3 * MIN);
     await user.click(screen.getByRole("button", { name: "Submit exam" }));
@@ -205,10 +213,7 @@ describe("taking an exam", () => {
   });
 
   test("closing or reloading the tab during an exam asks first", async () => {
-    const user = userEvent.setup();
-    renderApp("/exam", memoryStore(), testClock().now);
-    await ready();
-    await startCh04Beginner(user);
+    await openSeeded(memoryStore(), testClock().now);
     const ev = new Event("beforeunload", { cancelable: true });
     const prevent = vi.spyOn(ev, "preventDefault");
     window.dispatchEvent(ev);

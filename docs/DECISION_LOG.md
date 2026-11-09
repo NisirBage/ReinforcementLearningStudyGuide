@@ -247,3 +247,8 @@ The service worker activates a new version at once and deletes the old version's
 - **Descriptive examples are items with no facts.** Many of the draft's examples describe how a task can be framed (bioreactor, golf) and make no numerical claim. They are Example items with an empty fact list, verified against the text layer. Their card says there is nothing to reproduce instead of offering a check button, and the validator refuses a computed verification for them. An example with numbers keeps facts backed by checks.
 - **One transcription per figure.** Printed values live in the figure items (content/figures); checks read them from there, as Figure 4.2's already did.
 - **The 5 × 5 gridworld is a library environment**, not lab-only code, so the same definition serves the checks, the DP laboratory and later chapters.
+
+## D-046: Jack's car rental and test fixtures independent of the bank (Accepted, 2026-11-09)
+- **Jack's car rental gets a dedicated, factored solver** rather than a generic FiniteMDP. Probabilities are exact (folded Poisson tails). The within-day order of events (move, rent, then returns) is our reading of the draft and is stated in the lab.
+- **The unexplained value-axis difference in Figure 4.4 is flagged, not tuned away.** The policies agree with the figure.
+- **Tests do not depend on how many questions a filter happens to give.** As the bank grows, a test that needs a specific paper puts it in place through the engine (`startExam`), and the setup form is tested separately.

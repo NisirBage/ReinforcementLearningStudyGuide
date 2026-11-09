@@ -490,3 +490,11 @@ pre.code { max-height: 30rem; overflow: auto; padding: 10px 12px; background: va
 .bj-policy td { text-align: center; padding: 2px 3px; }
 .bj-policy td.stick { background: color-mix(in srgb, var(--series-1) 22%, transparent); }
 .bj-policy td.off { outline: 2px solid var(--warn); outline-offset: -2px; font-weight: 700; }
+
+/* Jack's car rental policy grids (Figure 4.4): 21 × 21 small cells that fit a phone without horizontal page scroll. */
+.jack-wrap { max-width: 100%; overflow-x: auto; }
+.jack-grid { border-collapse: collapse; font-size: 0.62rem; font-variant-numeric: tabular-nums; margin: 8px 0; }
+.jack-grid td, .jack-grid th { width: 1.35em; height: 1.35em; padding: 0; text-align: center; }
+.jack-grid td { border: 1px solid var(--border); color: var(--text); }
+.jack-grid th { color: var(--muted); font-weight: 400; }
+

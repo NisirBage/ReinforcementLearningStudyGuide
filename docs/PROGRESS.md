@@ -704,5 +704,63 @@ Verification: the windy-gridworld investigation, blackjack (Examples 5.1, 5.3 an
 
 `npm run check` passes.
 
-#### Next: Milestone 4E
-Chapter 4 to the coverage criteria.
+### Milestone 4E: Chapter 4 complete (done, 2026-11-09)
+
+**Chapter 4 meets the coverage criteria:**
+- all 8 sections are covered;
+- the chapter opening's two equations and all 8 numbered equations are present;
+- all 3 examples are covered;
+- all 10 exercises are accounted for: 8 in the question bank, and the two programming exercises, 4.5 and 4.9, as laboratory tasks.
+
+The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read in the text layer, and equations (4.1)–(4.8), the stochastic form on p. 96 and Figure 4.4 were checked on the page images (PDF pp. 104, 108–110, 113).
+
+**Jack's car rental (Example 4.2), new in the library** (`lib/rl/envs/jacksCarRental.ts`).
+- **A dedicated solver.** A generic MDP with 441 states, 11 actions and 441 next states would need millions of transition objects. The dynamics factor into the two locations, so values are computed from per-location tables instead.
+- **Exact probabilities.** The Poisson tails are folded into "every car rented" and "lot full", not truncated.
+- **Order of events.** Within a day, cars are moved overnight, then rented, then the returns arrive. The draft implies this order but does not state it, and the lab says so.
+- **Figure 4.4, reproduced.** Policy iteration from "never move a car" gives π₀ … π₄, and π₄ is stable. Each policy is a strict improvement on the one before. π₄ moves between −4 and 5 cars, and its top and bottom rows match the figure cell for cell (read at 500 dpi). The improvements change 318, 272, 79 and 8 states.
+- **Flagged as a replication discrepancy.** The smallest value, 421.4, matches the 420 on the figure's value axis. The largest is 637.0, while the axis shows 612. Possible reasons are an unstated modelling detail, or 612 marking an axis tick rather than the maximum. Nothing was tuned to match.
+- **Exercise 4.5 (lab task).** The DP laboratory's new Jack's car rental panel steps through π₀ … π₄ and solves the variant with one free shuttle and a $4 parking charge above 10 cars.
+
+**Exercise 4.9 (lab task):** the gambler's problem with p_h = 0.25 keeps the bold shape: v*(50) = 0.25, v*(25) = 0.0625, and staking everything at 50 is among the best choices. With p_h = 0.55, a stake of 1 is optimal in every state, and value iteration needs about 2,250 sweeps instead of about 20.
+
+**Checks (12 new, 114 in all):**
+- Figure 4.4 and its value range;
+- the policy improvement theorem, (4.7)–(4.8), from 30 random policies on the 5 × 5 gridworld and the recycling robot;
+- our answers to Exercises 4.3 and 4.10, iterated until they converge to q_π and q*;
+- the two laboratory tasks;
+- 5 numeric answers.
+
+**Content:**
+- **10 concepts:**
+  - dynamic programming, full backup and the policy improvement theorem;
+  - Jack's car rental and the gambler's problem;
+  - truncated policy iteration, asynchronous DP and GPI;
+  - DP's efficiency, and bootstrapping.
+- **8 equations:** (4.1)–(4.4), (4.6)–(4.8), and the stochastic-policy form of the improvement condition.
+- **Example 4.2** as an item.
+- **8 lessons:** §4.1 also teaches the chapter opening; §4.8 is a reading guide.
+- **22 questions** (now 34 in Chapter 4):
+  - 6 exercises, reworded and labelled as the draft's: 4.3, 4.4, 4.6, 4.7, 4.8 and 4.10;
+  - 16 derived from the text;
+  - 5 numeric questions with answer checks;
+  - 6 written answers marked against rubrics.
+
+**Tests:** **27 files, 1586 tests, all passed.** New: `ch04-4e` (6), covering the Jack model, the laboratory panel, the Chapter 4 lessons, coverage and the flag. Updated tests:
+- **The mock-exam tests used to start their paper from the filter "Chapter 4, Beginner",** which until now gave exactly ch04-q003 and ch04-q007. It now gives 7 questions. The tests now put that same two-question paper in place with the exam engine's own `startExam` and resume it, as the page does after a reload, so they no longer depend on the size of the bank. The setup test now starts a real paper from the form (Chapter 4, Beginner: 7 questions).
+- **A search test** expected "belman equation" to rank (3.12) in the top five. Chapters 3 and 4 added several genuine Bellman equations that now rank alongside it. The test now requires the Bellman-equation concept in the top two, and (3.12) to be found.
+- **The coverage test's example of a partial section was §4.2;** it is now §5.3. Chapter 4's opening equations are covered, so the test removes (4.1) from a fresh copy of the content to show that a missing opening equation is still reported.
+- **Pinned counts and lists, updated to the new values:** questions 111 → 133 (86 → 102 without written answers), concepts 50 → 60, and the Chapter 4 question lists.
+- **One selector renamed.** The Jack panel's selector is labelled "Variant", so the DP laboratory's "Problem" selector stays unique.
+- **Setup hooks now get 30 s, the same limit as tests** (`hookTimeout` in `vitest.config.ts`). Twice, in 4C and in this milestone, two or three files failed while loading every route, the content and the search index with 27 files running in parallel; the same files pass in seconds on their own. No assertion depends on this, and the reason is written next to the setting.
+
+**Browser review:**
+- all Chapter 4 sections render with no KaTeX errors and show Covered;
+- the Jack panel draws π₄ like Figure 4.4 and fits a phone screen without horizontal scrolling.
+
+`npm run check` passes.
+
+#### Next: Milestone 4F
+Chapter 5 to the coverage criteria.

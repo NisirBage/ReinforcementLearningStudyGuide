@@ -755,6 +755,1273 @@
         "check": "ch04-q012"
       },
       "reviewed": true
+    },
+    {
+      "id": "ch04-q013",
+      "unit": "ch04",
+      "section": "4.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch04.jacks-car-rental"
+        ]
+      },
+      "concepts": [
+        "ch04.jacks-car-rental"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "In Jack's car rental, the first location starts a day with 2 cars available, and rental requests there are Poisson with mean 3. Since a request with no car available is lost, the number rented is $\\min(\\text{requests}, 2)$. What is the expected number of cars rented, and the expected credit at $10 per rental?",
+      "parts": [
+        {
+          "label": "expected rentals",
+          "answer": 1.7511,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "expected credit ($)",
+          "answer": 17.511,
+          "tolerance": 0.005
+        }
+      ],
+      "solution": [
+        "$P(0) = e^{-3} \\approx 0.0498$, $P(1) = 3e^{-3} \\approx 0.1494$, so $P(\\ge 2) \\approx 0.8009$.",
+        "$\\mathbb{E}[\\min(N, 2)] = 0 \\cdot 0.0498 + 1 \\cdot 0.1494 + 2 \\cdot 0.8009 \\approx 1.7511$.",
+        "Credit: $10 \\times 1.7511 \\approx \\$17.51$."
+      ],
+      "explanation": "Cars that are not available cannot be rented, so the expected reward is capped by the stock: this is why moving cars pays.",
+      "misconceptions": [
+        {
+          "wrong": "3 cars ($30)",
+          "why": "Only 2 cars are available; requests beyond that are lost."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.3",
+          "printedPages": [
+            98,
+            98
+          ],
+          "pdfPages": [
+            112,
+            112
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch04-q013"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q014",
+      "unit": "ch04",
+      "section": "4.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch04.jacks-car-rental"
+        ]
+      },
+      "concepts": [
+        "ch04.jacks-car-rental"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "Jack's car rental keeps between 0 and 20 cars at each of two locations, and each night moves a net number of cars between them, at most 5 in either direction. How many states does the MDP have, and how many actions are available in a state with plenty of cars at both locations?",
+      "parts": [
+        {
+          "label": "states",
+          "answer": 441,
+          "tolerance": 0
+        },
+        {
+          "label": "actions",
+          "answer": 11,
+          "tolerance": 0
+        }
+      ],
+      "solution": [
+        "States: $21 \\times 21 = 441$ pairs (cars at each location, 0 to 20).",
+        "Actions: net moves $-5, \\ldots, 5$, that is 11 (fewer when a location has fewer than 5 cars)."
+      ],
+      "explanation": "Small enough for exact DP, large enough that the optimal policy is not obvious.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.3",
+          "printedPages": [
+            98,
+            98
+          ],
+          "pdfPages": [
+            112,
+            112
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch04-q014"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q015",
+      "unit": "ch04",
+      "section": "4.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.7"
+        ]
+      },
+      "concepts": [
+        "ch04.dp-efficiency"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "The 4×4 gridworld of Example 4.1 has 14 nonterminal states with 4 actions each. How many deterministic policies does it have? (Policy iteration finds an optimal one after a single improvement.)",
+      "parts": [
+        {
+          "label": "deterministic policies",
+          "answer": 268435456,
+          "tolerance": 0
+        }
+      ],
+      "solution": [
+        "One action per state, chosen independently: $m^n = 4^{14} = 268{,}435{,}456$."
+      ],
+      "explanation": "Direct search through m^n policies is hopeless even here; DP is polynomial in n and m.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.7",
+          "printedPages": [
+            106,
+            106
+          ],
+          "pdfPages": [
+            120,
+            120
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch04-q015"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q016",
+      "unit": "ch04",
+      "section": "4.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "Exercise 4.9",
+          "§4.4"
+        ]
+      },
+      "concepts": [
+        "ch04.gamblers-problem",
+        "ch04.value-iteration"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Solve the gambler's problem with a heads probability of $p_h = 0.25$ by value iteration (the dynamic programming laboratory can do it). What are $v_*(25)$ and $v_*(50)$?",
+      "parts": [
+        {
+          "label": "v*(25)",
+          "answer": 0.0625,
+          "tolerance": 0.0005
+        },
+        {
+          "label": "v*(50)",
+          "answer": 0.25,
+          "tolerance": 0.0005
+        }
+      ],
+      "solution": [
+        "With an unfavourable coin, bold play is optimal: from 50, stake everything: $v_*(50) = p_h = 0.25$.",
+        "From 25, stake 25 to reach 50, then stake 50: $v_*(25) = p_h^2 = 0.0625$."
+      ],
+      "explanation": "With p_h < 0.5 every flip loses money on average, so the fewer flips the better.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.4",
+          "printedPages": [
+            100,
+            101
+          ],
+          "pdfPages": [
+            114,
+            115
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            111,
+            111
+          ],
+          "pdfPages": [
+            125,
+            125
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch04-q016"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q017",
+      "unit": "ch04",
+      "section": "4.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.5"
+        ]
+      },
+      "concepts": [
+        "ch04.asynchronous-dp"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Backgammon has about $10^{20}$ states. If value-iteration backups could be done at a million states per second, how many years would one full sweep take (365.25-day years)?",
+      "parts": [
+        {
+          "label": "years",
+          "answer": 3168808.78,
+          "tolerance": 5000
+        }
+      ],
+      "solution": [
+        "$10^{20} / 10^6 = 10^{14}$ seconds.",
+        "$10^{14} / (365.25 \\times 24 \\times 3600) \\approx 3.17 \\times 10^6$ years."
+      ],
+      "explanation": "The draft's 'over a thousand years' is true, and an understatement: sweeps are out of the question, which is why asynchronous DP matters.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.5",
+          "printedPages": [
+            101,
+            101
+          ],
+          "pdfPages": [
+            115,
+            115
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch04-q017"
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q018",
+      "unit": "ch04",
+      "section": "4.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "4.3"
+      },
+      "concepts": [
+        "ch04.policy-evaluation",
+        "ch03.action-value-function"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "Give the equations for action values that correspond to (4.3), (4.4) and (4.5): the definition of $q_\\pi$ as a one-step expectation, its Bellman equation written with $p(s', r|s, a)$, and the update that computes successive approximations $q_0, q_1, q_2, \\ldots$",
+      "answer": "$q_\\pi(s, a) = \\mathbb{E}_\\pi[R_{t+1} + \\gamma q_\\pi(S_{t+1}, A_{t+1}) \\mid S_t = s, A_t = a]$; $q_\\pi(s, a) = \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma \\sum_{a'} \\pi(a'|s') q_\\pi(s', a')\\big]$; $q_{k+1}(s, a) = \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma \\sum_{a'} \\pi(a'|s') q_k(s', a')\\big]$ for all $s, a$.",
+      "solution": [
+        "Start from q_π(s, a) = E_π[G_t | S_t = s, A_t = a] and split off the first reward.",
+        "The next action A_{t+1} is drawn from π, so average q_π(s′, ·) with π(·|s′).",
+        "Turn the equation into an assignment with q_k on the right."
+      ],
+      "explanation": "Iterating this update converges to q_π, just as (4.5) converges to v_π.",
+      "rubric": [
+        {
+          "point": "Analogue of (4.3): expectation of R_{t+1} + γ q_π(S_{t+1}, A_{t+1}) given S_t = s, A_t = a",
+          "marks": 1
+        },
+        {
+          "point": "Analogue of (4.4): sum over s′, r of p(s′, r|s, a), with the next action averaged under π",
+          "marks": 1
+        },
+        {
+          "point": "Analogue of (4.5): q_{k+1} on the left, q_k on the right, for all state–action pairs",
+          "marks": 1
+        },
+        {
+          "point": "Notes that the first action is given (no π for it)",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            110,
+            110
+          ],
+          "pdfPages": [
+            124,
+            124
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch04.q-evaluation-converges",
+        "note": "Exercise 4.3, printed p. 110; the iteration is checked to converge to q_π on the 5×5 gridworld."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q019",
+      "unit": "ch04",
+      "section": "4.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "4.4"
+      },
+      "concepts": [
+        "ch04.iterative-policy-evaluation"
+      ],
+      "type": "short-answer",
+      "category": "algorithm-trace",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "In an undiscounted episodic task, a policy may never reach the terminal state (for example, it moves back and forth between two cells of the gridworld), so $v_\\pi(s)$ can be $-\\infty$ and the algorithm of Figure 4.1 never stops. As a practical matter, how could the algorithm be changed so that it always terminates? Assume that the optimal policy does terminate.",
+      "answer": "Any of: cap the number of sweeps and stop with a warning; detect divergence (values falling below a bound such as −(maximum possible episode cost) or growing without limit) and report $-\\infty$ for those states; add a small discount (γ slightly below 1) so every value is finite; or, inside policy iteration, start from a policy known to terminate, so that every policy produced by improvement is at least as good and therefore also terminates. The last is the principled fix: improvement never makes values worse, so it can never produce a non-terminating policy from a terminating one.",
+      "solution": [
+        "Ask what makes Δ never fall below θ: values that keep decreasing.",
+        "Either bound the computation, change the problem slightly (discount), or avoid evaluating such policies at all."
+      ],
+      "explanation": "The dynamic programming laboratory handles the same issue by reporting an evaluation that does not converge.",
+      "rubric": [
+        {
+          "point": "Proposes a stopping safeguard: a sweep limit, or a bound that detects values diverging",
+          "marks": 1
+        },
+        {
+          "point": "Or proposes discounting or a per-step cap so that values stay finite",
+          "marks": 1
+        },
+        {
+          "point": "Notes the policy-iteration route: start from a terminating policy; improvement keeps every later policy terminating",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            110,
+            110
+          ],
+          "pdfPages": [
+            124,
+            124
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 4.4, printed p. 110."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q020",
+      "unit": "ch04",
+      "section": "4.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "4.6"
+      },
+      "concepts": [
+        "ch04.policy-iteration",
+        "ch03.action-value-function"
+      ],
+      "type": "short-answer",
+      "category": "pseudocode",
+      "difficulty": 3,
+      "marks": 4,
+      "stem": "Define policy iteration for action values: write a complete algorithm that computes $q_*$, in the style of Figure 4.3 (which computes $v_*$). The draft stresses that the ideas in this exercise are used throughout the rest of the book.",
+      "answer": "1. Initialise $Q(s, a)$ arbitrarily and a deterministic $\\pi(s) \\in \\mathcal{A}(s)$ for all s. 2. Policy evaluation: repeat, with $\\Delta \\leftarrow 0$: for each $(s, a)$: $q \\leftarrow Q(s, a)$; $Q(s, a) \\leftarrow \\sum_{s', r} p(s', r|s, a)[r + \\gamma Q(s', \\pi(s'))]$; $\\Delta \\leftarrow \\max(\\Delta, |q - Q(s, a)|)$; until $\\Delta < \\theta$. 3. Policy improvement: stable ← true; for each s: $a \\leftarrow \\pi(s)$; $\\pi(s) \\leftarrow \\arg\\max_{a'} Q(s, a')$, keeping $a$ if it ties for the maximum; if $\\pi(s) \\ne a$, stable ← false. If stable, stop and return $Q \\approx q_*$ and $\\pi \\approx \\pi_*$; otherwise go to 2.",
+      "solution": [
+        "Mirror Figure 4.3, replacing V(s) by Q(s, a).",
+        "The improvement step no longer needs p(s′, r|s, a): it compares Q(s, a′) directly.",
+        "Keep the current action on ties, the fix for the bug noted under Figure 4.3."
+      ],
+      "explanation": "Model-free control methods (Monte Carlo control, Sarsa, Q-learning) follow exactly this pattern with sampled evaluation.",
+      "rubric": [
+        {
+          "point": "Initialises Q for every state–action pair and a policy",
+          "marks": 1
+        },
+        {
+          "point": "Evaluation backs up Q(s, a) from Q(s′, π(s′)) with the dynamics, until Δ < θ",
+          "marks": 1
+        },
+        {
+          "point": "Improvement takes argmax over Q(s, ·) directly, without a one-step look-ahead through the model",
+          "marks": 1
+        },
+        {
+          "point": "Handles ties (keeps the current action when it is among the best) so the loop terminates",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            110,
+            110
+          ],
+          "pdfPages": [
+            124,
+            124
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 4.6, printed p. 110; compared with Figure 4.3, printed p. 97."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q021",
+      "unit": "ch04",
+      "section": "4.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "4.7"
+      },
+      "concepts": [
+        "ch04.policy-iteration"
+      ],
+      "type": "short-answer",
+      "category": "algorithm-trace",
+      "difficulty": 4,
+      "marks": 3,
+      "stem": "Suppose only ε-soft policies are allowed: in every state each action has probability at least $\\epsilon / |\\mathcal{A}(s)|$. Describe, qualitatively, how steps 3, 2 and 1 of policy iteration (Figure 4.3) would have to change, in that order.",
+      "answer": "Step 3 (improvement): instead of a deterministic argmax, the new policy is ε-greedy: probability $1 - \\epsilon + \\epsilon/|\\mathcal{A}(s)|$ on a greedy action and $\\epsilon/|\\mathcal{A}(s)|$ on each other action; the stability test compares these stochastic policies (or just the greedy action). Step 2 (evaluation): the backup must average over the policy's action probabilities, $V(s) \\leftarrow \\sum_a \\pi(a|s) \\sum_{s', r} p(s', r|s, a)[r + \\gamma V(s')]$, rather than use a single action. Step 1 (initialisation): start from an ε-soft policy (for example the equiprobable random policy) rather than an arbitrary deterministic one. The result is the best ε-soft policy, not $\\pi_*$.",
+      "solution": [
+        "Work backwards from what must stay ε-soft: the policy produced by improvement, then what evaluation must handle, then where to start."
+      ],
+      "explanation": "This anticipates on-policy Monte Carlo control with ε-soft policies in Chapter 5.",
+      "rubric": [
+        {
+          "point": "Step 3: improvement produces an ε-greedy (ε-soft) policy rather than a deterministic greedy one",
+          "marks": 1
+        },
+        {
+          "point": "Step 2: evaluation averages over π(a|s) for all actions",
+          "marks": 1
+        },
+        {
+          "point": "Step 1: initialise with an ε-soft policy; notes the outcome is optimal only among ε-soft policies",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            111,
+            111
+          ],
+          "pdfPages": [
+            125,
+            125
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 4.7, printed p. 111."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q022",
+      "unit": "ch04",
+      "section": "4.4",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "4.8"
+      },
+      "concepts": [
+        "ch04.gamblers-problem"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 4,
+      "marks": 3,
+      "stem": "In the gambler's problem with $p_h = 0.4$, the optimal policy stakes everything at a capital of 50, but stakes only 1 at 51. Why is such an odd-looking policy a good one?",
+      "answer": "With $p_h < 0.5$ every flip loses money on average, so the gambler wants to reach $100 in as few flips as possible. At 50 one all-in bet wins with probability 0.4, as good as anything. At 51, staking 49 or more risks dropping below 50 for no benefit; staking 1 instead either reaches 52 or falls back to exactly 50, from which the single bold bet is still available. More generally, small bets near 25, 50 and 75 edge towards these landmark capitals, from which one or two bold bets reach the goal. Many stakes tie for optimal (the draft says the policy is not unique), so the saw-tooth is one member of a family of optimal policies.",
+      "solution": [
+        "Compare the outcomes of stake 1 and stake 49 at capital 51 in terms of the capitals they lead to.",
+        "Use v*(50) = 0.4 and the fact that losing small bets returns you to 50."
+      ],
+      "explanation": "Value iteration finds the whole family of tied stakes; the laboratory draws the smallest positive one.",
+      "rubric": [
+        {
+          "point": "Explains that with p_h < 0.5 fewer flips are better, so bold bets at landmark capitals (50, 25, 75) are optimal",
+          "marks": 1
+        },
+        {
+          "point": "Explains why 51 bets small: a small bet keeps 50 available as a fallback, while a big bet risks dropping below it",
+          "marks": 1
+        },
+        {
+          "point": "Notes that several stakes tie, so the shown policy is one of a family of optimal policies",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            111,
+            111
+          ],
+          "pdfPages": [
+            125,
+            125
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Exercise 4.8, printed p. 111; values recomputed in the laboratory (v*(50) = 0.4)."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q023",
+      "unit": "ch04",
+      "section": "4.4",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "4.10"
+      },
+      "concepts": [
+        "ch04.value-iteration",
+        "ch03.action-value-function"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "Write the action-value counterpart of the value iteration backup (4.10): how is $q_{k+1}(s, a)$ computed from $q_k$?",
+      "answer": "$q_{k+1}(s, a) = \\mathbb{E}[R_{t+1} + \\gamma \\max_{a'} q_k(S_{t+1}, a') \\mid S_t = s, A_t = a] = \\sum_{s', r} p(s', r|s, a)\\big[r + \\gamma \\max_{a'} q_k(s', a')\\big]$, for all $s, a$.",
+      "solution": [
+        "Start from (4.2) and replace q_* by q_k on the right and q_{k+1} on the left."
+      ],
+      "explanation": "This is the full-backup version of Q-learning's update (Chapter 6).",
+      "rubric": [
+        {
+          "point": "Turns the Bellman optimality equation for q_* (4.2) into an update",
+          "marks": 1
+        },
+        {
+          "point": "Has the max over a′ at the next state, inside the sum over s′, r",
+          "marks": 1
+        },
+        {
+          "point": "Applies to every state–action pair",
+          "marks": 1
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            111,
+            111
+          ],
+          "pdfPages": [
+            125,
+            125
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch04.q-value-iteration-converges",
+        "note": "Exercise 4.10, printed p. 111; the iteration is checked to converge to q_* on the 5×5 gridworld."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q024",
+      "unit": "ch04",
+      "section": "4.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.1"
+        ]
+      },
+      "concepts": [
+        "ch04.dynamic-programming"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Why does the draft say classical dynamic programming is of limited direct use in reinforcement learning, though still essential?",
+      "options": [
+        "It needs a perfect model of the environment and a great deal of computation",
+        "It only works for deterministic environments",
+        "It cannot compute optimal policies, only values",
+        "It only applies to episodic tasks"
+      ],
+      "answer": 0,
+      "solution": [
+        "DP assumes a finite MDP known exactly, and sweeps over all states."
+      ],
+      "explanation": "Every later method can be seen as approximating DP with less computation and no perfect model.",
+      "optionNotes": [
+        "Correct: those two assumptions limit it; later methods try to achieve the same effect without them.",
+        "DP handles stochastic dynamics through p(s′, r|s, a).",
+        "Policy and value iteration compute optimal policies.",
+        "DP handles discounted continuing tasks too (e.g. Jack's car rental)."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "printedPages": [
+            89,
+            89
+          ],
+          "pdfPages": [
+            103,
+            103
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Chapter 4 opening, printed p. 89."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q025",
+      "unit": "ch04",
+      "section": "4.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch04.improvement-conclusion"
+        ]
+      },
+      "concepts": [
+        "ch04.policy-improvement-theorem"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "A policy π′ is greedy with respect to $v_\\pi$, and in at least one state $q_\\pi(s, \\pi'(s)) > v_\\pi(s)$. What does the policy improvement theorem guarantee?",
+      "options": [
+        "v_π′ ≥ v_π in every state, with strict inequality in at least one state",
+        "v_π′ > v_π in every state",
+        "π′ is optimal",
+        "v_π′ ≥ v_π only in the states where the action changed"
+      ],
+      "answer": 0,
+      "solution": [
+        "(4.7) holds everywhere for a greedy π′, so (4.8) holds everywhere; strictness somewhere carries over."
+      ],
+      "explanation": "If no state improves, π was already optimal: v_π satisfies the Bellman optimality equation.",
+      "optionNotes": [
+        "Correct: (4.8) everywhere, strict somewhere.",
+        "Improvement can leave some states' values unchanged.",
+        "Only an improvement is guaranteed; in Figure 4.2 it happens to be optimal.",
+        "The guarantee covers all states, including those whose action did not change."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.2",
+          "printedPages": [
+            94,
+            96
+          ],
+          "pdfPages": [
+            108,
+            110
+          ]
+        }
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-09",
+        "check": "ch04.policy-improvement-theorem",
+        "note": "Printed pp. 94–96; checked numerically from random policies."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q026",
+      "unit": "ch04",
+      "section": "4.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch04.stochastic-improvement"
+        ]
+      },
+      "concepts": [
+        "ch04.policy-improvement-theorem",
+        "ch04.policy-improvement"
+      ],
+      "type": "multi",
+      "category": "conceptual",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "In a state, two actions tie for the maximum in (4.9) and a third is worse. Which stochastic policies count as greedy improvements in that state? Select all that apply.",
+      "options": [
+        "Probability 1 on the first tied action",
+        "Probability 0.5 on each tied action",
+        "Probability 0.9 and 0.1 on the two tied actions",
+        "Probability 0.45, 0.45 and 0.1 on the three actions",
+        "The equiprobable policy over all three actions"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "solution": [
+        "Any apportioning among maximising actions is allowed; submaximal actions get zero."
+      ],
+      "explanation": "The bottom-right policy of Figure 4.2 shows such ties as several arrows in one cell.",
+      "optionNotes": [
+        "Correct: any split among maximising actions is allowed.",
+        "Correct.",
+        "Correct.",
+        "The worse action must get zero probability.",
+        "Gives the worse action probability 1/3."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.2",
+          "printedPages": [
+            96,
+            96
+          ],
+          "pdfPages": [
+            110,
+            110
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 96."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q027",
+      "unit": "ch04",
+      "section": "4.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch04.policy-iteration"
+        ]
+      },
+      "concepts": [
+        "ch04.policy-iteration"
+      ],
+      "type": "true-false",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "True or false: as printed, the policy iteration algorithm of Figure 4.3 may never stop if, at some state, several actions are equally good and the improvement step keeps switching between them.",
+      "answer": true,
+      "solution": [
+        "The draft says so under the figure.",
+        "Keeping the current action whenever it ties for best (as our laboratory does) removes the problem."
+      ],
+      "explanation": "The stability test then compares equally good policies and never sees 'no change'.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.3",
+          "printedPages": [
+            97,
+            97
+          ],
+          "pdfPages": [
+            111,
+            111
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Figure 4.3 caption, printed p. 97."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q028",
+      "unit": "ch04",
+      "section": "4.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.4"
+        ]
+      },
+      "concepts": [
+        "ch04.truncated-policy-iteration",
+        "ch04.value-iteration"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "How does value iteration relate to policy iteration?",
+      "options": [
+        "It is policy iteration with each evaluation stopped after one sweep, the improvement folded into a max",
+        "It evaluates every policy exactly, by a linear solve",
+        "It improves the policy only once, at the end",
+        "It needs a policy as input"
+      ],
+      "answer": 0,
+      "solution": [
+        "(4.10) is (4.5) with the policy's average replaced by a max over actions."
+      ],
+      "explanation": "Between the two lies a whole family of truncated policy iteration methods.",
+      "optionNotes": [
+        "Correct: the max in (4.10) is the only difference from the evaluation backup (4.5).",
+        "That is exact policy iteration.",
+        "It effectively improves in every sweep; the final greedy policy is only read off at the end.",
+        "It needs only the model; the output policy is greedy with respect to the final values."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.4",
+          "printedPages": [
+            98,
+            100
+          ],
+          "pdfPages": [
+            112,
+            114
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed pp. 98–100."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q029",
+      "unit": "ch04",
+      "section": "4.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.5"
+        ]
+      },
+      "concepts": [
+        "ch04.asynchronous-dp"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "An asynchronous value iteration backs up one state per step, in an order chosen by the agent's experience. What does it need, with $0 \\le \\gamma < 1$, to converge to $v_*$?",
+      "options": [
+        "Every state must keep being backed up: each must appear infinitely often",
+        "The states must be backed up in a fixed order",
+        "Each state must be backed up the same number of times",
+        "Nothing: any order converges, even one that stops visiting some states"
+      ],
+      "answer": 0,
+      "solution": [
+        "Asynchronous DP is flexible in order and frequency, but it cannot ignore any state after some point."
+      ],
+      "explanation": "In the undiscounted episodic case some orderings can fail, but they are easy to avoid.",
+      "optionNotes": [
+        "Correct: the order can even be random.",
+        "Any order is allowed.",
+        "Some states may be backed up far more often than others.",
+        "A state that is never backed up again keeps a wrong value."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.5",
+          "printedPages": [
+            102,
+            103
+          ],
+          "pdfPages": [
+            116,
+            117
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed pp. 102–103."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q030",
+      "unit": "ch04",
+      "section": "4.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.6"
+        ]
+      },
+      "concepts": [
+        "ch04.gpi"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In generalized policy iteration, suppose both the evaluation process and the improvement process stop changing anything. What can you conclude?",
+      "options": [
+        "The value function and the policy are optimal",
+        "Only that the value function is v_π for the current policy",
+        "Only that the policy is greedy with respect to some value function",
+        "Nothing: GPI need not converge"
+      ],
+      "answer": 0,
+      "solution": [
+        "Stable evaluation: V = v_π. Stable improvement: π greedy with respect to V. Together: v_π satisfies (4.1)."
+      ],
+      "explanation": "The two processes compete in the short run and cooperate in the long run.",
+      "optionNotes": [
+        "Correct: the policy is greedy with respect to its own value function, so the Bellman optimality equation holds.",
+        "Stable improvement also means the policy is greedy with respect to it.",
+        "Stable evaluation also means the values are the policy's own.",
+        "If both stabilise, optimality follows."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.6",
+          "printedPages": [
+            104,
+            104
+          ],
+          "pdfPages": [
+            118,
+            118
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 104."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q031",
+      "unit": "ch04",
+      "section": "4.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.6"
+        ]
+      },
+      "concepts": [
+        "ch04.gpi"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: in generalized policy iteration, evaluation must run to convergence before each improvement, as in policy iteration.",
+      "answer": false,
+      "solution": [
+        "GPI covers any granularity: value iteration improves after one sweep, asynchronous DP after single states."
+      ],
+      "explanation": "Almost all reinforcement learning methods are GPI with partial, interleaved evaluation and improvement.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.6",
+          "printedPages": [
+            104,
+            104
+          ],
+          "pdfPages": [
+            118,
+            118
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 104."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q032",
+      "unit": "ch04",
+      "section": "4.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.7"
+        ]
+      },
+      "concepts": [
+        "ch04.dp-efficiency"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "What does the draft say about the 'curse of dimensionality' and DP?",
+      "options": [
+        "Large state sets are a difficulty of the problem itself; DP copes with them better than direct search or linear programming",
+        "It shows that DP is exponential in the number of states",
+        "It makes linear programming the method of choice for large problems",
+        "It applies only to continuous state spaces"
+      ],
+      "answer": 0,
+      "solution": [
+        "The exponential growth is in the number of states as variables are added, which any method faces."
+      ],
+      "explanation": "The term is Bellman's (1957).",
+      "optionNotes": [
+        "Correct.",
+        "DP is polynomial in the numbers of states and actions; the number of states may grow exponentially with the number of state variables.",
+        "Linear programming becomes impractical at much smaller sizes (by a factor of about 100).",
+        "It concerns the growth of finite state sets with the number of variables."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.7",
+          "printedPages": [
+            106,
+            106
+          ],
+          "pdfPages": [
+            120,
+            120
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 106."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q033",
+      "unit": "ch04",
+      "section": "4.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.8"
+        ]
+      },
+      "concepts": [
+        "ch04.bootstrapping"
+      ],
+      "type": "multi",
+      "category": "compare-contrast",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Which methods bootstrap, in the draft's sense of updating estimates from other estimates? Select all that apply.",
+      "options": [
+        "Dynamic programming",
+        "Temporal-difference learning (Chapter 6)",
+        "Monte Carlo methods (Chapter 5)",
+        "Averaging complete sample returns for each state"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "solution": [
+        "Bootstrapping and needing a model are separate properties: DP has both, Monte Carlo neither, TD only bootstrapping."
+      ],
+      "explanation": "The next two chapters are organised around these two properties.",
+      "optionNotes": [
+        "Correct: every DP backup uses the successors' current estimates.",
+        "Correct: TD bootstraps without needing a model.",
+        "Monte Carlo methods wait for actual returns and do not bootstrap.",
+        "That is the Monte Carlo idea: no estimates on the right-hand side."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.8",
+          "printedPages": [
+            108,
+            108
+          ],
+          "pdfPages": [
+            122,
+            122
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Printed p. 108."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch04-q034",
+      "unit": "ch04",
+      "section": "4.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§4.1",
+          "§4.8"
+        ]
+      },
+      "concepts": [
+        "ch04.full-backup",
+        "ch04.iterative-policy-evaluation"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In the bibliographical remarks, the two-array and the in-place versions of iterative policy evaluation are named after classical methods for linear systems. Which pairing is right?",
+      "options": [
+        "Two arrays: Jacobi style (synchronous); in place: Gauss–Seidel style",
+        "Two arrays: Gauss–Seidel style; in place: Jacobi style",
+        "Both are Newton's method",
+        "Two arrays: asynchronous; in place: synchronous"
+      ],
+      "answer": 0,
+      "solution": [
+        "Jacobi: every new value from the old vector. Gauss–Seidel: new values used immediately."
+      ],
+      "explanation": "Both are special cases of asynchronous DP.",
+      "optionNotes": [
+        "Correct.",
+        "Reversed: Gauss–Seidel uses new values as soon as they are computed.",
+        "Neither uses derivatives.",
+        "The two-array version is the synchronous one."
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "4",
+          "section": "4.8",
+          "printedPages": [
+            109,
+            109
+          ],
+          "pdfPages": [
+            123,
+            123
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-09",
+        "note": "Bibliographical remarks, printed p. 109."
+      },
+      "reviewed": true
     }
   ]
 }

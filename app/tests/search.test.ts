@@ -47,7 +47,10 @@ describe("search over the real content", () => {
 
   test("typos are tolerated", () => {
     expect(rank("incremantal update", "concept:ch02.incremental-update")).toBeGreaterThanOrEqual(0);
-    expect(rank("belman equation", "equation:eq.ch03.bellman-v")).toBeLessThan(5);
+    // Chapters 3 and 4 added several genuine Bellman equations (optimality equations, (4.4)), which now rank
+    // alongside (3.12); the misspelt query still puts the Bellman-equation concept in the top two.
+    expect(rank("belman equation", "concept:ch03.bellman-equation-v")).toBeLessThan(2);
+    expect(rank("belman equation", "equation:eq.ch03.bellman-v")).toBeGreaterThanOrEqual(0);
   });
 
   test("search as you type: a prefix matches", () => {
