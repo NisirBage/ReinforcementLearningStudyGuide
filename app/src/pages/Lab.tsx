@@ -12,10 +12,11 @@ import { MdpExplorer } from "./labs/MdpExplorer";
 import { DpLab } from "./labs/DpLab";
 import { McLab } from "./labs/McLab";
 import { TdLab } from "./labs/TdLab";
+import { TicTacToeLab } from "./labs/TicTacToeLab";
 import { NotFound } from "./NotFound";
 import { useProgress } from "../store/ProgressContext";
 
-const BODIES: Record<string, () => ReactElement> = { bandit: BanditLab, mdp: MdpExplorer, bellman: BellmanLab, dp: DpLab, mc: McLab, td: TdLab };
+const BODIES: Record<string, () => ReactElement> = { tictactoe: TicTacToeLab, bandit: BanditLab, mdp: MdpExplorer, bellman: BellmanLab, dp: DpLab, mc: McLab, td: TdLab };
 
 export function LabHub() {
   const labs = cat.catalog.labs;

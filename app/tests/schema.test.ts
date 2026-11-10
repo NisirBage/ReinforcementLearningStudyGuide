@@ -135,7 +135,7 @@ describe("validator rejects", () => {
 
   test("a duplicate question id", () =>
     expectError(/duplicate id ch02-q001/, (b) => {
-      b.questionFiles[0].questions[1].id = "ch02-q001";
+      b.questionFiles.find((f) => f.unit === "ch02")!.questions[1].id = "ch02-q001"; // by unit: ch01 sorts first since Milestone 4H
     }));
 
   test("a curriculum that drops a textbook chapter", () =>

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "lab.ch01.tictactoe",
+    "slug": "tictactoe",
+    "unit": "ch01",
+    "title": "Tic-tac-toe laboratory",
+    "summary": "The learning player of §1.5 against an imperfect opponent: greedy and exploratory moves, the value backup after greedy moves, and the last game drawn as in Figure 1.1. The opponent is known to the lab, so the learned policy's true probability of winning is computed exactly and compared with the best possible. Options for Exercises 1.2–1.4, a self-play panel (Exercise 1.1), and minimax against the best response.",
+    "sections": [
+      "1.5"
+    ],
+    "concepts": [
+      "ch01.tic-tac-toe",
+      "ch01.value-backup"
+    ],
+    "implementations": [
+      "ttt.playLearningGame",
+      "ttt.optimalWinProbability",
+      "ttt.evaluatePolicy",
+      "ttt.selfPlay",
+      "ttt.minimaxValues"
+    ],
+    "guide": [
+      "Play 2,000 games against the random opponent with the defaults (ε = 0.1, α = 0.1). The win rate climbs toward the dashed line, the best possible 99.48%; the table shows the exact probability of winning of the learned greedy policy.",
+      "Exercise 1.3: set ε to 0, reset, and play 20,000 games. The greedy player settles on a worse policy (about 93% against the random opponent, where exploring players reach about 99%).",
+      "Exercise 1.2: tick 'one value per symmetry class' and compare the first 1,000 games with and without it.",
+      "Exercise 1.4: choose α = 1/n and tick 'learn from exploratory moves'. The learned values of the first moves drop toward the probabilities of winning while still exploring; the greedy policy can stay the same.",
+      "Exercise 1.1: run self-play. X's policy draws against a perfect opponent; a policy trained only against the random opponent often loses to one.",
+      "Read the minimax table: against the defensive opponent, plain minimax wins 87.5% while the best response wins 92.7%."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.5",
+        "printedPages": [
+          10,
+          15
+        ],
+        "pdfPages": [
+          24,
+          29
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "printedPages": [
+          26,
+          26
+        ],
+        "pdfPages": [
+          40,
+          40
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch01.ttt-learner-converges"
+    },
+    "checks": [
+      "ch01.ttt-positions",
+      "ch01.ttt-minimax",
+      "ch01.ttt-learner-converges",
+      "ch01.ttt-exploration-values",
+      "ch01.ttt-greedy-worse",
+      "ch01.ttt-symmetries-faster",
+      "ch01.ttt-self-play"
+    ]
+  }
+]

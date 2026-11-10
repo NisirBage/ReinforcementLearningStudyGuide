@@ -1,0 +1,469 @@
+[
+  {
+    "id": "ch01.reinforcement-learning",
+    "unit": "ch01",
+    "title": "Reinforcement learning",
+    "kind": "definition",
+    "summary": "Finding out which action to take in each situation so as to maximise a numerical reward. Three features set the problem apart: it is closed-loop (actions influence later inputs), nobody tells the learner which action is right, so it must find out by trying, and consequences, rewards included, can unfold over a long time. The term names the problem, the class of methods suited to it, and the field.",
+    "prereqs": [],
+    "related": [
+      "ch01.rl-vs-supervised"
+    ],
+    "keywords": [
+      "reinforcement learning",
+      "trial and error",
+      "delayed reward",
+      "closed loop",
+      "goal-directed"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "printedPages": [
+          1,
+          1
+        ],
+        "pdfPages": [
+          15,
+          15
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.1",
+        "printedPages": [
+          2,
+          5
+        ],
+        "pdfPages": [
+          16,
+          19
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 4 points to connections with psychology and neuroscience 'summarized in Chapters ?? and ??': unresolved references in the draft. Those would be Chapters 12 (Psychology) and 13 (Neuroscience), which are not written in this draft.",
+        "suggestion": "Read 'Chapters 12 and 13', both unwritten in this draft."
+      }
+    ]
+  },
+  {
+    "id": "ch01.rl-vs-supervised",
+    "unit": "ch01",
+    "title": "Reinforcement, supervised and unsupervised learning",
+    "kind": "idea",
+    "summary": "Supervised learning generalises from labelled examples of correct actions, which are rarely available, correct and representative for interactive problems. Unsupervised learning looks for hidden structure in unlabelled data; reinforcement learning instead maximises a reward signal. So the draft treats it as a third paradigm. Only it faces the trade-off between exploiting what is known and exploring to find better actions.",
+    "prereqs": [
+      "ch01.reinforcement-learning"
+    ],
+    "related": [
+      "ch02.exploration-exploitation"
+    ],
+    "keywords": [
+      "supervised learning",
+      "unsupervised learning",
+      "exploration",
+      "exploitation",
+      "paradigm"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.1",
+        "printedPages": [
+          2,
+          3
+        ],
+        "pdfPages": [
+          16,
+          17
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch01.agent-environment-examples",
+    "unit": "ch01",
+    "title": "Agents, environments and goals in examples",
+    "kind": "example",
+    "summary": "Chess, a refinery controller, a newborn gazelle, a trash-collecting robot, a person making breakfast: each is an agent interacting with an uncertain environment to reach a goal it can judge progress toward. Actions affect future situations, so choices need foresight; effects cannot be fully predicted, so the agent must keep monitoring. The agent–environment boundary is abstract: the robot's battery and a person's hunger belong to the environment of the deciding agent.",
+    "prereqs": [
+      "ch01.reinforcement-learning"
+    ],
+    "related": [
+      "ch03.agent-environment-interface"
+    ],
+    "keywords": [
+      "examples",
+      "agent",
+      "environment",
+      "goal",
+      "uncertainty",
+      "Phil's breakfast"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.2",
+        "printedPages": [
+          5,
+          7
+        ],
+        "pdfPages": [
+          19,
+          21
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch01.elements-of-rl",
+    "unit": "ch01",
+    "title": "Elements of a reinforcement learning system",
+    "kind": "definition",
+    "summary": "Besides agent and environment: a policy (how the agent behaves: a mapping from perceived states to actions, possibly stochastic), a reward signal (a number each step that defines the goal; the agent seeks the most total reward over the long run), a value function (what is good in the long run: the reward expected to accumulate from a state), and, optionally, a model of the environment used for planning.",
+    "prereqs": [
+      "ch01.reinforcement-learning"
+    ],
+    "related": [
+      "ch03.policy",
+      "ch03.state-value-function"
+    ],
+    "keywords": [
+      "policy",
+      "reward signal",
+      "value function",
+      "model",
+      "elements"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.3",
+        "printedPages": [
+          7,
+          9
+        ],
+        "pdfPages": [
+          21,
+          23
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch01.reward-vs-value",
+    "unit": "ch01",
+    "title": "Rewards and values",
+    "kind": "idea",
+    "summary": "Rewards are immediate and given by the environment; values are predictions of future reward and must be estimated, again and again, from experience. A state may give low reward and still have high value because good states usually follow it, or the reverse. Decisions are made on values, since they lead to the most reward over the long run, which is why efficient value estimation is at the heart of most of the book's methods.",
+    "prereqs": [
+      "ch01.elements-of-rl"
+    ],
+    "related": [
+      "ch03.return"
+    ],
+    "keywords": [
+      "reward",
+      "value",
+      "long run",
+      "value estimation"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.3",
+        "printedPages": [
+          7,
+          8
+        ],
+        "pdfPages": [
+          21,
+          22
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch01.model-based-model-free",
+    "unit": "ch01",
+    "title": "Models, planning, and model-free learning",
+    "kind": "definition",
+    "summary": "A model mimics the environment: given a state and action it might predict the next state and reward. Planning is any way of choosing actions by considering possible futures before they happen. Methods that use models and planning are model-based; model-free methods learn purely by trial and error. Modern reinforcement learning covers the whole range.",
+    "prereqs": [
+      "ch01.elements-of-rl"
+    ],
+    "related": [
+      "ch01.tic-tac-toe"
+    ],
+    "keywords": [
+      "model",
+      "planning",
+      "model-based",
+      "model-free"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.3",
+        "printedPages": [
+          8,
+          9
+        ],
+        "pdfPages": [
+          22,
+          23
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 9 says systems that learn by trial and error, learn a model and plan with it are explored 'in Chapter 9'. In this draft that material is Chapter 8 (Planning and Learning with Tabular Methods); Chapter 9 is on approximation.",
+        "suggestion": "Read 'Chapter 8'."
+      }
+    ]
+  },
+  {
+    "id": "ch01.evolutionary-methods",
+    "unit": "ch01",
+    "title": "Evolutionary methods and the scope of the book",
+    "kind": "idea",
+    "summary": "Genetic algorithms, simulated annealing and similar methods can solve reinforcement learning problems without value functions, by evaluating many fixed policies over whole lifetimes and keeping the best. They can work when good policies are easy to find, or when the state cannot be sensed well, but they ignore which states and actions occurred, so the book does not count them as reinforcement learning. Policy gradient methods, which also search policy space but learn during interaction, are included. And maximising reward is an aim, not a promise to reach the maximum.",
+    "prereqs": [
+      "ch01.elements-of-rl"
+    ],
+    "related": [
+      "ch01.tic-tac-toe"
+    ],
+    "keywords": [
+      "evolutionary methods",
+      "genetic algorithms",
+      "policy search",
+      "policy gradient",
+      "optimization",
+      "optimality"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.4",
+        "printedPages": [
+          9,
+          10
+        ],
+        "pdfPages": [
+          23,
+          24
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch01.tic-tac-toe",
+    "unit": "ch01",
+    "title": "The tic-tac-toe player",
+    "kind": "example",
+    "summary": "§1.5's extended example. Against an imperfect opponent, minimax is wrong (it assumes perfect play) and dynamic programming would need a complete model of the opponent. Instead: a table of estimated probabilities of winning, one per position, starting at 0.5 (1 for our wins, 0 for losses and draws); mostly greedy moves, occasional exploratory ones; and after each greedy move the previous position's value moves toward the new one. With the step size reduced properly the values converge to the true probabilities under optimal play, and the greedy moves become optimal against that opponent.",
+    "prereqs": [
+      "ch01.elements-of-rl",
+      "ch01.reward-vs-value"
+    ],
+    "related": [
+      "ch01.evolutionary-methods",
+      "ch06.afterstates"
+    ],
+    "keywords": [
+      "tic-tac-toe",
+      "Figure 1.1",
+      "exploratory move",
+      "greedy move",
+      "minimax",
+      "self-play",
+      "symmetries"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.5",
+        "printedPages": [
+          10,
+          15
+        ],
+        "pdfPages": [
+          24,
+          29
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 14 says Tesauro's backgammon program is discussed in 'Chapter 15'. In this draft TD-Gammon is §14.1; Chapter 15 is the partly written closing chapter.",
+        "suggestion": "Read '§14.1'."
+      },
+      {
+        "type": "suspected-typo",
+        "note": "Exercise 1.1 (p. 26) speaks of 'a random opponent', while §1.5 describes an imperfect opponent whose play is only sometimes incorrect. The laboratory offers both a uniformly random and a less imperfect ('defensive') opponent.",
+        "suggestion": "Read it as the imperfect opponent of §1.5."
+      }
+    ]
+  },
+  {
+    "id": "ch01.value-backup",
+    "unit": "ch01",
+    "title": "Backing up values (a first TD rule)",
+    "kind": "procedure",
+    "summary": "After each greedy move, shift the earlier position's value toward the later position's value by the fraction α: $V(s) \\leftarrow V(s) + \\alpha[V(s') - V(s)]$. It is a temporal-difference method, because the change is driven by the difference between estimates at two successive times. Exploratory moves cause no update.",
+    "prereqs": [
+      "ch01.tic-tac-toe"
+    ],
+    "related": [
+      "ch06.td-prediction"
+    ],
+    "keywords": [
+      "backup",
+      "step-size parameter",
+      "temporal difference",
+      "update rule"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.5",
+        "printedPages": [
+          12,
+          13
+        ],
+        "pdfPages": [
+          26,
+          27
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch01.history-threads",
+    "unit": "ch01",
+    "title": "Three threads of history",
+    "kind": "idea",
+    "summary": "Modern reinforcement learning joined three threads in the late 1980s: trial-and-error learning from the psychology of animal learning (through early AI and Klopf to its revival around 1980); optimal control with value functions and dynamic programming (Bellman, MDPs, Howard's policy iteration), mostly without learning; and temporal-difference learning (secondary reinforcers, Samuel's checkers player, Klopf, Sutton, Witten), brought together with optimal control by Watkins's Q-learning in 1989.",
+    "prereqs": [
+      "ch01.reinforcement-learning"
+    ],
+    "related": [
+      "ch01.law-of-effect"
+    ],
+    "keywords": [
+      "history",
+      "optimal control",
+      "dynamic programming",
+      "trial and error",
+      "temporal difference",
+      "Bellman",
+      "Watkins"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.7",
+        "printedPages": [
+          16,
+          25
+        ],
+        "pdfPages": [
+          30,
+          39
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The history leaves chapter references unresolved: 'Chapter ??' for trial-and-error learning in more detail (p. 18), and 'Chapter Y' twice, for neural networks (p. 23) and for the neuroscience of reinforcement learning (p. 25).",
+        "suggestion": "Placeholders: the psychology and neuroscience chapters (12 and 13) are unwritten in this draft."
+      }
+    ]
+  },
+  {
+    "id": "ch01.law-of-effect",
+    "unit": "ch01",
+    "title": "The Law of Effect",
+    "kind": "definition",
+    "summary": "Thorndike's principle of trial-and-error learning: responses followed by satisfaction become more strongly connected to the situation, and those followed by discomfort less so, in proportion to the satisfaction or discomfort. It is selectional (it tries alternatives and keeps the better) and associative (it ties choices to situations), the two features reinforcement learning shares with it.",
+    "prereqs": [
+      "ch01.history-threads"
+    ],
+    "related": [
+      "ch01.credit-assignment"
+    ],
+    "keywords": [
+      "Law of Effect",
+      "Thorndike",
+      "trial and error",
+      "reinforcement",
+      "selectional"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.7",
+        "printedPages": [
+          18,
+          19
+        ],
+        "pdfPages": [
+          32,
+          33
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch01.credit-assignment",
+    "unit": "ch01",
+    "title": "The credit assignment problem",
+    "kind": "definition",
+    "summary": "Minsky's question (1961): how should credit for a success be shared among the many decisions that may have contributed to it? The draft says all the methods in the book are aimed, in a sense, at this problem.",
+    "prereqs": [
+      "ch01.history-threads"
+    ],
+    "related": [
+      "ch01.law-of-effect"
+    ],
+    "keywords": [
+      "credit assignment",
+      "Minsky",
+      "delayed reward"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.7",
+        "printedPages": [
+          20,
+          20
+        ],
+        "pdfPages": [
+          34,
+          34
+        ]
+      }
+    ]
+  }
+]

@@ -10,6 +10,7 @@ import * as racetrackEnv from "./envs/racetrack";
 import * as mc from "./mc";
 import * as blackjack from "./envs/blackjack";
 import * as td from "./td";
+import * as ttt from "./envs/tictactoe";
 import * as batch from "./batch";
 import * as dp from "./dp";
 import * as mdp from "./mdp";
@@ -47,6 +48,11 @@ export const IMPLEMENTATIONS = {
   "envs.racetrack": racetrackEnv.racetrack, // Exercise 5.9, Figure 5.11
   "envs.gamblersProblem": examples.gamblersProblem, // Example 4.3
   "envs.randomWalk": examples.randomWalk, // Example 6.2
+  "ttt.playLearningGame": ttt.playLearningGame, // the §1.5 learner, Figure 1.1
+  "ttt.optimalWinProbability": ttt.optimalWinProbability, // the exact best response to a known opponent
+  "ttt.evaluatePolicy": ttt.evaluatePolicy, // exact win/draw/loss probabilities of a policy
+  "ttt.selfPlay": ttt.selfPlay, // Exercise 1.1
+  "ttt.minimaxValues": ttt.minimaxValues, // §1.5's minimax comparison
   "envs.windyGridworld": examples.windyGridworld, // Example 6.5
   "batch.batchUpdate": batch.batchUpdate, // batch TD(0) and batch constant-α MC (§6.3, Examples 6.3–6.4)
   "batch.certaintyEquivalence": batch.certaintyEquivalence, // the certainty-equivalence estimate (§6.3)

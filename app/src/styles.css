@@ -504,4 +504,9 @@ pre.code { max-height: 30rem; overflow: auto; padding: 10px 12px; background: va
 .track-grid td.off { border-color: transparent; background: transparent; }
 .track-grid td.finish { background: color-mix(in srgb, var(--ok) 35%, var(--surface-2)); }
 .track-grid td.startline { background: color-mix(in srgb, var(--accent) 25%, var(--surface-2)); }
-
+/* Tic-tac-toe laboratory (§1.5) */
+.ttt { border-collapse: collapse; margin: 4px 0; font-variant-numeric: tabular-nums; }
+.ttt td { width: 1.6em; height: 1.6em; padding: 0; text-align: center; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-weight: 600; }
+.ttt.explore td { border-style: dashed; border-color: var(--accent); }
+.ttt.values td { width: 3.6em; font-weight: 400; font-size: 0.85rem; }
+.ttt-row { display: flex; flex-wrap: wrap; gap: 8px; }

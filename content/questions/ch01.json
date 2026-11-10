@@ -1,0 +1,1363 @@
+{
+  "unit": "ch01",
+  "questions": [
+    {
+      "id": "ch01-q001",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "1.1"
+      },
+      "concepts": [
+        "ch01.tic-tac-toe",
+        "ch01.value-backup"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 1.1 (self-play): suppose the §1.5 learner played against itself instead of against the imperfect opponent, both sides learning. What would happen? Would it learn a different way of playing?",
+      "answer": "Each side now faces an opponent that keeps improving, so the target keeps moving; as both get better, each learns to exploit and then to avoid the other's mistakes, and play drifts toward the minimax (perfect-play) solution, where tic-tac-toe is a draw. So it learns a different, more cautious way of playing: one that does not lose to any opponent, but that no longer specialises in exploiting a particular weak opponent's errors. In the laboratory, a self-play X policy draws against a perfect opponent, while a policy trained against the random opponent often loses to one, but wins more often against the random opponent.",
+      "solution": [
+        "Ask what kind of opponent each side meets as learning goes on.",
+        "Run the self-play panel of the tic-tac-toe laboratory."
+      ],
+      "explanation": "Self-play learns about a strong opponent; training against a weak one learns that opponent's weaknesses.",
+      "rubric": [
+        {
+          "point": "Both sides improve, so each faces a changing, increasingly strong opponent",
+          "marks": 1
+        },
+        {
+          "point": "Play tends toward the minimax/perfect-play solution (draws)",
+          "marks": 1
+        },
+        {
+          "point": "A different policy: safer against any opponent, less exploitative of a weak one",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 1.1, printed p. 26; measured by check ch01.ttt-self-play."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            10,
+            15
+          ],
+          "pdfPages": [
+            24,
+            29
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "printedPages": [
+            26,
+            26
+          ],
+          "pdfPages": [
+            40,
+            40
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q002",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "1.2"
+      },
+      "concepts": [
+        "ch01.tic-tac-toe"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 1.2 (symmetries): a rotation or reflection of the board often turns one tic-tac-toe position into another that is essentially the same. How could the §1.5 learner take advantage of this, and how would that help? Now suppose the opponent does not play symmetrically. Should we still use the symmetries? Must symmetric positions then have the same value?",
+      "answer": "Store one value per symmetry class: before looking up or updating a position, map it to a canonical representative of its class (e.g. the smallest of its 8 rotations and reflections). There are 765 classes instead of 5478 positions, so there are fewer values to learn and every game informs all positions symmetric to the ones played: learning is faster and uses less memory. But the values are probabilities of winning against this particular opponent. If the opponent does not behave symmetrically (say it prefers the top-left corner), symmetric positions can have different true values, and forcing them equal makes the estimates wrong. So use the symmetries only if the opponent respects them; symmetric positions need not have the same value.",
+      "solution": [
+        "Count the positions and the classes (the laboratory reports 5478 and 765).",
+        "Remember what a value is: the probability of winning against this opponent."
+      ],
+      "explanation": "Symmetries of the game are not necessarily symmetries of the problem, which includes the opponent.",
+      "rubric": [
+        {
+          "point": "Canonicalise positions / share one value per symmetry class",
+          "marks": 1
+        },
+        {
+          "point": "Benefit: fewer values, faster learning, less memory",
+          "marks": 1
+        },
+        {
+          "point": "If the opponent is not symmetric, symmetric positions can have different values, so do not tie them",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch01-q017"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 1.2, printed p. 26; counts by check ch01.ttt-positions, faster early learning by check ch01.ttt-symmetries-faster."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            10,
+            15
+          ],
+          "pdfPages": [
+            24,
+            29
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "printedPages": [
+            26,
+            26
+          ],
+          "pdfPages": [
+            40,
+            40
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q003",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "1.3"
+      },
+      "concepts": [
+        "ch01.tic-tac-toe"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 1.3 (greedy play): suppose the learner always made the move leading to the position it currently rates best, never exploring. Would its play end up better or worse than that of a player that sometimes explores? What problems might occur?",
+      "answer": "Worse, in general. Its estimates only improve for positions it actually reaches, and it only reaches positions its current estimates favour. A move that looked bad early (for example after one unlucky game) is never tried again, so its value is never corrected, and the player can settle on a suboptimal policy. It does win more often while it is learning, since it never makes deliberately weak moves. In the laboratory, a greedy learner reaches a policy winning about 93% against the random opponent, where exploring learners reach about 99%.",
+      "solution": [
+        "Which positions' values does a greedy player ever update?",
+        "Try ε = 0 in the laboratory."
+      ],
+      "explanation": "Without exploration, early mistaken estimates can never be corrected: the exploration–exploitation dilemma.",
+      "rubric": [
+        {
+          "point": "Worse in the long run (can get stuck)",
+          "marks": 1
+        },
+        {
+          "point": "Reason: never tries moves rated low, so their estimates are never corrected",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 1.3, printed p. 26; measured by check ch01.ttt-greedy-worse."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            10,
+            15
+          ],
+          "pdfPages": [
+            24,
+            29
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "printedPages": [
+            26,
+            26
+          ],
+          "pdfPages": [
+            40,
+            40
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q004",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "1.4"
+      },
+      "concepts": [
+        "ch01.tic-tac-toe",
+        "ch01.value-backup"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 1.4 (learning from exploration): suppose updates were made after every move, exploratory ones included, with the step size reduced appropriately over time, so the values settle down. What probabilities do they settle on with, and without, learning from exploratory moves? If we keep exploring, which set is better to learn, and which would give more wins?",
+      "answer": "Without learning from exploratory moves, the values converge to the probabilities of winning from each position if we play optimally (greedily) from then on. With it, they converge to the probabilities of winning if we keep following the exploring policy, mistakes included, which are lower. If exploration continues, the second set is the more accurate prediction of what will actually happen, but the first is better for choosing moves: it measures the quality of the position under the best play, and so leads to better greedy choices and more wins. (In the laboratory the learned first-move values drop when exploratory moves are learned from, as the exploring policy's probabilities say they should.)",
+      "solution": [
+        "Ask which policy's values each version is estimating.",
+        "In the laboratory, compare the first-move values with and without learning from exploratory moves (α = 1/n)."
+      ],
+      "explanation": "The same distinction returns later as off-policy (greedy) against on-policy (exploring) learning, e.g. Q-learning against Sarsa.",
+      "rubric": [
+        {
+          "point": "Without: probabilities of winning under optimal/greedy play",
+          "marks": 1
+        },
+        {
+          "point": "With: probabilities under the exploring (ε-greedy) policy",
+          "marks": 1
+        },
+        {
+          "point": "The first is better for choosing moves and gives more wins; the second predicts actual outcomes",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch01-q023"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 1.4, printed p. 26; measured by check ch01.ttt-exploration-values."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            10,
+            15
+          ],
+          "pdfPages": [
+            24,
+            29
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "printedPages": [
+            26,
+            26
+          ],
+          "pdfPages": [
+            40,
+            40
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q005",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "1.5"
+      },
+      "concepts": [
+        "ch01.tic-tac-toe"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 1.5 (other improvements): suggest other ways to improve the §1.5 tic-tac-toe player, and any better way to solve the problem as posed.",
+      "answer": "Any well-argued suggestions, for example: use symmetries (if the opponent respects them); initialise values from knowledge (e.g. one-move wins and forced blocks); back up from every visited position, or several steps at once, so information spreads faster; reduce α and ε on a schedule; prefer exploring moves that have been tried least; learn a model of the opponent's move probabilities from experience and then compute the best response by dynamic programming over the game tree, which the draft itself calls about the best one can do (p. 11); or look ahead several moves with the learned values.",
+      "solution": [
+        "Think about speed of learning, exploration, prior knowledge, and the model-based approach the draft mentions on p. 11."
+      ],
+      "explanation": "Open-ended: the draft asks for ideas, and many of them are developed later in the book.",
+      "rubric": [
+        {
+          "point": "At least two sensible improvements to the learner",
+          "marks": 2
+        },
+        {
+          "point": "A better overall approach, e.g. learn an opponent model and solve it by DP, or lookahead",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 1.5, printed p. 26; model-based alternative, printed p. 11."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            10,
+            15
+          ],
+          "pdfPages": [
+            24,
+            29
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "printedPages": [
+            26,
+            26
+          ],
+          "pdfPages": [
+            40,
+            40
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q006",
+      "unit": "ch01",
+      "section": "1.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.1"
+        ]
+      },
+      "concepts": [
+        "ch01.reinforcement-learning"
+      ],
+      "type": "multi",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "Which three features does §1.1 name as the most important distinguishing features of reinforcement learning problems? Select all that apply.",
+      "options": [
+        "They are closed-loop: the learner's actions influence its later inputs",
+        "Nobody tells the learner which action is correct",
+        "Consequences of actions, rewards included, play out over extended time",
+        "The learner is given labelled examples of correct actions",
+        "The environment is always deterministic"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "optionNotes": [
+        "Correct.",
+        "Correct.",
+        "Correct.",
+        "That is supervised learning.",
+        "Uncertainty about the environment is the usual case."
+      ],
+      "solution": [
+        "The draft lists being closed-loop, the absence of direct instruction, and delayed consequences."
+      ],
+      "explanation": "These three features recur in every chapter.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 2."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.1",
+          "printedPages": [
+            2,
+            2
+          ],
+          "pdfPages": [
+            16,
+            16
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q007",
+      "unit": "ch01",
+      "section": "1.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.1"
+        ]
+      },
+      "concepts": [
+        "ch01.rl-vs-supervised"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Why does the draft not count reinforcement learning as a kind of unsupervised learning, even though it uses no examples of correct behaviour?",
+      "options": [
+        "It tries to maximise a reward signal rather than find hidden structure in data",
+        "It always uses labelled examples",
+        "It cannot use any structure found in experience",
+        "Unsupervised learning also maximises rewards"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "It does not use labelled examples.",
+        "Finding structure can help it, but does not by itself solve its problem.",
+        "Unsupervised learning has no reward."
+      ],
+      "solution": [
+        "Unsupervised learning seeks structure; reinforcement learning seeks reward."
+      ],
+      "explanation": "Hence the draft calls it a third paradigm.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 3."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.1",
+          "printedPages": [
+            3,
+            3
+          ],
+          "pdfPages": [
+            17,
+            17
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q008",
+      "unit": "ch01",
+      "section": "1.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.1"
+        ]
+      },
+      "concepts": [
+        "ch01.rl-vs-supervised"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: according to §1.1, supervised and unsupervised learning, at least in pure form, never face the exploration–exploitation trade-off.",
+      "answer": true,
+      "solution": [
+        "The learner there does not choose actions that determine what it gets to learn from."
+      ],
+      "explanation": "The dilemma is studied in its simplest form in Chapter 2.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 3."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.1",
+          "printedPages": [
+            3,
+            3
+          ],
+          "pdfPages": [
+            17,
+            17
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q009",
+      "unit": "ch01",
+      "section": "1.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.2"
+        ]
+      },
+      "concepts": [
+        "ch01.agent-environment-examples"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In the mobile-robot example, where does the draft place the robot's battery?",
+      "options": [
+        "In the environment of the robot's decision-making agent",
+        "Inside the agent, since it is part of the robot",
+        "Outside both agent and environment",
+        "It is the reward signal"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: the agent is the decision maker, not the whole machine.",
+        "The agent is not necessarily the whole robot.",
+        "Everything is either agent or environment.",
+        "Its charge level is part of the state, not the reward."
+      ],
+      "solution": [
+        "The draft: the battery is part of the environment of the robot's controlling agent."
+      ],
+      "explanation": "The agent–environment boundary is not the boundary of the body.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 6."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.2",
+          "printedPages": [
+            6,
+            6
+          ],
+          "pdfPages": [
+            20,
+            20
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q010",
+      "unit": "ch01",
+      "section": "1.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.3"
+        ]
+      },
+      "concepts": [
+        "ch01.elements-of-rl"
+      ],
+      "type": "multi",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "Which are the four main elements of a reinforcement learning system named in §1.3, besides agent and environment? Select all that apply.",
+      "options": [
+        "A policy",
+        "A reward signal",
+        "A value function",
+        "A model of the environment (optional)",
+        "A labelled training set"
+      ],
+      "answer": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "optionNotes": [
+        "Correct.",
+        "Correct.",
+        "Correct.",
+        "Correct: optional.",
+        "Not an element of reinforcement learning."
+      ],
+      "solution": [
+        "Policy, reward signal, value function, and optionally a model."
+      ],
+      "explanation": "Of these, the policy alone suffices to determine behaviour.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 7."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.3",
+          "printedPages": [
+            7,
+            7
+          ],
+          "pdfPages": [
+            21,
+            21
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q011",
+      "unit": "ch01",
+      "section": "1.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.3"
+        ]
+      },
+      "concepts": [
+        "ch01.reward-vs-value"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "A state always gives a low immediate reward. Which statement is right?",
+      "options": [
+        "Its value can still be high, if it is usually followed by states that give high rewards",
+        "Its value must be low too",
+        "Its value equals its reward",
+        "States have rewards but no values"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Value counts the rewards that follow, not just the immediate one.",
+        "Value is the expected total future reward.",
+        "Values are defined for states (§1.3)."
+      ],
+      "solution": [
+        "Rewards are immediate; values are long-run predictions."
+      ],
+      "explanation": "Decisions are based on values, not rewards.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 8."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.3",
+          "printedPages": [
+            8,
+            8
+          ],
+          "pdfPages": [
+            22,
+            22
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q012",
+      "unit": "ch01",
+      "section": "1.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.3"
+        ]
+      },
+      "concepts": [
+        "ch01.elements-of-rl"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: the agent can change the process that produces its rewards, not only influence rewards through its actions.",
+      "answer": false,
+      "solution": [
+        "The draft: the agent cannot alter the process; it can only affect reward through its actions, directly or by changing the state."
+      ],
+      "explanation": "Otherwise the agent could simply award itself reward.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 7."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.3",
+          "printedPages": [
+            7,
+            7
+          ],
+          "pdfPages": [
+            21,
+            21
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q013",
+      "unit": "ch01",
+      "section": "1.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.4"
+        ]
+      },
+      "concepts": [
+        "ch01.evolutionary-methods"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why does the draft consider evolutionary methods poorly suited to reinforcement learning problems, in general?",
+      "options": [
+        "They ignore useful structure: that the policy maps states to actions, and which states and actions occurred",
+        "They cannot find good policies even in small policy spaces",
+        "They require a model of the environment",
+        "They cannot handle stochastic policies"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "They can be effective when the policy space is small or well structured.",
+        "They need no model, only evaluations of policies.",
+        "Not the reason given."
+      ],
+      "solution": [
+        "Evaluating whole lifetimes discards information about individual interactions."
+      ],
+      "explanation": "They can still work well when states are poorly sensed or good policies are easy to find.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 9."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.4",
+          "printedPages": [
+            9,
+            9
+          ],
+          "pdfPages": [
+            23,
+            23
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q014",
+      "unit": "ch01",
+      "section": "1.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.4"
+        ]
+      },
+      "concepts": [
+        "ch01.evolutionary-methods"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: when the draft says the agent's goal is to maximise reward, it means the agent is always trying to increase its reward, not that it necessarily attains the maximum.",
+      "answer": true,
+      "solution": [
+        "'Optimization is not the same as optimality' (p. 10)."
+      ],
+      "explanation": "Many factors can keep an agent from the maximum.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 10."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.4",
+          "printedPages": [
+            10,
+            10
+          ],
+          "pdfPages": [
+            24,
+            24
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q015",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch01.value-backup"
+        ]
+      },
+      "concepts": [
+        "ch01.value-backup"
+      ],
+      "type": "numeric",
+      "category": "algorithm-trace",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "The tic-tac-toe player makes a greedy move from a position valued $V(s) = 0.5$ to one valued $V(s') = 0.8$. With $\\alpha = 0.1$, what is the new $V(s)$?",
+      "parts": [
+        {
+          "label": "new V(s)",
+          "answer": 0.53,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "$V(s) \\leftarrow 0.5 + 0.1(0.8 - 0.5) = 0.53$."
+      ],
+      "explanation": "The earlier estimate moves a tenth of the way toward the later one.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch01-q015"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            13,
+            13
+          ],
+          "pdfPages": [
+            27,
+            27
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q016",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.5"
+        ]
+      },
+      "concepts": [
+        "ch01.tic-tac-toe"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why is the classical minimax solution not correct for the tic-tac-toe problem of §1.5?",
+      "options": [
+        "It assumes the opponent plays in a particular (perfect) way, so it would never enter a position from which it could lose, even one where this opponent would in fact lose",
+        "It cannot be computed for tic-tac-toe",
+        "It needs the opponent's move probabilities",
+        "It always loses against imperfect players"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "It is easy to compute for tic-tac-toe.",
+        "That is dynamic programming's requirement.",
+        "Minimax never loses; it may just fail to win as often as possible."
+      ],
+      "solution": [
+        "Minimax optimises against the worst case, not against the actual opponent."
+      ],
+      "explanation": "In the laboratory, plain minimax wins 87.5% against the defensive opponent, where the best response wins 92.7%.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 11; the comparison is check ch01.ttt-minimax."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            11,
+            11
+          ],
+          "pdfPages": [
+            25,
+            25
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q017",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "Exercise 1.2",
+          "§1.5"
+        ]
+      },
+      "concepts": [
+        "ch01.tic-tac-toe"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Counting from the empty board with X moving first, and stopping at a win or a full board, how many tic-tac-toe positions are reachable? Into how many classes do they fall when positions related by a rotation or reflection of the board are counted as one?",
+      "parts": [
+        {
+          "label": "positions",
+          "answer": 5478,
+          "tolerance": 0.5
+        },
+        {
+          "label": "symmetry classes",
+          "answer": 765,
+          "tolerance": 0.5
+        }
+      ],
+      "solution": [
+        "Enumerate all positions by playing every legal move from the empty board (X first), stopping at wins and full boards: 5478, the empty board included.",
+        "Map each to the smallest of its 8 images under the symmetries of the square: 765 distinct representatives."
+      ],
+      "explanation": "This is the saving behind Exercise 1.2: a table one seventh the size.",
+      "related": [
+        "ch01-q002"
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch01-q017"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            10,
+            12
+          ],
+          "pdfPages": [
+            24,
+            26
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "printedPages": [
+            26,
+            26
+          ],
+          "pdfPages": [
+            40,
+            40
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q018",
+      "unit": "ch01",
+      "section": "1.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.6"
+        ]
+      },
+      "concepts": [
+        "ch01.reinforcement-learning",
+        "ch01.evolutionary-methods"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "According to the chapter summary, what distinguishes the book's reinforcement learning methods from evolutionary methods?",
+      "options": [
+        "Their use of value functions",
+        "Their use of labelled examples",
+        "Their need for a complete model of the environment",
+        "Their restriction to games"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Neither uses labelled examples.",
+        "Reinforcement learning does not need complete models.",
+        "Neither is restricted to games."
+      ],
+      "solution": [
+        "Evolutionary methods search policy space using scalar evaluations of whole policies; the book's methods learn value functions."
+      ],
+      "explanation": "Value functions make search in policy space efficient.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 16."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.6",
+          "printedPages": [
+            16,
+            16
+          ],
+          "pdfPages": [
+            30,
+            30
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q019",
+      "unit": "ch01",
+      "section": "1.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.7"
+        ]
+      },
+      "concepts": [
+        "ch01.history-threads"
+      ],
+      "type": "multi",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "Which three threads does §1.7 say came together in the late 1980s to form modern reinforcement learning? Select all that apply.",
+      "options": [
+        "Trial-and-error learning, from the psychology of animal learning",
+        "Optimal control with value functions and dynamic programming",
+        "Temporal-difference methods",
+        "Supervised learning of neural networks",
+        "Minimax search in games"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "optionNotes": [
+        "Correct.",
+        "Correct.",
+        "Correct.",
+        "The history treats this as a distinct, often confused, line.",
+        "Not one of the threads."
+      ],
+      "solution": [
+        "Two main threads (trial and error; optimal control) and a third, less distinct one (temporal differences)."
+      ],
+      "explanation": "Watkins's Q-learning (1989) joined the TD and optimal-control threads.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 16."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.7",
+          "printedPages": [
+            16,
+            16
+          ],
+          "pdfPages": [
+            30,
+            30
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q020",
+      "unit": "ch01",
+      "section": "1.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.7"
+        ]
+      },
+      "concepts": [
+        "ch01.law-of-effect"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "What does Thorndike's Law of Effect say?",
+      "options": [
+        "Responses followed by satisfaction become more strongly connected to the situation, and those followed by discomfort less so",
+        "Every response is equally likely to recur",
+        "Animals learn only from labelled instruction",
+        "Rewards should be discounted geometrically"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "The law is about changing those likelihoods.",
+        "It is about consequences, not instruction.",
+        "Discounting is not part of it."
+      ],
+      "solution": [
+        "It is about how the consequences of an action change the tendency to choose it again."
+      ],
+      "explanation": "It is selectional and associative, like reinforcement learning.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed pp. 18–19."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.7",
+          "printedPages": [
+            18,
+            19
+          ],
+          "pdfPages": [
+            32,
+            33
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q021",
+      "unit": "ch01",
+      "section": "1.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.7"
+        ]
+      },
+      "concepts": [
+        "ch01.history-threads"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "According to §1.7, who published the earliest known temporal-difference learning rule, essentially tabular TD(0)?",
+      "options": [
+        "Ian Witten (1977)",
+        "Richard Bellman (1957)",
+        "Chris Watkins (1989)",
+        "Gerry Tesauro (1992)"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: as part of an adaptive controller for MDPs.",
+        "Bellman developed dynamic programming.",
+        "Watkins developed Q-learning.",
+        "Tesauro built TD-Gammon."
+      ],
+      "solution": [
+        "Witten's 1977 paper, found by the authors in 1981."
+      ],
+      "explanation": "Witten's work spanned both the trial-and-error and the optimal-control threads.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 25."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.7",
+          "printedPages": [
+            25,
+            25
+          ],
+          "pdfPages": [
+            39,
+            39
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q022",
+      "unit": "ch01",
+      "section": "1.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.8"
+        ]
+      },
+      "concepts": [
+        "ch01.reinforcement-learning"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Where do the bibliographical remarks send the reader for references on the kind of temporal-difference method used in the tic-tac-toe example?",
+      "options": [
+        "Chapter 6",
+        "Chapter 2",
+        "Chapter 14",
+        "There are no references for it"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Chapter 2 is about bandits.",
+        "Chapter 14 is about applications.",
+        "They point to Chapter 6."
+      ],
+      "solution": [
+        "The remarks defer these references to Chapter 6 (temporal-difference learning)."
+      ],
+      "explanation": "The tic-tac-toe update is a first look at TD(0).",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed p. 26."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.8",
+          "printedPages": [
+            26,
+            26
+          ],
+          "pdfPages": [
+            40,
+            40
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch01-q023",
+      "unit": "ch01",
+      "section": "1.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§1.5"
+        ]
+      },
+      "concepts": [
+        "ch01.tic-tac-toe",
+        "ch01.value-backup"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: in the §1.5 player, exploratory moves do not cause any learning; only greedy moves are followed by a backup.",
+      "answer": true,
+      "solution": [
+        "Figure 1.1's caption: exploratory moves do not result in any learning."
+      ],
+      "explanation": "Exercise 1.4 asks what changes if they did.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Printed pp. 12–13."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "1",
+          "section": "1.5",
+          "printedPages": [
+            12,
+            13
+          ],
+          "pdfPages": [
+            26,
+            27
+          ]
+        }
+      ],
+      "reviewed": true
+    }
+  ]
+}

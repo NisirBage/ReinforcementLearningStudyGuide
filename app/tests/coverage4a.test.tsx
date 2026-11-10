@@ -152,11 +152,11 @@ describe("content quality checks", () => {
 
   test("identical question stems are errors, near-identical ones warnings", () => {
     const b = fresh();
-    const qs = b.questionFiles[0].questions;
+    const qs = b.questionFiles.find((f) => f.unit === "ch02")!.questions; // by unit: ch01 sorts first since Milestone 4H
     qs.push({ ...qs[0], id: "ch02-q900" });
     expect(errorsOf(b)).toMatch(/ch02-q900: same stem as ch02-q001/);
     const c = fresh();
-    const q = c.questionFiles[0].questions;
+    const q = c.questionFiles.find((f) => f.unit === "ch02")!.questions;
     const long = q.find((x) => x.stem.split(" ").length > 20)!;
     q.push({ ...long, id: "ch02-q901", stem: long.stem.replace(/\.$/, " exactly.") });
     expect(qualityChecks(c, inventory).warnings.join("\n")).toMatch(new RegExp(`${long.id} and ch02-q901 are near duplicates`));
@@ -267,7 +267,7 @@ describe("in the interface", () => {
     expect(row("4")).toHaveTextContent("Covered"); // completed in Milestone 4E
     expect(row("5")).toHaveTextContent("Covered"); // completed in Milestone 4F
     expect(row("6")).toHaveTextContent("Covered"); // completed in Milestone 4G
-    expect(row("7")).toHaveTextContent("Not started");
+    expect(row("1")).toHaveTextContent("Covered"); // completed in Milestone 4H
     expect(row("7")).toHaveTextContent("Not started");
   });
 });

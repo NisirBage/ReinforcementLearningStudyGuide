@@ -62,7 +62,7 @@ describe("progress updates and persistence", () => {
     cleanup();
     renderApp("/", store);
     await ready();
-    expect(screen.getByText("1 / 80")).toBeInTheDocument(); // dashboard counts it (80 core concepts since Milestone 4G added 8)
+    expect(screen.getByText("1 / 92")).toBeInTheDocument(); // dashboard counts it (92 core concepts since Milestone 4H added 12)
   });
 
   test("answering an exercise is graded, recorded and shown on the dashboard after reload", async () => {

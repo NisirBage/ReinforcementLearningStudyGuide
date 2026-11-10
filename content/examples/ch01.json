@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ex.ch01.tic-tac-toe",
+    "unit": "ch01",
+    "concepts": [
+      "ch01.tic-tac-toe",
+      "ch01.value-backup"
+    ],
+    "title": "Tic-tac-toe against an imperfect opponent",
+    "summary": "The draft gives no numbers for §1.5. The laboratory reproduces the player against two fixed opponents (uniformly random, and 'defensive': wins if it can, blocks if it must). Because the opponents are known to the lab, though not to the learner, the true probabilities of winning are computed exactly: 191/192 at best against the random opponent and 89/96 against the defensive one.",
+    "facts": [
+      {
+        "claim": "There are 5478 reachable positions, 765 up to the symmetries of the board (Exercise 1.2).",
+        "check": "ch01.ttt-positions"
+      },
+      {
+        "claim": "With the step size reduced over time the learned values approach the true probabilities of winning under optimal play, and the greedy policy comes within 0.01 of the best possible probability of winning (p. 13).",
+        "check": "ch01.ttt-learner-converges"
+      },
+      {
+        "claim": "Plain minimax wins less often than the best response against the defensive opponent (87.5% against 92.7%); a player that never risks a loss, choosing well among its safe moves, loses nothing against either opponent here.",
+        "check": "ch01.ttt-minimax"
+      },
+      {
+        "claim": "Learning from exploratory moves too makes the values approach the probabilities under the exploring policy rather than under optimal play (Exercise 1.4).",
+        "check": "ch01.ttt-exploration-values"
+      },
+      {
+        "claim": "A purely greedy learner ends up with a worse policy than one that explores (Exercise 1.3).",
+        "check": "ch01.ttt-greedy-worse"
+      },
+      {
+        "claim": "One value per symmetry class learns faster early on (Exercise 1.2).",
+        "check": "ch01.ttt-symmetries-faster"
+      },
+      {
+        "claim": "Self-play learns a policy that draws against a perfect opponent; training against the random opponent can leave a policy that loses to one (Exercise 1.1).",
+        "check": "ch01.ttt-self-play"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.5",
+        "printedPages": [
+          10,
+          15
+        ],
+        "pdfPages": [
+          24,
+          29
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch01.ttt-learner-converges"
+    }
+  }
+]

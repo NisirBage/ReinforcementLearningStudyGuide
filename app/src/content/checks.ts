@@ -6,6 +6,7 @@ import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages,
 import { deterministic, greedyPolicy, iterativePolicyEvaluation, policyIteration, qFromV, valueIteration } from "../lib/rl/dp";
 import { GRID5, RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, gridworld5x5, randomWalk, windyGridworld, windyVariant } from "../lib/rl/envs/examples";
 import { batchUpdate, certaintyEquivalence, sampleAverageReturns, type Episode } from "../lib/rl/batch";
+import * as ttt from "../lib/rl/envs/tictactoe";
 import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
 import { DEAL_STATE as BJ_DEAL, END as BJ_END, HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
 import { INFINITE_VARIANCE_BEHAVIOUR, INFINITE_VARIANCE_TARGET, importanceRatio, infiniteVarianceMdp, isEstimates, newOffPolicyControl, offPolicyControlEpisode, weightedIncremental } from "../lib/rl/offPolicy";
@@ -1073,6 +1074,122 @@ export const CHECKS: Record<string, Check> = {
       const gaps = m.starts.map((s) => vstar[s] - learned[s]);
       const finishes = m.starts.every((s) => greedyTrajectory(m, st.pi, s).finished);
       return gaps.every((g) => g >= -1e-6) && gaps.slice(0, 3).every((g) => g < 1.5) && gaps.reduce((a, b) => a + b, 0) / gaps.length < 5 && finishes;
+    },
+  },
+  // ----- Chapter 1, Milestone 4H: tic-tac-toe (§1.5, Exercises 1.1–1.5) -----
+  "ch01.ttt-positions": {
+    kind: "fact", // 5478 positions are reachable from the empty board (X first, stopping at a win or a full board); up to the 8 symmetries
+    // of the square they fall into 765 classes, and every image of a position has the same class
+    run: () => {
+      const all = ttt.reachablePositions();
+      const classes = new Set([...all].map(ttt.canonical));
+      const invariant = [...all].every((b) => ttt.SYMMETRIES.every((p) => ttt.canonical(p.map((i) => b[i]).join("")) === ttt.canonical(b)));
+      return all.size === 5478 && classes.size === 765 && invariant;
+    },
+  },
+  "ch01.ttt-minimax": {
+    kind: "fact", // §1.5: minimax assumes a perfect opponent. Plain minimax (first of its tied moves) wins 87.5% against the defensive
+    // opponent, where the best response wins 92.7%; against the random opponent both win 99.48%. The best player that never risks a loss
+    // matches the best response against both opponents (so these opponents do not show the draft's point in its strongest form)
+    run: () => {
+      const M = ttt.minimaxValues();
+      const firstTie: ttt.XPolicy = (b) => {
+        const ms = ttt.moves(b);
+        const best = Math.max(...ms.map((i) => M.get(ttt.play(b, i, "X"))!));
+        return [{ move: ms.find((i) => M.get(ttt.play(b, i, "X")) === best)!, p: 1 }];
+      };
+      const kinds: ttt.OpponentKind[] = ["random", "defensive"];
+      const [r, d] = kinds.map((k) => ({ opt: ttt.optimalWinProbability(k), plain: ttt.evaluatePolicy(firstTie, k).win, safe: ttt.evaluatePolicy(ttt.bestMinimaxSafePolicy(k), k).win }));
+      return close(r.opt, 191 / 192, 1e-12) && close(r.plain, r.opt, 1e-12) && close(d.opt, 89 / 96, 1e-12) && close(d.plain, 0.875, 1e-12) && close(d.safe, d.opt, 1e-12) && close(r.safe, r.opt, 1e-12);
+    },
+  },
+  "ch01.ttt-learner-converges": {
+    kind: "fact", // p. 13: with the step size reduced over time (1/n per position) the values approach the true probabilities of winning under
+    // optimal play. After 30,000 games against the random opponent (ε = 0.1, seed 1) the ten most-updated values are within 0.01 RMS of them,
+    // and the greedy policy wins within 0.01 of the best possible probability
+    run: () => {
+      const k: ttt.OpponentKind = "random";
+      const W = ttt.optimalAfterstateValues(k);
+      const cfg: ttt.TttSettings = { epsilon: 0.1, alpha: "1/n" };
+      const L = ttt.newLearner();
+      ttt.trainTicTacToe(L, k, cfg, 30_000, makeRng(1));
+      const top = [...L.n.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+      const rms = Math.sqrt(top.reduce((a, [s]) => a + (L.V.get(s)! - W.get(s)!) ** 2, 0) / top.length);
+      return rms < 0.01 && ttt.learnedPolicyResult(L, k, cfg).win > ttt.optimalWinProbability(k) - 0.01;
+    },
+  },
+  "ch01.ttt-exploration-values": {
+    kind: "fact", // Exercise 1.4: without learning from exploratory moves the values approach the optimal-play probabilities; learning from
+    // them too, they approach the probabilities under the ε-greedy policy instead (30,000 games, 1/n, seed 1, ten most-updated positions)
+    run: () => {
+      const k: ttt.OpponentKind = "random";
+      const W = ttt.optimalAfterstateValues(k);
+      const opt = ttt.greedyPolicy((s) => (ttt.isTerminal(s) ? ttt.terminalValue(s) : W.get(s)!));
+      const Vopt = ttt.afterstateValuesUnder(opt, k);
+      const Veps = ttt.afterstateValuesUnder(ttt.epsilonGreedyOf(opt, 0.1), k);
+      const errs = (learnFromExploration: boolean) => {
+        const L = ttt.newLearner();
+        ttt.trainTicTacToe(L, k, { epsilon: 0.1, alpha: "1/n", learnFromExploration }, 30_000, makeRng(1));
+        const top = [...L.n.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+        const e = (f: (s: string) => number) => Math.sqrt(top.reduce((a, [s]) => a + (L.V.get(s)! - f(s)) ** 2, 0) / top.length);
+        return [e(Vopt), e(Veps)];
+      };
+      const [a, b] = errs(false);
+      const [c, d] = errs(true);
+      return a < 0.01 && a < b && d < c && d < 0.02 && Veps(ttt.play(ttt.EMPTY, 0, "X")) < Vopt(ttt.play(ttt.EMPTY, 0, "X"));
+    },
+  },
+  "ch01.ttt-greedy-worse": {
+    kind: "fact", // Exercise 1.3: a purely greedy learner (ε = 0) ends up with a worse greedy policy than one that explores (ε = 0.1):
+    // mean over seeds 1–4 after 10,000 games, against both opponents
+    run: () => {
+      const mean = (k: ttt.OpponentKind, epsilon: number) =>
+        [1, 2, 3, 4].reduce((a, s) => {
+          const L = ttt.newLearner();
+          const cfg: ttt.TttSettings = { epsilon, alpha: 0.1 };
+          ttt.trainTicTacToe(L, k, cfg, 10_000, makeRng(s));
+          return a + ttt.learnedPolicyResult(L, k, cfg).win / 4;
+        }, 0);
+      return mean("random", 0) < mean("random", 0.1) - 0.02 && mean("defensive", 0) < mean("defensive", 0.1);
+    },
+  },
+  "ch01.ttt-symmetries-faster": {
+    kind: "fact", // Exercise 1.2: one value per symmetry class learns faster early on: mean over seeds 1–8 after 1,000 games, both opponents
+    run: () => {
+      const mean = (k: ttt.OpponentKind, symmetries: boolean) =>
+        [1, 2, 3, 4, 5, 6, 7, 8].reduce((a, s) => {
+          const L = ttt.newLearner();
+          const cfg: ttt.TttSettings = { epsilon: 0.1, alpha: 0.1, symmetries };
+          ttt.trainTicTacToe(L, k, cfg, 1000, makeRng(s));
+          return a + ttt.learnedPolicyResult(L, k, cfg).win / 8;
+        }, 0);
+      return mean("random", true) > mean("random", false) && mean("defensive", true) > mean("defensive", false);
+    },
+  },
+  "ch01.ttt-self-play": {
+    kind: "fact", // Exercise 1.1: after 30,000 self-play games (ε = 0.1, α = 0.1, seeds 1–2) X's greedy policy draws against a perfect
+    // opponent; a learner trained for 30,000 games against the random opponent (seed 2) loses to one
+    run: () => {
+      const cfg: ttt.TttSettings = { epsilon: 0.1, alpha: 0.1 };
+      const selfOk = [1, 2].every((s) => {
+        const X = ttt.newLearner();
+        ttt.selfPlay(X, ttt.newLearner(), cfg, 30_000, makeRng(s));
+        return ttt.worstCaseAgainstPerfect(ttt.greedyPolicy((b) => ttt.learnerValue(X, b, cfg))) === "draw";
+      });
+      const L = ttt.newLearner();
+      ttt.trainTicTacToe(L, "random", cfg, 30_000, makeRng(2));
+      return selfOk && ttt.worstCaseAgainstPerfect(ttt.greedyPolicy((b) => ttt.learnerValue(L, b, cfg))) === "loss";
+    },
+  },
+  "ch01-q015": {
+    kind: "answer", // the §1.5 backup V(s) ← V(s) + α[V(s′) − V(s)] with V(s) = 0.5, V(s′) = 0.8, α = 0.1
+    run: () => [0.5 + 0.1 * (0.8 - 0.5)],
+  },
+  "ch01-q017": {
+    kind: "answer", // reachable positions (X first, stopping at a win or a full board) and their classes under the 8 symmetries
+    run: () => {
+      const all = ttt.reachablePositions();
+      return [all.size, new Set([...all].map(ttt.canonical)).size];
     },
   },
   // ----- Chapter 6, Milestone 4G -----

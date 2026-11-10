@@ -887,5 +887,67 @@ The validator reports no problems and no warnings.
 
 `npm run check` passes.
 
-#### Next: Milestone 4H
-Chapter 1 to the coverage criteria.
+### Milestone 4H: Chapter 1 complete (done, 2026-11-10)
+
+**Chapter 1 meets the coverage criteria:**
+- all 8 sections are covered (§1.6–1.8 as reading guides);
+- it has no numbered equations or examples;
+- all 5 exercises are in the question bank.
+
+The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read in the text layer; the §1.5 update rule was checked on the page image (p. 13). **Flagged** cross-references:
+- "Chapters ?? and ??" (p. 4), "Chapter ??" (p. 18) and "Chapter Y" (pp. 23, 25) are unresolved in the draft. They point to the psychology and neuroscience chapters, unwritten here.
+- Model learning and planning "in Chapter 9" (p. 9) is Chapter 8 in this draft.
+- Tesauro's backgammon player, "see Chapter 15" (p. 14), is §14.1 here.
+- Exercise 1.1 speaks of "a random opponent", while §1.5 describes an imperfect one.
+
+**Tic-tac-toe (§1.5), new library code `lib/rl/envs/tictactoe.ts`:**
+- **The game:** rules, the 8 symmetries, and 5478 reachable positions in 765 symmetry classes.
+- **Two fixed opponents:** uniformly random, and "defensive" (wins if it can, blocks if it must).
+- **Exact evaluation.** The opponents are known to the lab, though not to the learner, so the true probabilities of winning are computed over the game tree. The best response wins 191/192 against the random opponent and 89/96 against the defensive one.
+- **The §1.5 learner.** It values the positions after its own moves, explores with probability ε among the other moves, and backs up only after greedy moves. Where the draft leaves details open, our reading is stated in the lab:
+  - when the opponent ends the game, its final position is the last later state;
+  - "reduced properly" is a step size of 1/n per position.
+
+**Reproductions:**
+- **p. 13.** With α = 1/n, after 30,000 games against the random opponent the most-updated values are within 0.01 RMS of the true optimal-play probabilities, and the greedy policy is within 0.01 of the best possible.
+- **Minimax (p. 11).** Plain minimax wins 87.5% against the defensive opponent, where the best response wins 92.7%. However, the best player that never risks a loss loses nothing against either opponent. So these opponents do not show the draft's point in its strongest form; the lab says so.
+- **Exercise 1.1.** Self-play learns a policy that draws against a perfect opponent. A policy trained against the random opponent can lose to one (in 4 of 6 seeds tried).
+- **Exercise 1.2.** One value per symmetry class learns faster in the first 1,000 games, against both opponents.
+- **Exercise 1.3.** A purely greedy learner settles near 93–94% against the random opponent, where exploring learners reach about 98–99%.
+- **Exercise 1.4.** Without learning from exploratory moves, the values approach the optimal-play probabilities. With it, they approach the probabilities under the ε-greedy policy.
+
+**Laboratory.** A new tic-tac-toe laboratory with three panels:
+- the learner, with options for Exercises 1.2–1.4, an exact comparison with the optimum, the learned first-move values, and the last game drawn as in Figure 1.1;
+- self-play;
+- minimax against the best response.
+
+**Content:**
+- **12 concepts.**
+- **1 unnumbered equation:** the §1.5 update.
+- **1 example item:** the tic-tac-toe player, with 7 checked facts.
+- **8 lessons.**
+- **23 questions:**
+  - the 5 exercises, as written answers with rubrics;
+  - 18 derived from the text, 2 of them numeric with answer checks.
+
+**Checks:** 9 new, 152 in all.
+
+**Tests:** **30 test files, 1814 tests, all passed.**
+- **New: `ch01-4h` (8).** The rules, symmetries and exact values, the learner's backup rule, the laboratory, the lessons, coverage and flags.
+- **Updated, because they pinned the previous content:**
+  - question counts 182 → 205 (135 → 153 without written answers);
+  - concept count 80 → 92;
+  - the written-answer and textbook-exercise lists;
+  - Chapter 1's status in the chapter list.
+- **Two validator tests** assumed the first question file was Chapter 2's. They now select it by unit, with the same assertions.
+
+**Browser review:**
+- all Chapter 1 sections, the example and the equation render with no KaTeX errors;
+- the laboratory plays 20,000 games in about 0.6 s, and fits at phone width without horizontal scrolling.
+
+`npm run check` passes.
+
+#### Next: Milestone 4I
+Chapter 7 to the coverage criteria.

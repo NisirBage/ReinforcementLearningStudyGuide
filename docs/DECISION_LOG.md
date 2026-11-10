@@ -263,3 +263,8 @@ The service worker activates a new version at once and deletes the old version's
 - **Figure 6.8 is reproduced from the closed-form answers** of batch TD(0) and batch MC: the certainty-equivalence estimate and the sample averages. The draft states these are what the batch methods converge to. A check confirms, on a real batch, that the iterative batch updates do converge to them.
 - **Closed form, not iteration, in the curve.** Iterating to convergence after every episode of 100 runs would cost thousands of passes per point for the same numbers.
 - **Exercise 6.7's stochastic wind applies only to windy columns,** following the draft's "if there is any"; the question states this reading.
+
+## D-049: Tic-tac-toe judged against an exact best response (Accepted, 2026-11-10)
+- **The opponent is a fixed stochastic player known to the lab, not to the learner.** So the learned policy's true probability of winning, and the best possible one, are computed exactly over the game tree, instead of estimated from more games.
+- **Values belong to the positions after our moves,** as §6.6 says of this example. The backup pairs successive positions of ours. The opponent's final move supplies the last target, so losses and draws are learned.
+- **Where a reproduction does not show what the draft argues, the lab says so.** Against both opponents, minimax with the best tie-breaking loses nothing.

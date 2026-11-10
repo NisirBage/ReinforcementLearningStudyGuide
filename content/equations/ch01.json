@@ -1,0 +1,52 @@
+[
+  {
+    "id": "eq.ch01.value-backup",
+    "unit": "ch01",
+    "concept": "ch01.value-backup",
+    "name": "The tic-tac-toe value update",
+    "tex": "V(s) \\leftarrow V(s) + \\alpha\\Big[V(s') - V(s)\\Big]",
+    "symbols": [
+      {
+        "tex": "s, s'",
+        "meaning": "the positions before and after a greedy move"
+      },
+      {
+        "tex": "V",
+        "meaning": "the estimated probability of winning"
+      },
+      {
+        "tex": "\\alpha",
+        "meaning": "a small positive step-size parameter"
+      }
+    ],
+    "intuition": "Make the earlier estimate a little more like the later, better-informed one.",
+    "assumptions": [
+      "Applied only after greedy moves; exploratory moves cause no update (Figure 1.1)."
+    ],
+    "example": "With $V(s) = 0.5$, $V(s') = 0.8$ and $\\alpha = 0.1$: $V(s)$ becomes $0.5 + 0.1(0.8 - 0.5) = 0.53$.",
+    "significance": "The book's first temporal-difference rule; Chapter 6 returns to it as TD(0) (6.2) with rewards and discounting.",
+    "pitfalls": [
+      "Unnumbered in the draft.",
+      "With a constant α the values keep moving; the draft's convergence claim needs α reduced over time."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "1",
+        "section": "1.5",
+        "printedPages": [
+          13,
+          13
+        ],
+        "pdfPages": [
+          27,
+          27
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10"
+    }
+  }
+]
