@@ -34,6 +34,13 @@
           159
         ]
       }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The bibliographical remarks (p. 162) place the case study of Samuel's checkers work in 'Section 15.2'. In this draft the case study is §14.2 (Samuel's Checkers Player); Chapter 15 is the partly written closing chapter.",
+        "suggestion": "Read 'Section 14.2'."
+      }
     ]
   },
   {
@@ -105,6 +112,304 @@
           171,
           172
         ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The summary (pp. 161–162) sorts the chapter's control methods as on-policy (Sarsa and actor–critic methods) and off-policy (Q-learning and R-learning). Actor–critic methods and R-learning are not in this chapter of the draft: they are §11.1 and §11.3. The bibliographical remark numbered 6.6 (p. 164) is also about R-learning.",
+        "suggestion": "For Chapter 6 the classification is Sarsa (on-policy) and Q-learning (off-policy); the other two are in Chapter 11."
+      }
+    ]
+  },
+  {
+    "id": "ch06.td-error",
+    "unit": "ch06",
+    "title": "The TD error",
+    "kind": "definition",
+    "summary": "The bracketed quantity in (6.2), $R_{t+1} + \\gamma V(S_{t+1}) - V(S_t)$: how far the estimate at $S_t$ is from the one-step target formed a step later. Each TD update is a step of size α along it. In the driving home example (γ = 1, fixed estimates) the TD errors along an episode add up to the Monte Carlo error of the first state.",
+    "prereqs": [
+      "ch06.td-prediction"
+    ],
+    "related": [
+      "ch06.sample-backup"
+    ],
+    "keywords": [
+      "TD error",
+      "temporal difference",
+      "delta",
+      "target"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.1",
+        "printedPages": [
+          144,
+          147
+        ],
+        "pdfPages": [
+          158,
+          161
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch06.sample-backup",
+    "unit": "ch06",
+    "title": "Sample backups",
+    "kind": "definition",
+    "summary": "TD and Monte Carlo updates look ahead to one sampled successor (state or state–action pair), combine its value with the reward on the way, and move the original estimate toward that backed-up value. DP's full backups instead average over the whole distribution of successors, which needs a model.",
+    "prereqs": [
+      "ch06.td-prediction",
+      "ch04.full-backup"
+    ],
+    "related": [
+      "ch03.backup-diagram"
+    ],
+    "keywords": [
+      "sample backup",
+      "full backup",
+      "backup diagram",
+      "successor"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.1",
+        "printedPages": [
+          145,
+          145
+        ],
+        "pdfPages": [
+          159,
+          159
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch06.driving-home",
+    "unit": "ch06",
+    "title": "Driving home",
+    "kind": "example",
+    "summary": "Example 6.1: predicting the time to get home at each stage of a drive. The rewards are the minutes of each leg and γ = 1, so a state's return is the actual time still to go. Monte Carlo moves every prediction toward the final outcome, known only on arrival; TD moves each prediction toward the next one, as soon as it is made.",
+    "prereqs": [
+      "ch06.td-error"
+    ],
+    "related": [
+      "ch05.mc-prediction"
+    ],
+    "keywords": [
+      "driving home",
+      "Example 6.1",
+      "prediction",
+      "Figure 6.3",
+      "Figure 6.4"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.1",
+        "printedPages": [
+          145,
+          147
+        ],
+        "pdfPages": [
+          159,
+          161
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch06.td-advantages",
+    "unit": "ch06",
+    "title": "Advantages of TD prediction",
+    "kind": "idea",
+    "summary": "TD needs no model (unlike DP) and updates after every step (unlike Monte Carlo), which matters for long episodes, continuing tasks, and off-policy MC that must discard episode tails. Tabular TD(0) converges to $v_\\pi$: in the mean for a small constant α, with probability 1 under the conditions (2.7). Which of TD and MC is faster has no proof either way, but on stochastic tasks such as the random walk TD usually wins.",
+    "prereqs": [
+      "ch06.td-prediction",
+      "ch05.mc-prediction",
+      "ch02.step-size-conditions"
+    ],
+    "related": [
+      "ch06.certainty-equivalence"
+    ],
+    "keywords": [
+      "advantages",
+      "on-line",
+      "incremental",
+      "convergence",
+      "random walk",
+      "Example 6.2"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.2",
+        "printedPages": [
+          148,
+          150
+        ],
+        "pdfPages": [
+          162,
+          164
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch06.batch-updating",
+    "unit": "ch06",
+    "title": "Batch updating",
+    "kind": "procedure",
+    "summary": "With a fixed, finite set of experience, compute the increments of (6.1) or (6.2) for every visit, change the values once by their sum, and repeat over the same data until nothing changes. For any small enough α, batch TD(0) and batch constant-α MC each converge deterministically, to different answers.",
+    "prereqs": [
+      "ch06.td-prediction"
+    ],
+    "related": [
+      "ch06.td-advantages"
+    ],
+    "keywords": [
+      "batch updating",
+      "batch training",
+      "Example 6.3",
+      "Figure 6.8"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.3",
+        "printedPages": [
+          151,
+          152
+        ],
+        "pdfPages": [
+          165,
+          166
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch06.certainty-equivalence",
+    "unit": "ch06",
+    "title": "The certainty-equivalence estimate",
+    "kind": "idea",
+    "summary": "Batch Monte Carlo finds the values that minimise squared error on the training returns (sample averages). Batch TD(0) finds the values that are exactly correct if the process's maximum-likelihood model were the truth: transition probabilities as observed fractions, rewards as observed averages. That is the certainty-equivalence estimate, and it predicts future data better when the process is Markov. Computing it directly costs about $N^2$ memory and $N^3$ steps; TD approaches it with memory of order $N$.",
+    "prereqs": [
+      "ch06.batch-updating",
+      "ch03.markov-property"
+    ],
+    "related": [
+      "ch06.td-advantages"
+    ],
+    "keywords": [
+      "certainty equivalence",
+      "maximum likelihood",
+      "Example 6.4",
+      "you are the predictor",
+      "optimality of TD(0)"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.3",
+        "printedPages": [
+          151,
+          154
+        ],
+        "pdfPages": [
+          165,
+          168
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch06.windy-gridworld",
+    "unit": "ch06",
+    "title": "The windy gridworld",
+    "kind": "example",
+    "summary": "Example 6.5: a 7 × 10 gridworld with an upward wind of 0, 1 or 2 cells by column and reward −1 per step; the shortest path takes 15 steps. Monte Carlo methods are awkward here, because a policy that never reaches the goal gives an episode that never ends; Sarsa learns within the episode to avoid such policies. Exercises 6.6 and 6.7 add diagonal moves, a 'stay' action and stochastic wind.",
+    "prereqs": [
+      "ch06.sarsa"
+    ],
+    "related": [
+      "ch06.q-learning"
+    ],
+    "keywords": [
+      "windy gridworld",
+      "Example 6.5",
+      "king's moves",
+      "stochastic wind",
+      "Exercise 6.6",
+      "Exercise 6.7"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.4",
+        "printedPages": [
+          155,
+          157
+        ],
+        "pdfPages": [
+          169,
+          171
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch06.afterstates",
+    "unit": "ch06",
+    "title": "Afterstates",
+    "kind": "idea",
+    "summary": "When the immediate effect of an action is known (a board position after our move, before the opponent replies), learn values of these afterstates instead of state–action pairs. Different position–move pairs that lead to the same afterstate then share one value, so experience with one transfers to the others at once. Afterstate methods still follow generalized policy iteration.",
+    "prereqs": [
+      "ch06.td-prediction",
+      "ch04.gpi"
+    ],
+    "related": [
+      "ch06.sarsa"
+    ],
+    "keywords": [
+      "afterstates",
+      "afterstate value function",
+      "tic-tac-toe",
+      "games",
+      "queuing"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.6",
+        "printedPages": [
+          160,
+          161
+        ],
+        "pdfPages": [
+          174,
+          175
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 161 mentions an 'access-control queuing example' said to be in the previous section. No such example is in §6.5 or anywhere in Chapter 6 of this draft; it is Example 11.1 (§11.3, p. 262), with R-learning. The bibliographical remark numbered 6.6 (p. 164), about R-learning and this example, belongs with it too.",
+        "suggestion": "Read it as a reference to Example 11.1 (§11.3)."
       }
     ]
   }

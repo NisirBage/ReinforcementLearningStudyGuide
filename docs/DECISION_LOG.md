@@ -258,3 +258,8 @@ The service worker activates a new version at once and deletes the old version's
 - **The racetrack is a finite MDP.** This makes value iteration's optimum available to judge Monte Carlo control. The rules the draft leaves open are chosen once and stated in the lab.
 - **Where an exact quantity exists, checks use it rather than a noisy average.** Examples: Var(ρG) for Figure 5.7, and the enumerated moments for Figure 5.8.
 - **Tests that need an example of a partial section build it from a fresh copy of the content,** so they do not change at every milestone.
+
+## D-048: Batch updating by its fixed points (Accepted, 2026-11-10)
+- **Figure 6.8 is reproduced from the closed-form answers** of batch TD(0) and batch MC: the certainty-equivalence estimate and the sample averages. The draft states these are what the batch methods converge to. A check confirms, on a real batch, that the iterative batch updates do converge to them.
+- **Closed form, not iteration, in the curve.** Iterating to convergence after every episode of 100 runs would cost thousands of passes per point for the same numbers.
+- **Exercise 6.7's stochastic wind applies only to windy columns,** following the draft's "if there is any"; the question states this reading.

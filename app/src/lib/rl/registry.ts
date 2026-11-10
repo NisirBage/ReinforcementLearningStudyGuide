@@ -10,6 +10,7 @@ import * as racetrackEnv from "./envs/racetrack";
 import * as mc from "./mc";
 import * as blackjack from "./envs/blackjack";
 import * as td from "./td";
+import * as batch from "./batch";
 import * as dp from "./dp";
 import * as mdp from "./mdp";
 import * as sa from "./sa";
@@ -47,6 +48,9 @@ export const IMPLEMENTATIONS = {
   "envs.gamblersProblem": examples.gamblersProblem, // Example 4.3
   "envs.randomWalk": examples.randomWalk, // Example 6.2
   "envs.windyGridworld": examples.windyGridworld, // Example 6.5
+  "batch.batchUpdate": batch.batchUpdate, // batch TD(0) and batch constant-α MC (§6.3, Examples 6.3–6.4)
+  "batch.certaintyEquivalence": batch.certaintyEquivalence, // the certainty-equivalence estimate (§6.3)
+  "envs.windyVariant": examples.windyVariant, // Exercises 6.6–6.7 (king's moves, "stay", stochastic wind)
   "envs.cliffWalking": examples.cliffWalking, // Example 6.6
   "sa.robbinsMonro": sa.robbinsMonro, // supplementary (Zhao Ch 6)
 } as const;

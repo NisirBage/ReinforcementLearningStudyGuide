@@ -179,8 +179,8 @@ export function ExampleCard({ x }: { x: Example }) {
         <>
           <h4>What the book claims, and what our code reproduces</h4>
           <ul className="facts">
-            {x.facts.map((f) => (
-              <li key={f.check}>
+            {x.facts.map((f, i) => (
+              <li key={`${f.check}-${i}`}>
                 {results ? <span className={results[f.check] ? "ok" : "bad"}>{results[f.check] ? "✓" : "✗"}</span> : <span className="muted">•</span>}{" "}
                 <MdInline text={f.claim} />
               </li>

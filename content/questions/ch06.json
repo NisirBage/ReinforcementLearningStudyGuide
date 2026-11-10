@@ -341,11 +341,8 @@
       "unit": "ch06",
       "section": "6.5",
       "provenance": {
-        "kind": "textbook-derived",
-        "basis": [
-          "eq.ch06.q-learning",
-          "§6.5"
-        ]
+        "kind": "textbook-exercise",
+        "exercise": "6.9"
       },
       "concepts": [
         "ch06.q-learning"
@@ -354,7 +351,7 @@
       "category": "conceptual",
       "difficulty": 2,
       "marks": 1,
-      "stem": "Why is Q-learning called an off-policy method?",
+      "stem": "Exercise 6.9 asks why Q-learning counts as an off-policy control method. Which answer is right?",
       "options": [
         "It learns $q_*$ directly, whatever exploring policy generates the experience",
         "It never follows any policy",
@@ -389,12 +386,1461 @@
             171,
             171
           ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            165,
+            165
+          ],
+          "pdfPages": [
+            179,
+            179
+          ]
         }
       ],
       "verification": {
         "method": "text-layer",
-        "on": "2026-11-05",
-        "note": "Q-learning's independence from the policy followed, printed p. 157, checked against the text layer."
+        "on": "2026-11-10",
+        "note": "Exercise 6.9, printed p. 165; Q-learning's independence from the policy followed, printed p. 157."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q007",
+      "unit": "ch06",
+      "section": "6.4",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.6"
+      },
+      "concepts": [
+        "ch06.windy-gridworld",
+        "ch06.sarsa"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 6.6: re-solve the windy gridworld (Example 6.5) with eight actions, the diagonal 'king's moves' included, and then with a ninth action that moves only with the wind. Give the minimum number of steps from S to G with the four standard moves, with king's moves, and with king's moves plus 'stay'.",
+      "parts": [
+        {
+          "label": "standard moves",
+          "answer": 15,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "king's moves",
+          "answer": 7,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "king's moves and stay",
+          "answer": 7,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "The task is deterministic, so value iteration on the exact model gives the shortest path: $-v_*(S)$ is the number of steps.",
+        "Standard moves need 15 steps (the draft's figure). Diagonal moves let the agent move right and push against the wind in the same step: 7 steps.",
+        "'Stay' adds nothing here: drifting with the wind is never better than a move that also makes progress, so the optimum stays 7."
+      ],
+      "explanation": "Sarsa with ε-greedy exploration in the laboratory learns paths a little longer than these optima, as in the four-action case.",
+      "related": [
+        "ch06-q008"
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch06-q007"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.4",
+          "printedPages": [
+            155,
+            157
+          ],
+          "pdfPages": [
+            169,
+            171
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            165,
+            165
+          ],
+          "pdfPages": [
+            179,
+            179
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q008",
+      "unit": "ch06",
+      "section": "6.4",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.7"
+      },
+      "concepts": [
+        "ch06.windy-gridworld"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 3,
+      "marks": 2,
+      "stem": "Exercise 6.7: with king's moves, make the wind stochastic: in a windy column the push is the column's value, one more, or one less, each with probability 1/3 (calm columns stay calm). What is the smallest expected number of steps from S to G? Give it to two decimals.",
+      "parts": [
+        {
+          "label": "expected steps",
+          "answer": 10.96,
+          "tolerance": 0.01
+        }
+      ],
+      "solution": [
+        "The transitions are now stochastic; value iteration on the exact model gives $-v_*(S) \\approx 10.96$ expected steps.",
+        "That is almost 4 steps more than the deterministic 7: the agent cannot aim at the goal exactly and must sometimes recover from being blown past it."
+      ],
+      "explanation": "This reading assumes the extra randomness applies only where the wind blows ('if there is any'); the TD laboratory's comparison panel runs Sarsa and Q-learning on it.",
+      "related": [
+        "ch06-q007"
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch06-q008"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.4",
+          "printedPages": [
+            155,
+            157
+          ],
+          "pdfPages": [
+            169,
+            171
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            165,
+            165
+          ],
+          "pdfPages": [
+            179,
+            179
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q009",
+      "unit": "ch06",
+      "section": "6.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.2"
+      },
+      "concepts": [
+        "ch06.td-prediction",
+        "ch06.td-advantages"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 6.2: in Figure 6.6 (TD(0), α = 0.1, all values starting at 0.5) the first episode changes only $V(A)$. That means the first walk ended off the left end. By exactly how much did $V(A)$ change, and what is its new value?",
+      "parts": [
+        {
+          "label": "change in V(A)",
+          "answer": -0.05,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "new V(A)",
+          "answer": 0.45,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "Between nonterminal states every reward is 0 and both values are 0.5, so each TD error $0 + 0.5 - 0.5$ is 0: nothing changes.",
+        "Only the last step, from A into the left terminal (reward 0, terminal value 0), has a nonzero error: $0 + 0 - 0.5 = -0.5$.",
+        "So $V(A)$ changes by $0.1 \\times (-0.5) = -0.05$, to 0.45."
+      ],
+      "explanation": "Had the walk ended on the right, only $V(E)$ would have changed, by +0.05.",
+      "related": [
+        "ch06-q001"
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch06-q009"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.2",
+          "printedPages": [
+            149,
+            150
+          ],
+          "pdfPages": [
+            163,
+            164
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            164,
+            164
+          ],
+          "pdfPages": [
+            178,
+            178
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q010",
+      "unit": "ch06",
+      "section": "6.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.1"
+      },
+      "concepts": [
+        "ch06.td-prediction",
+        "ch06.driving-home"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 6.1: think about the driving home example. Describe a situation (what you have experienced so far, and where you are now) in which you would expect a TD update to be better, on average, than a Monte Carlo update. Hint from the draft: you have driven home from work many times, then move to a new building and parking lot but still join the highway at the same place. Could something similar happen in the original task?",
+      "answer": "After the move, the states from the highway onward are familiar and their predictions are already accurate; only the new building and parking lot have poor estimates. A TD update for a new state moves it toward the next state's estimate, which is accurate, so it is close to right after a few trips. A Monte Carlo update moves it toward the whole actual return, which carries all the randomness of the rest of the trip, so it needs many trips to average out that noise. The same happens in the original task whenever a rarely visited or new state leads into well-learned states: TD transfers what is already known about the successors.",
+      "solution": [
+        "Ask which part of the journey is already well predicted.",
+        "Compare the variance of the two targets for the new state."
+      ],
+      "explanation": "TD's target uses the successor's learned value, so knowledge about later states is reused at once.",
+      "rubric": [
+        {
+          "point": "Familiar later states (from the highway on) already have accurate predictions",
+          "marks": 1
+        },
+        {
+          "point": "TD bootstraps from those accurate estimates, while MC's target carries the noise of the whole remaining trip",
+          "marks": 1
+        },
+        {
+          "point": "Same effect in the original task when new or rare states lead into well-learned ones",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch06-q017"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 6.1, printed p. 164; Example 6.1, printed pp. 145–147."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.1",
+          "printedPages": [
+            145,
+            147
+          ],
+          "pdfPages": [
+            159,
+            161
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            164,
+            164
+          ],
+          "pdfPages": [
+            178,
+            178
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q011",
+      "unit": "ch06",
+      "section": "6.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.3"
+      },
+      "concepts": [
+        "ch06.td-advantages"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 6.3: the results of Figure 6.7 depend on α. Would trying a wider range of α change the conclusion about which method is better? Is there a fixed α at which either method would have done much better than shown? Explain.",
+      "answer": "Probably not. A constant α trades speed for noise: larger α learns faster early but leaves a larger steady fluctuation, smaller α fluctuates less but learns slowly. The curves shown already span this trade-off for both methods (TD from 0.05 to 0.15, MC from 0.01 to 0.04), and the best TD curve beats the best MC curve over the whole range of episodes; values outside the range would be either slower or noisier for each method. No single fixed α can be both fast early and precise late, so neither method would do significantly better; that needs a decreasing step size.",
+      "solution": [
+        "Think of what α controls: the speed of the early drop and the size of the final fluctuation.",
+        "The laboratory lets you add other α values to Figure 6.7 to test this."
+      ],
+      "explanation": "A step size that decreases over time, as in (2.7), is what removes the floor on the error.",
+      "rubric": [
+        {
+          "point": "Constant α trades early speed against final noise",
+          "marks": 1
+        },
+        {
+          "point": "The range shown already covers this trade-off; the conclusion (TD better) is unlikely to change",
+          "marks": 1
+        },
+        {
+          "point": "No fixed α does much better; decreasing α would be needed",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch06-q012"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 6.3, printed p. 164; Figure 6.7, printed p. 150."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.2",
+          "printedPages": [
+            149,
+            150
+          ],
+          "pdfPages": [
+            163,
+            164
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            164,
+            164
+          ],
+          "pdfPages": [
+            178,
+            178
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q012",
+      "unit": "ch06",
+      "section": "6.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.4"
+      },
+      "concepts": [
+        "ch06.td-advantages",
+        "ch06.td-prediction"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 6.4: TD's RMS error in Figure 6.7 falls and then rises again, especially for large α. What could cause this? Does it always happen, or might it depend on how the value function was initialised?",
+      "answer": "The starting values 0.5 are already right for C and close on average for the other states, so the initial error is small and the first episodes, which carry the terminal rewards inward, reduce it quickly. With a large α the estimates then keep jumping in response to the most recent episodes, and this steady fluctuation is larger than the error reached at the bottom of the dip, so the curve rises toward that noise level. It depends on the initialisation: in the laboratory's reproduction (α = 0.15, 100 runs) the minimum comes early and the final error is higher when the values start at 0.5, but starting at 0 the error simply falls with no dip.",
+      "solution": [
+        "Separate the transient (learning from the initial values) from the steady state (fluctuation caused by a constant α).",
+        "Try another initial value."
+      ],
+      "explanation": "Check ch06.td-high-alpha-dip measures both cases.",
+      "rubric": [
+        {
+          "point": "Initial values of 0.5 are partly correct, so the error first falls quickly",
+          "marks": 1
+        },
+        {
+          "point": "A large constant α leaves a steady fluctuation above that minimum",
+          "marks": 1
+        },
+        {
+          "point": "It depends on initialisation (e.g. no dip when starting from 0)",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch06-q011"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 6.4, printed p. 164; the dip and its dependence on initialisation are measured by check ch06.td-high-alpha-dip."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.2",
+          "printedPages": [
+            149,
+            150
+          ],
+          "pdfPages": [
+            163,
+            164
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            164,
+            164
+          ],
+          "pdfPages": [
+            178,
+            178
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q013",
+      "unit": "ch06",
+      "section": "6.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.5"
+      },
+      "concepts": [
+        "ch06.td-advantages"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 6.5: the true values of the random walk's states A to E are k/6 for k = 1, …, 5. Describe at least two ways these could have been computed. Which do you think the authors used, and why?",
+      "answer": "(1) Solve the Bellman equations: v(k) = ½ v(k−1) + ½ v(k+1) for the five states, with the left terminal worth 0 and leaving on the right worth 1; this linear system has the solution k/6. (2) Iterative policy evaluation (DP) until convergence. (3) Reason directly: with γ = 1 the value is the probability of exiting right, and for a symmetric walk that grows linearly from 0 to 1 across the six gaps. (Monte Carlo would only give approximations.) Most likely they solved it analytically or with the linear equations, since the exact fractions come out directly and the problem is tiny.",
+      "solution": [
+        "Write the value of each state in terms of its neighbours.",
+        "Check ch06.random-walk-true-values confirms both the exact solve and iterative evaluation give k/6."
+      ],
+      "explanation": "For such a small, fully known process, an exact method is easy and gives fractions rather than estimates.",
+      "rubric": [
+        {
+          "point": "At least two correct methods (linear Bellman system, iterative DP, the linear-probability argument)",
+          "marks": 1
+        },
+        {
+          "point": "A reasoned guess, e.g. an exact/analytic method because the process is tiny and the answers are exact fractions",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 6.5, printed pp. 164–165; the values k/6 are confirmed by check ch06.random-walk-true-values."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.2",
+          "printedPages": [
+            149,
+            149
+          ],
+          "pdfPages": [
+            163,
+            163
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            164,
+            165
+          ],
+          "pdfPages": [
+            178,
+            179
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q014",
+      "unit": "ch06",
+      "section": "6.4",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.8"
+      },
+      "concepts": [
+        "ch06.sarsa",
+        "ch06.sample-backup"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 6.8: draw (or describe) Sarsa's backup diagram.",
+      "answer": "A single path: at the top a filled action node for $(S_t, A_t)$, then the reward $R_{t+1}$ leading to an open state node $S_{t+1}$, then one filled action node for the next action $A_{t+1}$ actually chosen. There is no branching and no maximisation arc, because Sarsa backs up from the one sampled next pair.",
+      "solution": [
+        "Sarsa's update (6.5) involves the quintuple $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$.",
+        "Compare with Q-learning's diagram (Figure 6.14), which branches to all next actions under an arc."
+      ],
+      "explanation": "A sample backup over state–action pairs: the same shape as TD(0)'s diagram, shifted to start and end on action nodes.",
+      "rubric": [
+        {
+          "point": "Root and leaf are action nodes; one state node in between",
+          "marks": 1
+        },
+        {
+          "point": "Only one sampled next action, no branching or max arc",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch06-q015"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 6.8, printed p. 165; Sarsa (6.5), printed p. 155."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.4",
+          "printedPages": [
+            155,
+            155
+          ],
+          "pdfPages": [
+            169,
+            169
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            165,
+            165
+          ],
+          "pdfPages": [
+            179,
+            179
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q015",
+      "unit": "ch06",
+      "section": "6.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.10"
+      },
+      "concepts": [
+        "ch06.sarsa",
+        "ch06.q-learning"
+      ],
+      "type": "short-answer",
+      "category": "compare-contrast",
+      "difficulty": 4,
+      "marks": 4,
+      "stem": "Exercise 6.10: take Q-learning and replace the maximum over next actions: the target becomes the expected next action value under the current policy: $R_{t+1} + \\gamma \\sum_a \\pi(a|S_{t+1}) Q(S_{t+1}, a)$. Is it on-policy or off-policy? What is its backup diagram? With the same experience, would you expect it to do better or worse than Sarsa? What else might affect the comparison?",
+      "answer": "With π the policy being followed, it is on-policy: it evaluates the policy that generates the behaviour, like Sarsa. (If π were a different target policy it could be used off-policy.) Backup diagram: an action node at the top, the next state below, and all actions of that state below it, combined as a π-weighted average, with no max arc. With the same experience it should do better than Sarsa: it removes the randomness of which next action happened to be sampled, so its updates have lower variance and can tolerate a larger α. Against that, each update costs more computation (a sum over all actions), which matters with many actions.",
+      "solution": [
+        "Ask which policy's values the target estimates.",
+        "Its target is the expectation of Sarsa's target over $A_{t+1}$."
+      ],
+      "explanation": "Averaging over the next action removes one source of sampling noise without needing a model of the environment.",
+      "rubric": [
+        {
+          "point": "On-policy when π is the behaviour policy",
+          "marks": 1
+        },
+        {
+          "point": "Backup diagram: all next actions, weighted by π, no max",
+          "marks": 1
+        },
+        {
+          "point": "Expected to do better than Sarsa: lower variance from not sampling the next action",
+          "marks": 1
+        },
+        {
+          "point": "Consideration: more computation per update (or other valid factor)",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch06-q014",
+        "ch06-q006"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 6.10, printed p. 165."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.5",
+          "printedPages": [
+            157,
+            158
+          ],
+          "pdfPages": [
+            171,
+            172
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            165,
+            165
+          ],
+          "pdfPages": [
+            179,
+            179
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q016",
+      "unit": "ch06",
+      "section": "6.6",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "6.11"
+      },
+      "concepts": [
+        "ch06.afterstates",
+        "ch04.jacks-car-rental"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 6.11: explain how the car rental problem of Example 4.2 could be recast with afterstates. Why, for this task in particular, would that be likely to speed convergence?",
+      "answer": "The afterstate is the pair of car counts at the two locations after the overnight moves, before the next day's rentals and returns. The move's effect is known exactly (and so is its cost, $2 a car), while rentals and returns are the random part. Many state–action pairs give the same afterstate: for example 11 and 9 cars with one car moved to the second location, and 10 and 10 with none moved, both give (10, 10). An action-value method must learn each such pair separately; an afterstate value function learns one value that all of them share, so there are far fewer values to learn (about 21 × 21 afterstates instead of states times 11 actions) and every experience improves the estimates for many pairs at once.",
+      "solution": [
+        "Separate the known, deterministic part of a transition from the random part.",
+        "Count how many state–action pairs lead to the same afterstate."
+      ],
+      "explanation": "The same idea as for games, where the position after our move is known before the opponent replies.",
+      "rubric": [
+        {
+          "point": "Afterstate = cars at each location after the overnight move, before rentals/returns",
+          "marks": 1
+        },
+        {
+          "point": "Many state–action pairs lead to the same afterstate (example)",
+          "marks": 1
+        },
+        {
+          "point": "Shared values: fewer to learn, experience transfers, so faster convergence",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Exercise 6.11, printed p. 165; Example 4.2, printed p. 98."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.6",
+          "printedPages": [
+            160,
+            161
+          ],
+          "pdfPages": [
+            174,
+            175
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            165,
+            165
+          ],
+          "pdfPages": [
+            179,
+            179
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q017",
+      "unit": "ch06",
+      "section": "6.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch06.driving-home",
+          "eq.ch06.constant-alpha-mc",
+          "eq.ch06.td0"
+        ]
+      },
+      "concepts": [
+        "ch06.driving-home",
+        "ch06.td-error"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "In the driving home example (γ = 1), at 'reach car' the elapsed time is 5 and the predicted time to go is 35; at 'leaving office' it was 0 and 30. You exit the highway at minute 20 predicting 15 more, and arrive at minute 43. Give the TD error for 'leaving office' (one stage later), the Monte Carlo error at 'exiting highway', and the change to that prediction with α = 1/2.",
+      "parts": [
+        {
+          "label": "TD error, leaving office",
+          "answer": 10,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "MC error, exiting highway",
+          "answer": 8,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "increment with α = 1/2",
+          "answer": 4,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "TD error: reward (5 minutes) plus the next prediction (35) minus the current one (30): 10. It is the rise of the predicted total from 30 to 40.",
+        "MC error at the highway exit: actual time to go, 43 − 20 = 23, minus 15: 8.",
+        "With α = 1/2 the prediction rises by 4."
+      ],
+      "explanation": "The TD error is known after 5 minutes; the Monte Carlo error only on arrival.",
+      "related": [
+        "ch06-q010"
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch06-q017"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.1",
+          "printedPages": [
+            145,
+            147
+          ],
+          "pdfPages": [
+            159,
+            161
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q018",
+      "unit": "ch06",
+      "section": "6.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.1"
+        ]
+      },
+      "concepts": [
+        "ch06.sample-backup"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "What distinguishes a sample backup (TD, Monte Carlo) from a full backup (DP)?",
+      "options": [
+        "It uses one sampled successor instead of the whole distribution of successors",
+        "It never uses the value of a successor",
+        "It is only possible in continuing tasks",
+        "It requires the model's transition probabilities"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "TD's sample backup does use the successor's value; Monte Carlo's uses the whole return.",
+        "Both apply to episodic and continuing tasks.",
+        "That is what full backups need; sample backups do not."
+      ],
+      "solution": [
+        "A full backup averages over every possible next state, weighted by the model.",
+        "A sample backup looks at the one successor that actually occurred."
+      ],
+      "explanation": "Removing the need for the distribution is what makes TD and MC model-free.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Sample and full backups, printed p. 145."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.1",
+          "printedPages": [
+            145,
+            145
+          ],
+          "pdfPages": [
+            159,
+            159
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q019",
+      "unit": "ch06",
+      "section": "6.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch06.you-are-the-predictor",
+          "§6.3"
+        ]
+      },
+      "concepts": [
+        "ch06.certainty-equivalence",
+        "ch06.batch-updating"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Example 6.4's eight episodes are A, 0, B, 0 (once), B, 1 (six times) and B, 0 (once). What value does batch TD(0) give $V(A)$, and what value does batch Monte Carlo give it?",
+      "parts": [
+        {
+          "label": "V(A), batch TD(0)",
+          "answer": 0.75,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "V(A), batch MC",
+          "answer": 0,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "Both give $V(B) = 6/8 = 3/4$.",
+        "Batch TD uses the maximum-likelihood model: A goes to B with reward 0 every time, so $V(A) = 0 + V(B) = 3/4$.",
+        "Batch MC averages the returns actually seen after A: there was one, and it was 0."
+      ],
+      "explanation": "MC's answer fits the training data perfectly; TD's should generalise better if the process is Markov.",
+      "related": [
+        "ch06-q020"
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-10",
+        "check": "ch06-q019"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.3",
+          "printedPages": [
+            152,
+            153
+          ],
+          "pdfPages": [
+            166,
+            167
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q020",
+      "unit": "ch06",
+      "section": "6.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.3"
+        ]
+      },
+      "concepts": [
+        "ch06.certainty-equivalence"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Under batch updating, what does TD(0) converge to?",
+      "options": [
+        "The values that would be exactly right for the maximum-likelihood model of the process",
+        "The sample averages of the returns observed after each state",
+        "The true value function $v_\\pi$",
+        "Values that depend on the step size α"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: the certainty-equivalence estimate.",
+        "That is what batch Monte Carlo converges to.",
+        "Only in the limit of infinite data; a finite batch gives an estimate.",
+        "For any small enough α the answer is the same."
+      ],
+      "solution": [
+        "Build the model from the batch: observed transition fractions and average rewards.",
+        "Solve for the values that model implies; batch TD(0) arrives at exactly these."
+      ],
+      "explanation": "This is why it is called certainty equivalence: the estimated model is treated as if it were known for certain.",
+      "related": [
+        "ch06-q019",
+        "ch06-q021"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Certainty equivalence, printed p. 153."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.3",
+          "printedPages": [
+            153,
+            153
+          ],
+          "pdfPages": [
+            167,
+            167
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q021",
+      "unit": "ch06",
+      "section": "6.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.3"
+        ]
+      },
+      "concepts": [
+        "ch06.batch-updating"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: under batch updating with a small enough α, batch TD(0) and batch constant-α MC both converge deterministically, but not to the same values.",
+      "answer": true,
+      "solution": [
+        "Each converges to a single answer, independent of α once α is small enough.",
+        "TD's answer is the certainty-equivalence estimate; MC's is the sample averages."
+      ],
+      "explanation": "Comparing the two fixed points is how §6.3 explains TD's advantage.",
+      "related": [
+        "ch06-q020"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Batch updating, printed p. 151."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.3",
+          "printedPages": [
+            151,
+            151
+          ],
+          "pdfPages": [
+            165,
+            165
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q022",
+      "unit": "ch06",
+      "section": "6.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.3"
+        ]
+      },
+      "concepts": [
+        "ch06.certainty-equivalence"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why does the draft call it striking that TD can approximate the certainty-equivalence estimate?",
+      "options": [
+        "Computing it directly needs about $N^2$ memory and $N^3$ steps, while TD uses memory of order N",
+        "TD computes it exactly after one episode",
+        "The estimate cannot be computed at all except by TD",
+        "TD needs the model's transition probabilities to do it"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "It approaches it by repeated passes, not after one episode.",
+        "It can be computed directly, at a cost that is rarely feasible for large N.",
+        "TD is model-free."
+      ],
+      "solution": [
+        "Forming the maximum-likelihood model takes up to $N^2$ entries; solving for its values takes on the order of $N^3$ steps.",
+        "TD keeps one value per state and repeats passes over the data."
+      ],
+      "explanation": "On large problems TD may be the only practical route to that estimate.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Cost of the certainty-equivalence estimate, printed p. 154."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.3",
+          "printedPages": [
+            154,
+            154
+          ],
+          "pdfPages": [
+            168,
+            168
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q023",
+      "unit": "ch06",
+      "section": "6.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.6"
+        ]
+      },
+      "concepts": [
+        "ch06.afterstates"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why can learning an afterstate value function be faster than learning action values in a game like tic-tac-toe?",
+      "options": [
+        "Position–move pairs that produce the same position share one value, so learning about one pair transfers to the others",
+        "Afterstates need no exploration",
+        "Afterstate values are always exact after one game",
+        "It does not need to know the effect of its own moves"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Exploration is still needed; the on- versus off-policy choice remains.",
+        "They are learned, like any values.",
+        "It depends on knowing exactly what position each move produces."
+      ],
+      "solution": [
+        "Action values treat each position–move pair separately.",
+        "Pairs that lead to the same afterposition must have the same value, so one shared estimate suffices."
+      ],
+      "explanation": "Afterstates use the known part of the dynamics (the effect of our move) and learn only the unknown part.",
+      "related": [
+        "ch06-q016"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Afterstates, printed p. 160."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.6",
+          "printedPages": [
+            160,
+            160
+          ],
+          "pdfPages": [
+            174,
+            174
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q024",
+      "unit": "ch06",
+      "section": "6.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.4"
+        ]
+      },
+      "concepts": [
+        "ch06.windy-gridworld",
+        "ch06.sarsa"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: on the windy gridworld, Monte Carlo methods are hard to use because some policies never reach the goal, so an episode under them would never end.",
+      "answer": true,
+      "solution": [
+        "Monte Carlo learns only at the end of an episode.",
+        "Sarsa learns during the episode that a policy which keeps it stuck is poor, and changes it."
+      ],
+      "explanation": "Learning step by step is an advantage whenever termination is not guaranteed.",
+      "related": [
+        "ch06-q007"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Example 6.5, printed p. 157."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.4",
+          "printedPages": [
+            157,
+            157
+          ],
+          "pdfPages": [
+            171,
+            171
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q025",
+      "unit": "ch06",
+      "section": "6.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.2"
+        ]
+      },
+      "concepts": [
+        "ch06.td-advantages"
+      ],
+      "type": "multi",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Which are advantages of TD prediction that §6.2 gives? Select all that apply.",
+      "options": [
+        "It needs no model of rewards and next-state probabilities",
+        "It can update after every step, so long or endless episodes are no problem",
+        "It has been proved to learn faster than constant-α MC on all tasks",
+        "It learns from each transition whatever actions follow, unlike MC methods that must discard episodes after exploratory actions",
+        "It needs no step-size parameter"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "optionNotes": [
+        "Correct: the advantage over DP.",
+        "Correct: on-line and incremental.",
+        "No such proof exists; the question is open.",
+        "Correct.",
+        "TD(0) uses a step size α."
+      ],
+      "solution": [
+        "Compare TD with DP (model) and with MC (waiting for the end of the episode)."
+      ],
+      "explanation": "TD is proven sound (convergence), but which method is faster remains open in general.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Advantages of TD, printed pp. 148–149."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.2",
+          "printedPages": [
+            148,
+            149
+          ],
+          "pdfPages": [
+            162,
+            163
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q026",
+      "unit": "ch06",
+      "section": "6.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch06.mc-target",
+          "eq.ch06.dp-target",
+          "§6.1"
+        ]
+      },
+      "concepts": [
+        "ch06.td-prediction"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Using (6.3) and (6.4), why is the TD target $R_{t+1} + \\gamma V(S_{t+1})$ an estimate?",
+      "options": [
+        "It samples the expectation in (6.4) and uses $V$ instead of the true $v_\\pi$",
+        "Only because it samples the expectation, like Monte Carlo",
+        "Only because it uses $V$ instead of $v_\\pi$, like DP",
+        "It is not an estimate: it equals $v_\\pi(S_t)$"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: both reasons apply.",
+        "That is the Monte Carlo target's only reason.",
+        "That is the DP target's only reason.",
+        "It is a single noisy sample using a current estimate."
+      ],
+      "solution": [
+        "Monte Carlo estimates (6.3) by sampling.",
+        "DP computes (6.4)'s expectation exactly from a model but uses the current V.",
+        "TD does both: it samples and it bootstraps."
+      ],
+      "explanation": "TD combines Monte Carlo's sampling with DP's bootstrapping.",
+      "related": [
+        "ch06-q002"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Equations (6.3)–(6.4) and the discussion of targets, printed p. 144."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.1",
+          "printedPages": [
+            144,
+            144
+          ],
+          "pdfPages": [
+            158,
+            158
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q027",
+      "unit": "ch06",
+      "section": "6.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.7"
+        ]
+      },
+      "concepts": [
+        "ch06.sarsa",
+        "ch06.q-learning"
+      ],
+      "type": "multi",
+      "category": "compare-contrast",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "The summary groups TD control methods by how they handle exploration. Of the two control methods taught in this chapter, which statements are correct? Select all that apply.",
+      "options": [
+        "Sarsa is on-policy",
+        "Q-learning is off-policy",
+        "Sarsa is off-policy",
+        "Both extend TD prediction to control through generalized policy iteration"
+      ],
+      "answer": [
+        0,
+        1,
+        3
+      ],
+      "optionNotes": [
+        "Correct.",
+        "Correct.",
+        "Sarsa learns the values of the policy it follows.",
+        "Correct: the summary's framing."
+      ],
+      "solution": [
+        "Sarsa evaluates and improves the policy that chooses its actions; Q-learning learns $q_*$ whatever the behaviour policy."
+      ],
+      "explanation": "The summary also names actor–critic methods and R-learning, which are in Chapter 11 of this draft (flagged).",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.7",
+          "printedPages": [
+            161,
+            162
+          ],
+          "pdfPages": [
+            175,
+            176
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Summary, printed pp. 161–162."
+      },
+      "reviewed": true
+    },
+    {
+      "id": "ch06-q028",
+      "unit": "ch06",
+      "section": "6.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§6.7"
+        ]
+      },
+      "concepts": [
+        "ch06.td-prediction"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "The summary says the methods of this chapter should properly be called one-step, tabular, model-free TD methods. Which list matches the extensions it announces for the next three chapters?",
+      "options": [
+        "Multistep forms, function approximation, and models for planning",
+        "Policy gradients, deep networks, and exploration bonuses",
+        "Batch updating, certainty equivalence, and afterstates",
+        "Bandits, MDPs, and dynamic programming"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: Chapters 7, 9 and 8 respectively.",
+        "Not what the summary announces.",
+        "These are topics of this chapter.",
+        "These are earlier chapters."
+      ],
+      "solution": [
+        "Multistep forms link TD to Monte Carlo; function approximation replaces tables; models link to planning and DP."
+      ],
+      "explanation": "Each extension keeps the core: on-line updates driven by TD errors.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.7",
+          "printedPages": [
+            161,
+            162
+          ],
+          "pdfPages": [
+            175,
+            176
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-10",
+        "note": "Summary, printed p. 162."
       },
       "reviewed": true
     }

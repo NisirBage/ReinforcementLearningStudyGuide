@@ -1,0 +1,120 @@
+[
+  {
+    "id": "ex.ch06.driving-home",
+    "unit": "ch06",
+    "concepts": [
+      "ch06.driving-home",
+      "ch06.td-error"
+    ],
+    "title": "Driving home",
+    "bookLabel": "Example 6.1",
+    "summary": "Six stages of a Friday drive, each with elapsed time and predicted time to go: 0/30, 5/35, 20/15, 30/10, 40/3, 43/0. The rewards are the minutes of each leg and γ = 1, so each state's return is 43 minus its elapsed time. Monte Carlo (Figure 6.3) compares each prediction with that actual time; TD (Figure 6.4) compares it with the next prediction, and its errors are the changes in predicted total time.",
+    "facts": [
+      {
+        "claim": "At 'exiting highway' the Monte Carlo error is 23 − 15 = 8 minutes, so with α = 1/2 the prediction rises by 4.",
+        "check": "ch06.driving-home"
+      },
+      {
+        "claim": "The TD errors are the step-to-step changes of predicted total time (10, −5, 5, 3, 0), and from each state they sum to that state's Monte Carlo error.",
+        "check": "ch06.driving-home"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.1",
+        "printedPages": [
+          145,
+          147
+        ],
+        "pdfPages": [
+          159,
+          161
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch06.driving-home"
+    }
+  },
+  {
+    "id": "ex.ch06.batch-random-walk",
+    "unit": "ch06",
+    "concepts": [
+      "ch06.batch-updating",
+      "ch06.certainty-equivalence"
+    ],
+    "title": "Random walk under batch updating",
+    "bookLabel": "Example 6.3",
+    "summary": "After each new episode of the random walk, all episodes so far are presented repeatedly to TD(0) or constant-α MC, with α small enough to converge, and the RMS error of the result is averaged over 100 repetitions (Figure 6.8). The fixed points are known in closed form (the certainty-equivalence estimate and the sample averages), so the reproduction computes them directly, after checking on a batch that iterating converges to them.",
+    "facts": [
+      {
+        "claim": "Iterated batch TD(0) converges to the certainty-equivalence estimate, and batch MC to the sample averages of the returns.",
+        "check": "ch06.fig6-8"
+      },
+      {
+        "claim": "Over 100 runs batch TD has lower RMS error than batch MC at every batch size from 5 to 100 episodes; at 100 episodes TD is near 0.035 and MC near 0.054, as in Figure 6.8.",
+        "check": "ch06.fig6-8"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.3",
+        "printedPages": [
+          151,
+          152
+        ],
+        "pdfPages": [
+          165,
+          166
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch06.fig6-8"
+    }
+  },
+  {
+    "id": "ex.ch06.you-are-the-predictor",
+    "unit": "ch06",
+    "concepts": [
+      "ch06.certainty-equivalence"
+    ],
+    "title": "You are the predictor",
+    "bookLabel": "Example 6.4",
+    "summary": "Eight episodes: A, 0, B, 0 once; B, 1 six times; B, 0 once. Both answers give V(B) = 3/4. For A, the model-based answer (A always goes to B with reward 0, so V(A) = V(B)) gives 3/4, which is batch TD(0); the return actually seen after A gives 0, which is batch Monte Carlo and fits the training data exactly.",
+    "facts": [
+      {
+        "claim": "Batch TD(0) on the eight episodes gives V(A) = V(B) = 3/4; batch MC gives V(A) = 0 and V(B) = 3/4.",
+        "check": "ch06.you-are-the-predictor"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.3",
+        "printedPages": [
+          152,
+          153
+        ],
+        "pdfPages": [
+          166,
+          167
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-10",
+      "check": "ch06.you-are-the-predictor"
+    }
+  }
+]

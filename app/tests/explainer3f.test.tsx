@@ -124,7 +124,7 @@ describe("the explainer page", () => {
   test("Practice opened from an explainer has the chapter and topic chosen", async () => {
     renderApp("/practice?concept=ch06.q-learning");
     await settled();
-    expect(screen.getByText(/^3 questions match/)).toBeInTheDocument(); // ch06-q004, q005, q006
+    expect(screen.getByText(/^5 questions match/)).toBeInTheDocument(); // ch06-q004, q005, q006, and q015 and q027 (Milestone 4G)
   });
 
   test("Practice opened with a pool preset uses it", async () => {

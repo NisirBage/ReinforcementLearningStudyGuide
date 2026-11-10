@@ -154,3 +154,44 @@ export function gridworld5x5(): GridMDP {
     grid: { rows: n, cols: n, cells: states.map((_, s) => [Math.floor(s / n), s % n]), start: -1, goal: [], marks: { [GRID5.A]: "A", [GRID5.B]: "B", [GRID5.A2]: "A′", [GRID5.B2]: "B′" } },
   };
 }
+
+/**
+ * Exercises 6.6 and 6.7: the windy gridworld with king's moves (eight actions, diagonals included), optionally a ninth
+ * action that does not move (only the wind acts), and optionally stochastic wind: in a column with wind w > 0 the
+ * push is w − 1, w or w + 1 cells, each with probability 1/3 (columns without wind stay calm, as the exercise's "if
+ * there is any" says).
+ */
+export const KING_MOVES: [string, number, number][] = [
+  ["up", -1, 0], ["down", 1, 0], ["right", 0, 1], ["left", 0, -1],
+  ["up-right", -1, 1], ["up-left", -1, -1], ["down-right", 1, 1], ["down-left", 1, -1],
+];
+export function windyVariant(opts: { stay?: boolean; stochastic?: boolean } = {}): GridMDP {
+  const rows = 7;
+  const cols = 10;
+  const moves = opts.stay ? [...KING_MOVES, ["stay", 0, 0] as [string, number, number]] : KING_MOVES;
+  const id = (r: number, c: number) => r * cols + c;
+  const goal = id(3, 7);
+  const states = Array.from({ length: rows * cols }, (_, s) => `(${Math.floor(s / cols)},${s % cols})`);
+  const dynamics = states.map((_, s) => {
+    if (s === goal) return moves.map(() => []);
+    const r = Math.floor(s / cols);
+    const c = s % cols;
+    const w = WINDY_WIND[c];
+    const pushes = opts.stochastic && w > 0 ? [w - 1, w, w + 1] : [w];
+    return moves.map(([, dr, dc]) => {
+      const out = new Map<number, number>();
+      for (const push of pushes) {
+        const to = id(clamp(r + dr - push, 0, rows - 1), clamp(c + dc, 0, cols - 1));
+        out.set(to, (out.get(to) ?? 0) + 1 / pushes.length);
+      }
+      return [...out].map(([next, prob]) => ({ next, reward: -1, prob }));
+    });
+  });
+  return {
+    states,
+    terminal: states.map((_, s) => s === goal),
+    actions: moves.map(([name]) => name),
+    dynamics,
+    grid: { rows, cols, cells: states.map((_, s) => [Math.floor(s / cols), s % cols]), start: id(3, 0), goal: [goal], wind: WINDY_WIND },
+  };
+}

@@ -1,0 +1,323 @@
+{
+  "unit": "ch06",
+  "sections": [
+    {
+      "id": "ch06.s6-1",
+      "section": "6.1",
+      "title": "TD prediction",
+      "concepts": [
+        "ch06.td-prediction",
+        "ch06.td-error",
+        "ch06.sample-backup",
+        "ch06.driving-home"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Temporal-difference learning mixes the two previous chapters. Like Monte Carlo it learns from raw experience, with no model; like DP it **bootstraps**, updating a guess from another guess without waiting for the final outcome. The chapter starts with prediction (estimating $v_\\pi$); control again follows the pattern of GPI.\n\nMonte Carlo knows $G_t$ only once the episode is over. TD(0) waits one step: once it sees $R_{t+1}$ and $S_{t+1}$ it moves $V(S_t)$ toward $R_{t+1} + \\gamma V(S_{t+1})$."
+        },
+        {
+          "layer": "formal",
+          "body": "Constant-α MC (6.1) and TD(0) (6.2) differ only in their targets: $G_t$ against $R_{t+1} + \\gamma V(S_{t+1})$. The bracket in (6.2) is the **TD error**.\n\nWhy are these targets estimates? Write the value two ways. (6.3) says $v_\\pi(s)$ is the expected return; Monte Carlo replaces the expectation by a sample. (6.4) says it is the expected one-step reward plus the discounted value of the next state; DP computes that expectation from a model but must use the current $V$ for $v_\\pi(S_{t+1})$. TD both samples the expectation and uses $V$.\n\nTD and MC updates are **sample backups**: they use one sampled successor, where DP's full backups average over all successors. Figure 6.1 gives tabular TD(0); its backup diagram is one state, one transition, one next state.",
+          "refs": [
+            "eq.ch06.constant-alpha-mc",
+            "eq.ch06.td0",
+            "eq.ch06.mc-target",
+            "eq.ch06.dp-target",
+            "alg.ch06.td0"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Driving home (Example 6.1).** The predicted times to go along one drive are 30, 35, 15, 10, 3, 0 at elapsed minutes 0, 5, 20, 30, 40, 43. With γ = 1 the return from each stage is the actual time still to go, 43 minus the elapsed time. On leaving the highway you predicted 15 minutes and it took 23: the Monte Carlo error is 8, and with α = 1/2 the prediction rises by 4, but only after you are home. TD instead compares each prediction with the next one: the predicted totals go 30, 40, 35, 40, 43, 43, so the TD errors are 10, −5, 5, 3 and 0, available one stage later. They add up to 13, the Monte Carlo error from the office.\n\nOn a day stuck in a jam, TD would already raise the office estimate toward 50 minutes while you sit in traffic; Monte Carlo cannot until you arrive.",
+          "refs": [
+            "ex.ch06.driving-home"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "The sum of TD errors equals the Monte Carlo error whenever the estimates do not change during the episode (and γ = 1); Chapter 7 builds on this link. Step TD(0) in the TD laboratory to see each target and TD error."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.1",
+          "printedPages": [
+            143,
+            147
+          ],
+          "pdfPages": [
+            157,
+            161
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch06.s6-2",
+      "section": "6.2",
+      "title": "Advantages of TD prediction methods",
+      "concepts": [
+        "ch06.td-advantages",
+        "ch06.td-prediction"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Learning a guess from a guess sounds risky. What does TD gain? Over DP, it needs no model. Over Monte Carlo, it learns on-line after every step: useful when episodes are long, when there are no episodes at all, and when Monte Carlo would have to discard the experience after an exploratory action."
+        },
+        {
+          "layer": "formal",
+          "body": "Soundness: for a fixed policy, tabular TD(0) converges to $v_\\pi$, in the mean if a constant α is small enough, and with probability 1 if α decreases under the stochastic approximation conditions (2.7). Speed: nobody has proved that TD or MC learns faster in general, and even how to pose the question formally is unclear. In practice TD has usually been faster than constant-α MC on stochastic tasks."
+        },
+        {
+          "layer": "example",
+          "body": "**Random walk (Example 6.2).** Five states A–E in a row, starting at C, moving left or right with equal probability; leaving on the right pays +1, everything else 0. With γ = 1 a state's value is its probability of finishing on the right: 1/6, 2/6, 3/6, 4/6, 5/6. Figure 6.6 shows TD(0) (α = 0.1) approaching these values; Figure 6.7 compares RMS error curves for several α, all starting from V = 0.5, and TD is better throughout the 100 episodes. Both figures are reproduced in the TD laboratory."
+        },
+        {
+          "layer": "connections",
+          "body": "Exercise 6.4 asks why TD's error dips and rises again at high α. Here the dip appears with V = 0.5 initially and disappears when the values start at 0: the starting value 0.5 is already right for C and roughly right on average, so early updates help, and then the steady noise of a large α takes over."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.2",
+          "printedPages": [
+            148,
+            150
+          ],
+          "pdfPages": [
+            162,
+            164
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch06.s6-3",
+      "section": "6.3",
+      "title": "Optimality of TD(0)",
+      "concepts": [
+        "ch06.batch-updating",
+        "ch06.certainty-equivalence"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Suppose you only have a fixed pile of experience, say ten episodes. A common approach is to replay it until the learner settles. Then TD and Monte Carlo do not just learn at different speeds; they settle on **different answers**, and comparing those answers explains much of TD's advantage."
+        },
+        {
+          "layer": "formal",
+          "body": "**Batch updating:** compute the increments of (6.1) or (6.2) for every visit in the batch, apply their sum once, and repeat. For small enough α each method converges, independently of α.\n\n- Batch constant-α MC converges to the **sample averages** of the returns seen after each state: the values with least squared error on the training data.\n- Batch TD(0) converges to the **certainty-equivalence estimate**: build the maximum-likelihood model (transition probability from i to j = fraction of transitions from i that went to j; expected reward = average observed reward) and compute the values that would be exactly right if that model were true.\n\nComputing the certainty-equivalence estimate directly takes about $N^2$ memory and $N^3$ operations for N states. TD reaches it with memory of order N, by passing over the data repeatedly.",
+          "refs": []
+        },
+        {
+          "layer": "example",
+          "body": "**You are the predictor (Example 6.4).** Eight episodes: A, 0, B, 0 once; B, 1 six times; B, 0 once. Everyone agrees V(B) = 3/4. For A, the model says A always moves to B with reward 0, so V(A) = 3/4 (batch TD). The data say the one return seen after A was 0, so V(A) = 0 (batch MC), which has zero error on the training set. If the process is Markov, 3/4 should predict future data better.\n\n**Random walk under batch updating (Example 6.3, Figure 6.8).** Batch TD beats batch MC at every number of episodes. Reproduced with 100 runs: at 100 episodes, RMS error about 0.035 for TD and 0.054 for MC.",
+          "refs": [
+            "ex.ch06.you-are-the-predictor",
+            "ex.ch06.batch-random-walk"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Ordinary (non-batch) TD and MC do not reach these answers, but they move roughly toward them, which may explain part of TD's speed in Figure 6.7. The draft says nothing more definite can yet be said about on-line efficiency."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.3",
+          "printedPages": [
+            151,
+            154
+          ],
+          "pdfPages": [
+            165,
+            168
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch06.s6-4",
+      "section": "6.4",
+      "title": "Sarsa: on-policy TD control",
+      "concepts": [
+        "ch06.sarsa",
+        "ch06.windy-gridworld"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "For control, follow GPI with TD doing the evaluation. As with Monte Carlo, without a model we need action values, and exploration has to be kept up. Sarsa is the on-policy answer: it learns $q_\\pi$ for the policy it is following, while making that policy greedier."
+        },
+        {
+          "layer": "formal",
+          "body": "Treat the sequence of state–action pairs as a Markov chain with rewards; TD(0) then carries over unchanged to (6.5). The update uses the quintuple $(S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1})$, hence the name, and $Q$ of a terminal state is 0. Figure 6.9 chooses $A'$ ε-greedily before updating, and then actually takes it. Convergence to an optimal policy is reported (Singh, unpublished in the draft's words) if every pair is visited infinitely often and the policy becomes greedy in the limit, for example ε = 1/t.",
+          "refs": [
+            "eq.ch06.sarsa",
+            "alg.ch06.sarsa"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Windy gridworld (Example 6.5).** An upward wind of 0, 1 or 2 cells shifts every move in the middle columns; reward −1 per step; the shortest path takes 15 steps. Sarsa with ε = 0.1 and α = 0.5 completes episodes ever faster (Figure 6.11). Monte Carlo would be awkward: a policy that keeps the agent in place makes an episode that never ends, while Sarsa learns during the episode to abandon it.\n\nExercises 6.6 and 6.7, by value iteration on the exact model: king's moves cut the optimum to 7 steps; adding 'stay' does not help (still 7); with stochastic wind the best expected length is about 10.96 steps. All three variants run in the TD laboratory's comparison panel."
+        },
+        {
+          "layer": "connections",
+          "body": "The lab notes a discrepancy: with α = 0.5 the learned greedy policy is not yet optimal by 8000 steps as the draft says, though the 17-step average it reports is exactly what ε-greedy exploration costs around the optimal path."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.4",
+          "printedPages": [
+            154,
+            157
+          ],
+          "pdfPages": [
+            168,
+            171
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch06.s6-5",
+      "section": "6.5",
+      "title": "Q-learning: off-policy TD control",
+      "concepts": [
+        "ch06.q-learning"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Q-learning bootstraps from the best next action, not from the action the agent will actually take. So whatever exploring policy generates the experience, it learns about the greedy policy: it is off-policy."
+        },
+        {
+          "layer": "formal",
+          "body": "Update (6.6) makes $Q$ approximate $q_*$ directly. The behaviour policy still decides which pairs get updated; correct convergence needs only that all pairs keep being updated (with the usual step-size conditions), and then $Q \\to q_*$ with probability 1. Its backup diagram (Figure 6.14) has an action node at the top and, below the next state, all its actions joined by the arc for a maximum.",
+          "refs": [
+            "eq.ch06.q-learning",
+            "alg.ch06.q-learning"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Cliff walking (Example 6.6).** Reward −1 per step, −100 and back to the start for stepping into the cliff. With ε = 0.1, Q-learning learns the optimal path along the edge but sometimes falls off while exploring; Sarsa, which accounts for its own exploration, learns a longer safe path and earns more per episode on-line. Reducing ε over time would make both reach the optimum. Reproduced in the TD laboratory."
+        },
+        {
+          "layer": "connections",
+          "body": "The chapter summary also lists actor–critic methods and R-learning; they are not in this chapter of the draft (they are §11.1 and §11.3), and the flag on Q-learning says so."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.5",
+          "printedPages": [
+            157,
+            159
+          ],
+          "pdfPages": [
+            171,
+            173
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch06.s6-6",
+      "section": "6.6",
+      "title": "Games, afterstates, and other special cases",
+      "concepts": [
+        "ch06.afterstates"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Some tasks are better handled in a special way. The tic-tac-toe learner of Chapter 1 valued board positions **after its own move**, before the opponent replied: neither state values nor action values in the usual sense. Call these afterstates."
+        },
+        {
+          "layer": "formal",
+          "body": "Afterstates fit tasks where the immediate effect of an action is known but what follows is not: in chess we know the position our move produces, not the reply. Different position–move pairs that produce the same position must have the same value; an action-value function would learn each pair separately, while an afterstate value function learns them as one. The same idea applies to queuing tasks, where an action's effect (servers assigned, customers rejected) is known and only arrivals and departures are random. Afterstate methods still fit GPI, and still face the on-policy versus off-policy choice."
+        },
+        {
+          "layer": "connections",
+          "body": "The draft refers to an access-control queuing example 'in the previous section', which is not in Chapter 6 of this draft: it is Example 11.1 (flagged on the concept). Exercise 6.11 applies afterstates to Jack's car rental."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.6",
+          "printedPages": [
+            160,
+            161
+          ],
+          "pdfPages": [
+            174,
+            175
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch06.s6-7",
+      "section": "6.7",
+      "title": "Summary (reading guide)",
+      "concepts": [
+        "ch06.td-prediction",
+        "ch06.sarsa",
+        "ch06.q-learning"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**What this section does.** It places TD among the methods so far: TD is an alternative to Monte Carlo for prediction, extended to control through GPI, with on-policy and off-policy variants to handle exploration. It calls the chapter's methods one-step, tabular, model-free TD, and announces their extensions: multistep forms (Chapter 7), function approximation (Chapter 9), and models and planning (Chapter 8). It also notes that TD is a general method for long-term prediction, not only for reinforcement learning. Read pp. 161–162, the bibliographical remarks (pp. 162–164) and the exercises (pp. 164–165). Its classification mentions actor–critic methods and R-learning, which are in Chapter 11 of this draft (flagged)."
+        },
+        {
+          "layer": "connections",
+          "body": "**Bibliographical pointers.** TD learning has roots in animal learning psychology and in Samuel's (1959) and Klopf's (1972) work; the remarks place Samuel's case study in 'Section 15.2', which is §14.2 in this draft (flagged). Most of §6.1–6.2 follows Sutton (1988); convergence of tabular TD(0) is due to Sutton (1988), Dayan (1992), and later Jaakkola, Jordan and Singh (1994) and Tsitsiklis (1994). Batch optimality is from Sutton (1988); the term certainty equivalence comes from adaptive control. Sarsa was explored by Rummery and Niranjan (1994) as 'modified Q-learning' and named by Sutton (1996); it is close to Holland's bucket brigade. Q-learning is Watkins (1989), with the proof by Watkins and Dayan (1992). The remark numbered 6.6 is about R-learning and the access-control queuing example, both in Chapter 11 here."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "section": "6.7",
+          "printedPages": [
+            161,
+            162
+          ],
+          "pdfPages": [
+            175,
+            176
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "6",
+          "printedPages": [
+            162,
+            165
+          ],
+          "pdfPages": [
+            176,
+            179
+          ]
+        }
+      ]
+    }
+  ]
+}

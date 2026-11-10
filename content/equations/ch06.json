@@ -88,6 +88,101 @@
     }
   },
   {
+    "id": "eq.ch06.mc-target",
+    "unit": "ch06",
+    "concept": "ch06.td-prediction",
+    "name": "The value as an expected return (the Monte Carlo target)",
+    "bookLabel": "(6.3)",
+    "tex": "v_\\pi(s) = \\mathbb{E}_\\pi[G_t \\mid S_t = s] = \\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} \\,\\Big|\\, S_t = s\\Big]",
+    "symbols": [
+      {
+        "tex": "G_t",
+        "meaning": "the return following time t"
+      },
+      {
+        "tex": "\\mathbb{E}_\\pi",
+        "meaning": "expectation when following π"
+      }
+    ],
+    "intuition": "A state's value is the average return from it. Monte Carlo estimates this expectation by sampled returns.",
+    "assumptions": [
+      "The value definition of Chapter 3; the printed (6.3) is the first line of a chain that ends at (6.4)."
+    ],
+    "pitfalls": [
+      "The Monte Carlo target is an estimate only because it samples: it uses no other estimate."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.1",
+        "printedPages": [
+          144,
+          144
+        ],
+        "pdfPages": [
+          158,
+          158
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10"
+    }
+  },
+  {
+    "id": "eq.ch06.dp-target",
+    "unit": "ch06",
+    "concept": "ch06.td-prediction",
+    "name": "The value through its successor (the DP target)",
+    "bookLabel": "(6.4)",
+    "tex": "v_\\pi(s) = \\mathbb{E}_\\pi\\Big[R_{t+1} + \\gamma \\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_t = s\\Big] = \\mathbb{E}_\\pi\\big[R_{t+1} + \\gamma v_\\pi(S_{t+1}) \\mid S_t = s\\big]",
+    "symbols": [
+      {
+        "tex": "v_\\pi(S_{t+1})",
+        "meaning": "the value of the next state, standing for all later rewards"
+      }
+    ],
+    "intuition": "Split off the first reward; the rest of the return is, in expectation, the value of the next state.",
+    "assumptions": [
+      "Continues (6.3) on p. 144."
+    ],
+    "derivation": [
+      {
+        "tex": "\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} = R_{t+1} + \\gamma \\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2}",
+        "why": "Take the k = 0 term out of the sum and shift the index."
+      },
+      {
+        "tex": "\\mathbb{E}_\\pi\\Big[\\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+2} \\,\\Big|\\, S_t = s\\Big] = \\mathbb{E}_\\pi[v_\\pi(S_{t+1}) \\mid S_t = s]",
+        "why": "The remaining sum is the return from time t + 1, whose expectation given the next state is that state's value."
+      }
+    ],
+    "significance": "DP uses (6.4) with the expectation computed from a model and the current estimate V in place of $v_\\pi$. TD(0) uses it with the expectation sampled and V in place of $v_\\pi$: both kinds of estimate at once.",
+    "pitfalls": [
+      "The DP target is an estimate because of V, not because of the expectation, which the model gives exactly."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "6",
+        "section": "6.1",
+        "printedPages": [
+          144,
+          144
+        ],
+        "pdfPages": [
+          158,
+          158
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-10"
+    }
+  },
+  {
     "id": "eq.ch06.sarsa",
     "unit": "ch06",
     "concept": "ch06.sarsa",

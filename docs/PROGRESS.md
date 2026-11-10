@@ -831,5 +831,61 @@ The validator reports no problems and no warnings.
 
 `npm run check` passes.
 
-#### Next: Milestone 4G
-Chapter 6 to the coverage criteria.
+### Milestone 4G: Chapter 6 complete (done, 2026-11-10)
+
+**Chapter 6 meets the coverage criteria:**
+- all 7 sections are covered (§6.7 as a reading guide);
+- all 6 numbered equations are present;
+- all 6 examples are covered;
+- all 11 exercises are in the question bank, none declared as laboratory tasks.
+
+The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read in the text layer; equations (6.3)–(6.4) and the model diagram of Example 6.4 were checked on the page images. Three items are **flagged**:
+- **§6.6 (p. 161)** refers to an access-control queuing example "in the previous section". No such example is in Chapter 6; it is Example 11.1 (§11.3). The bibliographical remark numbered 6.6 (p. 164), about R-learning, belongs with it.
+- **The summary (pp. 161–162)** classifies actor–critic methods and R-learning with Sarsa and Q-learning. Neither is in this chapter of the draft; they are §11.1 and §11.3.
+- **The bibliographical remarks (p. 162)** place Samuel's checkers case study in "Section 15.2"; in this draft it is §14.2.
+
+**Reproductions:**
+- **Example 6.1 (driving home).** The Monte Carlo error on leaving the highway is 8, so α = 1/2 raises the prediction by 4. The TD errors (10, −5, 5, 3, 0) are the changes in predicted total time and sum, from each state, to its Monte Carlo error.
+- **Example 6.3, Figure 6.8.** New library code (`lib/rl/batch.ts`) does batch TD(0) and batch constant-α MC by repeated passes, and computes their fixed points directly: the certainty-equivalence estimate and the sample averages. On a test batch, iterating converges to them. Over 100 runs batch TD has lower RMS error than batch MC at every batch size from 5 to 100 episodes; at 100 episodes TD is about 0.035 and MC about 0.054 (the figure shows about 0.035 and 0.05).
+- **Example 6.4.** Batch TD(0) gives V(A) = V(B) = 3/4; batch MC gives V(A) = 0.
+- **Exercise 6.2.** The first episode of Figure 6.6 ended on the left: V(A) falls by 0.05, to 0.45.
+- **Exercise 6.4.** With α = 0.15 and V = 0.5 initially, TD's RMS error is lowest around episode 26 (0.058) and ends higher (0.070). Started from V = 0 there is no dip, so it depends on the initialisation.
+- **Exercise 6.5.** The exact solve and iterative policy evaluation both give k/6.
+- **Exercises 6.6–6.7,** by value iteration: 15 steps with the standard moves, 7 with king's moves, still 7 with "stay", and about 10.96 expected steps with stochastic wind. The draft says the wind varies "if there is any"; we read this as only in windy columns, and say so in the question.
+
+**Laboratory.** The TD laboratory's comparison panel adds three windy gridworld variants: king's moves, king's moves with "stay", and stochastic wind. Each prints its optimum next to the learning curves. With stochastic wind and α = 0.5 the learned episodes are still much longer than the optimum after 8000 steps; the panel says so.
+
+**Content:**
+- **8 concepts:** the TD error, sample backups, driving home, the advantages of TD prediction, batch updating, the certainty-equivalence estimate, the windy gridworld and afterstates.
+- **2 equations:** (6.3) and (6.4).
+- **3 example items:** Examples 6.1, 6.3 and 6.4. Examples 6.2, 6.5 and 6.6 were already reproduced by laboratory checks.
+- **7 lessons:** §6.1 also teaches the chapter opening; §6.7 is a reading guide.
+- **22 new questions** (now 28 in Chapter 6):
+  - 11 exercises, reworded and labelled as the draft's. The existing q006 became Exercise 6.9.
+  - 11 derived from the text;
+  - 5 numeric questions with answer checks;
+  - 7 written answers marked against rubrics.
+
+**Checks:** 11 new, 143 in all.
+
+**Fix:** example cards keyed their facts by check id, so an example with two facts verified by the same check caused a React duplicate-key error. Now each fact has its own key.
+
+**Tests:** **29 test files, 1775 tests, all passed.**
+- **New: `ch06-4g` (7).** Batch updating and certainty equivalence, the windy variants and their laboratory panel, the Chapter 6 lessons and equations, coverage and flags.
+- **Updated, because they pinned the previous content:**
+  - question counts 160 → 182 (120 → 135 without written answers);
+  - concept count 72 → 80;
+  - the written-answer and textbook-exercise lists;
+  - Q-learning's practice count (3 → 5);
+  - Chapter 6's status in the chapter list.
+
+**Browser review:**
+- every Chapter 6 section, the new examples and equations render with no KaTeX errors;
+- the comparison panel runs the stochastic-wind variant at phone width without horizontal scrolling.
+
+`npm run check` passes.
+
+#### Next: Milestone 4H
+Chapter 1 to the coverage criteria.

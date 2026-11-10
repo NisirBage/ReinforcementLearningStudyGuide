@@ -4,7 +4,8 @@
 // Printed values below are transcribed from page images of the April 2015 draft and cite their page.
 import { constantStepEstimates, epsilonGreedyProbabilities, incrementalAverages, recencyWeightedAverage, recencyWeights, ucbScores, argmaxAll } from "../lib/rl/bandit";
 import { deterministic, greedyPolicy, iterativePolicyEvaluation, policyIteration, qFromV, valueIteration } from "../lib/rl/dp";
-import { GRID5, RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, gridworld5x5, randomWalk, windyGridworld } from "../lib/rl/envs/examples";
+import { GRID5, RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, gridworld5x5, randomWalk, windyGridworld, windyVariant } from "../lib/rl/envs/examples";
+import { batchUpdate, certaintyEquivalence, sampleAverageReturns, type Episode } from "../lib/rl/batch";
 import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
 import { DEAL_STATE as BJ_DEAL, END as BJ_END, HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
 import { INFINITE_VARIANCE_BEHAVIOUR, INFINITE_VARIANCE_TARGET, importanceRatio, infiniteVarianceMdp, isEstimates, newOffPolicyControl, offPolicyControlEpisode, weightedIncremental } from "../lib/rl/offPolicy";
@@ -1072,6 +1073,144 @@ export const CHECKS: Record<string, Check> = {
       const gaps = m.starts.map((s) => vstar[s] - learned[s]);
       const finishes = m.starts.every((s) => greedyTrajectory(m, st.pi, s).finished);
       return gaps.every((g) => g >= -1e-6) && gaps.slice(0, 3).every((g) => g < 1.5) && gaps.reduce((a, b) => a + b, 0) / gaps.length < 5 && finishes;
+    },
+  },
+  // ----- Chapter 6, Milestone 4G -----
+  "ch06.driving-home": {
+    kind: "fact", // Example 6.1 (table on p. 146): actual times to go are the returns; at "exiting highway" the MC error is 23 − 15 = 8,
+    // so α = 1/2 raises the prediction by 4; the TD errors are the changes in predicted total time, and they sum to the MC error
+    run: () => {
+      const elapsed = [0, 5, 20, 30, 40, 43];
+      const toGo = [30, 35, 15, 10, 3, 0];
+      const total = elapsed.map((e, i) => e + toGo[i]);
+      const actual = elapsed.map((e) => 43 - e); // the return from each state (γ = 1, rewards are elapsed minutes)
+      const mcErr = actual.map((g, i) => g - toGo[i]);
+      const tdErr = toGo.slice(0, -1).map((v, i) => elapsed[i + 1] - elapsed[i] + toGo[i + 1] - v); // R + V(S′) − V(S)
+      const sumsMatch = mcErr.slice(0, -1).every((e, i) => close(e, tdErr.slice(i).reduce((a, b) => a + b, 0), 1e-12));
+      return mcErr[2] === 8 && 0.5 * mcErr[2] === 4 && tdErr.every((d, i) => d === total[i + 1] - total[i]) && sumsMatch;
+    },
+  },
+  "ch06.first-episode": {
+    kind: "fact", // Exercise 6.2 (Figure 6.6): from V = 0.5 with α = 0.1, an episode that ends on the left changes only V(A), by −0.05;
+    // one that ends on the right changes only V(E), by +0.05
+    run: () => {
+      const m = randomWalk();
+      const run = (path: number[], end: number, reward: number) => {
+        const V = m.states.map((_, s) => (m.terminal[s] ? 0 : 0.5));
+        for (let k = 0; k < path.length; k++) td0Update(V, m, path[k], k === path.length - 1 ? reward : 0, k === path.length - 1 ? end : path[k + 1], 0.1, 1);
+        return V;
+      };
+      const left = run([3, 2, 1], 0, 0);
+      const right = run([3, 4, 5], 6, 1);
+      return left.every((x, s) => (s === 1 ? close(x, 0.45) : close(x, m.terminal[s] ? 0 : 0.5))) && right.every((x, s) => (s === 5 ? close(x, 0.55) : close(x, m.terminal[s] ? 0 : 0.5)));
+    },
+  },
+  "ch06.random-walk-true-values": {
+    kind: "fact", // Exercise 6.5: the true values 1/6 … 5/6 follow both from solving the Bellman equations and from iterative policy evaluation
+    run: () => {
+      const m = randomWalk();
+      const pi = equiprobablePolicy(m);
+      const exact = solveExact(m, pi, 1)!;
+      const iter = iterativePolicyEvaluation(m, pi, 1, { theta: 1e-13 }).v;
+      return [1, 2, 3, 4, 5].every((s) => close(exact[s], s / 6, 1e-12) && close(iter[s], s / 6, 1e-9) && close(RANDOM_WALK_TRUE[s], s / 6, 1e-12));
+    },
+  },
+  "ch06.td-high-alpha-dip": {
+    kind: "fact", // Exercise 6.4 (Figure 6.7): TD(0) with α = 0.15 from V = 0.5 reaches its lowest RMS error early (before episode 50, 100 runs)
+    // and ends higher; started from V = 0 instead, the dip disappears (the minimum is within 0.005 of the final error)
+    run: () => {
+      const m = randomWalk();
+      const pi = equiprobablePolicy(m);
+      const curve = (v0: number) => {
+        const c = new Array(101).fill(0);
+        for (let r = 0; r < 100; r++) runTd0(m, pi, RANDOM_WALK_START, 0.15, 1, 100, makeRng(300 + r), v0).history.forEach((V, n) => (c[n] += rmsError(V, RANDOM_WALK_TRUE, [1, 2, 3, 4, 5]) / 100));
+        return c;
+      };
+      const half = curve(0.5);
+      const zero = curve(0);
+      const minHalf = Math.min(...half);
+      return half.indexOf(minHalf) < 50 && half[100] > minHalf + 0.008 && zero[100] - Math.min(...zero) < 0.005;
+    },
+  },
+  "ch06.fig6-8": {
+    kind: "fact", // Example 6.3, Figure 6.8: batch TD(0) converges to the certainty-equivalence estimate (checked by iterating on a batch), batch MC
+    // to the sample averages; over 100 runs batch TD has lower RMS error than batch MC at every batch size from 5 to 100 episodes, near the
+    // figure's values at 100 episodes (TD about 0.035, MC about 0.05)
+    run: () => {
+      const m = randomWalk();
+      const pi = equiprobablePolicy(m);
+      const v0 = m.states.map((_, s) => (m.terminal[s] ? 0 : 0.5));
+      const rng0 = makeRng(9);
+      const batch: Episode[] = Array.from({ length: 20 }, () => generateEpisode(m, pi, RANDOM_WALK_START, rng0).steps);
+      const td = batchUpdate(batch, m.terminal, "td", 0.001, 1, v0).V;
+      const mc = batchUpdate(batch, m.terminal, "mc", 0.001, 1, v0).V;
+      const ce = certaintyEquivalence(batch, m.terminal, 1);
+      const avg = sampleAverageReturns(batch, m.states.length, 1);
+      const converge = [1, 2, 3, 4, 5].every((s) => close(td[s], ce[s], 1e-6) && close(mc[s], avg[s], 1e-6));
+      const inner = [1, 2, 3, 4, 5];
+      const fill = (V: number[]) => V.map((x) => (Number.isNaN(x) ? 0.5 : x));
+      const tdC = new Array(100).fill(0);
+      const mcC = new Array(100).fill(0);
+      for (let r = 0; r < 100; r++) {
+        const rng = makeRng(600 + r);
+        const data: Episode[] = [];
+        for (let n = 0; n < 100; n++) {
+          data.push(generateEpisode(m, pi, RANDOM_WALK_START, rng).steps);
+          tdC[n] += rmsError(fill(certaintyEquivalence(data, m.terminal, 1)), RANDOM_WALK_TRUE, inner) / 100;
+          mcC[n] += rmsError(fill(sampleAverageReturns(data, m.states.length, 1)), RANDOM_WALK_TRUE, inner) / 100;
+        }
+      }
+      const below = tdC.slice(4).every((x, i) => x < mcC[i + 4]);
+      return converge && below && tdC[99] > 0.025 && tdC[99] < 0.045 && mcC[99] > 0.04 && mcC[99] < 0.07;
+    },
+  },
+  "ch06.you-are-the-predictor": {
+    kind: "fact", // Example 6.4: on the eight episodes, batch TD(0) gives V(A) = V(B) = 3/4; batch MC gives V(A) = 0, V(B) = 3/4
+    run: () => {
+      const terminal = [false, false, true]; // A, B, terminal
+      const step = (s: number, r: number, next: number) => ({ t: 0, s, a: 0, r, next });
+      const eps: Episode[] = [[step(0, 0, 1), step(1, 0, 2)], ...Array.from({ length: 6 }, () => [step(1, 1, 2)]), [step(1, 0, 2)]];
+      const td = batchUpdate(eps, terminal, "td", 0.01, 1, [0, 0, 0]).V;
+      const mc = batchUpdate(eps, terminal, "mc", 0.01, 1, [0, 0, 0]).V;
+      return close(td[0], 0.75, 1e-6) && close(td[1], 0.75, 1e-6) && close(mc[0], 0, 1e-6) && close(mc[1], 0.75, 1e-6);
+    },
+  },
+  "ch06-q007": {
+    kind: "answer", // Exercises 6.6–6.7: the optimal expected episode length from S, by value iteration: standard moves, king's moves,
+    // king's moves with "stay", king's moves with stochastic wind
+    run: () => [windyGridworld(), windyVariant(), windyVariant({ stay: true })].map((m) => -valueIteration(m, 1, { theta: 1e-12 }).v[m.grid.start]),
+  },
+  "ch06-q008": {
+    kind: "answer", // Exercise 6.7: king's moves with stochastic wind (±1 with probability 1/3 each, in windy columns only)
+    run: () => {
+      const m = windyVariant({ stochastic: true });
+      return [-valueIteration(m, 1, { theta: 1e-12 }).v[m.grid.start]];
+    },
+  },
+  "ch06-q009": {
+    kind: "answer", // Exercise 6.2: the first episode of Figure 6.6 ended on the left; only V(A) changes, from 0.5
+    run: () => {
+      const m = randomWalk();
+      const V = m.states.map((_, s) => (m.terminal[s] ? 0 : 0.5));
+      for (const [s, r, next] of [[3, 0, 2], [2, 0, 1], [1, 0, 0]]) td0Update(V, m, s, r, next, 0.1, 1);
+      return [V[1] - 0.5, V[1]];
+    },
+  },
+  "ch06-q017": {
+    kind: "answer", // Example 6.1: TD error leaving the office, MC error exiting the highway, and the α = 1/2 increment
+    run: () => {
+      const td = 5 + 35 - 30;
+      const mc = 43 - 20 - 15;
+      return [td, mc, 0.5 * mc];
+    },
+  },
+  "ch06-q019": {
+    kind: "answer", // Example 6.4: V(A) under batch TD(0) and under batch MC
+    run: () => {
+      const terminal = [false, false, true];
+      const step = (s: number, r: number, next: number) => ({ t: 0, s, a: 0, r, next });
+      const eps: Episode[] = [[step(0, 0, 1), step(1, 0, 2)], ...Array.from({ length: 6 }, () => [step(1, 1, 2)]), [step(1, 0, 2)]];
+      return [batchUpdate(eps, terminal, "td", 0.01, 1, [0, 0, 0]).V[0], batchUpdate(eps, terminal, "mc", 0.01, 1, [0, 0, 0]).V[0]];
     },
   },
   "lab.mdp.gridworld-exact": {

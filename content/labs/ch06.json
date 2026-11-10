@@ -4,7 +4,7 @@
     "slug": "td",
     "unit": "ch06",
     "title": "Temporal-difference laboratory",
-    "summary": "TD(0) prediction on the random walk against constant-α Monte Carlo (Figures 6.6 and 6.7), then Sarsa and Q-learning on the windy gridworld and cliff walking (Figures 6.11 and 6.13). Every update is shown with $S_t$, $A_t$, $R_{t+1}$, $S_{t+1}$, the current value, the bootstrap term, the TD target, the TD error and the new value.",
+    "summary": "TD(0) prediction on the random walk against constant-α Monte Carlo (Figures 6.6 and 6.7), then Sarsa and Q-learning on the windy gridworld and cliff walking (Figures 6.11 and 6.13). Every update is shown with $S_t$, $A_t$, $R_{t+1}$, $S_{t+1}$, the current value, the bootstrap term, the TD target, the TD error and the new value. The comparison panel also runs the windy gridworld variants of Exercises 6.6 and 6.7.",
     "sections": [
       "6.1",
       "6.2",
@@ -22,14 +22,17 @@
       "td.qLearningStep",
       "envs.randomWalk",
       "envs.windyGridworld",
-      "envs.cliffWalking"
+      "envs.cliffWalking",
+      "envs.windyVariant",
+      "dp.valueIteration"
     ],
     "guide": [
       "Step TD(0) on the random walk: the first update that changes anything is the step that reaches the right end (reward 1); after that, values propagate back one state per visit.",
       "Average 100 runs (the Figure 6.7 preset): TD(0) reaches a lower RMS error than constant-α MC within 100 episodes. Both start at 0.236.",
       "On cliff walking, step Sarsa and Q-learning and compare their targets: Sarsa uses $Q(S_{t+1}, A_{t+1})$ for the action it will take, Q-learning uses $\\max_a Q(S_{t+1}, a)$.",
       "Train both for 500 episodes: Q-learning's greedy path runs along the cliff edge (13 steps), Sarsa's takes the safer route, and Sarsa earns more per episode while exploring (about −25 against −50 in Figure 6.13).",
-      "On the windy gridworld (Example 6.5), Sarsa with the draft's settings (ε = 0.1, α = 0.5) finishes about 160 episodes in its first 8000 steps (the draft's figure shows about 170), and its episodes then average about 26 steps, settling near 19. The draft reports about 17, which is exactly what ε-greedy exploration costs around the optimal policy (17.05 steps). Set α to 0.1 and run longer: the episodes settle at that 17. See the note on this lab."
+      "On the windy gridworld (Example 6.5), Sarsa with the draft's settings (ε = 0.1, α = 0.5) finishes about 160 episodes in its first 8000 steps (the draft's figure shows about 170), and its episodes then average about 26 steps, settling near 19. The draft reports about 17, which is exactly what ε-greedy exploration costs around the optimal policy (17.05 steps). Set α to 0.1 and run longer: the episodes settle at that 17. See the note on this lab.",
+      "Exercises 6.6–6.7: in the comparison panel choose the windy gridworld with king's moves, with 'stay', or with stochastic wind. The panel prints the optimal expected episode length from S found by value iteration (7, 7 and about 10.96 steps) next to the learning curves."
     ],
     "sources": [
       {

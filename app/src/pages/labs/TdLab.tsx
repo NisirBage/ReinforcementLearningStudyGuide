@@ -9,7 +9,8 @@ import { sampleAction, sampleStep } from "../../lib/rl/sampling";
 import {
   controlStep, greedyPath, maxQ, newControl, rmsError, runControl, runTd0, td0Update, type ControlMethod, type ControlState, type ControlStepDetail, type Td0Detail,
 } from "../../lib/rl/td";
-import { RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, randomWalk, windyGridworld, type GridMDP } from "../../lib/rl/envs/examples";
+import { RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, randomWalk, windyGridworld, windyVariant, type GridMDP } from "../../lib/rl/envs/examples";
+import { valueIteration } from "../../lib/rl/dp";
 import { GridView } from "../../components/GridView";
 import { LineChart } from "../../components/LineChart";
 import { NumberInput } from "../../components/NumberInput";
@@ -207,6 +208,10 @@ function TdVsMc() {
 
 type Task = "cliff" | "windy";
 const taskOf = (t: Task): GridMDP => (t === "cliff" ? cliffWalking() : windyGridworld());
+/** The comparison panel also runs the windy gridworld of Exercises 6.6–6.7 (king's moves, "stay", stochastic wind). */
+type CompareTask = Task | "king" | "king-stay" | "king-stochastic";
+const compareTaskOf = (t: CompareTask): GridMDP =>
+  t === "king" ? windyVariant() : t === "king-stay" ? windyVariant({ stay: true }) : t === "king-stochastic" ? windyVariant({ stochastic: true }) : taskOf(t);
 
 function Explain({ d, m, alpha, gamma }: { d: ControlStepDetail; m: GridMDP; alpha: number; gamma: number }) {
   const cell = (s: number) => `(${Math.floor(s / m.grid.cols) + 1},${(s % m.grid.cols) + 1})`;
@@ -358,14 +363,14 @@ export function ControlInspector({ initialMethod = "q-learning" }: { initialMeth
 }
 
 function Compare() {
-  const [task, setTask] = useState<Task>("cliff");
+  const [task, setTask] = useState<CompareTask>("cliff");
   const [runs, setRuns] = useState(20);
-  const [res, setRes] = useState<{ task: Task; series: { label: string; values: number[] }[]; paths: string[] } | null>(null);
+  const [res, setRes] = useState<{ task: CompareTask; series: { label: string; values: number[] }[]; paths: string[]; optimum?: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const go = () => {
     setBusy(true);
     setTimeout(() => {
-      const m = taskOf(task);
+      const m = compareTaskOf(task);
       const methods: ControlMethod[] = ["sarsa", "q-learning"];
       const paths: string[] = [];
       const series = methods.map((method) => {
@@ -395,7 +400,9 @@ function Compare() {
         paths.push(`${method === "sarsa" ? "Sarsa" : "Q-learning"}: ${acc[T - 1].toFixed(0)} episodes by step ${T} (average)`);
         return { label: method === "sarsa" ? "Sarsa" : "Q-learning", values: acc };
       });
-      setRes({ task, series, paths });
+      // Windy tasks: the optimal expected number of steps from S, by value iteration on the exact model.
+      const optimum = task === "cliff" ? undefined : -valueIteration(m, 1, { theta: 1e-10 }).v[m.grid.start];
+      setRes({ task, series, paths, optimum });
       setBusy(false);
     }, 0);
   };
@@ -405,9 +412,12 @@ function Compare() {
       <div className="inputs">
         <label>
           Task{" "}
-          <select value={task} onChange={(e) => setTask(e.target.value as Task)}>
+          <select value={task} onChange={(e) => setTask(e.target.value as CompareTask)}>
             <option value="cliff">cliff walking: reward per episode (Figure 6.13)</option>
             <option value="windy">windy gridworld: episodes completed against time steps (Figure 6.11)</option>
+            <option value="king">windy gridworld, king's moves (Exercise 6.6)</option>
+            <option value="king-stay">windy gridworld, king's moves and "stay" (Exercise 6.6)</option>
+            <option value="king-stochastic">windy gridworld, king's moves, stochastic wind (Exercise 6.7)</option>
           </select>
         </label>
         <label>
@@ -420,13 +430,18 @@ function Compare() {
       {res && res.task === "cliff" && (
         <LineChart title={`Reward per episode (average of ${runs} runs, 10-episode moving average)`} series={res.series} xLabel="Episode" yLabel="sum of rewards" format={(x) => x.toFixed(0)} yMin={-100} yMax={0} />
       )}
-      {res && res.task === "windy" && <LineChart title={`Episodes completed (average of ${runs} runs)`} series={res.series} xLabel="Time step" yLabel="episodes" format={(x) => x.toFixed(0)} yMin={0} />}
+      {res && res.task !== "cliff" && <LineChart title={`Episodes completed (average of ${runs} runs)`} series={res.series} xLabel="Time step" yLabel="episodes" format={(x) => x.toFixed(0)} yMin={0} />}
       {res && (
         <ul>
           {res.paths.map((p) => (
             <li key={p}>{p}</li>
           ))}
         </ul>
+      )}
+      {res && res.optimum !== undefined && (
+        <p className="muted small">
+          Optimal expected episode length from S (value iteration on the exact model): {res.optimum.toFixed(2)} steps. A steeper curve means shorter episodes. Learned episodes stay longer than this optimum, because of ε = 0.1 exploration and learning that is not finished; with stochastic wind and α = 0.5 they are still many times longer after 8000 steps.
+        </p>
       )}
       {res && res.task === "cliff" && <p className="muted small">The draft's Figure 6.13 shows Sarsa near −25 and Q-learning near −50: Q-learning learns the optimal path along the edge (13 steps) and sometimes falls while exploring.</p>}
     </section>
