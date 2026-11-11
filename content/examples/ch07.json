@@ -1,0 +1,91 @@
+[
+  {
+    "id": "ex.ch07.random-walk-19",
+    "unit": "ch07",
+    "concepts": [
+      "ch07.random-walk-19",
+      "ch07.n-step-td"
+    ],
+    "title": "n-step TD methods on the random walk",
+    "bookLabel": "Example 7.1",
+    "summary": "On a first episode C → D → E → right of the 5-state walk (V = 0.5), one-step TD changes only V(E), two-step TD changes V(D) and V(E), and three-step or longer methods change all three by the same amount. The quantitative comparison uses a 19-state walk (Figure 7.2, and Figure 7.6 for the λ methods), reproduced here with the draft's protocol: 100 runs of 10 episodes, the same walks for every method.",
+    "facts": [
+      {
+        "claim": "On-line, an intermediate n is best (about 0.27); off-line the best is about 0.34, and every off-line method is unstable by α = 0.4 (Figure 7.2).",
+        "check": "ch07.fig7-2"
+      },
+      {
+        "claim": "Off-line, n = 3 and n = 5 break down at a lower α than n = 2 and n = 4, as Exercise 7.3 observes.",
+        "check": "ch07.ex7-3-odd-n"
+      },
+      {
+        "claim": "Figure 7.6: the on-line λ-return algorithm reaches about 0.26; accumulating traces match it for small α but blow up for large α and λ; dutch traces and true on-line TD(λ) stay within 0.01 of it and remain stable.",
+        "check": "ch07.fig7-6"
+      },
+      {
+        "claim": "Off-line, the λ-return algorithm and accumulating TD(λ) make identical updates, as the draft says its upper-right panel shows.",
+        "check": "ch07.offline-equivalence"
+      },
+      {
+        "claim": "For the first episode C → D → E → right with V = 0.5 and α = 0.1, two-step TD (off-line) raises V(D) and V(E) to 0.55 and leaves V(C) at 0.5.",
+        "check": "ch07-q009"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          171,
+          172
+        ],
+        "pdfPages": [
+          185,
+          186
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch07.fig7-2"
+    }
+  },
+  {
+    "id": "ex.ch07.traces-gridworld",
+    "unit": "ch07",
+    "concepts": [
+      "ch07.sarsa-lambda"
+    ],
+    "title": "Traces in gridworld",
+    "bookLabel": "Example 7.2",
+    "summary": "One episode wanders to the only reward. With all values 0, one-step Sarsa strengthens only the last action; Sarsa(λ) strengthens every action on the path, the amount falling by γλ (or (1 − α)γλ with dutch traces) per step back from the reward. The draft's figure shows a fall-off of 0.9 per step. The laboratory uses its own 20-move path on a 7 × 10 grid.",
+    "facts": [
+      {
+        "claim": "One-step Sarsa raises one action value; Sarsa(λ) with λ = 0.9 (γ = 1) raises all 20 on the path, each 0.9 times the next one nearer the reward.",
+        "check": "ch07.traces-gridworld"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.5",
+        "printedPages": [
+          184,
+          186
+        ],
+        "pdfPages": [
+          198,
+          200
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch07.traces-gridworld"
+    }
+  }
+]

@@ -1,0 +1,141 @@
+[
+  {
+    "id": "lab.ch07.traces",
+    "slug": "traces",
+    "unit": "ch07",
+    "title": "Eligibility-traces laboratory",
+    "summary": "TD(λ) step by step with every state's trace; the three kinds of trace (Figure 7.9) and the half-life of λ; the 19-state random-walk experiments of Figures 7.2 and 7.6 for n-step, λ-return, TD(λ) with each trace and true on-line TD(λ); and the credit one episode gives with and without traces (Example 7.2), including Watkins's cut.",
+    "sections": [
+      "7.1",
+      "7.2",
+      "7.3",
+      "7.4",
+      "7.5",
+      "7.6"
+    ],
+    "concepts": [
+      "ch07.td-lambda",
+      "ch07.trace-types",
+      "ch07.n-step-td",
+      "ch07.forward-view",
+      "ch07.true-online-td-lambda",
+      "ch07.sarsa-lambda",
+      "ch07.watkins-q-lambda"
+    ],
+    "implementations": [
+      "traces.tdLambdaEpisode",
+      "traces.trueOnlineTdLambdaEpisode",
+      "traces.nStepEpisode",
+      "traces.lambdaReturnEpisode",
+      "traces.walkExperiment",
+      "traces.replayPath",
+      "traces.traceControlUpdate",
+      "envs.randomWalkN"
+    ],
+    "guide": [
+      "Step TD(λ) with λ = 0.8: nothing changes until the first reward; then every state visited in that episode moves, the most recent most.",
+      "Set λ = 0 and step: only the state just left changes. That is TD(0).",
+      "In the trace panel, compare the three traces after the four quick visits: accumulating climbs above 2, replacing stays at 1, dutch lies between. Set α (dutch) to 0 or 1 to see it become the other two.",
+      "Run the on-line n-step family: the best curves are intermediate n near α = 0.4–0.5 (about 0.27). Then the off-line family: errors are higher and everything blows up above α ≈ 0.3; n = 3 and n = 5 break down earliest (Exercise 7.3).",
+      "Run accumulating, dutch and true on-line TD(λ): accumulating blows up for λ ≥ 0.95 at large α, the other two stay stable.",
+      "In 'Credit from one episode', compare the two grids, then declare a move exploratory to see Watkins's Q(λ) give nothing to the moves before it."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          171,
+          172
+        ],
+        "pdfPages": [
+          185,
+          186
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.2",
+        "printedPages": [
+          175,
+          176
+        ],
+        "pdfPages": [
+          189,
+          190
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          177,
+          181
+        ],
+        "pdfPages": [
+          191,
+          195
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.4",
+        "printedPages": [
+          182,
+          183
+        ],
+        "pdfPages": [
+          196,
+          197
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.5",
+        "printedPages": [
+          184,
+          186
+        ],
+        "pdfPages": [
+          198,
+          200
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.6",
+        "printedPages": [
+          186,
+          188
+        ],
+        "pdfPages": [
+          200,
+          202
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch07.fig7-6"
+    },
+    "checks": [
+      "ch07.fig7-2",
+      "ch07.ex7-3-odd-n",
+      "ch07.fig7-6",
+      "ch07.offline-equivalence",
+      "ch07.true-online-mc",
+      "ch07.trace-types",
+      "ch07.traces-gridworld",
+      "ch07.watkins",
+      "ch07.ex7-6-sparse",
+      "ch07.error-reduction"
+    ]
+  }
+]

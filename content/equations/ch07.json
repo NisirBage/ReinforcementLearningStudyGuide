@@ -1,0 +1,521 @@
+[
+  {
+    "id": "eq.ch07.n-step-target",
+    "unit": "ch07",
+    "concept": "ch07.n-step-return",
+    "name": "The n-step target",
+    "bookLabel": "(7.1)",
+    "tex": "R_{t+1} + \\gamma R_{t+2} + \\gamma^2 + \\cdots + \\gamma^{n-1}R_{t+n} + \\gamma^n V_t(S_{t+n}), \\quad \\forall n \\ge 1",
+    "symbols": [
+      {
+        "tex": "V_t(S_{t+n})",
+        "meaning": "the estimate, at time t, of the state n steps later"
+      },
+      {
+        "tex": "\\gamma^n",
+        "meaning": "its discount"
+      }
+    ],
+    "intuition": "n real rewards, then the current estimate stands in for all the rest.",
+    "assumptions": [],
+    "pitfalls": [
+      "As printed, the third term is $\\gamma^2$ alone; it should be $\\gamma^2 R_{t+3}$ (flagged)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          169,
+          169
+        ],
+        "pdfPages": [
+          183,
+          183
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    },
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The printed target reads '$R_{t+1} + \\gamma R_{t+2} + \\gamma^2 + \\cdots$': the reward $R_{t+3}$ is missing from the third term (checked on the page image). The transcription keeps it as printed.",
+        "suggestion": "$R_{t+1} + \\gamma R_{t+2} + \\gamma^2 R_{t+3} + \\cdots + \\gamma^{n-1}R_{t+n} + \\gamma^n V_t(S_{t+n})$"
+      }
+    ]
+  },
+  {
+    "id": "eq.ch07.n-step-increment",
+    "unit": "ch07",
+    "concept": "ch07.n-step-td",
+    "name": "The n-step backup",
+    "bookLabel": "(7.2)",
+    "tex": "\\Delta_t(S_t) = \\alpha\\Big[G_t^{t+n}(V_t(S_{t+n})) - V_t(S_t)\\Big]",
+    "symbols": [
+      {
+        "tex": "\\Delta_t(S_t)",
+        "meaning": "the increment to the visited state's value (0 for other states)"
+      },
+      {
+        "tex": "G_t^{t+n}(c)",
+        "meaning": "the n-step return with correction c"
+      }
+    ],
+    "intuition": "Move the estimate toward the n-step return.",
+    "assumptions": [
+      "Defined as an increment so that it can be applied on-line (7.3) or off-line (7.4)."
+    ],
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          170,
+          170
+        ],
+        "pdfPages": [
+          184,
+          184
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.online-update",
+    "unit": "ch07",
+    "concept": "ch07.online-offline",
+    "name": "On-line updating",
+    "bookLabel": "(7.3)",
+    "tex": "V_{t+1}(s) = V_t(s) + \\Delta_t(s), \\quad \\forall s \\in \\mathcal{S}",
+    "symbols": [
+      {
+        "tex": "V_{t+1}",
+        "meaning": "the values after step t's increment"
+      }
+    ],
+    "intuition": "Apply each increment as soon as it is known.",
+    "assumptions": [],
+    "pitfalls": [
+      "An n-step increment is only known n steps later; the lab reads $V_t$ as the values after the increments of steps $0, \\dots, t-1$, which is what a causal implementation has then."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          170,
+          170
+        ],
+        "pdfPages": [
+          184,
+          184
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.offline-update",
+    "unit": "ch07",
+    "concept": "ch07.online-offline",
+    "name": "Off-line updating",
+    "bookLabel": "(7.4)",
+    "tex": "V_{t+1}(s) = V_t(s), \\;\\forall t < T, \\qquad V_T(s) = V_{T-1}(s) + \\sum_{t=0}^{T-1}\\Delta_t(s)",
+    "symbols": [
+      {
+        "tex": "T",
+        "meaning": "the episode's final time step"
+      }
+    ],
+    "intuition": "Hold the values fixed through the episode, then apply the sum of its increments.",
+    "assumptions": [],
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          170,
+          170
+        ],
+        "pdfPages": [
+          184,
+          184
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.error-reduction",
+    "unit": "ch07",
+    "concept": "ch07.error-reduction",
+    "name": "Error reduction property",
+    "bookLabel": "(7.5)",
+    "tex": "\\max_s \\Big|\\mathbb{E}_\\pi\\big[G_t^{t+n}(v(S_{t+n})) \\,\\big|\\, S_t = s\\big] - v_\\pi(s)\\Big| \\le \\gamma^n \\max_s |v(s) - v_\\pi(s)|",
+    "symbols": [
+      {
+        "tex": "v",
+        "meaning": "any value function used for the correction"
+      }
+    ],
+    "intuition": "Looking n steps ahead shrinks the worst error by at least $\\gamma^n$.",
+    "assumptions": [],
+    "significance": "The basis of convergence proofs for n-step and λ-based TD methods. Check ch07.error-reduction confirms it on the 19-state walk with γ = 0.9.",
+    "pitfalls": [
+      "With γ = 1 the bound only says the error does not grow."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          171,
+          171
+        ],
+        "pdfPages": [
+          185,
+          185
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.lambda-return",
+    "unit": "ch07",
+    "concept": "ch07.lambda-return",
+    "name": "The λ-return, split at termination",
+    "bookLabel": "(7.6)",
+    "tex": "L_t = (1-\\lambda)\\sum_{n=1}^{T-t-1}\\lambda^{n-1}G_t^{t+n}(V_t(S_{t+n})) + \\lambda^{T-t-1}G_t",
+    "symbols": [
+      {
+        "tex": "L_t",
+        "meaning": "the λ-return (written $G^\\lambda_t$ in §7.9)"
+      },
+      {
+        "tex": "\\lambda",
+        "meaning": "the weight decay, in [0, 1]"
+      }
+    ],
+    "intuition": "Weight the 1-step return most, then each longer return λ times less; whatever weight is left goes to the complete return.",
+    "assumptions": [],
+    "derivation": [
+      {
+        "tex": "L_t = (1-\\lambda)\\sum_{n=1}^{\\infty}\\lambda^{n-1}G_t^{t+n}(V_t(S_{t+n}))",
+        "why": "The definition: every n-step return, weight $(1-\\lambda)\\lambda^{n-1}$."
+      },
+      {
+        "tex": "(1-\\lambda)\\sum_{n=T-t}^{\\infty}\\lambda^{n-1}G_t = \\lambda^{T-t-1}G_t",
+        "why": "From n = T − t on, every n-step return is the complete return $G_t$; the geometric tail sums to $\\lambda^{T-t-1}$."
+      }
+    ],
+    "example": "With λ = 0.5 the 1-, 2- and 3-step returns get weights 0.5, 0.25 and 0.125.",
+    "pitfalls": [
+      "The draft writes it $L_t$ here and $G^\\lambda_t$ in §7.9 (flagged on the concept)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.2",
+        "printedPages": [
+          173,
+          173
+        ],
+        "pdfPages": [
+          187,
+          187
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.lambda-return-increment",
+    "unit": "ch07",
+    "concept": "ch07.forward-view",
+    "name": "The λ-return backup",
+    "bookLabel": "(7.7)",
+    "tex": "\\Delta_t(S_t) = \\alpha\\Big[L_t - V_t(S_t)\\Big]",
+    "symbols": [
+      {
+        "tex": "L_t",
+        "meaning": "the λ-return"
+      }
+    ],
+    "intuition": "The forward view: move each visited state toward its λ-return.",
+    "assumptions": [],
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.2",
+        "printedPages": [
+          175,
+          175
+        ],
+        "pdfPages": [
+          189,
+          189
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.trace-decay",
+    "unit": "ch07",
+    "concept": "ch07.td-lambda",
+    "name": "Trace decay",
+    "bookLabel": "(7.8)",
+    "tex": "E_t(s) = \\gamma\\lambda E_{t-1}(s), \\quad \\forall s \\in \\mathcal{S}, s \\ne S_t",
+    "symbols": [
+      {
+        "tex": "E_t(s)",
+        "meaning": "the eligibility trace of state s at time t"
+      },
+      {
+        "tex": "\\gamma\\lambda",
+        "meaning": "the decay per step"
+      }
+    ],
+    "intuition": "Unvisited states become less eligible every step.",
+    "assumptions": [],
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          177,
+          177
+        ],
+        "pdfPages": [
+          191,
+          191
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.accumulating-trace",
+    "unit": "ch07",
+    "concept": "ch07.td-lambda",
+    "name": "Accumulating trace",
+    "bookLabel": "(7.9)",
+    "tex": "E_t(S_t) = \\gamma\\lambda E_{t-1}(S_t) + 1",
+    "symbols": [
+      {
+        "tex": "S_t",
+        "meaning": "the state visited at time t"
+      }
+    ],
+    "intuition": "The visited state decays like the others, then gains 1.",
+    "assumptions": [],
+    "pitfalls": [
+      "Repeated visits can push the trace above 1."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          177,
+          177
+        ],
+        "pdfPages": [
+          191,
+          191
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.td-error",
+    "unit": "ch07",
+    "concept": "ch07.td-lambda",
+    "name": "The TD error",
+    "bookLabel": "(7.10)",
+    "tex": "\\delta_t = R_{t+1} + \\gamma V_t(S_{t+1}) - V_t(S_t)",
+    "symbols": [
+      {
+        "tex": "\\delta_t",
+        "meaning": "the one-step TD error"
+      }
+    ],
+    "intuition": "The same TD error as in Chapter 6: the reinforcing event that traces distribute.",
+    "assumptions": [],
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          178,
+          178
+        ],
+        "pdfPages": [
+          192,
+          192
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.td-lambda-update",
+    "unit": "ch07",
+    "concept": "ch07.td-lambda",
+    "name": "The TD(λ) update",
+    "bookLabel": "(7.11)",
+    "tex": "\\Delta V_t(s) = \\alpha\\delta_t E_t(s), \\quad \\text{for all } s \\in \\mathcal{S}",
+    "symbols": [
+      {
+        "tex": "\\Delta V_t(s)",
+        "meaning": "the change to state s's value (written $\\Delta_t(s)$ in §7.1)"
+      }
+    ],
+    "intuition": "Every state shares the current TD error in proportion to its eligibility.",
+    "assumptions": [
+      "Applied on-line or summed off-line, as with n-step methods."
+    ],
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          178,
+          178
+        ],
+        "pdfPages": [
+          192,
+          192
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.replacing-trace",
+    "unit": "ch07",
+    "concept": "ch07.trace-types",
+    "name": "Replacing trace",
+    "bookLabel": "(7.12)",
+    "tex": "E_t(S_t) = 1",
+    "symbols": [
+      {
+        "tex": "E_t(S_t)",
+        "meaning": "the visited state's trace"
+      }
+    ],
+    "intuition": "A revisit resets the trace to 1 instead of adding to it.",
+    "assumptions": [],
+    "significance": "At λ = 1, replacing-trace TD(λ) is a close relative of first-visit Monte Carlo.",
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          180,
+          180
+        ],
+        "pdfPages": [
+          194,
+          194
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch07.dutch-trace",
+    "unit": "ch07",
+    "concept": "ch07.trace-types",
+    "name": "Dutch trace",
+    "bookLabel": "(7.13)",
+    "tex": "E_t(S_t) = (1-\\alpha)\\gamma\\lambda E_{t-1}(S_t) + 1",
+    "symbols": [
+      {
+        "tex": "\\alpha",
+        "meaning": "the step size"
+      }
+    ],
+    "intuition": "Between the two: accumulating as α → 0, replacing at α = 1.",
+    "assumptions": [],
+    "example": "With γλ = 0.8, α = 0.5 and a trace of 1 one step ago, a revisit gives $0.5 \\cdot 0.8 + 1 = 1.4$ (accumulating: 1.8; replacing: 1).",
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          180,
+          181
+        ],
+        "pdfPages": [
+          194,
+          195
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  }
+]

@@ -11,6 +11,7 @@ import * as mc from "./mc";
 import * as blackjack from "./envs/blackjack";
 import * as td from "./td";
 import * as ttt from "./envs/tictactoe";
+import * as traces from "./traces";
 import * as batch from "./batch";
 import * as dp from "./dp";
 import * as mdp from "./mdp";
@@ -53,6 +54,14 @@ export const IMPLEMENTATIONS = {
   "ttt.evaluatePolicy": ttt.evaluatePolicy, // exact win/draw/loss probabilities of a policy
   "ttt.selfPlay": ttt.selfPlay, // Exercise 1.1
   "ttt.minimaxValues": ttt.minimaxValues, // §1.5's minimax comparison
+  "traces.nStepEpisode": traces.nStepEpisode, // n-step TD (7.2)-(7.4)
+  "traces.lambdaReturnEpisode": traces.lambdaReturnEpisode, // the lambda-return algorithm (7.6)-(7.7)
+  "traces.tdLambdaEpisode": traces.tdLambdaEpisode, // TD(lambda), Figure 7.7, (7.8)-(7.13)
+  "traces.trueOnlineTdLambdaEpisode": traces.trueOnlineTdLambdaEpisode, // Figure 7.10
+  "traces.traceControlUpdate": traces.traceControlUpdate, // Sarsa(lambda) and Watkins's Q(lambda), Figures 7.12 and 7.15
+  "traces.walkExperiment": traces.walkExperiment, // Example 7.1, Figures 7.2 and 7.6
+  "traces.replayPath": traces.replayPath, // Example 7.2, Figure 7.13
+  "envs.randomWalkN": traces.randomWalkN, // the 19-state walk of Example 7.1
   "envs.windyGridworld": examples.windyGridworld, // Example 6.5
   "batch.batchUpdate": batch.batchUpdate, // batch TD(0) and batch constant-α MC (§6.3, Examples 6.3–6.4)
   "batch.certaintyEquivalence": batch.certaintyEquivalence, // the certainty-equivalence estimate (§6.3)

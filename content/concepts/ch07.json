@@ -1,0 +1,699 @@
+[
+  {
+    "id": "ch07.eligibility-traces",
+    "unit": "ch07",
+    "title": "Eligibility traces",
+    "kind": "idea",
+    "summary": "A basic mechanism that can be added to almost any TD method. Seen theoretically (the forward view), traces span a family of methods from one-step TD to Monte Carlo, with intermediate members often better than either end. Seen mechanically (the backward view), a trace is a short-lived record that a state or action occurred, marking it as eligible for learning when a TD error arrives: a tool for temporal credit assignment.",
+    "prereqs": [
+      "ch06.td-prediction",
+      "ch05.mc-prediction"
+    ],
+    "related": [
+      "ch01.credit-assignment"
+    ],
+    "keywords": [
+      "eligibility trace",
+      "forward view",
+      "backward view",
+      "credit assignment",
+      "TD(λ)"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "printedPages": [
+          167,
+          168
+        ],
+        "pdfPages": [
+          181,
+          182
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.n-step-return",
+    "unit": "ch07",
+    "title": "n-step returns",
+    "kind": "definition",
+    "summary": "A target between TD's and Monte Carlo's: the first n rewards, then the discounted estimate of the state n steps later, $G_t^{t+n}(c) = R_{t+1} + \\gamma R_{t+2} + \\cdots + \\gamma^{n-1}R_{t+n} + \\gamma^n c$ with $c = V_t(S_{t+n})$. The time $t + n$ is the horizon; if the episode ends first, the n-step return is the complete return $G_t$, so Monte Carlo is the infinite-step case.",
+    "prereqs": [
+      "ch07.eligibility-traces",
+      "ch03.return"
+    ],
+    "related": [
+      "ch07.n-step-td"
+    ],
+    "keywords": [
+      "n-step return",
+      "horizon",
+      "truncated return",
+      "correction"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          168,
+          170
+        ],
+        "pdfPages": [
+          182,
+          184
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.online-offline",
+    "unit": "ch07",
+    "title": "On-line and off-line updating",
+    "kind": "definition",
+    "summary": "An n-step backup is defined by its increment $\\Delta_t(S_t)$, which can be used two ways: on-line, changing V within the episode the moment each increment can be computed (7.3); or off-line, adding up the episode's increments with V held fixed and applying them at its end (7.4). Batch updating (§6.3) goes further, summing over a whole set of episodes.",
+    "prereqs": [
+      "ch07.n-step-return"
+    ],
+    "related": [
+      "ch06.batch-updating"
+    ],
+    "keywords": [
+      "on-line",
+      "off-line",
+      "increment",
+      "updating"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          170,
+          171
+        ],
+        "pdfPages": [
+          184,
+          185
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.error-reduction",
+    "unit": "ch07",
+    "title": "The error reduction property",
+    "kind": "theorem",
+    "summary": "For any value function v, the expected n-step return built on v is closer to $v_\\pi$ in the worst state: its maximum error is at most $\\gamma^n$ times v's (7.5). Averages of n-step returns inherit the property, which is why n-step and λ-based TD methods can be shown to converge.",
+    "prereqs": [
+      "ch07.n-step-return"
+    ],
+    "related": [
+      "ch04.iterative-policy-evaluation"
+    ],
+    "keywords": [
+      "error reduction",
+      "contraction",
+      "convergence"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          171,
+          171
+        ],
+        "pdfPages": [
+          185,
+          185
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.n-step-td",
+    "unit": "ch07",
+    "title": "n-step TD prediction",
+    "kind": "algorithm",
+    "summary": "Back up each state toward its n-step return (7.2). One-step TD and Monte Carlo are the extreme members of the family. The methods are valid but awkward, since each update must wait n steps; their main role is to explain eligibility traces.",
+    "prereqs": [
+      "ch07.n-step-return",
+      "ch07.online-offline"
+    ],
+    "related": [
+      "ch07.td-lambda"
+    ],
+    "keywords": [
+      "n-step TD",
+      "n-step backup"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          170,
+          172
+        ],
+        "pdfPages": [
+          184,
+          186
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.random-walk-19",
+    "unit": "ch07",
+    "title": "The 19-state random walk",
+    "kind": "example",
+    "summary": "Example 7.1: the random walk of Example 6.2 with 19 states, −1 for leaving on the left and +1 on the right, values starting at 0. Methods are compared by the RMS error over the first 10 episodes, averaged over 100 runs with the same walks, as a function of α. Intermediate n (or λ) works best, and on-line updating beats off-line.",
+    "prereqs": [
+      "ch07.n-step-td"
+    ],
+    "related": [
+      "ch06.td-advantages"
+    ],
+    "keywords": [
+      "random walk",
+      "Example 7.1",
+      "Figure 7.2",
+      "Figure 7.6",
+      "19 states"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.1",
+        "printedPages": [
+          171,
+          172
+        ],
+        "pdfPages": [
+          185,
+          186
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "Exercise 7.3 (p. 193) refers to 'the lower part of Figure 7.2', but in this draft the figure's two panels sit side by side; the n = 3 curve that drops early is in the right-hand (off-line) panel.",
+        "suggestion": "Read 'the off-line (right-hand) panel of Figure 7.2'."
+      }
+    ]
+  },
+  {
+    "id": "ch07.complex-backup",
+    "unit": "ch07",
+    "title": "Complex backups",
+    "kind": "definition",
+    "summary": "A backup toward a weighted average of n-step returns (positive weights summing to 1), for example half a two-step and half a four-step return. Such averages keep an error reduction property, so they too give convergent methods. The backup diagram stacks the component diagrams under a line, with the weights below.",
+    "prereqs": [
+      "ch07.n-step-return"
+    ],
+    "related": [
+      "ch07.lambda-return"
+    ],
+    "keywords": [
+      "complex backup",
+      "average of returns",
+      "compound"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.2",
+        "printedPages": [
+          172,
+          173
+        ],
+        "pdfPages": [
+          186,
+          187
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.lambda-return",
+    "unit": "ch07",
+    "title": "The λ-return",
+    "kind": "definition",
+    "summary": "The average of all n-step returns with weights $(1-\\lambda)\\lambda^{n-1}$: $L_t = (1-\\lambda)\\sum_{n\\ge1}\\lambda^{n-1}G_t^{t+n}(V_t(S_{t+n}))$. After termination every n-step return equals $G_t$, so the tail weight $\\lambda^{T-t-1}$ goes to the complete return (7.6). λ = 0 gives the one-step return, λ = 1 the Monte Carlo return.",
+    "prereqs": [
+      "ch07.complex-backup"
+    ],
+    "related": [
+      "ch07.forward-view"
+    ],
+    "keywords": [
+      "λ-return",
+      "lambda",
+      "weighting",
+      "Figure 7.4"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.2",
+        "printedPages": [
+          173,
+          174
+        ],
+        "pdfPages": [
+          187,
+          188
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The draft names the λ-return $L_t$ in §7.2 but $G^\\lambda_t$ in §7.9, and writes n-step returns $G_t^{t+n}(c)$ in §7.1 but $G_t^{(n)}$ in §7.9. The objects are the same.",
+        "suggestion": "$L_t = G^\\lambda_t$ and $G_t^{(n)} = G_t^{t+n}(V(S_{t+n}))$."
+      }
+    ]
+  },
+  {
+    "id": "ch07.forward-view",
+    "unit": "ch07",
+    "title": "The forward view: the λ-return algorithm",
+    "kind": "idea",
+    "summary": "The λ-return algorithm backs up each state toward its λ-return (7.7), on-line or off-line. It is the theoretical, forward view: from each state, look ahead at all future rewards and decide how to combine them. It is acausal, since it needs the future, but it defines what TD(λ) approximates. On the 19-state walk it performs about as well as the best n-step methods.",
+    "prereqs": [
+      "ch07.lambda-return",
+      "ch07.online-offline"
+    ],
+    "related": [
+      "ch07.td-lambda"
+    ],
+    "keywords": [
+      "forward view",
+      "λ-return algorithm",
+      "theoretical view",
+      "acausal"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.2",
+        "printedPages": [
+          174,
+          176
+        ],
+        "pdfPages": [
+          188,
+          190
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.td-lambda",
+    "unit": "ch07",
+    "title": "TD(λ): the backward view",
+    "kind": "algorithm",
+    "summary": "Keep an eligibility trace per state: all traces decay by γλ each step (7.8) and the visited state's is incremented (7.9). The one-step TD error (7.10) then updates every state in proportion to its trace (7.11). Recent states get most credit. λ = 0 is TD(0); λ = 1 with γ = 1 gives undecaying traces and Monte Carlo behaviour. It is causal and incremental, and off-line it equals the λ-return algorithm exactly.",
+    "prereqs": [
+      "ch07.forward-view",
+      "ch06.td-error"
+    ],
+    "related": [
+      "ch07.trace-types"
+    ],
+    "keywords": [
+      "TD(lambda)",
+      "backward view",
+      "trace-decay parameter",
+      "Figure 7.7"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          177,
+          180
+        ],
+        "pdfPages": [
+          191,
+          194
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The bibliographical remark for §7.3 (p. 192) ends 'See Section 14.??', an unresolved reference (probably to the planned psychology or neuroscience material, unwritten in this draft).",
+        "suggestion": "No section of this draft matches; skip the pointer."
+      }
+    ]
+  },
+  {
+    "id": "ch07.trace-types",
+    "unit": "ch07",
+    "title": "Accumulating, replacing and dutch traces",
+    "kind": "definition",
+    "summary": "All three decay non-visited traces by γλ. At a visit, the accumulating trace adds 1 (7.9), the replacing trace is reset to 1 (7.12), and the dutch trace becomes $(1-\\alpha)\\gamma\\lambda E_{t-1}(S_t) + 1$ (7.13), which is accumulating as α → 0 and replacing at α = 1. Replacing and dutch traces make on-line TD(λ) more robust to large α and λ; dutch traces come closest to the λ-return algorithm.",
+    "prereqs": [
+      "ch07.td-lambda"
+    ],
+    "related": [
+      "ch07.true-online-td-lambda"
+    ],
+    "keywords": [
+      "accumulating trace",
+      "replacing trace",
+      "dutch trace",
+      "Figure 7.9"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          177,
+          181
+        ],
+        "pdfPages": [
+          191,
+          195
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.td-one",
+    "unit": "ch07",
+    "title": "TD(1)",
+    "kind": "idea",
+    "summary": "With λ = 1 the traces fall only by γ per step, which is exactly the discounting a reward needs when passed back, so TD(1) behaves like Monte Carlo. Unlike the Monte Carlo methods of Chapter 5, it works for discounted continuing tasks and learns on-line, so a control method built on it can change its behaviour within the same episode.",
+    "prereqs": [
+      "ch07.td-lambda"
+    ],
+    "related": [
+      "ch05.mc-prediction"
+    ],
+    "keywords": [
+      "TD(1)",
+      "Monte Carlo",
+      "on-line"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          179,
+          180
+        ],
+        "pdfPages": [
+          193,
+          194
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.forward-backward-equivalence",
+    "unit": "ch07",
+    "title": "Equivalences of the forward and backward views",
+    "kind": "theorem",
+    "summary": "At λ = 0 all λ-methods are one-step TD. Off-line, the λ-return algorithm and TD(λ) with accumulating traces make identical updates for every λ, and at λ = 1 both are constant-α MC. On-line, TD(λ) only approximates the λ-return algorithm: closely for small α and λ, poorly (even unstably) for large ones; dutch traces approximate it better. An exact on-line equivalence holds between true on-line TD(λ) and a real-time λ-return algorithm (van Seijen and Sutton, 2014), presented in Chapter 9.",
+    "prereqs": [
+      "ch07.td-lambda",
+      "ch07.forward-view"
+    ],
+    "related": [
+      "ch07.true-online-td-lambda"
+    ],
+    "keywords": [
+      "equivalence",
+      "forward view",
+      "backward view",
+      "off-line"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          180,
+          180
+        ],
+        "pdfPages": [
+          194,
+          194
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.4",
+        "printedPages": [
+          181,
+          182
+        ],
+        "pdfPages": [
+          195,
+          196
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 182 says the off-line equivalence was verified with 'the upper-left panel' of Figure 7.6, while p. 180 places the off-line results in the upper-right panel (the upper-left is the on-line λ-return). p. 181 also refers to panels 'in (7.6)' for Figure 7.6, and the bibliographical remark for §7.4 points to 'Section 9.??'.",
+        "suggestion": "Read 'upper-right panel', 'Figure 7.6', and the equivalence material of Chapter 9."
+      }
+    ]
+  },
+  {
+    "id": "ch07.true-online-td-lambda",
+    "unit": "ch07",
+    "title": "True on-line TD(λ)",
+    "kind": "algorithm",
+    "summary": "TD(λ) with dutch traces plus two correction terms (Figure 7.10): it is the exact backward view of a real-time λ-return algorithm. On the 19-state walk it edges out the on-line λ-return algorithm but does not clearly beat dutch traces alone; with λ = 1 it ends each episode exactly where constant-α MC would, while updating on-line.",
+    "prereqs": [
+      "ch07.forward-backward-equivalence",
+      "ch07.trace-types"
+    ],
+    "related": [
+      "ch07.td-lambda"
+    ],
+    "keywords": [
+      "true on-line TD(λ)",
+      "dutch traces",
+      "Figure 7.10"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.4",
+        "printedPages": [
+          182,
+          183
+        ],
+        "pdfPages": [
+          196,
+          197
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.sarsa-lambda",
+    "unit": "ch07",
+    "title": "Sarsa(λ)",
+    "kind": "algorithm",
+    "summary": "TD(λ) applied to state–action pairs: a trace per pair, the Sarsa TD error $R_{t+1} + \\gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)$, and every pair updated by $\\alpha\\delta_t E_t(s, a)$, with an ε-greedy policy for control (Figure 7.12). One episode's reward then strengthens many earlier actions at once, not just the last (Example 7.2).",
+    "prereqs": [
+      "ch07.td-lambda",
+      "ch06.sarsa"
+    ],
+    "related": [
+      "ch07.watkins-q-lambda"
+    ],
+    "keywords": [
+      "Sarsa(λ)",
+      "on-policy",
+      "Figure 7.12",
+      "Example 7.2"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.5",
+        "printedPages": [
+          183,
+          186
+        ],
+        "pdfPages": [
+          197,
+          200
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "Exercise 7.5 (p. 193) is labelled '(programming)' but asks for a backup diagram for Sarsa(λ) with replacing traces.",
+        "suggestion": "Treat it as a drawing exercise."
+      }
+    ]
+  },
+  {
+    "id": "ch07.watkins-q-lambda",
+    "unit": "ch07",
+    "title": "Watkins's Q(λ)",
+    "kind": "algorithm",
+    "summary": "Eligibility traces for Q-learning. Since Q-learning learns about the greedy policy, experience after a nongreedy (exploratory) action says nothing about it, so the backup looks ahead only up to the first exploratory action (and one step past it, through the max). Mechanically: traces as in Sarsa(λ), but all set to 0 whenever a nongreedy action is taken (Figure 7.15). Frequent exploration then cuts traces so often that little is gained over one-step Q-learning.",
+    "prereqs": [
+      "ch07.sarsa-lambda",
+      "ch06.q-learning"
+    ],
+    "related": [
+      "ch07.off-policy-traces"
+    ],
+    "keywords": [
+      "Watkins's Q(λ)",
+      "off-policy",
+      "cutting traces",
+      "Figure 7.15"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.6",
+        "printedPages": [
+          186,
+          188
+        ],
+        "pdfPages": [
+          200,
+          202
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.off-policy-traces",
+    "unit": "ch07",
+    "title": "Off-policy traces by importance sampling",
+    "kind": "idea",
+    "summary": "Watkins's Q(λ) treats off-policy deviation as all or nothing and mixes it up with bootstrapping: it cuts traces (and so bootstraps) at any deviation, even with λ = 1. The aim is to separate them: λ for the degree of bootstrapping, importance-sampling ratios (Chapter 5) for the degree of deviation.",
+    "prereqs": [
+      "ch07.watkins-q-lambda",
+      "ch05.importance-sampling"
+    ],
+    "related": [
+      "ch05.off-policy-learning"
+    ],
+    "keywords": [
+      "off-policy",
+      "importance sampling",
+      "bootstrapping"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.7",
+        "printedPages": [
+          188,
+          189
+        ],
+        "pdfPages": [
+          202,
+          203
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.trace-implementation",
+    "unit": "ch07",
+    "title": "Implementing traces efficiently",
+    "kind": "idea",
+    "summary": "Naively every state updates its value and trace every step. But for usual γ and λ almost all traces are nearly zero, so only the few recently visited states need updating; this makes traces cost a few times a one-step method. With function approximation the relative cost is smaller still.",
+    "prereqs": [
+      "ch07.td-lambda"
+    ],
+    "related": [
+      "ch07.eligibility-traces"
+    ],
+    "keywords": [
+      "implementation",
+      "efficiency",
+      "sparse traces"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.8",
+        "printedPages": [
+          189,
+          189
+        ],
+        "pdfPages": [
+          203,
+          203
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch07.variable-lambda",
+    "unit": "ch07",
+    "title": "Variable λ",
+    "kind": "idea",
+    "summary": "Let λ change from step to step, for example by state: λ near 0 where the value is known well (cut the traces and trust it), near 1 where it is uncertain (skip over it to better-known states). The trace update uses $\\gamma\\lambda_t$; the forward view is a generalised λ-return. Interesting in theory, unused in practice in the draft's account.",
+    "prereqs": [
+      "ch07.td-lambda",
+      "ch07.lambda-return"
+    ],
+    "related": [
+      "ch07.watkins-q-lambda"
+    ],
+    "keywords": [
+      "variable λ",
+      "state-dependent λ"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.9",
+        "printedPages": [
+          190,
+          190
+        ],
+        "pdfPages": [
+          204,
+          204
+        ]
+      }
+    ],
+    "optional": true
+  }
+]

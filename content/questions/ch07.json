@@ -1,0 +1,1562 @@
+{
+  "unit": "ch07",
+  "questions": [
+    {
+      "id": "ch07-q001",
+      "unit": "ch07",
+      "section": "7.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "7.1"
+      },
+      "concepts": [
+        "ch07.random-walk-19",
+        "ch07.n-step-td"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 7.1: why do you think the examples of this chapter use a larger random walk (19 states rather than 5)? Would a smaller walk have moved the advantage to a different n? And would changing the left-side outcome from 0 to −1 make any difference to the best n?",
+      "answer": "With 19 states episodes are long (about 100 steps from the centre on average), so there is room for n-step returns with many different n to differ: in a 5-state walk most episodes are only a few steps long, any n beyond about 4 is already the complete Monte Carlo return, and the comparison would collapse. A smaller walk would shift the best n down, since the useful lookahead is bounded by typical episode length. The −1 outcome on the left makes the true values run from −0.9 to 0.9 with values starting at 0, so both ends carry information and errors are symmetric; it changes the scale of the errors and makes early updates from the left informative, which could change which n learns fastest, though not the general shape (intermediate n best). With the values starting at 0 and a left outcome of 0, initial estimates would already be correct for the left half and only the right reward would teach anything.",
+      "solution": [
+        "Think about episode length relative to n.",
+        "Think about what the initial values and the left outcome mean for the initial error."
+      ],
+      "explanation": "The best n reflects how far information needs to travel in typical episodes.",
+      "rubric": [
+        {
+          "point": "Longer episodes leave room for many n to differ; in a 5-state walk large n is just Monte Carlo",
+          "marks": 1
+        },
+        {
+          "point": "A smaller walk would favour smaller n",
+          "marks": 1
+        },
+        {
+          "point": "The −1 outcome (with values from 0) makes both ends informative and changes errors; argued effect on best n",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch07-q002"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 7.1, printed p. 193; Example 7.1, printed pp. 171–172."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.1",
+          "printedPages": [
+            168,
+            172
+          ],
+          "pdfPages": [
+            182,
+            186
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            193,
+            193
+          ],
+          "pdfPages": [
+            207,
+            207
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q002",
+      "unit": "ch07",
+      "section": "7.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "7.2"
+      },
+      "concepts": [
+        "ch07.online-offline",
+        "ch07.random-walk-19"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 7.2: on the random-walk task, on-line methods did better than off-line ones. Why might that be?",
+      "answer": "On-line methods use what they learn immediately: an update made early in an episode improves the estimates that later targets in the same episode bootstrap from, and repeated visits to a state within one episode see its corrected value. Off-line methods hold the values fixed through the whole (long) episode and then apply the sum of all increments at once. In the random walk states are revisited many times per episode, so a single state can receive dozens of increments computed from the same stale value; their sum overshoots for larger α, which is why off-line methods become unstable above about α = 0.3 while on-line ones remain stable up to α ≈ 1.",
+      "solution": [
+        "Count how often a state is visited in one 19-state episode.",
+        "Compare stale and fresh values."
+      ],
+      "explanation": "Off-line updating in effect multiplies the step size by the number of visits.",
+      "rubric": [
+        {
+          "point": "On-line updates use improved estimates within the same episode",
+          "marks": 1
+        },
+        {
+          "point": "Off-line sums many increments computed from stale values, overshooting at larger α (frequent revisits)",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch07-q003"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 7.2, printed p. 193; Figure 7.2, printed p. 172."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.1",
+          "printedPages": [
+            168,
+            172
+          ],
+          "pdfPages": [
+            182,
+            186
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            193,
+            193
+          ],
+          "pdfPages": [
+            207,
+            207
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q003",
+      "unit": "ch07",
+      "section": "7.1",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "7.3"
+      },
+      "concepts": [
+        "ch07.random-walk-19",
+        "ch07.online-offline"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 4,
+      "marks": 4,
+      "stem": "Exercise 7.3 (starred): in the off-line panel of Figure 7.2 the curve for n = 3 breaks down at a much lower α than similar methods, and the authors saw the same for n = 5, 7 and 9. Can you explain why this might be? (The draft admits it is not sure itself.)",
+      "answer": "Any reasoned hypothesis earns credit; one candidate is parity. The walk moves one state per step, so after an odd number of steps it is always on a state of the opposite parity to where it started; for odd n every off-line target bootstraps from the other parity class. In expectation the off-line update multiplies the error by something like $I - \\alpha D(I - P^n)$, where $P$ is the walk's transition matrix. Because the walk alternates parity, $P$ has eigenvalues near −1, so $P^n$ has eigenvalues near −1 for odd n but only nonnegative ones for even n. Then $I - P^n$ has eigenvalues near 2 for odd n, which makes the summed off-line updates overshoot at a smaller step size. Our reproduction confirms the observation: at α = 0.2 off-line n = 3 and n = 5 have blown up while n = 2 and n = 4 are still learning. This is a plausible partial explanation, not a proof (n = 1 is also odd but has fewer, smaller increments per state).",
+      "solution": [
+        "Reproduce it in the eligibility-traces laboratory (off-line n-step family).",
+        "Consider where the walk can be after an odd number of steps."
+      ],
+      "explanation": "Starred and open-ended: the draft itself has no settled answer.",
+      "rubric": [
+        {
+          "point": "Confirms or describes the phenomenon correctly (odd n unstable at lower α off-line)",
+          "marks": 1
+        },
+        {
+          "point": "A coherent mechanism, e.g. parity of the walk making odd-n targets oscillate (eigenvalues near −1)",
+          "marks": 2
+        },
+        {
+          "point": "Acknowledges limits of the explanation",
+          "marks": 1
+        }
+      ],
+      "related": [
+        "ch07-q002"
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 7.3, printed p. 193; reproduced by check ch07.ex7-3-odd-n."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.1",
+          "printedPages": [
+            168,
+            172
+          ],
+          "pdfPages": [
+            182,
+            186
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            193,
+            193
+          ],
+          "pdfPages": [
+            207,
+            207
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q004",
+      "unit": "ch07",
+      "section": "7.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "7.4"
+      },
+      "concepts": [
+        "ch07.lambda-return"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 7.4: the weights $\\lambda^n$ of the λ-return fall off at a rate set by λ; a half-life $\\tau_\\lambda$ (the time by which the weighting has fallen to half its initial value) is sometimes easier to think with. From $\\lambda^{\\tau_\\lambda} = 1/2$, find $\\tau_\\lambda$ for λ = 0.9 and for λ = 0.5.",
+      "parts": [
+        {
+          "label": "τ for λ = 0.9",
+          "answer": 6.5788,
+          "tolerance": 0.01
+        },
+        {
+          "label": "τ for λ = 0.5",
+          "answer": 1,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "$\\lambda^{\\tau} = \\tfrac12$ gives $\\tau = \\ln(1/2)/\\ln\\lambda = \\ln 2 / \\ln(1/\\lambda)$.",
+        "λ = 0.9: $0.6931/0.1054 \\approx 6.58$ steps. λ = 0.5: exactly 1 step."
+      ],
+      "explanation": "The half-life grows quickly as λ approaches 1: about 69 steps for λ = 0.99.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch07-q004"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.2",
+          "printedPages": [
+            172,
+            176
+          ],
+          "pdfPages": [
+            186,
+            190
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            193,
+            193
+          ],
+          "pdfPages": [
+            207,
+            207
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q005",
+      "unit": "ch07",
+      "section": "7.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "7.5"
+      },
+      "concepts": [
+        "ch07.sarsa-lambda",
+        "ch07.trace-types"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 7.5: draw (or describe) the backup diagram for Sarsa(λ) with replacing traces. (The draft labels this exercise '(programming)', though it asks for a diagram.)",
+      "answer": "As Figure 7.11: a sequence of component backups starting from the state–action pair $(S_t, A_t)$ (a filled action node), the first reaching one step ahead to the next state–action pair, the second two steps ahead, and so on, the last to the end of the episode; weights $1-\\lambda$, $(1-\\lambda)\\lambda$, $(1-\\lambda)\\lambda^2$, …, and $\\lambda^{T-t-1}$ for the complete return, summing to 1. With replacing traces the forward view changes when a pair recurs within the episode: a revisit resets the trace rather than adding to it, so the earlier occurrence's backups stop at the revisit. In the diagram, each component backup from $(S_t, A_t)$ is truncated where the same pair occurs again (the later occurrence takes over), roughly the first-visit analogue of the accumulating-trace diagram.",
+      "solution": [
+        "Start from Figure 7.11 and ask what a revisit does to the trace."
+      ],
+      "explanation": "Accumulating traces add the credit of repeated visits; replacing traces keep only the most recent.",
+      "rubric": [
+        {
+          "point": "Component backups of 1, 2, … steps over state–action pairs, ending with the complete return",
+          "marks": 1
+        },
+        {
+          "point": "Weights (1 − λ)λ^{n−1} and λ^{T−t−1}",
+          "marks": 1
+        },
+        {
+          "point": "Effect of replacing: credit from an earlier occurrence ends at a revisit of the same pair",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 7.5, printed p. 193; Figure 7.11, printed p. 184."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.5",
+          "printedPages": [
+            183,
+            184
+          ],
+          "pdfPages": [
+            197,
+            198
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            193,
+            193
+          ],
+          "pdfPages": [
+            207,
+            207
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q006",
+      "unit": "ch07",
+      "section": "7.8",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "7.6"
+      },
+      "concepts": [
+        "ch07.trace-implementation",
+        "ch07.td-lambda"
+      ],
+      "type": "short-answer",
+      "category": "pseudocode",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 7.6: give pseudocode for TD(λ) in which only states with a trace above some small positive constant have their values updated.",
+      "answer": "Keep a list (or map) L of states with significant traces. Each episode: clear L; S ← start. Each step: take the action π gives, observe R and S′; δ ← R + γV(S′) − V(S); raise E(S) (accumulating +1, or dutch/replacing) and add S to L if absent; for each s in L: add αδ times its trace to V(s), multiply its trace by γλ, and if the trace is now below ε, zero it and drop s from L. S ← S′, until S is terminal. Cost per step is proportional to the size of L, about $\\log\\varepsilon / \\log(\\gamma\\lambda)$ recent states, instead of all states.",
+      "solution": [
+        "Store only the nonzero traces.",
+        "Remove a state once its trace drops below the constant."
+      ],
+      "explanation": "The laboratory's implementation does exactly this; on the 19-state walk it saves about a third of the updates with negligible change in values.",
+      "rubric": [
+        {
+          "point": "Data structure holding only states with significant traces",
+          "marks": 1
+        },
+        {
+          "point": "Correct TD(λ) update and decay over that list",
+          "marks": 1
+        },
+        {
+          "point": "Removal when the trace drops below the constant; cost argument",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 7.6, printed p. 193; §7.8, printed p. 189; measured by check ch07.ex7-6-sparse."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.8",
+          "printedPages": [
+            189,
+            189
+          ],
+          "pdfPages": [
+            203,
+            203
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            193,
+            193
+          ],
+          "pdfPages": [
+            207,
+            207
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q007",
+      "unit": "ch07",
+      "section": "7.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "7.7"
+      },
+      "concepts": [
+        "ch07.sarsa-lambda",
+        "ch07.true-online-td-lambda",
+        "ch07.watkins-q-lambda"
+      ],
+      "type": "short-answer",
+      "category": "pseudocode",
+      "difficulty": 4,
+      "marks": 4,
+      "stem": "Exercise 7.7: give update equations or pseudocode for Sarsa(λ), Q(λ) or both, using dutch traces; then repeat for a true on-line variant.",
+      "answer": "Dutch Sarsa(λ): as Figure 7.12 with the visited pair's trace E(S, A) ← (1 − α)E(S, A) + 1 (after the previous step's decay by γλ); δ ← R + γQ(S′, A′) − Q(S, A); every pair Q ← Q + αδE, then E ← γλE. Dutch Q(λ): the same with δ using max_a Q(S′, a) and traces set to 0 instead of decayed when A′ is not greedy. True on-line Sarsa(λ), by analogy with Figure 7.10 replacing V(S) by Q(S, A): keep a remembered value Q_old. Each step, let Δ be the change of Q(S, A) since it was remembered, then remember Q(S′, A′); form the Sarsa error δ; give the current pair the dutch increment; move every pair by α(δ + Δ) times its trace and decay all traces by γλ; finally subtract αΔ from Q(S, A) (a terminal pair's value is 0).",
+      "solution": [
+        "Change only the trace increment for the dutch version.",
+        "For the true on-line version, transcribe Figure 7.10 with state–action pairs."
+      ],
+      "explanation": "The draft gives no algorithm box for these; the analogy with Figure 7.10 is the intended route.",
+      "rubric": [
+        {
+          "point": "Dutch trace increment for the visited pair",
+          "marks": 1
+        },
+        {
+          "point": "Correct Sarsa (or Q) TD error and update over all pairs",
+          "marks": 1
+        },
+        {
+          "point": "True on-line version: Δ/Q_old correction terms as in Figure 7.10",
+          "marks": 2
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 7.7, printed p. 193; Figures 7.10, 7.12 and 7.15, printed pp. 183–188."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.5",
+          "printedPages": [
+            183,
+            185
+          ],
+          "pdfPages": [
+            197,
+            199
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            193,
+            193
+          ],
+          "pdfPages": [
+            207,
+            207
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q008",
+      "unit": "ch07",
+      "section": "7.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.1"
+        ]
+      },
+      "concepts": [
+        "ch07.n-step-return"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "What is the n-step return $G_t^{t+n}(V(S_{t+n}))$ when the episode ends before the horizon $t + n$?",
+      "options": [
+        "The complete return $G_t$",
+        "Zero",
+        "The one-step return",
+        "It is undefined"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: the truncation happens at the episode's end.",
+        "The rewards received are still counted.",
+        "Only if the episode ends after one step.",
+        "The draft defines it as the complete return."
+      ],
+      "solution": [
+        "If $h \\ge T$ then $G_t^h(c) = G_t$: near the end of an episode every n-step return is already the full return."
+      ],
+      "explanation": "So Monte Carlo is the case of infinite n.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 170."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.1",
+          "printedPages": [
+            170,
+            170
+          ],
+          "pdfPages": [
+            184,
+            184
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q009",
+      "unit": "ch07",
+      "section": "7.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch07.random-walk-19",
+          "eq.ch07.n-step-increment"
+        ]
+      },
+      "concepts": [
+        "ch07.n-step-td",
+        "ch07.online-offline"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "On the 5-state walk with all values 0.5 and α = 0.1, the first episode goes C → D → E → right end (reward 1 at the end, 0 otherwise, γ = 1). After two-step TD with off-line updating, what are V(C), V(D) and V(E)?",
+      "parts": [
+        {
+          "label": "V(C)",
+          "answer": 0.5,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "V(D)",
+          "answer": 0.55,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "V(E)",
+          "answer": 0.55,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "C's two-step return is $0 + 0 + V(E) = 0.5$, so no change.",
+        "D's two-step return reaches the end: the complete return 1; $0.5 + 0.1(1 - 0.5) = 0.55$.",
+        "E's is also 1, so V(E) = 0.55."
+      ],
+      "explanation": "Two-step TD passes the outcome back two states in one episode; one-step TD would change only V(E).",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch07-q009"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.1",
+          "printedPages": [
+            171,
+            171
+          ],
+          "pdfPages": [
+            185,
+            185
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q010",
+      "unit": "ch07",
+      "section": "7.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.1"
+        ]
+      },
+      "concepts": [
+        "ch07.online-offline"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: with off-line updating, the value estimates do not change during an episode; the increments are summed and applied at its end.",
+      "answer": true,
+      "solution": [
+        "That is (7.4)."
+      ],
+      "explanation": "On-line updating (7.3) applies each increment as soon as it is computed.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 170."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.1",
+          "printedPages": [
+            170,
+            170
+          ],
+          "pdfPages": [
+            184,
+            184
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q011",
+      "unit": "ch07",
+      "section": "7.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch07.lambda-return"
+        ]
+      },
+      "concepts": [
+        "ch07.lambda-return"
+      ],
+      "type": "multi-numeric",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 3,
+      "stem": "In the λ-return with λ = 0.5, what weights do the 1-step, 2-step and 3-step returns receive (assuming the episode lasts longer than 4 more steps)?",
+      "parts": [
+        {
+          "label": "1-step",
+          "answer": 0.5,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "2-step",
+          "answer": 0.25,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "3-step",
+          "answer": 0.125,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "The n-step return gets $(1-\\lambda)\\lambda^{n-1}$: 0.5, 0.25, 0.125."
+      ],
+      "explanation": "Each longer return gets λ times the weight of the one before.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch07-q011"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.2",
+          "printedPages": [
+            173,
+            173
+          ],
+          "pdfPages": [
+            187,
+            187
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q012",
+      "unit": "ch07",
+      "section": "7.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.2"
+        ]
+      },
+      "concepts": [
+        "ch07.lambda-return",
+        "ch07.forward-view"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Backing up toward the λ-return is the same as which methods at λ = 0 and at λ = 1?",
+      "options": [
+        "TD(0) at λ = 0; constant-α MC at λ = 1",
+        "Constant-α MC at λ = 0; TD(0) at λ = 1",
+        "TD(0) at both",
+        "Q-learning at λ = 0; Sarsa at λ = 1"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Reversed.",
+        "At λ = 1 the target is the complete return.",
+        "These are control methods; the λ-return here is for prediction."
+      ],
+      "solution": [
+        "λ = 0 leaves only the one-step return; λ = 1 puts all the weight on the complete return (7.6)."
+      ],
+      "explanation": "λ interpolates between the two.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 173–174."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.2",
+          "printedPages": [
+            173,
+            174
+          ],
+          "pdfPages": [
+            187,
+            188
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q013",
+      "unit": "ch07",
+      "section": "7.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch07.accumulating-trace",
+          "eq.ch07.replacing-trace",
+          "eq.ch07.dutch-trace"
+        ]
+      },
+      "concepts": [
+        "ch07.trace-types"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "With γ = 1 and λ = 0.8, a state is visited at t = 0 (trace 1 then) and again at t = 2. What is its trace at t = 2 with accumulating, replacing and dutch traces (α = 0.5)?",
+      "parts": [
+        {
+          "label": "accumulating",
+          "answer": 1.64,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "replacing",
+          "answer": 1,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "dutch",
+          "answer": 1.32,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "Before the revisit the trace has decayed twice: $0.8^2 = 0.64$.",
+        "Accumulating: $0.64 + 1 = 1.64$. Replacing: 1. Dutch: $(1 - 0.5) \\cdot 0.64 + 1 = 1.32$."
+      ],
+      "explanation": "The dutch trace lies between the other two.",
+      "related": [
+        "ch07-q014"
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch07-q013"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.3",
+          "printedPages": [
+            177,
+            180
+          ],
+          "pdfPages": [
+            191,
+            194
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q014",
+      "unit": "ch07",
+      "section": "7.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch07.td-lambda-update"
+        ]
+      },
+      "concepts": [
+        "ch07.td-lambda"
+      ],
+      "type": "numeric",
+      "category": "algorithm-trace",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "In TD(λ), the current TD error is δ = 0.5 and α = 0.1. By how much does a state whose trace is 0.64 change?",
+      "parts": [
+        {
+          "label": "change in V(s)",
+          "answer": 0.032,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "(7.11): $\\Delta V(s) = \\alpha\\delta E(s) = 0.1 \\cdot 0.5 \\cdot 0.64 = 0.032$."
+      ],
+      "explanation": "Every state with a nonzero trace changes on the same step, in proportion to its trace.",
+      "related": [
+        "ch07-q013"
+      ],
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch07-q014"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.3",
+          "printedPages": [
+            178,
+            178
+          ],
+          "pdfPages": [
+            192,
+            192
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q015",
+      "unit": "ch07",
+      "section": "7.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.3"
+        ]
+      },
+      "concepts": [
+        "ch07.td-one"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "What does TD(1) offer over the Monte Carlo methods of Chapter 5?",
+      "options": [
+        "It also applies to discounted continuing tasks and learns on-line, during the episode",
+        "It never needs a step size",
+        "It bootstraps more than TD(0)",
+        "It needs a model of the environment"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "It uses α like other TD methods.",
+        "λ = 1 means no bootstrapping.",
+        "It is model-free."
+      ],
+      "solution": [
+        "With λ = 1 traces fall by γ per step, matching discounting; updates happen every step."
+      ],
+      "explanation": "A control method based on TD(1) can change its behaviour within the same episode.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 179–180."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.3",
+          "printedPages": [
+            179,
+            180
+          ],
+          "pdfPages": [
+            193,
+            194
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q016",
+      "unit": "ch07",
+      "section": "7.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.4"
+        ]
+      },
+      "concepts": [
+        "ch07.forward-backward-equivalence"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: off-line, the λ-return algorithm and TD(λ) with accumulating traces make exactly the same updates, for every λ.",
+      "answer": true,
+      "solution": [
+        "Proved in the first edition; confirmed here to rounding error (check ch07.offline-equivalence)."
+      ],
+      "explanation": "On-line they only approximately agree.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 181."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.4",
+          "printedPages": [
+            181,
+            181
+          ],
+          "pdfPages": [
+            195,
+            195
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q017",
+      "unit": "ch07",
+      "section": "7.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.4"
+        ]
+      },
+      "concepts": [
+        "ch07.true-online-td-lambda"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "What can be said of true on-line TD(λ) with λ = 1, according to §7.4?",
+      "options": [
+        "By the end of each episode it is exactly equivalent to constant-α MC, while updating on-line",
+        "It is identical to TD(0)",
+        "It diverges on the random walk",
+        "It needs off-line updating"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct; the draft says no other method here can claim this.",
+        "That is λ = 0.",
+        "It is stable on the walk.",
+        "It is an on-line algorithm."
+      ],
+      "solution": [
+        "The correction terms make it match the λ-return at λ = 1, i.e. the Monte Carlo return."
+      ],
+      "explanation": "Check ch07.true-online-mc confirms it exactly.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 182."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.4",
+          "printedPages": [
+            182,
+            182
+          ],
+          "pdfPages": [
+            196,
+            196
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q018",
+      "unit": "ch07",
+      "section": "7.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.5"
+        ]
+      },
+      "concepts": [
+        "ch07.sarsa-lambda"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "What is the TD error used by Sarsa(λ)?",
+      "options": [
+        "$R_{t+1} + \\gamma Q_t(S_{t+1}, A_{t+1}) - Q_t(S_t, A_t)$",
+        "$R_{t+1} + \\gamma\\max_a Q_t(S_{t+1}, a) - Q_t(S_t, A_t)$",
+        "$G_t - Q_t(S_t, A_t)$",
+        "$R_{t+1} - Q_t(S_t, A_t)$"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: Sarsa's error, with the action actually chosen next.",
+        "That is Watkins's Q(λ).",
+        "That is a Monte Carlo error.",
+        "It ignores the next pair."
+      ],
+      "solution": [
+        "Sarsa(λ) is TD(λ) on state–action pairs with Sarsa's TD error."
+      ],
+      "explanation": "The traces then spread it over recent pairs.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 184."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.5",
+          "printedPages": [
+            184,
+            184
+          ],
+          "pdfPages": [
+            198,
+            198
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q019",
+      "unit": "ch07",
+      "section": "7.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch07.traces-gridworld"
+        ]
+      },
+      "concepts": [
+        "ch07.sarsa-lambda"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "In Example 7.2 (all action values 0, the only reward +1 at the end, γ = 1), an episode of 20 moves is learned from with α = 0.1. By how much does one-step Sarsa raise the last move's value, and by how much does Sarsa(λ) with λ = 0.9 (accumulating, no repeated pairs) raise the value of the move three steps before the last?",
+      "parts": [
+        {
+          "label": "one-step Sarsa, last move",
+          "answer": 0.1,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "Sarsa(λ), three steps earlier",
+          "answer": 0.0729,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "Every TD error is 0 until the final move, whose error is 1.",
+        "One-step: only the last pair, by $0.1 \\cdot 1$.",
+        "Sarsa(λ): the pair three steps earlier has trace $0.9^3$, so it rises by $0.1 \\cdot 0.729 = 0.0729$."
+      ],
+      "explanation": "The trace method credits the whole path, decaying by γλ per step.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch07-q019"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.5",
+          "printedPages": [
+            184,
+            186
+          ],
+          "pdfPages": [
+            198,
+            200
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q020",
+      "unit": "ch07",
+      "section": "7.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.6"
+        ]
+      },
+      "concepts": [
+        "ch07.watkins-q-lambda"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "In Watkins's Q(λ), what happens to the eligibility traces when the agent takes an exploratory (nongreedy) action?",
+      "options": [
+        "They are all set to zero",
+        "They are all set to one",
+        "They decay by γλ as usual",
+        "Only the current pair's trace is reset"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "No.",
+        "That is what happens after greedy actions.",
+        "All traces are cut."
+      ],
+      "solution": [
+        "Experience after a nongreedy action says nothing about the greedy policy, so earlier pairs must not be credited with it."
+      ],
+      "explanation": "This is why frequent exploration weakens Q(λ).",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 187–188."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.6",
+          "printedPages": [
+            187,
+            188
+          ],
+          "pdfPages": [
+            201,
+            202
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q021",
+      "unit": "ch07",
+      "section": "7.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.6"
+        ]
+      },
+      "concepts": [
+        "ch07.watkins-q-lambda"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "True or false: in the tabular Watkins's Q(λ) of Figure 7.15, if the action A′ chosen next ties for the maximum of Q(S′, ·), the traces are decayed rather than cut.",
+      "answer": true,
+      "solution": [
+        "The box sets A* ← A′ when A′ ties for the max, so A′ = A* and the traces decay by γλ."
+      ],
+      "explanation": "Ties count as greedy.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 188."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.6",
+          "printedPages": [
+            188,
+            188
+          ],
+          "pdfPages": [
+            202,
+            202
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q022",
+      "unit": "ch07",
+      "section": "7.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.7"
+        ]
+      },
+      "concepts": [
+        "ch07.off-policy-traces"
+      ],
+      "type": "multi",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Which two shortcomings of Watkins's Q(λ) does §7.7 point out? Select all that apply.",
+      "options": [
+        "It treats deviation from the target policy as all or nothing",
+        "It confounds bootstrapping with off-policy deviation: it bootstraps at any deviation, even with λ = 1",
+        "It cannot learn about the greedy policy",
+        "It needs a model of the environment"
+      ],
+      "answer": [
+        0,
+        1
+      ],
+      "optionNotes": [
+        "Correct.",
+        "Correct.",
+        "It does learn about the greedy policy.",
+        "It is model-free."
+      ],
+      "solution": [
+        "Importance-sampling ratios could weight deviations by degree, and λ could then control bootstrapping alone."
+      ],
+      "explanation": "The draft states the goal but no algorithm here.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 188–189."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.7",
+          "printedPages": [
+            188,
+            189
+          ],
+          "pdfPages": [
+            202,
+            203
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q023",
+      "unit": "ch07",
+      "section": "7.8",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.8"
+        ]
+      },
+      "concepts": [
+        "ch07.trace-implementation"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Why are eligibility traces usually not as expensive as updating every state on every step suggests?",
+      "options": [
+        "Almost all traces are nearly zero, so only the few recently visited states need updating",
+        "Traces are only used off-line",
+        "Only one state has a nonzero trace at a time",
+        "The values of most states never change"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "They are usually used on-line.",
+        "That is only so for λ = 0.",
+        "They can change whenever their trace is nonzero."
+      ],
+      "solution": [
+        "Keep track of the states with significant traces; the cost becomes a few times that of a one-step method."
+      ],
+      "explanation": "Cichosz (1995) reduces it further, to a constant.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 189."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.8",
+          "printedPages": [
+            189,
+            189
+          ],
+          "pdfPages": [
+            203,
+            203
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q024",
+      "unit": "ch07",
+      "section": "7.9",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.9"
+        ]
+      },
+      "concepts": [
+        "ch07.variable-lambda"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "With a state-dependent λ, what λ suits a state whose value is believed to be known with high certainty?",
+      "options": [
+        "Zero or very small, cutting the traces there and using its estimate fully",
+        "Close to 1, skipping over it",
+        "Exactly 0.5",
+        "λ cannot depend on the state"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "That suits uncertain states.",
+        "No particular reason.",
+        "§7.9 lets λ vary with the state."
+      ],
+      "solution": [
+        "A small λ at a state stops looking beyond it and trusts its value."
+      ],
+      "explanation": "Uncertain states get λ near 1 so their estimates count for little.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 190."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.9",
+          "printedPages": [
+            190,
+            190
+          ],
+          "pdfPages": [
+            204,
+            204
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q025",
+      "unit": "ch07",
+      "section": "7.10",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.10"
+        ]
+      },
+      "concepts": [
+        "ch07.eligibility-traces"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "According to the conclusions, when does it often NOT pay to use eligibility traces?",
+      "options": [
+        "In off-line applications where data can be generated cheaply, for example from a fast simulation",
+        "When data are scarce and arrive on-line",
+        "When rewards are delayed by many steps",
+        "When the task is partly non-Markov"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: processing more data quickly matters more than squeezing each datum.",
+        "Traces pay most here.",
+        "Traces help most here.",
+        "Traces help here too."
+      ],
+      "solution": [
+        "Traces cost computation; they repay it when each piece of experience is precious."
+      ],
+      "explanation": "With cheap data, one-step methods are often favoured.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 190–191."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.10",
+          "printedPages": [
+            190,
+            191
+          ],
+          "pdfPages": [
+            204,
+            205
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch07-q026",
+      "unit": "ch07",
+      "section": "7.10",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§7.10"
+        ]
+      },
+      "concepts": [
+        "ch07.eligibility-traces"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: the conclusions recommend pushing λ all the way to 1, making the method a pure Monte Carlo method, for best performance.",
+      "answer": false,
+      "solution": [
+        "Performance degrades sharply near pure Monte Carlo; an intermediate mixture appears best."
+      ],
+      "explanation": "Traces should move us toward Monte Carlo, but not all the way.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 190."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.10",
+          "printedPages": [
+            190,
+            190
+          ],
+          "pdfPages": [
+            204,
+            204
+          ]
+        }
+      ],
+      "reviewed": true
+    }
+  ]
+}

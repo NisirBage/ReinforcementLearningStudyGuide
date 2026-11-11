@@ -18,6 +18,7 @@ import { Iteration } from "./labs/BellmanLab";
 import { PolicyIterationPanel, ValueIterationPanel, model } from "./labs/DpLab";
 import { ExploringStarts, Prediction } from "./labs/McLab";
 import { ControlInspector, TdStepper } from "./labs/TdLab";
+import { PathCredit, TdLambdaStepper } from "./labs/TracesLab";
 import { NotFound } from "./NotFound";
 
 const SA = { kind: "sample-average" } as const;
@@ -41,6 +42,8 @@ export const DEMOS: Record<Explainer["demo"], { note: string; view: () => ReactE
   td0: { note: "TD(0) on the random walk, one step at a time: $S_t$, $R_{t+1}$, $S_{t+1}$, the target, the TD error and the new $V(S_t)$.", view: () => <TdStepper /> },
   sarsa: { note: "Sarsa on cliff walking, one update at a time: the next action $A_{t+1}$ is chosen ε-greedily first, and its value forms the target.", view: () => <ControlInspector initialMethod="sarsa" /> },
   "q-learning": { note: "Q-learning on cliff walking, one update at a time: the target uses $\\max_a Q(S_{t+1}, a)$, whatever action is taken next.", view: () => <ControlInspector initialMethod="q-learning" /> },
+  "td-lambda": { note: "TD(λ) on the random walk, one step at a time: the TD error δ, every state's eligibility trace, and the change it causes; choose the kind of trace, or true on-line TD(λ).", view: () => <TdLambdaStepper /> },
+  "sarsa-lambda": { note: "Example 7.2: the action values one episode raises with one-step Sarsa and with traces; declare a move exploratory to see Watkins's Q(λ) cut the traces.", view: () => <PathCredit /> },
 };
 
 export function AlgorithmPage() {

@@ -949,5 +949,93 @@ The validator reports no problems and no warnings.
 
 `npm run check` passes.
 
-#### Next: Milestone 4I
-Chapter 7 to the coverage criteria.
+### Milestone 4I: Chapter 7 complete (done, 2026-11-11)
+
+**Chapter 7 meets the coverage criteria:**
+- all 10 sections are covered (§7.10 as a reading guide);
+- all 13 numbered equations are present;
+- both examples are covered;
+- all 7 exercises are in the question bank.
+
+The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read in the text layer, and equations (7.1)–(7.13) were checked on the page images. **Flagged:**
+- **(7.1)** is printed "$R_{t+1} + \gamma R_{t+2} + \gamma^2 + \cdots$": the reward $R_{t+3}$ is missing. The transcription keeps it as printed and the flag gives the correction.
+- **Notation.** The λ-return is $L_t$ in §7.2 but $G^\lambda_t$ in §7.9, and n-step returns are $G_t^{t+n}(c)$ in §7.1 but $G_t^{(n)}$ in §7.9.
+- **Figure 7.6 panels.** p. 182 places the off-line equivalence in the "upper-left" panel, where p. 180 says upper-right. p. 181 writes "panels in (7.6)" for Figure 7.6.
+- **Unresolved references:** "Section 9.??" and "Section 14.??" in the bibliographical remarks.
+- **Exercise 7.3** refers to "the lower part of Figure 7.2", whose panels are side by side; the off-line panel is meant.
+- **Exercise 7.5** is labelled "(programming)" but asks for a backup diagram.
+
+**New library code, `lib/rl/traces.ts`:**
+- the N-state random walk;
+- n-step returns and n-step TD, on-line and off-line;
+- the λ-return algorithm;
+- TD(λ) with accumulating, replacing and dutch traces, on-line or off-line, with an option to skip negligible traces (Exercise 7.6);
+- true on-line TD(λ), exactly as Figure 7.10;
+- constant-α MC;
+- the Sarsa(λ) and Watkins's Q(λ) update (Figures 7.12 and 7.15);
+- an open gridworld and path replay for Example 7.2.
+
+**Our reading of $V_t$ on-line:** the values after the increments of steps $0, \dots, t-1$. This is what a causal n-step implementation has when step t's increment becomes computable.
+
+**Reproductions (100 runs of 10 episodes, the same walks for every method, as in Example 7.1):**
+- **Figure 7.2.**
+  - On-line, the best is about 0.27, at n = 3–4 and α ≈ 0.4–0.5 (the figure shows about 0.26 at n = 4).
+  - Off-line, the best is about 0.34 at n = 8.
+  - Every off-line method has blown up by α = 0.4, matching "unstable for α much above 0.3".
+- **Exercise 7.3.** Off-line n = 3 and n = 5 break down at α = 0.2, where n = 2 and n = 4 are still learning. The question's model answer offers a parity explanation as a hypothesis, as the draft itself is unsure.
+- **Figure 7.6.**
+  - The on-line λ-return algorithm reaches 0.263 (λ = 0.8, α = 0.4).
+  - Accumulating traces match it at small α but blow up for λ = 0.95, α = 0.6.
+  - Dutch traces (0.258) and true on-line TD(λ) (0.259) stay within 0.01 of it and remain stable. True on-line TD(λ) is "slightly better than the on-line λ-return, not necessarily better than dutch traces", as the draft says.
+  - Replacing traces reach 0.252.
+- **Exact equivalences** (to rounding error):
+  - off-line λ-return = off-line accumulating TD(λ), for several λ and γ;
+  - at λ = 1 both equal constant-α MC;
+  - true on-line TD(1), updating on-line, ends each episode where constant-α MC applied at the episode's end would;
+  - at λ = 0 all on-line methods are TD(0).
+- **(7.5).** Checked on the 19-state walk with γ = 0.9 for random value functions, n = 1 … 10.
+- **Example 7.2.** One-step Sarsa raises one value. Sarsa(λ) with λ = 0.9 raises all 20 values on the path, falling by 0.9 per step.
+- **Watkins's Q(λ).** With λ = 0 it equals Q-learning exactly. Traces are cut after every nongreedy next action, and only then.
+- **Exercise 7.6.** Dropping traces below 0.01 changes values by under 0.002 and saves about a third of the updates on the 19-state walk. The check states this measured saving.
+
+**Laboratory.** A new eligibility-traces laboratory with four panels:
+- TD(λ) step by step with every state's trace (any trace kind, or true on-line);
+- the three traces of Figure 7.9 and the half-life of λ;
+- the 19-state experiments of Figures 7.2 and 7.6 for eight method families;
+- Example 7.2's credit grids, with Watkins's cut.
+
+Two new explainer demos, "td-lambda" and "sarsa-lambda", serve the four new algorithm pages (Figures 7.7, 7.10, 7.12, 7.15).
+
+**Content:**
+- **19 concepts** (§7.9 marked optional).
+- **13 equations.**
+- **4 algorithms with explainers.**
+- **2 example items.**
+- **10 lessons.**
+- **26 questions:**
+  - the 7 exercises: 6 written answers with rubrics, and Exercise 7.4 as a numeric question;
+  - 19 derived from the text, 5 of them numeric with answer checks.
+
+**Checks:** 16 new, 168 in all.
+
+**Tests:** **31 test files, 1986 tests, all passed.**
+- **New: `ch07-4i` (10).** Returns, traces, the Watkins cut, the laboratory and an algorithm page with its demo, the lessons and equations, coverage and flags.
+- **Updated, because they pinned the previous content:**
+  - question counts 205 → 231 (153 → 173 without written answers);
+  - concept count 92 → 111;
+  - algorithm count 11 → 15;
+  - the written-answer and textbook-exercise lists;
+  - Chapter 7's status in the chapter list.
+- **Two coverage tests** used §7.1 as their "not started" example. They now build a copy of the content without Chapter 7, with the same assertions.
+
+**Browser review:**
+- every Chapter 7 section, the algorithm, example and equation pages render with no KaTeX errors;
+- the laboratory fits at phone width without horizontal scrolling;
+- the experiment panel runs 20 runs of a whole family in about 0.2 s.
+
+`npm run check` passes.
+
+#### Next: Milestone 4J
+Chapter 8 to the coverage criteria.

@@ -7,12 +7,13 @@ import { deterministic, greedyPolicy, iterativePolicyEvaluation, policyIteration
 import { GRID5, RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProblem, gridworld5x5, randomWalk, windyGridworld, windyVariant } from "../lib/rl/envs/examples";
 import { batchUpdate, certaintyEquivalence, sampleAverageReturns, type Episode } from "../lib/rl/batch";
 import * as ttt from "../lib/rl/envs/tictactoe";
+import * as tr from "../lib/rl/traces";
 import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
 import { DEAL_STATE as BJ_DEAL, END as BJ_END, HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
 import { INFINITE_VARIANCE_BEHAVIOUR, INFINITE_VARIANCE_TARGET, importanceRatio, infiniteVarianceMdp, isEstimates, newOffPolicyControl, offPolicyControlEpisode, weightedIncremental } from "../lib/rl/offPolicy";
 import { TRACK_LEFT, greedyTrajectory, racetrack } from "../lib/rl/envs/racetrack";
 import { generateEpisode } from "../lib/rl/sampling";
-import { greedyPath, newControl, qLearningStep, rmsError, runControl, runTd0, sarsaStep, td0Update } from "../lib/rl/td";
+import { epsilonGreedyAction, greedyPath, newControl, qLearningStep, rmsError, runControl, runTd0, sarsaStep, td0Update } from "../lib/rl/td";
 import { makeRng } from "../domain/random";
 import { constantRewardReturn, discountedReturn, returnsOfEpisode } from "../lib/rl/returns";
 import { FIG_2_5, TESTBED_10, expectedMaxNormal, meanOver, parameterStudy, recordRun, runExperiment, softmax, type Method } from "../lib/rl/banditLab";
@@ -1074,6 +1075,235 @@ export const CHECKS: Record<string, Check> = {
       const gaps = m.starts.map((s) => vstar[s] - learned[s]);
       const finishes = m.starts.every((s) => greedyTrajectory(m, st.pi, s).finished);
       return gaps.every((g) => g >= -1e-6) && gaps.slice(0, 3).every((g) => g < 1.5) && gaps.reduce((a, b) => a + b, 0) / gaps.length < 5 && finishes;
+    },
+  },
+  // ----- Chapter 7, Milestone 4I: eligibility traces -----
+  "ch07.error-reduction": {
+    kind: "fact", // (7.5): on the 19-state walk with γ = 0.9, for random value functions v, the expected n-step return (the n-fold Bellman
+    // expectation operator applied to v) is within γ^n of v's worst-state error, for n = 1 … 10
+    run: () => {
+      const m = tr.randomWalkN(19);
+      const pi = equiprobablePolicy(m);
+      const gamma = 0.9;
+      const vpi = solveExact(m, pi, gamma)!;
+      const backup = (v: number[]) => v.map((_, s) => (m.terminal[s] ? 0 : m.dynamics[s][0].reduce((a, o) => a + o.prob * (o.reward + gamma * (m.terminal[o.next] ? 0 : v[o.next])), 0)));
+      const rng = makeRng(17);
+      return Array.from({ length: 20 }).every(() => {
+        let v = m.states.map((_, s) => (m.terminal[s] ? 0 : 4 * rng() - 2));
+        const err0 = Math.max(...v.map((x, s) => Math.abs(x - vpi[s])));
+        for (let n = 1; n <= 10; n++) {
+          v = backup(v);
+          if (Math.max(...v.map((x, s) => Math.abs(x - vpi[s]))) > gamma ** n * err0 + 1e-12) return false;
+        }
+        return true;
+      });
+    },
+  },
+  "ch07.fig7-2": {
+    kind: "fact", // Example 7.1, Figure 7.2 (19-state walk, values from 0, RMS over the first 10 episodes, 100 runs, the same walks for all):
+    // on-line, an intermediate n (2 to 8) is best, at about 0.27; off-line the best is about 0.34, worse than on-line, and every off-line
+    // method has blown up (error above 0.6) by α = 0.4
+    run: () => {
+      const sets = tr.walkSets(100, 10, makeRng(1));
+      const alphas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+      const best = (n: number, mode: tr.Mode) => Math.min(...alphas.map((a) => tr.walkExperiment({ kind: "n-step", n, mode }, a, sets)));
+      const ns = [1, 2, 4, 8, 16, 64];
+      const on = ns.map((n) => best(n, "online"));
+      const off = ns.map((n) => best(n, "offline"));
+      const iOn = on.indexOf(Math.min(...on));
+      const blown = ns.every((n) => tr.walkExperiment({ kind: "n-step", n, mode: "offline" }, 0.4, sets) > 0.6);
+      return [2, 4, 8].includes(ns[iOn]) && on[iOn] > 0.25 && on[iOn] < 0.29 && Math.min(...off) > 0.32 && Math.min(...off) < 0.36 && Math.min(...off) > on[iOn] && blown;
+    },
+  },
+  "ch07.ex7-3-odd-n": {
+    kind: "fact", // Exercise 7.3 (the off-line panel of Figure 7.2): at α = 0.2, off-line n = 3 and n = 5 have already blown up (error above 0.45)
+    // while n = 2 and n = 4 are still learning (below 0.42)
+    run: () => {
+      const sets = tr.walkSets(100, 10, makeRng(1));
+      const e = (n: number) => tr.walkExperiment({ kind: "n-step", n, mode: "offline" }, 0.2, sets);
+      return e(3) > 0.45 && e(5) > 0.45 && e(2) < 0.42 && e(4) < 0.42;
+    },
+  },
+  "ch07.offline-equivalence": {
+    kind: "fact", // §7.4: off-line, the λ-return algorithm and TD(λ) with accumulating traces make the same updates (to 1e-12), for several λ and γ;
+    // at λ = 1 both equal off-line constant-α MC
+    run: () => {
+      const rng = makeRng(5);
+      const walks = Array.from({ length: 30 }, () => tr.sampleWalk(19, rng));
+      return ([[0.5, 1], [0.8, 0.9], [1, 0.95]] as const).every(([lambda, gamma]) => {
+        const A = Array.from({ length: 21 }, (_, i) => Math.sin(i));
+        const B = [...A];
+        const C = [...A];
+        for (const w of walks) {
+          tr.lambdaReturnEpisode(A, w, lambda, 0.1, gamma, "offline");
+          tr.tdLambdaEpisode(B, w, lambda, 0.1, gamma, "accumulating", { mode: "offline" });
+          if (lambda === 1) tr.constantAlphaMcEpisode(C, w, 0.1, gamma, "offline");
+          if (A.some((x, i) => Math.abs(x - B[i]) > 1e-12) || (lambda === 1 && C.some((x, i) => Math.abs(x - B[i]) > 1e-12))) return false;
+        }
+        return true;
+      });
+    },
+  },
+  "ch07.true-online-mc": {
+    kind: "fact", // p. 182: true on-line TD(λ) with λ = 1, updating on-line, ends each episode exactly where constant-α MC applied at the episode's
+    // end would (updates in time order), to 1e-12; and at λ = 0 every on-line method (n = 1, λ-return, the three traces, true on-line) is TD(0)
+    run: () => {
+      const rng = makeRng(6);
+      const walks = Array.from({ length: 30 }, () => tr.sampleWalk(19, rng));
+      const ok1 = walks.every((w) => {
+        const a = Array.from({ length: 21 }, (_, i) => Math.cos(i));
+        const b = [...a];
+        tr.trueOnlineTdLambdaEpisode(a, w, 1, 0.1, 0.9);
+        tr.constantAlphaMcEpisode(b, w, 0.1, 0.9, "sequential");
+        return a.every((x, i) => Math.abs(x - b[i]) < 1e-12);
+      });
+      const ms: tr.PredictionMethod[] = [
+        { kind: "n-step", n: 1, mode: "online" }, { kind: "lambda-return", lambda: 0, mode: "online" }, { kind: "td-lambda", lambda: 0, trace: "accumulating", mode: "online" },
+        { kind: "td-lambda", lambda: 0, trace: "dutch", mode: "online" }, { kind: "td-lambda", lambda: 0, trace: "replacing", mode: "online" }, { kind: "true-online", lambda: 0 },
+      ];
+      const Vs = ms.map(() => new Array(21).fill(0));
+      for (const w of walks) ms.forEach((m, i) => tr.runEpisode(Vs[i], w, m, 0.3));
+      return ok1 && Vs.every((V) => V.every((x, i) => Math.abs(x - Vs[0][i]) < 1e-12));
+    },
+  },
+  "ch07.fig7-6": {
+    kind: "fact", // Figure 7.6 (same experiment, λ = 0.8 unless stated): on-line λ-return ≈ 0.26 at α = 0.4; on-line TD(λ) with accumulating traces
+    // within 0.01 of it at α = 0.1 but blown up at λ = 0.95, α = 0.6; dutch traces and true on-line TD(λ) within 0.01 of the on-line λ-return at
+    // α = 0.4 and still stable at λ = 0.95, α = 0.6; replacing traces below 0.27 at α = 0.5; off-line λ-return no better than 0.33 (λ = 0.9, α = 0.15)
+    run: () => {
+      const sets = tr.walkSets(100, 10, makeRng(1));
+      const e = (m: tr.PredictionMethod, a: number) => tr.walkExperiment(m, a, sets);
+      const lr = e({ kind: "lambda-return", lambda: 0.8, mode: "online" }, 0.4);
+      const accSmall = e({ kind: "td-lambda", lambda: 0.8, trace: "accumulating", mode: "online" }, 0.1);
+      const lrSmall = e({ kind: "lambda-return", lambda: 0.8, mode: "online" }, 0.1);
+      const accBig = e({ kind: "td-lambda", lambda: 0.95, trace: "accumulating", mode: "online" }, 0.6);
+      const dutch = e({ kind: "td-lambda", lambda: 0.8, trace: "dutch", mode: "online" }, 0.4);
+      const dutchBig = e({ kind: "td-lambda", lambda: 0.95, trace: "dutch", mode: "online" }, 0.6);
+      const tol = e({ kind: "true-online", lambda: 0.8 }, 0.4);
+      const tolBig = e({ kind: "true-online", lambda: 0.95 }, 0.6);
+      const repl = e({ kind: "td-lambda", lambda: 0.8, trace: "replacing", mode: "online" }, 0.5);
+      const off = e({ kind: "lambda-return", lambda: 0.9, mode: "offline" }, 0.15);
+      return lr > 0.25 && lr < 0.28 && Math.abs(accSmall - lrSmall) < 0.01 && accBig > 0.6 && Math.abs(dutch - lr) < 0.01 && Math.abs(tol - lr) < 0.01 && dutchBig < 0.5 && tolBig < 0.5 && repl < 0.27 && off > 0.33;
+    },
+  },
+  "ch07.trace-types": {
+    kind: "fact", // (7.12)–(7.13), Figure 7.9: the dutch trace equals the accumulating trace when α = 0 and the replacing trace when α = 1; with
+    // γλ = 0.8 and visits at steps 0, 6, 7, 8, 9 the accumulating trace exceeds 2, the replacing trace never exceeds 1, and the dutch trace (α = 0.5) lies between
+    run: () => {
+      const visits = new Set([0, 6, 7, 8, 9]);
+      const series = (kind: tr.TraceKind, alpha: number) => {
+        let e = 0;
+        return Array.from({ length: 16 }, (_, t) => (e = visits.has(t) ? tr.bumpTrace(0.8 * e, kind, alpha) : 0.8 * e));
+      };
+      const same = (a: number[], b: number[]) => a.every((x, i) => Math.abs(x - b[i]) < 1e-12);
+      const acc = series("accumulating", 0.5);
+      const rep = series("replacing", 0.5);
+      const dut = series("dutch", 0.5);
+      return same(series("dutch", 0), acc) && same(series("dutch", 1), rep) && Math.max(...acc) > 2 && Math.max(...rep) === 1 && dut.every((x, i) => x >= rep[i] - 1e-12 && x <= acc[i] + 1e-12);
+    },
+  },
+  "ch07.traces-gridworld": {
+    kind: "fact", // Example 7.2, Figure 7.13: after one episode ending in the only reward, one-step Sarsa raises only the last action value; Sarsa(λ)
+    // with λ = 0.9 (γ = 1, accumulating) raises every pair on the path, each 0.9 times the next one closer to the reward
+    run: () => {
+      const g = tr.openGrid(7, 10, tr.EXAMPLE_7_2.goal);
+      const { path, final } = tr.pathFromActions(g, tr.EXAMPLE_7_2.start, tr.EXAMPLE_7_2.actions);
+      const alpha = 0.1;
+      const one = tr.replayPath(g, path, final, 1, 0, alpha);
+      const lam = tr.replayPath(g, path, final, 1, 0.9, alpha);
+      const k = path.length;
+      const changedOne = one.flat().filter((x) => x !== 0).length;
+      const lastOne = one[path[k - 1].s][path[k - 1].a];
+      const geometric = path.every((p, i) => Math.abs(lam[p.s][p.a] - alpha * 0.9 ** (k - 1 - i)) < 1e-12);
+      return final === g.goal && changedOne === 1 && Math.abs(lastOne - alpha) < 1e-12 && geometric && lam.flat().filter((x) => x !== 0).length === k;
+    },
+  },
+  "ch07.watkins": {
+    kind: "fact", // §7.6, Figure 7.15: Watkins's Q(λ) with λ = 0 makes exactly Q-learning's updates (cliff walking, ε = 0.2, 30 episodes); with λ = 0.9
+    // the traces are cut (all zero) after every nongreedy next action, and only then
+    run: () => {
+      const m = cliffWalking();
+      const zero = () => m.states.map(() => m.actions.map(() => 0));
+      const Q1 = zero();
+      const E1 = zero();
+      const Q2 = zero();
+      const Q3 = zero();
+      const E3 = zero();
+      const rng = makeRng(3);
+      let cutsOk = true;
+      let cuts = 0;
+      for (let ep = 0; ep < 30; ep++) {
+        let s = m.grid.start;
+        let a = epsilonGreedyAction(Q1, m, s, 0.2, rng).a;
+        for (let k = 0; k < 400 && !m.terminal[s]; k++) {
+          const o = m.dynamics[s][a][0];
+          const a2 = m.terminal[o.next] ? null : epsilonGreedyAction(Q1, m, o.next, 0.2, rng).a;
+          Q2[s][a] += 0.5 * (o.reward + (m.terminal[o.next] ? 0 : Math.max(...Q2[o.next])) - Q2[s][a]);
+          tr.traceControlUpdate(Q1, E1, m, "watkins", "accumulating", { s, a, r: o.reward, s2: o.next, a2 }, 0.5, 1, 0);
+          const greedy = a2 === null || m.terminal[o.next] || Q3[o.next][a2] === Math.max(...Q3[o.next]);
+          const r3 = tr.traceControlUpdate(Q3, E3, m, "watkins", "accumulating", { s, a, r: o.reward, s2: o.next, a2 }, 0.5, 1, 0.9);
+          if (r3.cut) cuts++;
+          if (r3.cut === greedy || (r3.cut && E3.some((row) => row.some((x) => x !== 0)))) cutsOk = false;
+          s = o.next;
+          if (a2 === null) break;
+          a = a2;
+        }
+        for (const row of E1) row.fill(0);
+        for (const row of E3) row.fill(0);
+      }
+      return cutsOk && cuts > 0 && Q1.every((row, i) => row.every((x, j) => x === Q2[i][j]));
+    },
+  },
+  "ch07.ex7-6-sparse": {
+    kind: "fact", // Exercise 7.6: updating only states with traces above 0.01 (19-state walk, λ = 0.8, α = 0.2, 50 episodes) changes no value by more than
+    // 0.002 and makes about a third fewer updates than updating every state with a nonzero trace (the saving grows with the number of states)
+    run: () => {
+      const rng = makeRng(8);
+      const walks = Array.from({ length: 50 }, () => tr.sampleWalk(19, rng));
+      const A = new Array(21).fill(0);
+      const B = new Array(21).fill(0);
+      let nA = 0;
+      let nB = 0;
+      for (const w of walks) {
+        nA += tr.tdLambdaEpisode(A, w, 0.8, 0.2, 1, "accumulating");
+        nB += tr.tdLambdaEpisode(B, w, 0.8, 0.2, 1, "accumulating", { minTrace: 0.01 });
+      }
+      return A.every((x, i) => Math.abs(x - B[i]) < 0.002) && nB < 0.7 * nA;
+    },
+  },
+  "ch07-q004": {
+    kind: "answer", // Exercise 7.4: the half-life τ with λ^τ = 1/2, τ = ln(1/2)/ln λ, for λ = 0.9 and λ = 0.5
+    run: () => [tr.halfLife(0.9), tr.halfLife(0.5)],
+  },
+  "ch07-q009": {
+    kind: "answer", // Example 7.1: first episode C → D → E → right (5-state walk, V = 0.5, α = 0.1), two-step TD off-line: V(C), V(D), V(E)
+    run: () => {
+      const V = [0, 0.5, 0.5, 0.5, 0.5, 0.5, 0];
+      tr.nStepEpisode(V, { states: [3, 4, 5, 6], rewards: [0, 0, 1] }, 2, 0.1, 1, "offline");
+      return [V[3], V[4], V[5]];
+    },
+  },
+  "ch07-q011": {
+    kind: "answer", // λ-return weights (1 − λ)λ^(n−1) for n = 1, 2, 3 with λ = 0.5
+    run: () => [1, 2, 3].map((n) => 0.5 * 0.5 ** (n - 1)),
+  },
+  "ch07-q013": {
+    kind: "answer", // a state visited at t = 0 and t = 2, γλ = 0.8: its trace at t = 2, accumulating, replacing, dutch (α = 0.5)
+    run: () => (["accumulating", "replacing", "dutch"] as tr.TraceKind[]).map((k) => tr.bumpTrace(0.8 * 0.8 * tr.bumpTrace(0, k, 0.5), k, 0.5)),
+  },
+  "ch07-q014": {
+    kind: "answer", // (7.11): ΔV(s) = αδE(s) with α = 0.1, δ = 0.5, E(s) = 0.64
+    run: () => [0.1 * 0.5 * 0.64],
+  },
+  "ch07-q019": {
+    kind: "answer", // Example 7.2 on the lab's 20-move path (α = 0.1, γ = 1): one-step Sarsa's raise of the last move; Sarsa(0.9)'s raise three steps before it
+    run: () => {
+      const g = tr.openGrid(7, 10, tr.EXAMPLE_7_2.goal);
+      const { path, final } = tr.pathFromActions(g, tr.EXAMPLE_7_2.start, tr.EXAMPLE_7_2.actions);
+      const one = tr.replayPath(g, path, final, 1, 0, 0.1);
+      const lam = tr.replayPath(g, path, final, 1, 0.9, 0.1);
+      const k = path.length;
+      return [one[path[k - 1].s][path[k - 1].a], lam[path[k - 4].s][path[k - 4].a]];
     },
   },
   // ----- Chapter 1, Milestone 4H: tic-tac-toe (§1.5, Exercises 1.1–1.5) -----

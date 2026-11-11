@@ -68,6 +68,19 @@ describe("source inventory", () => {
 describe("coverage", () => {
   const cov = computeCoverage(fresh(), inventory, declarations);
   const sec = (id: string) => cov.flatMap((c) => c.sections).find((s) => s.id === id)!;
+  // A copy with no Chapter 7 content, so "not started" examples do not depend on how far Milestone 4 has got (4I covered Chapter 7).
+  const withoutCh07 = () => {
+    const b = fresh();
+    const keep = (x: { unit: string }) => x.unit !== "ch07";
+    b.lessons = b.lessons.filter(keep);
+    b.questionFiles = b.questionFiles.filter(keep);
+    b.equations = b.equations.filter(keep);
+    b.examples = b.examples.filter(keep);
+    b.concepts = b.concepts.filter(keep);
+    b.algorithms = b.algorithms.filter(keep);
+    b.labs = b.labs.filter(keep);
+    return b;
+  };
 
   test("unwritten chapters and heading-only sections are reported as such, with nothing missing", () => {
     for (const ch of ["10", "12", "13"]) expect(cov.find((c) => c.id === ch)!.status).toBe("unwritten");
@@ -82,7 +95,7 @@ describe("coverage", () => {
     noLesson.lessons = noLesson.lessons.map((l) => ({ ...l, sections: l.sections.filter((s) => s.section !== "2.3") }));
     const s23 = computeCoverage(noLesson, inventory, declarations).flatMap((c) => c.sections).find((s) => s.id === "2.3")!;
     expect(s23).toMatchObject({ status: "partial", missing: ["no lesson"] });
-    expect(sec("7.1")).toMatchObject({ status: "not-started" });
+    expect(computeCoverage(withoutCh07(), inventory, declarations).flatMap((c) => c.sections).find((s) => s.id === "7.1")).toMatchObject({ status: "not-started" });
     // Chapter 4's opening equations are covered now; removing (4.1) shows that a missing one is still reported.
     expect(cov.find((c) => c.id === "4")!.intro.missing).toEqual([]);
     const without41 = fresh();
@@ -95,7 +108,7 @@ describe("coverage", () => {
     b.questionFiles = b.questionFiles.map((f) => ({ ...f, questions: f.questions.filter((q) => q.section !== "2.3") }));
     expect(computeCoverage(b, inventory, declarations).flatMap((c) => c.sections).find((s) => s.id === "2.3")!.missing).toEqual(["no questions"]);
     const loud: CoverageDeclarations = { ...declarations, sections: { ...declarations.sections, "7.1": { treatment: "reading-guide", note: "x" } } };
-    expect(computeCoverage(fresh(), inventory, loud).flatMap((c) => c.sections).find((s) => s.id === "7.1")!.status).toBe("not-started");
+    expect(computeCoverage(withoutCh07(), inventory, loud).flatMap((c) => c.sections).find((s) => s.id === "7.1")!.status).toBe("not-started");
   });
 
   test("examples reproduced by a lab check count, and exercises declared as placeholders are accounted for", () => {
@@ -268,6 +281,7 @@ describe("in the interface", () => {
     expect(row("5")).toHaveTextContent("Covered"); // completed in Milestone 4F
     expect(row("6")).toHaveTextContent("Covered"); // completed in Milestone 4G
     expect(row("1")).toHaveTextContent("Covered"); // completed in Milestone 4H
-    expect(row("7")).toHaveTextContent("Not started");
+    expect(row("7")).toHaveTextContent("Covered"); // completed in Milestone 4I
+    expect(row("8")).toHaveTextContent("Not started");
   });
 });

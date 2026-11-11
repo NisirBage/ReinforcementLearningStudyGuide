@@ -268,3 +268,9 @@ The service worker activates a new version at once and deletes the old version's
 - **The opponent is a fixed stochastic player known to the lab, not to the learner.** So the learned policy's true probability of winning, and the best possible one, are computed exactly over the game tree, instead of estimated from more games.
 - **Values belong to the positions after our moves,** as §6.6 says of this example. The backup pairs successive positions of ours. The opponent's final move supplies the last target, so losses and draws are learned.
 - **Where a reproduction does not show what the draft argues, the lab says so.** Against both opponents, minimax with the best tie-breaking loses nothing.
+
+## D-050: Eligibility traces, forward and backward (Accepted, 2026-11-11)
+- **On-line forward-view targets use the values after the earlier steps' increments.** This is the reading of the draft's $V_t$ that a causal implementation realises, so on-line n-step TD and the on-line λ-return algorithm are computed by replaying the episode in time order.
+- **The draft's exact equivalences are checked exactly,** to rounding error: off-line λ-return against off-line TD(λ); true on-line TD(1) against constant-α MC. The figure reproductions are checked against the draft's numbers with tolerances.
+- **True on-line TD(λ) is included in the core.** The April 2015 draft itself presents it (§7.4, Figure 7.10); it is not a later addition.
+- **New explainer demos only where an existing one would mislead.** TD(λ) and true on-line TD(λ) share a stepper; Sarsa(λ) and Watkins's Q(λ) share the Example 7.2 credit panel.

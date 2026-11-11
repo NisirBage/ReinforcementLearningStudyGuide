@@ -1,0 +1,445 @@
+[
+  {
+    "id": "alg.ch07.td-lambda",
+    "unit": "ch07",
+    "concept": "ch07.td-lambda",
+    "name": "On-line tabular TD(λ)",
+    "bookLabel": "Figure 7.7",
+    "inputs": [
+      "the policy $\\pi$ to evaluate",
+      "step size $\\alpha$, trace decay $\\lambda$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $V$ (terminal states 0)"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "set every trace $E(s) = 0$; set $S$ to the start state"
+      },
+      {
+        "indent": 1,
+        "text": "repeat until $S$ is terminal:"
+      },
+      {
+        "indent": 2,
+        "text": "take the action $\\pi$ gives for $S$; see $R$ and $S'$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\delta \\leftarrow R + \\gamma V(S') - V(S)$"
+      },
+      {
+        "indent": 2,
+        "text": "raise $E(S)$: $E(S) + 1$ (accumulating), $(1-\\alpha)E(S) + 1$ (dutch) or $1$ (replacing)"
+      },
+      {
+        "indent": 2,
+        "text": "for every state $s$: $V(s) \\leftarrow V(s) + \\alpha\\delta E(s)$, then $E(s) \\leftarrow \\gamma\\lambda E(s)$"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow S'$"
+      }
+    ],
+    "output": "$V \\approx v_\\pi$",
+    "implementation": "traces.tdLambdaEpisode",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.3",
+        "printedPages": [
+          178,
+          178
+        ],
+        "pdfPages": [
+          192,
+          192
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Pseudocode compared with the text layer of Figure 7.7; the implementation is checked by ch07.offline-equivalence, ch07.true-online-mc and ch07.fig7-6."
+    },
+    "explainer": {
+      "problem": "Combine the one-step TD error with a short memory of recently visited states, so that each error updates many earlier states at once, approximating the λ-return algorithm causally and incrementally.",
+      "equations": [
+        "eq.ch07.trace-decay",
+        "eq.ch07.accumulating-trace",
+        "eq.ch07.td-error",
+        "eq.ch07.td-lambda-update",
+        "eq.ch07.replacing-trace",
+        "eq.ch07.dutch-trace"
+      ],
+      "derivation": [
+        {
+          "tex": "L_t - V(S_t) = \\sum_{k=t}^{T-1}(\\gamma\\lambda)^{k-t}\\delta_k",
+          "why": "Off-line (V fixed), the λ-return error is a discounted sum of later TD errors."
+        },
+        {
+          "tex": "\\sum_t \\alpha[L_t - V(S_t)]\\mathbb{1}[S_t = s] = \\sum_k \\alpha\\delta_k\\sum_{t\\le k}(\\gamma\\lambda)^{k-t}\\mathbb{1}[S_t = s] = \\sum_k \\alpha\\delta_k E_k(s)",
+          "why": "Swap the order of summation: the inner sum is the accumulating trace, so off-line TD(λ) makes the λ-return algorithm's updates exactly."
+        }
+      ],
+      "example": {
+        "text": "With γ = 1 and λ = 0.8, a state visited at time 0 and again at time 2 has accumulating trace $0.8^2 + 1 = 1.64$ at time 2 (replacing: 1; dutch with α = 0.5: $0.5 \\cdot 0.64 + 1 = 1.32$). A TD error of 0.5 with α = 0.1 then raises a state whose trace is 0.64 by $0.1 \\cdot 0.5 \\cdot 0.64 = 0.032$.",
+        "check": "ch07-q013"
+      },
+      "demo": "td-lambda",
+      "lab": "traces",
+      "advantages": [
+        "Causal and incremental: needs only the current TD error and the traces.",
+        "λ moves smoothly from TD(0) to Monte Carlo; intermediate λ is usually best (Figure 7.6).",
+        "Off-line it equals the λ-return algorithm exactly."
+      ],
+      "limitations": [
+        "On-line with accumulating traces it can be unstable for large α and λ (Figure 7.6).",
+        "Updating every state every step is costly unless near-zero traces are skipped (§7.8)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch06.td0",
+          "point": "TD(0) is the case λ = 0: only the state just left is updated."
+        },
+        {
+          "with": "alg.ch07.true-online-td-lambda",
+          "point": "True on-line TD(λ) adds correction terms that make it match a real-time λ-return algorithm exactly."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch07.true-online-td-lambda",
+    "unit": "ch07",
+    "concept": "ch07.true-online-td-lambda",
+    "name": "Tabular true on-line TD(λ)",
+    "bookLabel": "Figure 7.10",
+    "inputs": [
+      "the policy $\\pi$ to evaluate",
+      "step size $\\alpha$, trace decay $\\lambda$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $V$ (terminal states 0); $V_{old} \\leftarrow 0$"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "set every trace $E(s) = 0$; set $S$ to the start state"
+      },
+      {
+        "indent": 1,
+        "text": "repeat until $S$ is terminal:"
+      },
+      {
+        "indent": 2,
+        "text": "take the action $\\pi$ gives for $S$; see $R$ and $S'$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\Delta \\leftarrow V(S) - V_{old}$; $V_{old} \\leftarrow V(S')$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\delta \\leftarrow R + \\gamma V(S') - V(S)$"
+      },
+      {
+        "indent": 2,
+        "text": "$E(S) \\leftarrow (1-\\alpha)E(S) + 1$"
+      },
+      {
+        "indent": 2,
+        "text": "for every state $s$: $V(s) \\leftarrow V(s) + \\alpha(\\delta + \\Delta)E(s)$, then $E(s) \\leftarrow \\gamma\\lambda E(s)$"
+      },
+      {
+        "indent": 2,
+        "text": "$V(S) \\leftarrow V(S) - \\alpha\\Delta$"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow S'$"
+      }
+    ],
+    "output": "$V \\approx v_\\pi$",
+    "implementation": "traces.trueOnlineTdLambdaEpisode",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.4",
+        "printedPages": [
+          183,
+          183
+        ],
+        "pdfPages": [
+          197,
+          197
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Pseudocode compared with the text layer of Figure 7.10; check ch07.true-online-mc confirms its λ = 1 equivalence with constant-α MC."
+    },
+    "explainer": {
+      "problem": "Get an on-line, causal algorithm whose values match a forward-view (λ-return) algorithm exactly at every step, not just approximately.",
+      "equations": [
+        "eq.ch07.dutch-trace",
+        "eq.ch07.td-error"
+      ],
+      "derivation": [
+        {
+          "tex": "V_{t+1}(s) = V_t(s) + \\alpha\\big[\\delta_t + V_t(S_t) - V_{t-1}(S_t)\\big]E_t(s) - \\alpha\\mathbb{1}_{sS_t}\\big[V_t(S_t) - V_{t-1}(S_t)\\big]",
+          "why": "The draft's update (p. 182): TD(λ) with dutch traces plus two terms correcting for the change in $V(S_t)$ since it was last used as a target."
+        }
+      ],
+      "example": {
+        "text": "With λ = 1, after each episode its values equal those of constant-α MC applied at the episode's end in time order, to rounding error, even though it updated on-line (check ch07.true-online-mc).",
+        "check": "ch07.true-online-mc"
+      },
+      "demo": "td-lambda",
+      "lab": "traces",
+      "advantages": [
+        "Exactly equivalent to a real-time λ-return algorithm (van Seijen and Sutton, 2014).",
+        "Robust to α and λ on the 19-state walk, like dutch traces."
+      ],
+      "limitations": [
+        "Slightly more computation per step than TD(λ).",
+        "On the 19-state walk it is not clearly better than TD(λ) with dutch traces (p. 182)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch07.td-lambda",
+          "point": "TD(λ) with dutch traces, minus the correction terms."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch07.sarsa-lambda",
+    "unit": "ch07",
+    "concept": "ch07.sarsa-lambda",
+    "name": "Tabular Sarsa(λ)",
+    "bookLabel": "Figure 7.12",
+    "inputs": [
+      "step size $\\alpha$, trace decay $\\lambda$, exploration $\\varepsilon$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $Q(s, a)$"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "set every trace $E(s, a) = 0$; choose $S$ and $A$"
+      },
+      {
+        "indent": 1,
+        "text": "repeat until $S$ is terminal:"
+      },
+      {
+        "indent": 2,
+        "text": "take $A$; see $R$ and $S'$"
+      },
+      {
+        "indent": 2,
+        "text": "choose $A'$ from $S'$ with the policy derived from $Q$ (e.g. ε-greedy)"
+      },
+      {
+        "indent": 2,
+        "text": "$\\delta \\leftarrow R + \\gamma Q(S', A') - Q(S, A)$"
+      },
+      {
+        "indent": 2,
+        "text": "raise $E(S, A)$: accumulating, dutch or replacing, as in TD(λ)"
+      },
+      {
+        "indent": 2,
+        "text": "for every pair: $Q(s, a) \\leftarrow Q(s, a) + \\alpha\\delta E(s, a)$, then $E(s, a) \\leftarrow \\gamma\\lambda E(s, a)$"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow S'$; $A \\leftarrow A'$"
+      }
+    ],
+    "output": "$Q$ and an ε-greedy policy",
+    "implementation": "traces.traceControlUpdate",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.5",
+        "printedPages": [
+          185,
+          185
+        ],
+        "pdfPages": [
+          199,
+          199
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Pseudocode compared with the text layer of Figure 7.12; Example 7.2 is reproduced by check ch07.traces-gridworld."
+    },
+    "explainer": {
+      "problem": "On-policy control that passes each TD error back to many recent state–action pairs, so that a reward found at the end of a long path improves the whole path at once.",
+      "equations": [
+        "eq.ch07.trace-decay",
+        "eq.ch07.td-lambda-update",
+        "eq.ch07.dutch-trace"
+      ],
+      "example": {
+        "text": "Example 7.2: one episode ends in the only reward after 20 moves, from $Q = 0$ with α = 0.1. One-step Sarsa raises one action value (the last, by 0.1). Sarsa(λ) with λ = 0.9 raises all 20, by $0.1 \\cdot 0.9^k$ for the move k steps before the end: 0.0729 three steps back.",
+        "check": "ch07.traces-gridworld"
+      },
+      "demo": "sarsa-lambda",
+      "lab": "traces",
+      "advantages": [
+        "Much faster credit assignment over long paths (Example 7.2).",
+        "On-policy, like Sarsa, so the ε-greedy behaviour is taken into account."
+      ],
+      "limitations": [
+        "More computation per step than one-step Sarsa.",
+        "No convergence proof for control with 0 < λ < 1 (bibliographical remarks, p. 192)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch06.sarsa",
+          "point": "One-step Sarsa is the case λ = 0."
+        },
+        {
+          "with": "alg.ch07.watkins-q-lambda",
+          "point": "Watkins's Q(λ) uses the max in δ and cuts the traces after exploratory actions."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch07.watkins-q-lambda",
+    "unit": "ch07",
+    "concept": "ch07.watkins-q-lambda",
+    "name": "Tabular Watkins's Q(λ)",
+    "bookLabel": "Figure 7.15",
+    "inputs": [
+      "step size $\\alpha$, trace decay $\\lambda$, exploration $\\varepsilon$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with any $Q(s, a)$"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "set every trace $E(s, a) = 0$; choose $S$ and $A$"
+      },
+      {
+        "indent": 1,
+        "text": "repeat until $S$ is terminal:"
+      },
+      {
+        "indent": 2,
+        "text": "take $A$; see $R$ and $S'$"
+      },
+      {
+        "indent": 2,
+        "text": "choose $A'$ from $S'$ with the policy derived from $Q$ (e.g. ε-greedy)"
+      },
+      {
+        "indent": 2,
+        "text": "$A^* \\leftarrow \\arg\\max_a Q(S', a)$, choosing $A'$ itself when it is among the best"
+      },
+      {
+        "indent": 2,
+        "text": "$\\delta \\leftarrow R + \\gamma Q(S', A^*) - Q(S, A)$"
+      },
+      {
+        "indent": 2,
+        "text": "raise $E(S, A)$ (accumulating, dutch or replacing)"
+      },
+      {
+        "indent": 2,
+        "text": "for every pair: $Q(s, a) \\leftarrow Q(s, a) + \\alpha\\delta E(s, a)$; then $E(s, a) \\leftarrow \\gamma\\lambda E(s, a)$ if $A' = A^*$, else $E(s, a) \\leftarrow 0$"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow S'$; $A \\leftarrow A'$"
+      }
+    ],
+    "output": "$Q \\approx q_*$",
+    "implementation": "traces.traceControlUpdate",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "7",
+        "section": "7.6",
+        "printedPages": [
+          188,
+          188
+        ],
+        "pdfPages": [
+          202,
+          202
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Pseudocode compared with the text layer of Figure 7.15; check ch07.watkins confirms λ = 0 is Q-learning and that traces are cut exactly after nongreedy actions."
+    },
+    "explainer": {
+      "problem": "Add eligibility traces to off-policy Q-learning without crediting earlier actions with experience gathered after the agent stopped following the greedy policy.",
+      "equations": [
+        "eq.ch07.trace-decay",
+        "eq.ch07.td-lambda-update"
+      ],
+      "example": {
+        "text": "In the Example 7.2 path, declare move 15 exploratory: the traces are cut as it is chosen, so when the reward arrives only moves 15–20 are credited; the first 14 get nothing (lab panel 'Credit from one episode')."
+      },
+      "demo": "sarsa-lambda",
+      "lab": "traces",
+      "advantages": [
+        "Off-policy: learns about the greedy policy while exploring.",
+        "With λ = 0 it is one-step Q-learning (check ch07.watkins)."
+      ],
+      "limitations": [
+        "Exploratory actions cut the traces, so with frequent exploration it is little faster than Q-learning.",
+        "Treats off-policy deviation as all or nothing and bootstraps at every deviation, even with λ = 1 (§7.7)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch06.q-learning",
+          "point": "Q-learning is the case λ = 0."
+        },
+        {
+          "with": "alg.ch07.sarsa-lambda",
+          "point": "Sarsa(λ) never cuts its traces, since it learns about the policy it follows."
+        }
+      ]
+    }
+  }
+]

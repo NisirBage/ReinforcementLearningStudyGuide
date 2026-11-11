@@ -1,0 +1,464 @@
+{
+  "unit": "ch07",
+  "sections": [
+    {
+      "id": "ch07.s7-1",
+      "section": "7.1",
+      "title": "n-step TD prediction",
+      "concepts": [
+        "ch07.eligibility-traces",
+        "ch07.n-step-return",
+        "ch07.online-offline",
+        "ch07.error-reduction",
+        "ch07.n-step-td",
+        "ch07.random-walk-19"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Eligibility traces can be added to almost any TD method, and they have two faces. In the **forward view** they bridge one-step TD and Monte Carlo, giving a family whose middle members often beat both ends. In the **backward view** a trace is a fading record that a state was visited, marking it as eligible for credit or blame when a TD error comes. This section builds the first face from n-step returns.\n\nTD(0) uses one real reward and then its estimate; Monte Carlo uses all the rewards. Why not two, or ten?"
+        },
+        {
+          "layer": "formal",
+          "body": "The **n-step return** with correction $c$ is $G_t^{t+n}(c) = R_{t+1} + \\gamma R_{t+2} + \\cdots + \\gamma^{n-1}R_{t+n} + \\gamma^n c$, with $c = V_t(S_{t+n})$ in (7.1); $t + n$ is the horizon, and a horizon past the end gives the complete return $G_t$. The n-step backup is an increment (7.2), applied **on-line** as soon as it is known (7.3) or **off-line**, summed and applied at the episode's end (7.4).\n\nThe **error reduction property** (7.5): the expected n-step return built on any v has worst-state error at most $\\gamma^n$ times v's. This is why n-step TD methods converge; one-step TD and Monte Carlo are the extreme members. But n-step methods must wait n steps for each update, so they matter mostly for understanding.\n\nThe draft's (7.1) is printed with '$\\gamma^2$' where '$\\gamma^2 R_{t+3}$' is meant (flagged).",
+          "refs": [
+            "eq.ch07.n-step-target",
+            "eq.ch07.n-step-increment",
+            "eq.ch07.online-update",
+            "eq.ch07.offline-update",
+            "eq.ch07.error-reduction"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Example 7.1.** On the 5-state walk (all values 0.5), a first episode C → D → E → right end (return 1): one-step TD moves only V(E) toward 1; two-step moves V(D) and V(E); three-step or more moves all three, by the same amount. With α = 0.1 off-line two-step TD gives V(D) = V(E) = 0.55.\n\nOn a 19-state walk (−1 on the left, +1 on the right, values from 0), the RMS error over the first 10 episodes, averaged over 100 runs, shows: on-line methods do better and over a wider range of α; intermediate n is best. Reproduced: on-line best about 0.27 (n = 3–4, α ≈ 0.4–0.5); off-line best about 0.34 (n = 8), with everything unstable above α ≈ 0.3.",
+          "refs": [
+            "ex.ch07.random-walk-19"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Batch updating (§6.3) is off-line updating carried over several episodes. The 19-state walk returns in Figure 7.6 for the λ methods; run both in the eligibility-traces laboratory."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            167,
+            168
+          ],
+          "pdfPages": [
+            181,
+            182
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.1",
+          "printedPages": [
+            168,
+            172
+          ],
+          "pdfPages": [
+            182,
+            186
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-2",
+      "section": "7.2",
+      "title": "The forward view of TD(λ)",
+      "concepts": [
+        "ch07.complex-backup",
+        "ch07.lambda-return",
+        "ch07.forward-view"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Instead of choosing one n, back up toward an **average** of n-step returns. Any average with positive weights summing to 1 still reduces error, so it still gives a valid method. TD(λ) uses one particular, geometric average."
+        },
+        {
+          "layer": "formal",
+          "body": "A **complex backup** averages component backups. The **λ-return** weights the n-step return by $(1-\\lambda)\\lambda^{n-1}$: $L_t = (1-\\lambda)\\sum_{n\\ge1}\\lambda^{n-1}G_t^{t+n}(V_t(S_{t+n}))$. After termination all n-step returns equal $G_t$, which collects the remaining weight $\\lambda^{T-t-1}$ (7.6). So λ = 0 gives the one-step return (TD(0)) and λ = 1 the complete return (constant-α MC).\n\nThe **λ-return algorithm** backs up each state toward $L_t$ (7.7), on-line or off-line. This is the **forward view**: from each state, look ahead to all future rewards and decide how to weigh them. It is acausal (it needs the future), and it is not obviously better than n-step methods; its appeal is that a simple causal algorithm, TD(λ), achieves it.",
+          "refs": [
+            "eq.ch07.lambda-return",
+            "eq.ch07.lambda-return-increment"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "With λ = 0.5 the 1-, 2- and 3-step returns get weights 0.5, 0.25 and 0.125. Exercise 7.4: the weights fall to half after $\\tau = \\ln(1/2)/\\ln\\lambda$ steps, about 6.6 for λ = 0.9. On the 19-state walk the on-line λ-return algorithm reaches about 0.26 (λ = 0.8, α = 0.4), comparable to the best n-step methods; the off-line one about 0.34."
+        },
+        {
+          "layer": "connections",
+          "body": "The draft writes the λ-return $L_t$ here and $G^\\lambda_t$ in §7.9 (flagged). Averaging experience-based and model-based backups is mentioned as a link to Chapter 8."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.2",
+          "printedPages": [
+            172,
+            176
+          ],
+          "pdfPages": [
+            186,
+            190
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-3",
+      "section": "7.3",
+      "title": "The backward view of TD(λ)",
+      "concepts": [
+        "ch07.td-lambda",
+        "ch07.trace-types",
+        "ch07.td-one"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Turn the forward view around. Instead of each state looking ahead for its rewards, let each TD error look back and be shared among the states visited recently. A state's **eligibility trace** says how recently (and how often) it was visited, and so how much of each error it receives."
+        },
+        {
+          "layer": "formal",
+          "body": "Every trace decays by γλ per step (7.8) and the visited state's trace is incremented (7.9, accumulating). The one-step TD error (7.10) then changes every state by $\\alpha\\delta_t E_t(s)$ (7.11), on-line or off-line. Figure 7.7 gives the algorithm.\n\n- λ = 0: only the state just left is updated: TD(0).\n- λ = 1: credit falls only by γ per step, exactly the discounting a reward needs; with γ = 1 traces do not decay at all. **TD(1)** behaves like Monte Carlo, yet works in discounted continuing tasks and learns on-line, within the episode.\n\nOff-line, TD(λ) and the λ-return algorithm make identical updates. On-line, accumulating traces track the λ-return algorithm well only for small α and λ, and become unstable for large ones. Two variants change only the visited state's trace: **replacing** resets it to 1 (7.12; at λ = 1 it relates to first-visit MC), **dutch** sets it to $(1-\\alpha)\\gamma\\lambda E_{t-1}(S_t) + 1$ (7.13), accumulating as α → 0 and replacing at α = 1. Both are more robust; dutch traces come closest to the λ-return algorithm.",
+          "refs": [
+            "eq.ch07.trace-decay",
+            "eq.ch07.accumulating-trace",
+            "eq.ch07.td-error",
+            "eq.ch07.td-lambda-update",
+            "eq.ch07.replacing-trace",
+            "eq.ch07.dutch-trace",
+            "alg.ch07.td-lambda"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "A state visited at t = 0 and t = 2 with γ = 1, λ = 0.8 has, at t = 2, trace 1.64 (accumulating), 1 (replacing) or 1.32 (dutch, α = 0.5). Reproduced Figure 7.6 on the 19-state walk (λ = 0.8, best α): accumulating 0.267 (α = 0.3), dutch 0.258 (α = 0.4), replacing 0.252 (α = 0.5); with λ = 0.95 and α = 0.6 accumulating traces blow up while dutch traces stay near 0.40."
+        },
+        {
+          "layer": "connections",
+          "body": "Exercise 7.6 asks how to update only states with non-negligible traces: §7.8. The bibliographical remark's 'See Section 14.??' is unresolved (flagged)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.3",
+          "printedPages": [
+            177,
+            181
+          ],
+          "pdfPages": [
+            191,
+            195
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-4",
+      "section": "7.4",
+      "title": "Equivalences of forward and backward views",
+      "concepts": [
+        "ch07.forward-backward-equivalence",
+        "ch07.true-online-td-lambda"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "The forward view says what we want to compute; the backward view says how to compute it causally. When are they exactly the same?"
+        },
+        {
+          "layer": "formal",
+          "body": "- At λ = 0 every λ-method is one-step TD.\n- At λ = 1, off-line TD(λ) is constant-α MC.\n- For every λ, the off-line λ-return algorithm and off-line TD(λ) with accumulating traces make the same updates (proved in the first edition).\n- On-line, TD(λ) only approximates the λ-return algorithm, more closely with dutch traces.\n\nAn exact on-line equivalence was found recently: **true on-line TD(λ)** (Figure 7.10), dutch traces plus correction terms, is the backward view of a 'real-time' λ-return algorithm (van Seijen and Sutton, 2014), developed with function approximation in Chapter 9.",
+          "refs": [
+            "alg.ch07.true-online-td-lambda"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "Checked to rounding error: off-line λ-return = off-line accumulating TD(λ) for λ = 0.5, 0.8, 1 and γ < 1; true on-line TD(1), updating on-line, ends each episode exactly where constant-α MC applied at the end (in time order) would. On the 19-state walk true on-line TD(λ) reaches 0.259 against the on-line λ-return's 0.263 and dutch traces' 0.258, as the draft says: slightly better than the λ-return algorithm, not clearly better than dutch traces."
+        },
+        {
+          "layer": "connections",
+          "body": "The draft says the off-line equivalence was verified in the 'upper-left' panel of Figure 7.6, where §7.3 placed the off-line results upper right (flagged)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.4",
+          "printedPages": [
+            181,
+            183
+          ],
+          "pdfPages": [
+            195,
+            197
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-5",
+      "section": "7.5",
+      "title": "Sarsa(λ)",
+      "concepts": [
+        "ch07.sarsa-lambda"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "For control, learn action values and give every state–action pair a trace. A reward found at the end of a long path then credits many of the actions that led there, not just the last one."
+        },
+        {
+          "layer": "formal",
+          "body": "Traces per pair, accumulating $E_t(s,a) = \\gamma\\lambda E_{t-1}(s,a) + \\mathbb{1}_{sS_t}\\mathbb{1}_{aA_t}$ (or dutch, or replacing); the TD error $\\delta_t = R_{t+1} + \\gamma Q_t(S_{t+1}, A_{t+1}) - Q_t(S_t, A_t)$; and every pair updated by $\\alpha\\delta_t E_t(s,a)$. The backup diagram (Figure 7.11) mirrors TD(λ)'s, over state–action pairs. Sarsa(λ) is on-policy: it estimates $q_\\pi$ for the current ε-greedy policy while improving it (Figure 7.12).",
+          "refs": [
+            "alg.ch07.sarsa-lambda"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Traces in gridworld (Example 7.2).** One episode wanders to the only reward. One-step Sarsa strengthens only the last action; Sarsa(λ) strengthens every action on the path, falling by γλ per step back (0.9 in the draft's figure). Reproduced on a 20-move path: with α = 0.1, one-step Sarsa raises one value by 0.1, Sarsa(λ = 0.9) raises all 20, the move three steps from the end by $0.1 \\cdot 0.9^3 = 0.0729$.",
+          "refs": [
+            "ex.ch07.traces-gridworld"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Exercise 7.5 asks for the backup diagram with replacing traces (labelled '(programming)', flagged); Exercise 7.7 for Sarsa(λ) with dutch traces and a true on-line version."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.5",
+          "printedPages": [
+            183,
+            186
+          ],
+          "pdfPages": [
+            197,
+            200
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-6",
+      "section": "7.6",
+      "title": "Watkins's Q(λ)",
+      "concepts": [
+        "ch07.watkins-q-lambda"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Q-learning learns about the greedy policy while behaving with exploration. Once the agent takes an exploratory action, what follows says nothing about the greedy policy, so it must not be credited to earlier pairs."
+        },
+        {
+          "layer": "formal",
+          "body": "Watkins's Q(λ) looks ahead only up to the first exploratory action (and one step past it, through the max); if $A_{t+n}$ is the first, the longest backup is toward $R_{t+1} + \\cdots + \\gamma^{n-1}R_{t+n} + \\gamma^n\\max_a Q_t(S_{t+n}, a)$. Mechanically, traces work as in Sarsa(λ) but are **set to 0** whenever a nongreedy action is taken; the TD error uses $\\max_{a'} Q_t(S_{t+1}, a')$ (Figure 7.15; if $A'$ ties for the max it counts as greedy). The cost: early in learning, when exploration is frequent, backups rarely span more than a step or two, so the gain over one-step Q-learning can be small.",
+          "refs": [
+            "alg.ch07.watkins-q-lambda"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "Checked on cliff walking (ε = 0.2): with λ = 0 Watkins's Q(λ) makes exactly Q-learning's updates; with λ = 0.9 its traces are cleared after every nongreedy next action and only then. In the laboratory's Example 7.2 path, declaring move 15 exploratory leaves moves 1–14 uncredited."
+        },
+        {
+          "layer": "connections",
+          "body": "Peng's Q(λ), mentioned in the bibliographical remarks, is not covered in this draft. §7.7 explains what is unsatisfying about cutting traces."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.6",
+          "printedPages": [
+            186,
+            188
+          ],
+          "pdfPages": [
+            200,
+            202
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-7",
+      "section": "7.7",
+      "title": "Off-policy eligibility traces using importance sampling",
+      "concepts": [
+        "ch07.off-policy-traces"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Watkins's cut is a blunt instrument: it treats following the target policy as all or nothing, although both policies may assign different positive probabilities to actions."
+        },
+        {
+          "layer": "formal",
+          "body": "Two problems. First, deviation is a matter of degree, and importance-sampling ratios (Chapter 5) can weight it: a ratio for one action, a product of ratios for a sequence. Second, Watkins's Q(λ) mixes bootstrapping with off-policy correction: λ is supposed to set how much a method bootstraps (λ = 1 means none), but Q(λ) bootstraps at every deviation even with λ = 1. The goal stated in the draft: let λ control bootstrapping alone, and importance sampling correct for deviation independently."
+        },
+        {
+          "layer": "connections",
+          "body": "The draft states the aim but gives no algorithm here; off-policy methods with approximation are planned for Chapter 10, which is unwritten in this draft."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.7",
+          "printedPages": [
+            188,
+            189
+          ],
+          "pdfPages": [
+            202,
+            203
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-8",
+      "section": "7.8",
+      "title": "Implementation issues",
+      "concepts": [
+        "ch07.trace-implementation"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Updating every state's value and trace on every step sounds expensive. Usually it is not necessary."
+        },
+        {
+          "layer": "formal",
+          "body": "For typical γ and λ almost all traces are nearly zero; only recently visited states matter. Keeping a list of those and updating only them makes traces cost a few times a one-step method (Cichosz, 1995, reduces it to a constant). On parallel hardware the naive version is fine anyway, and with function approximation (e.g. neural networks) traces roughly double the memory and computation."
+        },
+        {
+          "layer": "example",
+          "body": "Exercise 7.6, measured on the 19-state walk (λ = 0.8, α = 0.2, 50 episodes): dropping traces below 0.01 changes no value by more than 0.002 and saves about a third of the updates. The saving grows with the number of states, since far more traces would be negligible."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.8",
+          "printedPages": [
+            189,
+            189
+          ],
+          "pdfPages": [
+            203,
+            203
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-9",
+      "section": "7.9",
+      "title": "Variable λ (optional)",
+      "concepts": [
+        "ch07.variable-lambda"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Why use the same λ everywhere? Trust a well-known state's value fully (small λ) and skip over uncertain ones (λ near 1)."
+        },
+        {
+          "layer": "formal",
+          "body": "Replace λ by $\\lambda_t$ in the trace update: $E_t(s) = \\gamma\\lambda_t E_{t-1}(s)$, plus 1 for the visited state. The forward view is a generalised λ-return, $G^\\lambda_t = \\sum_n G_t^{(n)}(1-\\lambda_{t+n})\\prod_{i=t+1}^{t+n-1}\\lambda_i$. Choosing $\\lambda_t = \\lambda(S_t)$ near 0 cuts all traces at a well-known state; near 1 makes an uncertain state's estimate count for little. Watkins's trace cut is the special case $\\lambda_t = 0$ after an exploratory action. The draft notes it has not been used in practical applications."
+        },
+        {
+          "layer": "connections",
+          "body": "The notation here ($G^\\lambda_t$, $G_t^{(n)}$) differs from §7.1–7.2 ($L_t$, $G_t^{t+n}$); flagged on the λ-return concept."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.9",
+          "printedPages": [
+            190,
+            190
+          ],
+          "pdfPages": [
+            204,
+            204
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch07.s7-10",
+      "section": "7.10",
+      "title": "Conclusions (reading guide)",
+      "concepts": [
+        "ch07.eligibility-traces"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**What this section does.** It sums up why traces matter: with TD errors they shift efficiently between Monte Carlo and TD, from partial experience, with little memory. Like Monte Carlo they help in non-Markov tasks and with long-delayed rewards (the 'first line of defense'). Empirically an intermediate λ is best; going all the way to Monte Carlo degrades sharply. Traces cost computation, so they pay when data are scarce and processed on-line, not when cheap simulated data can be generated in bulk, where one-step methods are favoured. Read pp. 190–191, the bibliographical remarks (pp. 191–193) and the exercises (p. 193). Exercise 7.3 is starred; the 'Section 9.??' and 'Section 14.??' pointers in the remarks are unresolved (flagged)."
+        },
+        {
+          "layer": "connections",
+          "body": "**Bibliographical pointers.** The forward view and the error reduction property are due to Watkins (1989), presented after Jaakkola, Jordan and Singh (1994). TD(λ) with accumulating traces is Sutton's (1988); replacing traces are Singh and Sutton's (1996); dutch traces and true on-line TD(λ) are van Seijen and Sutton's (2014). Convergence of TD(λ): Dayan (1992), Peng (1993), Dayan and Sejnowski (1994), Tsitsiklis (1994), Jaakkola, Jordan and Singh (1994). Sarsa(λ) was first explored by Rummery and Niranjan (1994); Watkins's Q(λ) is Watkins's (1989); Peng's Q(λ) is Peng and Williams's. No convergence proof exists for any control method with 0 < λ < 1. The remarks now recommend dutch traces."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "section": "7.10",
+          "printedPages": [
+            190,
+            191
+          ],
+          "pdfPages": [
+            204,
+            205
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "7",
+          "printedPages": [
+            191,
+            193
+          ],
+          "pdfPages": [
+            205,
+            207
+          ]
+        }
+      ]
+    }
+  ]
+}
