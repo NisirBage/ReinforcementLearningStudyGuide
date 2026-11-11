@@ -1,0 +1,471 @@
+[
+  {
+    "id": "ch08.models",
+    "unit": "ch08",
+    "title": "Models: distribution and sample",
+    "kind": "definition",
+    "summary": "A model is anything the agent can use to predict how the environment responds to its actions. A distribution model gives every possible next state and reward with its probability (what DP assumes); a sample model produces one outcome drawn with those probabilities (as in the blackjack simulator). Distribution models are stronger, but sample models are often much easier to obtain. Either can simulate experience.",
+    "prereqs": [
+      "ch03.finite-mdp",
+      "ch04.dynamic-programming"
+    ],
+    "related": [
+      "ch01.model-based-model-free"
+    ],
+    "keywords": [
+      "model",
+      "distribution model",
+      "sample model",
+      "simulated experience"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.1",
+        "printedPages": [
+          195,
+          196
+        ],
+        "pdfPages": [
+          209,
+          210
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.planning",
+    "unit": "ch08",
+    "title": "Planning as backups on simulated experience",
+    "kind": "idea",
+    "summary": "Planning is any computation that takes a model and produces or improves a policy. The book's kind is state-space planning (searching states for an optimal policy), not plan-space planning (searching plans). The unifying view: all state-space planning computes value functions, by backups applied to simulated experience, just as learning does with real experience. So learning methods can be used for planning, and planning can proceed in small, interruptible steps.",
+    "prereqs": [
+      "ch08.models"
+    ],
+    "related": [
+      "ch08.q-planning"
+    ],
+    "keywords": [
+      "planning",
+      "state-space planning",
+      "plan-space planning",
+      "simulated experience"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.1",
+        "printedPages": [
+          196,
+          198
+        ],
+        "pdfPages": [
+          210,
+          212
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 196 refers to 'Section 15.6' for an application of reinforcement learning within plan-space planning. Chapter 15 of this draft ends at §15.5.",
+        "suggestion": "No such section exists in this draft."
+      }
+    ]
+  },
+  {
+    "id": "ch08.q-planning",
+    "unit": "ch08",
+    "title": "Random-sample one-step Q-planning",
+    "kind": "algorithm",
+    "summary": "Figure 8.1: repeatedly pick a state and action at random, ask a sample model for a next state and reward, and make a one-step Q-learning backup. For the model, it reaches an optimal policy under the conditions that make Q-learning work for the real environment (every pair chosen infinitely often, α decreasing suitably).",
+    "prereqs": [
+      "ch08.planning",
+      "ch06.q-learning"
+    ],
+    "related": [
+      "ch08.dyna-q"
+    ],
+    "keywords": [
+      "Q-planning",
+      "random-sample",
+      "Figure 8.1"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.1",
+        "printedPages": [
+          197,
+          198
+        ],
+        "pdfPages": [
+          211,
+          212
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.direct-indirect-rl",
+    "unit": "ch08",
+    "title": "Direct and indirect reinforcement learning",
+    "kind": "idea",
+    "summary": "Real experience can improve the value function and policy directly (direct RL) or improve a model that planning then uses (model learning, leading to indirect RL). Indirect methods often get more out of limited experience; direct methods are simpler and immune to model biases. The draft argues the contrast has been exaggerated.",
+    "prereqs": [
+      "ch08.planning"
+    ],
+    "related": [
+      "ch08.dyna-architecture"
+    ],
+    "keywords": [
+      "direct RL",
+      "indirect RL",
+      "model learning",
+      "Figure 8.2"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.2",
+        "printedPages": [
+          198,
+          199
+        ],
+        "pdfPages": [
+          212,
+          213
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.dyna-architecture",
+    "unit": "ch08",
+    "title": "The Dyna architecture",
+    "kind": "idea",
+    "summary": "Planning, acting, model learning and direct RL run together (Figure 8.3). Real experience trains the model and the values; the model generates simulated experience from starting points chosen by search control; the same reinforcement learning method learns from both, so learning and planning share nearly all their machinery and differ only in the source of experience.",
+    "prereqs": [
+      "ch08.direct-indirect-rl",
+      "ch08.q-planning"
+    ],
+    "related": [
+      "ch08.dyna-q"
+    ],
+    "keywords": [
+      "Dyna",
+      "search control",
+      "Figure 8.3"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.2",
+        "printedPages": [
+          199,
+          200
+        ],
+        "pdfPages": [
+          213,
+          214
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.dyna-q",
+    "unit": "ch08",
+    "title": "Dyna-Q",
+    "kind": "algorithm",
+    "summary": "Figure 8.4: after each real step, a Q-learning backup (direct RL), a table entry recording the observed reward and next state (a deterministic model), and n Q-planning backups from previously experienced state–action pairs. With n = 0 it is one-step Q-learning. Planning in small increments lets the agent stay reactive while it deliberates in the background.",
+    "prereqs": [
+      "ch08.dyna-architecture"
+    ],
+    "related": [
+      "ch08.prioritized-sweeping"
+    ],
+    "keywords": [
+      "Dyna-Q",
+      "planning steps",
+      "Figure 8.4"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.2",
+        "printedPages": [
+          200,
+          203
+        ],
+        "pdfPages": [
+          214,
+          217
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.dyna-maze",
+    "unit": "ch08",
+    "title": "The Dyna maze",
+    "kind": "example",
+    "summary": "Example 8.1: a 47-state maze, reward +1 for reaching the goal, γ = 0.95. With n = 0, 5 and 50 planning steps per real step, Dyna-Q reaches near-optimal behaviour after about 25, 5 and 3 episodes. Halfway through the second episode, the planning agent has already built a policy reaching back most of the way to the start (Figure 8.6), where the nonplanning agent has learned one step.",
+    "prereqs": [
+      "ch08.dyna-q"
+    ],
+    "related": [
+      "ch08.prioritized-sweeping"
+    ],
+    "keywords": [
+      "Dyna maze",
+      "Example 8.1",
+      "Figure 8.5",
+      "Figure 8.6"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.2",
+        "printedPages": [
+          201,
+          203
+        ],
+        "pdfPages": [
+          215,
+          217
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.model-error",
+    "unit": "ch08",
+    "title": "When the model is wrong",
+    "kind": "idea",
+    "summary": "Models can be wrong: stochastic environments sampled too little, imperfect generalisation, or a changed environment. An optimistic error (the model promises more than is possible) tends to correct itself, since the planned policy tries the promise and finds it false (blocking maze). A pessimistic error, where the world has become better, may never be detected, since the planned policy never goes to look (shortcut maze). This is exploration against exploitation in a planning context.",
+    "prereqs": [
+      "ch08.dyna-q"
+    ],
+    "related": [
+      "ch08.dyna-q-plus"
+    ],
+    "keywords": [
+      "model error",
+      "blocking maze",
+      "shortcut maze",
+      "Example 8.2",
+      "Example 8.3"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.3",
+        "printedPages": [
+          203,
+          205
+        ],
+        "pdfPages": [
+          217,
+          219
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.dyna-q-plus",
+    "unit": "ch08",
+    "title": "Dyna-Q+ and exploration bonuses",
+    "kind": "algorithm",
+    "summary": "Dyna-Q+ keeps, for each state–action pair, the time τ since it was last tried for real, and plans as if that transition paid R + κ√τ. Long-untried actions become attractive, so the agent plans whole trips to test them. It also lets planning consider never-tried actions, modelled as staying put with reward 0. The cost is extra exploration; the gain is noticing changes.",
+    "prereqs": [
+      "ch08.model-error",
+      "ch02.exploration-exploitation"
+    ],
+    "related": [
+      "ch02.ucb"
+    ],
+    "keywords": [
+      "Dyna-Q+",
+      "exploration bonus",
+      "κ√τ",
+      "curiosity"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.3",
+        "printedPages": [
+          205,
+          206
+        ],
+        "pdfPages": [
+          219,
+          220
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.prioritized-sweeping",
+    "unit": "ch08",
+    "title": "Prioritized sweeping",
+    "kind": "algorithm",
+    "summary": "Uniform choice of planning backups wastes most of them, since most transitions lead between unchanged values. Instead work backwards from changes: keep a queue of state–action pairs whose value would change by more than θ, ordered by the size of the change; back up the top pair, then compute the effect on each predecessor pair and queue those that matter (Figure 8.9). In stochastic environments the backups are full ones, from estimated transition probabilities. The algorithms rely on discrete states; extending them to function approximation is open.",
+    "prereqs": [
+      "ch08.dyna-q"
+    ],
+    "related": [
+      "ch04.asynchronous-dp"
+    ],
+    "keywords": [
+      "prioritized sweeping",
+      "priority queue",
+      "predecessors",
+      "Figure 8.9",
+      "Example 8.4"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.4",
+        "printedPages": [
+          206,
+          209
+        ],
+        "pdfPages": [
+          220,
+          223
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.full-vs-sample",
+    "unit": "ch08",
+    "title": "Full against sample backups",
+    "kind": "idea",
+    "summary": "One-step backups vary by what they estimate ($v_\\pi$, $v_*$, $q_\\pi$, $q_*$) and by being full (all successors, weighted by a distribution model, (8.1)) or sample (one successor, (8.2)): seven useful kinds (Figure 8.12). A full backup is exact given its successors but costs about b times a sample backup, where b is the branching factor. With b equally likely successors, t sample backups leave error $\\sqrt{(b-1)/(bt)}$, so for large b a small fraction of b sample backups does most of the work: with large stochastic branching and many states, sample backups are likely better.",
+    "prereqs": [
+      "ch04.full-backup",
+      "ch06.sample-backup"
+    ],
+    "related": [
+      "ch08.trajectory-sampling"
+    ],
+    "keywords": [
+      "full backup",
+      "sample backup",
+      "branching factor",
+      "Figure 8.12",
+      "Figure 8.13"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.5",
+        "printedPages": [
+          210,
+          213
+        ],
+        "pdfPages": [
+          224,
+          227
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch08.trajectory-sampling",
+    "unit": "ch08",
+    "title": "Trajectory sampling and the on-policy distribution",
+    "kind": "idea",
+    "summary": "Instead of sweeping every state uniformly, distribute backups according to the on-policy distribution by simulating trajectories with the current policy and backing up what they visit. This focuses on states that matter (positions from real games, not random boards). In the draft's experiment it speeds planning early, and more so with many states and small branching, but can slow it later, when the commonly visited states already have correct values.",
+    "prereqs": [
+      "ch08.full-vs-sample",
+      "ch04.asynchronous-dp"
+    ],
+    "related": [
+      "ch08.heuristic-search"
+    ],
+    "keywords": [
+      "trajectory sampling",
+      "on-policy distribution",
+      "Figure 8.14"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.6",
+        "printedPages": [
+          213,
+          217
+        ],
+        "pdfPages": [
+          227,
+          231
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "replication-discrepancy",
+        "note": "The draft describes on-policy focusing with 10,000 states and b = 1 as giving a 'large and long-lasting' advantage (Figure 8.14, lower panel). Our reproduction gives a large early advantage (about 6.4 against 2.4 after 6,000 full backups, 5 tasks) but uniform sweeping catches up after about 40,000 backups. The draft does not say how rewards were set (we use standard normal rewards per transition), which may account for the difference."
+      }
+    ]
+  },
+  {
+    "id": "ch08.heuristic-search",
+    "unit": "ch08",
+    "title": "Heuristic search",
+    "kind": "idea",
+    "summary": "The AI planning tradition: for each state encountered, look ahead through a tree of possible continuations, evaluate the leaves with an approximate value function, back up toward the root by max-backups, choose the best action, and discard the backed-up values. Deeper search gives better choices with a perfect model at the price of time (TD-Gammon). Its real strength is focus: computation and memory devoted to the current state and its likely successors. Deep search can be built from one-step backups ordered bottom-up (Figure 8.15).",
+    "prereqs": [
+      "ch08.planning",
+      "ch03.backup-diagram"
+    ],
+    "related": [
+      "ch08.trajectory-sampling"
+    ],
+    "keywords": [
+      "heuristic search",
+      "lookahead",
+      "search tree",
+      "Figure 8.15",
+      "TD-Gammon"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.7",
+        "printedPages": [
+          217,
+          219
+        ],
+        "pdfPages": [
+          231,
+          233
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 218 points to TD-Gammon as 'Section 15.1'. In this draft TD-Gammon is §14.1.",
+        "suggestion": "Read '§14.1'."
+      }
+    ]
+  }
+]

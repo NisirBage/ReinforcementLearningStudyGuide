@@ -1,0 +1,290 @@
+[
+  {
+    "id": "alg.ch08.q-planning",
+    "unit": "ch08",
+    "concept": "ch08.q-planning",
+    "name": "Random-sample one-step tabular Q-planning",
+    "bookLabel": "Figure 8.1",
+    "inputs": [
+      "a sample model",
+      "step size $\\alpha$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "repeat forever:"
+      },
+      {
+        "indent": 1,
+        "text": "pick a state $S$ and an action $A$ at random"
+      },
+      {
+        "indent": 1,
+        "text": "ask the sample model for a next reward $R$ and state $S'$"
+      },
+      {
+        "indent": 1,
+        "text": "$Q(S, A) \\leftarrow Q(S, A) + \\alpha[R + \\gamma\\max_a Q(S', a) - Q(S, A)]$"
+      }
+    ],
+    "output": "$Q \\approx q_*$ for the model",
+    "implementation": "planning.qPlanning",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.1",
+        "printedPages": [
+          198,
+          198
+        ],
+        "pdfPages": [
+          212,
+          212
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Compared with the text layer of Figure 8.1; check ch08.q-planning confirms it finds an optimal maze policy."
+    },
+    "explainer": {
+      "problem": "Plan with a model by learning from simulated experience: the same Q-learning backup, fed by a model instead of the world.",
+      "equations": [
+        "eq.ch08.sample-backup-q"
+      ],
+      "example": {
+        "text": "On the 47-state maze, with the maze itself as the model, 100 random backups leave the greedy policy incomplete; 20,000 give a policy that follows a shortest path (14 steps).",
+        "check": "ch08.q-planning"
+      },
+      "demo": "dyna",
+      "lab": "planning",
+      "advantages": [
+        "Any sample model will do; no probabilities needed.",
+        "Converges under Q-learning's conditions."
+      ],
+      "limitations": [
+        "Uniformly random choice of pairs wastes most backups (§8.4)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch06.q-learning",
+          "point": "The same backup, applied to real rather than simulated transitions."
+        },
+        {
+          "with": "alg.ch08.dyna-q",
+          "point": "Dyna-Q runs this as its planning step, between real steps."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch08.dyna-q",
+    "unit": "ch08",
+    "concept": "ch08.dyna-q",
+    "name": "Dyna-Q",
+    "bookLabel": "Figure 8.4",
+    "inputs": [
+      "step size $\\alpha$, exploration $\\varepsilon$, planning steps $n$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with $Q(s, a)$ and an empty $Model(s, a)$"
+      },
+      {
+        "indent": 0,
+        "text": "repeat forever:"
+      },
+      {
+        "indent": 1,
+        "text": "$S \\leftarrow$ the current (nonterminal) state; $A \\leftarrow$ ε-greedy$(S, Q)$"
+      },
+      {
+        "indent": 1,
+        "text": "take $A$; see $R$ and $S'$"
+      },
+      {
+        "indent": 1,
+        "text": "direct RL: $Q(S, A) \\leftarrow Q(S, A) + \\alpha[R + \\gamma\\max_a Q(S', a) - Q(S, A)]$"
+      },
+      {
+        "indent": 1,
+        "text": "model learning: $Model(S, A) \\leftarrow R, S'$ (a deterministic environment)"
+      },
+      {
+        "indent": 1,
+        "text": "planning, $n$ times:"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow$ a random previously seen state; $A \\leftarrow$ a random action already taken in it"
+      },
+      {
+        "indent": 2,
+        "text": "$R, S' \\leftarrow Model(S, A)$"
+      },
+      {
+        "indent": 2,
+        "text": "$Q(S, A) \\leftarrow Q(S, A) + \\alpha[R + \\gamma\\max_a Q(S', a) - Q(S, A)]$"
+      }
+    ],
+    "output": "$Q$ and an ε-greedy policy",
+    "implementation": "planning.dynaStep",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.2",
+        "printedPages": [
+          201,
+          201
+        ],
+        "pdfPages": [
+          215,
+          215
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Compared with the text layer of Figure 8.4; Example 8.1 is reproduced by checks ch08.dyna-maze and ch08.fig8-6."
+    },
+    "explainer": {
+      "problem": "Combine acting, learning a model, learning directly and planning in one on-line agent, so that limited real experience is used many times over.",
+      "equations": [
+        "eq.ch08.sample-backup-q"
+      ],
+      "example": {
+        "text": "Example 8.1 (30 runs): with n = 0, 5 and 50 planning steps the average episode settles near the shortest path (14 steps) after about 29, 6 and 3 episodes (the draft: about 25, 5, 3). Halfway through the second episode, the n = 50 agent already has a greedy action in 18 states; the n = 0 agent in one.",
+        "check": "ch08.dyna-maze"
+      },
+      "demo": "dyna",
+      "lab": "planning",
+      "advantages": [
+        "Far fewer real steps than Q-learning (Figure 8.5).",
+        "Always reactive and always planning: planning steps can be interrupted at any time."
+      ],
+      "limitations": [
+        "The model is deterministic and table-based.",
+        "A model that is wrong in a pessimistic way may never be corrected (§8.3)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch06.q-learning",
+          "point": "Dyna-Q with n = 0 is one-step Q-learning."
+        },
+        {
+          "with": "alg.ch08.prioritized-sweeping",
+          "point": "Prioritized sweeping chooses planning backups by urgency instead of at random."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch08.prioritized-sweeping",
+    "unit": "ch08",
+    "concept": "ch08.prioritized-sweeping",
+    "name": "Prioritized sweeping (deterministic environment)",
+    "bookLabel": "Figure 8.9",
+    "inputs": [
+      "step size $\\alpha$, threshold $\\theta$, backups per step $n$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with $Q(s, a)$, $Model(s, a)$ and an empty priority queue"
+      },
+      {
+        "indent": 0,
+        "text": "repeat forever:"
+      },
+      {
+        "indent": 1,
+        "text": "$S \\leftarrow$ the current state; $A \\leftarrow policy(S, Q)$; take $A$; see $R$ and $S'$"
+      },
+      {
+        "indent": 1,
+        "text": "$Model(S, A) \\leftarrow R, S'$"
+      },
+      {
+        "indent": 1,
+        "text": "$P \\leftarrow |R + \\gamma\\max_a Q(S', a) - Q(S, A)|$; if $P > \\theta$, queue $(S, A)$ with priority $P$"
+      },
+      {
+        "indent": 1,
+        "text": "up to $n$ times, while the queue is not empty:"
+      },
+      {
+        "indent": 2,
+        "text": "take the top pair $(S, A)$; $R, S' \\leftarrow Model(S, A)$"
+      },
+      {
+        "indent": 2,
+        "text": "$Q(S, A) \\leftarrow Q(S, A) + \\alpha[R + \\gamma\\max_a Q(S', a) - Q(S, A)]$"
+      },
+      {
+        "indent": 2,
+        "text": "for each pair $(\\bar S, \\bar A)$ predicted to lead to $S$, with predicted reward $\\bar R$:"
+      },
+      {
+        "indent": 3,
+        "text": "$P \\leftarrow |\\bar R + \\gamma\\max_a Q(S, a) - Q(\\bar S, \\bar A)|$; if $P > \\theta$, queue it with priority $P$ (keeping the higher priority if already queued)"
+      }
+    ],
+    "output": "$Q \\approx q_*$",
+    "implementation": "planning.prioritizedStep",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.4",
+        "printedPages": [
+          208,
+          208
+        ],
+        "pdfPages": [
+          222,
+          222
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Compared with the text layer of Figure 8.9; Example 8.4 is reproduced by check ch08.prioritized."
+    },
+    "explainer": {
+      "problem": "Spend planning computation where it changes something: on the predecessors of states whose values have just changed, most urgent first.",
+      "equations": [
+        "eq.ch08.sample-backup-q",
+        "eq.ch08.full-backup-q"
+      ],
+      "example": {
+        "text": "On the Dyna maze and its 3 × 3-refined version (423 states), with at most 5 backups per real step, prioritized sweeping needs over 20 times fewer backups than Dyna-Q before its greedy policy is optimal.",
+        "check": "ch08.prioritized"
+      },
+      "demo": "dyna",
+      "lab": "planning",
+      "advantages": [
+        "Propagates changes backward efficiently; a decisive advantage on mazes (Example 8.4).",
+        "Extends to stochastic environments with full backups from counted transitions."
+      ],
+      "limitations": [
+        "Relies on discrete states and explicit predecessors; extending it to function approximation is open (p. 209)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch08.dyna-q",
+          "point": "Dyna-Q picks planning pairs uniformly at random."
+        },
+        {
+          "with": "alg.ch04.value-iteration",
+          "point": "Value iteration sweeps all states; prioritized sweeping orders backups by expected change."
+        }
+      ]
+    }
+  }
+]

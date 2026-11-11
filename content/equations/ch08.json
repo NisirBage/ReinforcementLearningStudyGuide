@@ -1,0 +1,88 @@
+[
+  {
+    "id": "eq.ch08.full-backup-q",
+    "unit": "ch08",
+    "concept": "ch08.full-vs-sample",
+    "name": "Full backup for q∗ from an estimated model",
+    "bookLabel": "(8.1)",
+    "tex": "Q(s, a) \\leftarrow \\sum_{s', r}\\hat{p}(s', r|s, a)\\Big[r + \\gamma\\max_{a'}Q(s', a')\\Big]",
+    "symbols": [
+      {
+        "tex": "\\hat{p}(s', r|s, a)",
+        "meaning": "the estimated dynamics (a distribution model)"
+      }
+    ],
+    "intuition": "Average the one-step lookahead over every possible outcome, weighted by its estimated probability.",
+    "assumptions": [
+      "A distribution model is available."
+    ],
+    "significance": "Exact given the successors' values, but it evaluates all b successors.",
+    "pitfalls": [
+      "Costs about b sample backups."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.5",
+        "printedPages": [
+          210,
+          210
+        ],
+        "pdfPages": [
+          224,
+          224
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch08.sample-backup-q",
+    "unit": "ch08",
+    "concept": "ch08.full-vs-sample",
+    "name": "Sample backup for q∗ (Q-learning-like)",
+    "bookLabel": "(8.2)",
+    "tex": "Q(s, a) \\leftarrow Q(s, a) + \\alpha\\Big[R + \\gamma\\max_{a'}Q(S', a') - Q(s, a)\\Big]",
+    "symbols": [
+      {
+        "tex": "S', R",
+        "meaning": "one sampled next state and reward (from the model)"
+      },
+      {
+        "tex": "\\alpha",
+        "meaning": "step size"
+      }
+    ],
+    "intuition": "Move toward the lookahead through one sampled outcome.",
+    "assumptions": [
+      "Needs only a sample model."
+    ],
+    "significance": "With a deterministic model and α = 1 it equals the full backup (8.1).",
+    "pitfalls": [
+      "Affected by sampling error when there are many possible next states."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.5",
+        "printedPages": [
+          212,
+          212
+        ],
+        "pdfPages": [
+          226,
+          226
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  }
+]

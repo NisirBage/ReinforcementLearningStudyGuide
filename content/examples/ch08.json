@@ -1,0 +1,194 @@
+[
+  {
+    "id": "ex.ch08.dyna-maze",
+    "unit": "ch08",
+    "concepts": [
+      "ch08.dyna-maze",
+      "ch08.dyna-q"
+    ],
+    "title": "Dyna maze",
+    "bookLabel": "Example 8.1",
+    "summary": "Dyna-Q on a 47-state maze (γ = 0.95, α = 0.1, ε = 0.1, random tie-breaking) with 0, 5 and 50 planning steps per real step, averaged over 30 runs (Figure 8.5), and the policies halfway through the second episode (Figure 8.6). The draft's first episode, 'about 1700 steps', is a single run (the seed was held constant); the expected length of that random walk is 868.7.",
+    "facts": [
+      {
+        "claim": "With n = 0, 5 and 50 the average episode stays below 20 steps from about episode 29, 6 and 3 (the draft: about 25, 5 and 3).",
+        "check": "ch08.dyna-maze"
+      },
+      {
+        "claim": "Halfway through the second episode the n = 0 agent has learned one greedy action, the n = 50 agent many, reaching most of the way back by the episode's end.",
+        "check": "ch08.fig8-6"
+      },
+      {
+        "claim": "The first episode is a uniform random walk with expected length 868.7 steps; single runs of 1700 or more are common.",
+        "check": "ch08.first-episode"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.2",
+        "printedPages": [
+          201,
+          203
+        ],
+        "pdfPages": [
+          215,
+          217
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch08.dyna-maze"
+    }
+  },
+  {
+    "id": "ex.ch08.blocking-maze",
+    "unit": "ch08",
+    "concepts": [
+      "ch08.model-error",
+      "ch08.dyna-q-plus"
+    ],
+    "title": "Blocking maze",
+    "bookLabel": "Example 8.2",
+    "summary": "The short path to the right of a barrier is blocked after 1000 steps and a longer one opens on the left (Figure 8.7). All agents stall, then find the new path; the model's error was optimistic, so acting on it exposes it. The draft gives no agent parameters; ours are n = 50, α = 1, ε = 0.1, γ = 0.95, κ = 0.001. Dyna-AC is not reproduced (actor–critic methods are §11.1).",
+    "facts": [
+      {
+        "claim": "Dyna-Q+ is ahead at step 1000 and further ahead at 3000; both agents recover after the change, Dyna-Q+ faster.",
+        "check": "ch08.blocking"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.3",
+        "printedPages": [
+          203,
+          204
+        ],
+        "pdfPages": [
+          217,
+          218
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch08.blocking"
+    }
+  },
+  {
+    "id": "ex.ch08.shortcut-maze",
+    "unit": "ch08",
+    "concepts": [
+      "ch08.model-error",
+      "ch08.dyna-q-plus"
+    ],
+    "title": "Shortcut maze",
+    "bookLabel": "Example 8.3",
+    "summary": "After 3000 steps a shorter path opens on the right without disturbing the old one (Figure 8.8). Dyna-Q's model says there is no shortcut, so the more it plans the less likely it is to find it; Dyna-Q+'s bonus for long-untried actions makes it plan a trip there.",
+    "facts": [
+      {
+        "claim": "At step 6000 Dyna-Q's greedy path still takes the long way in most runs, Dyna-Q+'s takes the shortcut in most, and Dyna-Q+ has more cumulative reward.",
+        "check": "ch08.shortcut"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.3",
+        "printedPages": [
+          204,
+          206
+        ],
+        "pdfPages": [
+          218,
+          220
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch08.shortcut"
+    }
+  },
+  {
+    "id": "ex.ch08.prioritized-mazes",
+    "unit": "ch08",
+    "concepts": [
+      "ch08.prioritized-sweeping"
+    ],
+    "title": "Prioritized sweeping on mazes",
+    "bookLabel": "Example 8.4",
+    "summary": "Mazes with the structure of Figure 8.5 at several grid resolutions, with at most 5 backups per real step (Figure 8.10, from Peng and Williams, 1993). Reproduced at 47 and 423 states: prioritized sweeping keeps a decisive advantage over Dyna-Q.",
+    "facts": [
+      {
+        "claim": "Prioritized sweeping needs far fewer backups than Dyna-Q before the greedy policy is optimal: more than 5 times fewer at both sizes (here over 20 times).",
+        "check": "ch08.prioritized"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.4",
+        "printedPages": [
+          207,
+          208
+        ],
+        "pdfPages": [
+          221,
+          222
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch08.prioritized"
+    },
+    "flags": [
+      {
+        "type": "replication-discrepancy",
+        "note": "The draft speaks of speed-ups 'often by a factor of 5 to 10'. Our reproduction (α = 1 for both methods, optimality checked after each episode, median of 3 runs) gives factors of about 20–50 at 47–423 states. The direction and the decisive advantage agree; the size depends on details the draft does not give (Peng and Williams's Dyna-Q settings and their stopping test)."
+      }
+    ]
+  },
+  {
+    "id": "ex.ch08.rod-maneuvering",
+    "unit": "ch08",
+    "concepts": [
+      "ch08.prioritized-sweeping"
+    ],
+    "title": "Rod maneuvering",
+    "bookLabel": "Example 8.5",
+    "summary": "Move a rod around awkwardly placed obstacles to a goal in the fewest steps: translate along or across its long axis, or rotate 10° either way; positions are quantised to 20 × 20, giving four actions and 14,400 potential states (36 orientations; some unreachable). The task is deterministic, and prioritized sweeping found the shortest solution (Figure 8.11, from Moore and Atkeson, 1993); the draft calls it probably too large for unprioritized methods. The obstacle layout is only drawn in the figure, so the example is described here, not reproduced.",
+    "facts": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.4",
+        "printedPages": [
+          207,
+          209
+        ],
+        "pdfPages": [
+          221,
+          223
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Example 8.5 and Figure 8.11, printed pp. 207–209."
+    }
+  }
+]

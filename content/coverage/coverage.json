@@ -101,6 +101,16 @@
     "8.1": {
       "disposition": "placeholder",
       "note": "A placeholder in the April 2015 draft (no exercise text)."
+    },
+    "8.4": {
+      "disposition": "lab-task",
+      "lab": "planning",
+      "note": "Programming exercise: the planning laboratory's changing-maze panel runs a third agent that adds the bonus κ√τ only in action selection, beside Dyna-Q and Dyna-Q+, on the blocking and shortcut mazes. Check ch08.ex8-4: it beats Dyna-Q on the blocking maze but rarely finds the distant shortcut."
+    },
+    "8.7": {
+      "disposition": "lab-task",
+      "lab": "planning",
+      "note": "Programming exercise: the planning laboratory's trajectory-sampling panel offers 10,000 states with b = 1 and b = 3 (rewards are our choice, as the draft gives none). Check ch08.trajectory-sampling covers the 1000-state comparison."
     }
   },
   "thin": {

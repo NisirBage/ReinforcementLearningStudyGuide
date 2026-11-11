@@ -12,6 +12,7 @@ import * as blackjack from "./envs/blackjack";
 import * as td from "./td";
 import * as ttt from "./envs/tictactoe";
 import * as traces from "./traces";
+import * as planning from "./planning";
 import * as batch from "./batch";
 import * as dp from "./dp";
 import * as mdp from "./mdp";
@@ -62,6 +63,14 @@ export const IMPLEMENTATIONS = {
   "traces.walkExperiment": traces.walkExperiment, // Example 7.1, Figures 7.2 and 7.6
   "traces.replayPath": traces.replayPath, // Example 7.2, Figure 7.13
   "envs.randomWalkN": traces.randomWalkN, // the 19-state walk of Example 7.1
+  "planning.dynaStep": planning.dynaStep, // Dyna-Q and Dyna-Q+, Figure 8.4, §8.3
+  "planning.qPlanning": planning.qPlanning, // random-sample one-step tabular Q-planning, Figure 8.1
+  "planning.prioritizedStep": planning.prioritizedStep, // Figure 8.9
+  "planning.dynaChanging": planning.dynaChanging, // Examples 8.2-8.3
+  "planning.backupsUntilOptimal": planning.backupsUntilOptimal, // Example 8.4
+  "planning.trajectorySampling": planning.trajectorySampling, // Figure 8.14
+  "planning.sampleBackupError": planning.sampleBackupError, // Figure 8.13
+  "envs.dynaMaze": planning.mazeEnv, // the mazes of Examples 8.1-8.4
   "envs.windyGridworld": examples.windyGridworld, // Example 6.5
   "batch.batchUpdate": batch.batchUpdate, // batch TD(0) and batch constant-α MC (§6.3, Examples 6.3–6.4)
   "batch.certaintyEquivalence": batch.certaintyEquivalence, // the certainty-equivalence estimate (§6.3)

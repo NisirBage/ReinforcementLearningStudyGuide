@@ -274,3 +274,12 @@ The service worker activates a new version at once and deletes the old version's
 - **The draft's exact equivalences are checked exactly,** to rounding error: off-line λ-return against off-line TD(λ); true on-line TD(1) against constant-α MC. The figure reproductions are checked against the draft's numbers with tolerances.
 - **True on-line TD(λ) is included in the core.** The April 2015 draft itself presents it (§7.4, Figure 7.10); it is not a later addition.
 - **New explainer demos only where an existing one would mislead.** TD(λ) and true on-line TD(λ) share a stepper; Sarsa(λ) and Watkins's Q(λ) share the Example 7.2 credit panel.
+
+## D-051: Planning experiments with unstated settings (Accepted, 2026-11-11)
+- **Where the draft gives no parameters, we choose them once and state them in the lab and on the example:**
+  - Examples 8.2–8.3: n = 50, α = 1, ε = 0.1, γ = 0.95, κ = 0.001.
+  - Figure 8.14: standard normal rewards.
+- **The checks test the draft's qualitative claims,** not curve heights that depend on these choices.
+- **A larger or shorter-lived effect than the draft reports is flagged as a replication discrepancy,** not hidden. This applies to prioritized sweeping's factor and to the duration of the on-policy advantage.
+- **Single-run numbers in the draft are compared with their distribution.** Example 8.1's "about 1700 steps" first episode is one run; the check computes the exact expected length (868.7) and shows such runs are common.
+- **Heavy laboratory runs are split across timer ticks** so the page stays responsive.

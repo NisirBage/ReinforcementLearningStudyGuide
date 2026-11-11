@@ -1037,5 +1037,87 @@ Two new explainer demos, "td-lambda" and "sarsa-lambda", serve the four new algo
 
 `npm run check` passes.
 
-#### Next: Milestone 4J
-Chapter 8 to the coverage criteria.
+### Milestone 4J: Chapter 8 complete (done, 2026-11-11)
+
+**Chapter 8 meets the coverage criteria:**
+- all 8 written sections are covered (§8.9 as a reading guide);
+- §8.8 (Monte Carlo Tree Search) is only a heading in this draft and stays marked unwritten;
+- both numbered equations and all 5 examples are covered;
+- all 7 exercises are accounted for: 8.1 is a placeholder; 8.4 and 8.7, the programming exercises, are laboratory tasks; the other 4 are in the question bank.
+
+The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read in the text layer. (8.1)–(8.2) and the maze layouts of Figures 8.5–8.8 were checked on the page images. **Flagged:**
+- **"Section 15.6"** (p. 196) does not exist; Chapter 15 ends at §15.5.
+- **TD-Gammon as "Section 15.1"** (p. 218) is §14.1 here.
+
+**Two reproduction differences, also flagged:**
+- **Example 8.4.** Prioritized sweeping's advantage comes out at 20–50 times, more than the draft's "often 5 to 10".
+- **Figure 8.14 (lower panel).** The 10,000-state on-policy advantage is large early but uniform sweeping catches up after about 40,000 backups, sooner than the figure suggests. The draft does not say how rewards were set.
+
+**New library code, `lib/rl/planning.ts`:**
+- the Dyna, blocking and shortcut mazes, and mazes scaled to a finer grid;
+- random-sample Q-planning (Figure 8.1);
+- Dyna-Q (Figure 8.4) and Dyna-Q+ (with the footnote's changes);
+- the selection-only bonus of Exercise 8.4;
+- prioritized sweeping for deterministic environments (Figure 8.9);
+- the full-against-sample error of Figure 8.13;
+- the random tasks and both backup distributions of Figure 8.14.
+
+**Reproductions:**
+- **Example 8.1 (30 runs).**
+  - The average episode settles near the 14-step shortest path after about 29, 6 and 3 episodes for n = 0, 5, 50 (the draft: about 25, 5, 3).
+  - Figure 8.6: halfway through episode 2, the n = 0 agent has one greedy action, the n = 50 agent 18, and 46 by the episode's end.
+  - The draft's first episode, "about 1700 steps", is a single run (its seed was held fixed). The first episode is a uniform random walk with expected length 868.7, and runs of 1700 or more are common.
+- **Examples 8.2–8.3.** The draft gives no parameters; ours are n = 50, α = 1, ε = 0.1, γ = 0.95, κ = 0.001.
+  - Dyna-Q+ leads in both phases on both mazes.
+  - Both agents recover from the blocking.
+  - At step 6000 Dyna-Q's greedy path keeps the long way in most runs, while Dyna-Q+'s uses the shortcut.
+  - Dyna-AC (actor–critic, §11.1) is not reproduced.
+- **Exercise 8.4 (laboratory task).** With the bonus only in action selection, the agent beats Dyna-Q on the blocking maze but rarely finds the distant shortcut: it cannot plan a trip to a far-off untried action.
+- **Example 8.4.** At 47 and 423 states, with at most 5 backups per real step, prioritized sweeping needs over 20 times fewer backups than Dyna-Q before its greedy policy is optimal.
+- **Figure 8.14 (1000 states, 10 tasks).** On-policy focusing is ahead after 500 backups and behind after 5000, for b = 1 and 3, with the crossover later for b = 1. Exercise 8.7 (10,000 states) is a laboratory task.
+- **Figure 8.1.** Q-planning with the maze as its model finds an optimal policy.
+- **Figure 8.13** is drawn from its formula.
+- **Example 8.5** (rod maneuvering) is described, not reproduced: its obstacle layout exists only in the figure.
+
+**Laboratory.** A new planning laboratory with six panels:
+- Dyna-Q or prioritized sweeping on the maze, step by step, drawing the greedy policy (also the new "dyna" explainer demo);
+- the Figure 8.5 curves;
+- the changing mazes with three agents;
+- the prioritized-sweeping comparison;
+- Figure 8.13;
+- trajectory sampling, which runs one task per timer tick so the page stays responsive.
+
+**Content:**
+- **13 concepts.**
+- **2 equations.**
+- **3 algorithms with explainers:** Figures 8.1, 8.4 and 8.9.
+- **5 example items.**
+- **8 lessons.**
+- **21 questions:**
+  - 4 exercises as written answers;
+  - 17 derived from the text, 3 of them numeric with answer checks.
+- **Coverage declarations** for Exercises 8.4 and 8.7 as laboratory tasks.
+
+**Checks:** 13 new, 181 in all.
+
+**Tests:** **32 test files, 2075 tests, all passed.**
+- **New: `ch08-4j` (11).** Mazes and models, the backup counts of Dyna-Q, prioritized sweeping's propagation, the error formula, the random tasks, the laboratory and the Dyna-Q algorithm page, lessons, coverage and flags.
+- **Updated, because they pinned the previous content:**
+  - question counts 231 → 252 (173 → 190 without written answers);
+  - concept count 111 → 124;
+  - algorithm count 15 → 18;
+  - the written-answer and textbook-exercise lists;
+  - Chapter 8's status in the chapter list.
+- A second Q-planning question was added because every algorithm's concept needs at least two practice questions.
+
+**Browser review:**
+- every Chapter 8 section, algorithm and example page renders with no KaTeX errors;
+- the equation names were changed from TeX to plain text, because they appear in headings and tab titles;
+- the laboratory fits at phone width.
+
+`npm run check` passes.
+
+#### Next: Milestone 4K
+Chapter 9 to the coverage criteria.

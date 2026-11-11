@@ -1,0 +1,139 @@
+[
+  {
+    "id": "lab.ch08.planning",
+    "slug": "planning",
+    "unit": "ch08",
+    "title": "Planning laboratory",
+    "summary": "Dyna-Q and prioritized sweeping on the maze of Example 8.1, step by step; the learning curves of Figure 8.5; the blocking and shortcut mazes with Dyna-Q+ and a selection-only bonus (Exercise 8.4); prioritized sweeping against Dyna-Q at two resolutions; full against sample backups (Figure 8.13); and trajectory sampling on random tasks (Figure 8.14, Exercise 8.7).",
+    "sections": [
+      "8.1",
+      "8.2",
+      "8.3",
+      "8.4",
+      "8.5",
+      "8.6"
+    ],
+    "concepts": [
+      "ch08.dyna-q",
+      "ch08.dyna-q-plus",
+      "ch08.prioritized-sweeping",
+      "ch08.full-vs-sample",
+      "ch08.trajectory-sampling",
+      "ch08.q-planning"
+    ],
+    "implementations": [
+      "planning.dynaStep",
+      "planning.qPlanning",
+      "planning.prioritizedStep",
+      "planning.dynaChanging",
+      "planning.backupsUntilOptimal",
+      "planning.trajectorySampling",
+      "planning.sampleBackupError",
+      "envs.dynaMaze"
+    ],
+    "guide": [
+      "With n = 50, press 'Finish episode' twice: after the first episode only the move into G has a greedy action; during the second, planning builds a policy reaching back toward S while the agent is still near the start (Figure 8.6). Compare n = 0.",
+      "Switch to prioritized sweeping: the policy grows backward from G in order, with far fewer backups.",
+      "Run the learning curves: n = 50 reaches the shortest path (14 steps) in about 3 episodes, n = 5 in about 6, n = 0 in about 25–30.",
+      "Blocking maze: all agents stall at step 1000, then recover; Dyna-Q+ leads throughout. Shortcut maze: Dyna-Q keeps the long way; Dyna-Q+ finds the shortcut. The selection-only bonus (Exercise 8.4) helps on the blocking maze but rarely finds the shortcut.",
+      "Trajectory sampling with 1000 states: on-policy is ahead early, uniform later; the crossover comes later for b = 1 than for b = 3. Exercise 8.7: try 10,000 states with b = 1 and b = 3."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.1",
+        "printedPages": [
+          198,
+          198
+        ],
+        "pdfPages": [
+          212,
+          212
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.2",
+        "printedPages": [
+          200,
+          203
+        ],
+        "pdfPages": [
+          214,
+          217
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.3",
+        "printedPages": [
+          203,
+          206
+        ],
+        "pdfPages": [
+          217,
+          220
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.4",
+        "printedPages": [
+          206,
+          209
+        ],
+        "pdfPages": [
+          220,
+          223
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.5",
+        "printedPages": [
+          210,
+          213
+        ],
+        "pdfPages": [
+          224,
+          227
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "8",
+        "section": "8.6",
+        "printedPages": [
+          213,
+          217
+        ],
+        "pdfPages": [
+          227,
+          231
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch08.dyna-maze"
+    },
+    "checks": [
+      "ch08.q-planning",
+      "ch08.dyna-maze",
+      "ch08.fig8-6",
+      "ch08.first-episode",
+      "ch08.blocking",
+      "ch08.shortcut",
+      "ch08.ex8-4",
+      "ch08.prioritized",
+      "ch08.sample-backups",
+      "ch08.trajectory-sampling"
+    ]
+  }
+]

@@ -1,0 +1,1205 @@
+{
+  "unit": "ch08",
+  "questions": [
+    {
+      "id": "ch08-q001",
+      "unit": "ch08",
+      "section": "8.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "8.2"
+      },
+      "concepts": [
+        "ch08.dyna-q-plus",
+        "ch08.model-error"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 8.2: why did Dyna-Q+, the agent with the exploration bonus, do better than Dyna-Q in the first phase of the blocking and shortcut experiments too, not only after the environment changed?",
+      "answer": "In the first phase the agents still have to discover the goal and the best path. Dyna-Q+'s bonus κ√τ makes every long-untried transition look rewarding in planning, so it explores systematically rather than by occasional random ε moves, and it also plans with actions it has never tried (modelled as staying put). It therefore covers the maze sooner, finds the goal and the short route earlier, and starts collecting reward sooner. Our reproduction agrees: Dyna-Q+ is ahead at step 1000 on the blocking maze and at step 3000 on the shortcut maze.",
+      "solution": [
+        "Think about what the bonus does before anything has changed.",
+        "Look at the start of the cumulative-reward curves in the laboratory."
+      ],
+      "explanation": "An exploration bonus helps whenever there is still something to discover, not only after a change.",
+      "rubric": [
+        {
+          "point": "In the first phase the goal/path must still be found",
+          "marks": 1
+        },
+        {
+          "point": "The bonus drives systematic exploration (planned trips to untried actions), finding the path sooner",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 8.2, printed p. 221; Figures 8.7–8.8, printed pp. 204–205."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.3",
+          "printedPages": [
+            203,
+            206
+          ],
+          "pdfPages": [
+            217,
+            220
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "printedPages": [
+            221,
+            222
+          ],
+          "pdfPages": [
+            235,
+            236
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q002",
+      "unit": "ch08",
+      "section": "8.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "8.3"
+      },
+      "concepts": [
+        "ch08.dyna-q-plus"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 8.3: in Figure 8.8 the gap between Dyna-Q+ and Dyna-Q narrows slightly over the first part of the experiment (before the shortcut opens). What is the reason?",
+      "answer": "Early on, Dyna-Q+'s exploration bonus helps it find the goal and the path faster, which gives it its lead. Once both agents know the path, the bonus is a cost rather than a benefit: Dyna-Q+ keeps being drawn to test long-untried transitions (the bonus grows as √τ while nothing changes), so it sometimes leaves the best path to explore, earning reward a little more slowly than Dyna-Q, which simply exploits. Its cumulative lead therefore shrinks until the shortcut opens and the exploration pays off.",
+      "solution": [
+        "Compare the two agents' reward rates once both know the path."
+      ],
+      "explanation": "Exploration that pays off after a change costs reward while nothing changes.",
+      "rubric": [
+        {
+          "point": "The early lead comes from faster discovery thanks to the bonus",
+          "marks": 1
+        },
+        {
+          "point": "Afterwards the bonus causes continued exploration away from the best path",
+          "marks": 1
+        },
+        {
+          "point": "So Dyna-Q+ earns reward slightly slower and the gap narrows",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 8.3, printed p. 222; Figure 8.8, printed p. 205."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.3",
+          "printedPages": [
+            204,
+            206
+          ],
+          "pdfPages": [
+            218,
+            220
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "printedPages": [
+            221,
+            222
+          ],
+          "pdfPages": [
+            235,
+            236
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q003",
+      "unit": "ch08",
+      "section": "8.5",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "8.5"
+      },
+      "concepts": [
+        "ch08.full-vs-sample"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 8.5: the analysis of Figure 8.13 assumed the b possible next states were equally likely. Suppose instead the distribution is highly skewed, a few of the b states being much more likely than the rest. Does that make sample backups look better or worse compared with full backups? Support your answer.",
+      "answer": "It strengthens the case. Sample backups draw successors in proportion to their probability, so they concentrate on the few likely next states that dominate the expected value and quickly get those right; the many unlikely states contribute little to the expectation and little to the error. The sampling variance is lower than in the uniform case for the same b, so the error falls even faster with t. A full backup, by contrast, still pays for all b successors, most of which barely matter. (If the rare states had extreme values, the variance could be higher, a caveat worth noting.)",
+      "solution": [
+        "Think about where the variance of one sampled successor comes from.",
+        "What does a full backup spend its b evaluations on?"
+      ],
+      "explanation": "Sampling automatically focuses effort where the probability mass is.",
+      "rubric": [
+        {
+          "point": "Strengthens the case for sample backups",
+          "marks": 1
+        },
+        {
+          "point": "Samples concentrate on the likely successors that dominate the expectation; lower effective variance",
+          "marks": 1
+        },
+        {
+          "point": "A full backup still costs all b, mostly on negligible states (caveat: extreme rare values)",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 8.5, printed p. 222; Figure 8.13, printed p. 213."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.5",
+          "printedPages": [
+            212,
+            213
+          ],
+          "pdfPages": [
+            226,
+            227
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "printedPages": [
+            221,
+            222
+          ],
+          "pdfPages": [
+            235,
+            236
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q004",
+      "unit": "ch08",
+      "section": "8.6",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "8.6"
+      },
+      "concepts": [
+        "ch08.trajectory-sampling"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 8.6: some curves in Figure 8.14 look scalloped in their early parts, especially the upper graph for b = 1 with the uniform distribution. Why might that be, and what in the data supports your hypothesis?",
+      "answer": "The uniform method backs up the state–action pairs in a fixed cyclic order, one complete sweep every 2|S| backups (2000 for 1000 states). Within a sweep, a pair's backup uses successor values from the previous sweep or the current one depending on where it falls in the order, and improvements reach the start state in bursts: the start state's greedy value jumps when the sweep passes the states on its path and then stays flat until the next pass. So progress comes in steps whose period is the sweep length, producing scallops. With b = 1 (deterministic successors) the effect is sharpest, because each backup propagates a single exact value along chains, without averaging to smooth it. Supporting evidence: the scallops' period matches one sweep (about 2000 backups for 1000 states), they appear for the uniform method but not the trajectory-based one, and they fade as values converge.",
+      "solution": [
+        "Look at how the uniform method orders its backups.",
+        "Compare the spacing of the scallops with the length of one sweep."
+      ],
+      "explanation": "A fixed sweep order makes improvements arrive periodically.",
+      "rubric": [
+        {
+          "point": "Cyclic sweep order: improvements reach the start state once per sweep",
+          "marks": 1
+        },
+        {
+          "point": "Explains why b = 1/uniform shows it most (no averaging)",
+          "marks": 1
+        },
+        {
+          "point": "Supporting evidence, e.g. period ≈ one sweep of all pairs, absent in on-policy curves",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 8.6, printed p. 222; Figure 8.14, printed p. 216."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.6",
+          "printedPages": [
+            214,
+            216
+          ],
+          "pdfPages": [
+            228,
+            230
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "printedPages": [
+            221,
+            222
+          ],
+          "pdfPages": [
+            235,
+            236
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q005",
+      "unit": "ch08",
+      "section": "8.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.1"
+        ]
+      },
+      "concepts": [
+        "ch08.models"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "What distinguishes a distribution model from a sample model?",
+      "options": [
+        "A distribution model gives every possible outcome with its probability; a sample model produces one outcome drawn with those probabilities",
+        "A sample model is always more accurate",
+        "A distribution model can only be used by Monte Carlo methods",
+        "They are two names for the same thing"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Accuracy is not what distinguishes them.",
+        "DP uses distribution models.",
+        "They differ in what they return."
+      ],
+      "solution": [
+        "DP assumes a distribution model; the blackjack simulator of Chapter 5 is a sample model."
+      ],
+      "explanation": "Distribution models are stronger (they can produce samples), but sample models are often much easier to get.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 195–196."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.1",
+          "printedPages": [
+            195,
+            196
+          ],
+          "pdfPages": [
+            209,
+            210
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q006",
+      "unit": "ch08",
+      "section": "8.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.1"
+        ]
+      },
+      "concepts": [
+        "ch08.q-planning",
+        "ch08.planning"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: Q-planning with random samples (Figure 8.1) finds the model's optimal policy under the same conditions that make Q-learning find the real environment's.",
+      "answer": true,
+      "solution": [
+        "Every state–action pair must be chosen infinitely often and α must decrease suitably."
+      ],
+      "explanation": "Planning here is just learning from simulated experience.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 197."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.1",
+          "printedPages": [
+            197,
+            197
+          ],
+          "pdfPages": [
+            211,
+            211
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q007",
+      "unit": "ch08",
+      "section": "8.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.2"
+        ]
+      },
+      "concepts": [
+        "ch08.direct-indirect-rl"
+      ],
+      "type": "mcq",
+      "category": "compare-contrast",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Which statement about direct and indirect reinforcement learning matches §8.2?",
+      "options": [
+        "Indirect methods often use limited experience more fully; direct methods are simpler and not affected by model biases",
+        "Direct methods always learn faster",
+        "Indirect methods need no model",
+        "Direct RL is another name for planning"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "The draft makes no such claim; Dyna-Q's planning often wins on experience.",
+        "Indirect RL works through a learned model.",
+        "Planning is the indirect route."
+      ],
+      "solution": [
+        "Real experience can improve values directly, or a model that planning uses (indirectly)."
+      ],
+      "explanation": "The draft finds the debate between the two exaggerated.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 198–199."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.2",
+          "printedPages": [
+            198,
+            199
+          ],
+          "pdfPages": [
+            212,
+            213
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q008",
+      "unit": "ch08",
+      "section": "8.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch08.dyna-q",
+          "eq.ch08.sample-backup-q"
+        ]
+      },
+      "concepts": [
+        "ch08.dyna-q"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "In a Dyna-Q planning backup with α = 0.1 and γ = 0.95, the model says pair (S, A) gave reward 0 and next state S′, where $\\max_a Q(S', a) = 0.5$; currently $Q(S, A) = 0$. What is the new Q(S, A)? And how many backups in all does Dyna-Q make per real step when n = 5?",
+      "parts": [
+        {
+          "label": "new Q(S, A)",
+          "answer": 0.0475,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "backups per real step",
+          "answer": 6,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "$Q(S, A) \\leftarrow 0 + 0.1(0 + 0.95 \\cdot 0.5 - 0) = 0.0475$.",
+        "One direct Q-learning backup plus n = 5 planning backups: 6."
+      ],
+      "explanation": "Planning backups are ordinary Q-learning backups on modelled transitions.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch08-q008"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.2",
+          "printedPages": [
+            200,
+            201
+          ],
+          "pdfPages": [
+            214,
+            215
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q009",
+      "unit": "ch08",
+      "section": "8.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch08.dyna-maze"
+        ]
+      },
+      "concepts": [
+        "ch08.dyna-maze"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In the Dyna maze, why does the n = 50 agent have a policy reaching most of the way back to the start by the end of its second episode, while the n = 0 agent has learned only one step?",
+      "options": [
+        "Planning backups replay the remembered transitions, propagating the goal's value back through many states between real steps",
+        "The n = 50 agent explores more",
+        "The n = 50 agent uses a larger step size",
+        "The n = 0 agent's first episode was shorter"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Both use ε = 0.1.",
+        "Both use α = 0.1.",
+        "The first episodes have the same distribution."
+      ],
+      "solution": [
+        "Without planning, each episode extends the learned path by one step; with planning, the model replays the first episode's transitions many times."
+      ],
+      "explanation": "This is why Dyna-Q needs far fewer real episodes (Figure 8.5).",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 202–203."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.2",
+          "printedPages": [
+            202,
+            203
+          ],
+          "pdfPages": [
+            216,
+            217
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q010",
+      "unit": "ch08",
+      "section": "8.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.3"
+        ]
+      },
+      "concepts": [
+        "ch08.dyna-q-plus"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Dyna-Q+ plans as if a transition untried for τ steps paid $R + \\kappa\\sqrt{\\tau}$. With modelled reward R = 0, κ = 0.001 and τ = 10,000 steps, what reward does a planning backup use?",
+      "parts": [
+        {
+          "label": "planning reward",
+          "answer": 0.1,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "$0 + 0.001\\sqrt{10000} = 0.001 \\cdot 100 = 0.1$."
+      ],
+      "explanation": "The bonus grows slowly, as the square root of the time since the last real try.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch08-q010"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.3",
+          "printedPages": [
+            205,
+            205
+          ],
+          "pdfPages": [
+            219,
+            219
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q011",
+      "unit": "ch08",
+      "section": "8.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.3"
+        ]
+      },
+      "concepts": [
+        "ch08.model-error"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why is a change that makes the environment better harder for a planning agent to notice than one that makes it worse?",
+      "options": [
+        "The current policy, planned on the old model, has no reason to try the improvement, whereas a worsening is met when the agent follows its plan",
+        "Better environments have lower rewards",
+        "Models cannot represent improvements",
+        "Planning stops when the environment improves"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: the shortcut maze.",
+        "Not the issue.",
+        "The model would represent it after one real try.",
+        "Planning continues."
+      ],
+      "solution": [
+        "An optimistic model error is tested by acting on it; a pessimistic one is never tested."
+      ],
+      "explanation": "Hence exploration bonuses such as Dyna-Q+'s.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 203–205."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.3",
+          "printedPages": [
+            203,
+            205
+          ],
+          "pdfPages": [
+            217,
+            219
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q012",
+      "unit": "ch08",
+      "section": "8.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.4"
+        ]
+      },
+      "concepts": [
+        "ch08.prioritized-sweeping"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "In prioritized sweeping, which state–action pairs are queued, and in what order are they backed up?",
+      "options": [
+        "Pairs whose value would change by more than θ, backed up in order of the size of that change; predecessors of a changed state are then checked",
+        "All pairs, in random order",
+        "Only the pairs on the current trajectory, last first",
+        "Pairs never tried, by how long since they were seen"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "That is Dyna-Q's uniform planning.",
+        "That is closer to backing up along an episode.",
+        "That resembles Dyna-Q+'s bonus."
+      ],
+      "solution": [
+        "The queue holds urgent backups; after each, predecessors are evaluated and queued if their change would exceed θ."
+      ],
+      "explanation": "Changes propagate backward until quiescence.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 207–208."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.4",
+          "printedPages": [
+            207,
+            208
+          ],
+          "pdfPages": [
+            221,
+            222
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q013",
+      "unit": "ch08",
+      "section": "8.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.4"
+        ]
+      },
+      "concepts": [
+        "ch08.prioritized-sweeping"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "True or false: according to §8.4, prioritized sweeping extends easily to function approximation, since a backup affects only one state.",
+      "answer": false,
+      "solution": [
+        "With function approximation a single backup can influence many states, and it is not apparent how to identify or process them efficiently."
+      ],
+      "explanation": "Its algorithms rely on discrete states.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 209."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.4",
+          "printedPages": [
+            209,
+            209
+          ],
+          "pdfPages": [
+            223,
+            223
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q014",
+      "unit": "ch08",
+      "section": "8.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.5",
+          "eq.ch08.sample-backup-q"
+        ]
+      },
+      "concepts": [
+        "ch08.full-vs-sample"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "With b = 100 equally likely successors (correct values, initial error 1), what is the error after t = 25 sample backups, a quarter of a full backup's cost? Give it to three decimals.",
+      "parts": [
+        {
+          "label": "error",
+          "answer": 0.199,
+          "tolerance": 0.001
+        }
+      ],
+      "solution": [
+        "$\\sqrt{(b-1)/(bt)} = \\sqrt{99/2500} \\approx 0.199$."
+      ],
+      "explanation": "A quarter of the cost removes about 80% of the error.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch08-q014"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.5",
+          "printedPages": [
+            212,
+            213
+          ],
+          "pdfPages": [
+            226,
+            227
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q015",
+      "unit": "ch08",
+      "section": "8.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.5"
+        ]
+      },
+      "concepts": [
+        "ch08.full-vs-sample"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "When are the full backup (8.1) and the sample backup (8.2) identical?",
+      "options": [
+        "When only one next state is possible, taking α = 1",
+        "Always, for any α",
+        "Only for state values",
+        "Never"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "With several possible next states they differ.",
+        "The statement concerns action values here.",
+        "They coincide in the deterministic case."
+      ],
+      "solution": [
+        "With one possible outcome, sampling it is the same as averaging over it; α = 1 replaces the old estimate fully."
+      ],
+      "explanation": "Differences grow with stochasticity.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 212."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.5",
+          "printedPages": [
+            212,
+            212
+          ],
+          "pdfPages": [
+            226,
+            226
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q016",
+      "unit": "ch08",
+      "section": "8.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.6"
+        ]
+      },
+      "concepts": [
+        "ch08.trajectory-sampling"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In the draft's experiment (Figure 8.14), how did backups distributed by the on-policy distribution compare with uniform sweeps?",
+      "options": [
+        "Faster at first and slower in the long run, more strongly so with small branching factors and many states",
+        "Always slower",
+        "Always faster",
+        "Identical, since both use full backups"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "On-policy was faster at first.",
+        "Uniform did better in the long run on the smaller tasks.",
+        "The distribution of backups matters."
+      ],
+      "solution": [
+        "Early on, on-policy focus helps on the start state's near descendants; later the commonly visited states are already right, and sweeping does more useful work."
+      ],
+      "explanation": "Reproduced in the planning laboratory.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 215–217."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.6",
+          "printedPages": [
+            215,
+            217
+          ],
+          "pdfPages": [
+            229,
+            231
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q017",
+      "unit": "ch08",
+      "section": "8.7",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.7"
+        ]
+      },
+      "concepts": [
+        "ch08.heuristic-search"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "According to §8.7, what mainly explains why deeper heuristic search makes better decisions?",
+      "options": [
+        "Its focus: backups concentrated on the states and actions immediately following the current state",
+        "Multistep backups are inherently better than one-step ones",
+        "It changes the value function permanently",
+        "It removes the need for a model"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "The draft notes deep search can be written as one-step backups; the gain is not from multistep backups as such.",
+        "Conventional heuristic search discards its backed-up values.",
+        "Search needs a model."
+      ],
+      "solution": [
+        "Figure 8.15: a search tree is a sequence of one-step backups ordered bottom-up."
+      ],
+      "explanation": "Focus of computation and memory on the current decision.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 218–219."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.7",
+          "printedPages": [
+            218,
+            219
+          ],
+          "pdfPages": [
+            232,
+            233
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q018",
+      "unit": "ch08",
+      "section": "8.9",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.9"
+        ]
+      },
+      "concepts": [
+        "ch08.planning"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "The summary names several ways of distributing backups. Which pairing is right?",
+      "options": [
+        "Prioritized sweeping: predecessors of states whose values just changed; heuristic search: successors of the current state; trajectory sampling: the on-policy distribution",
+        "Prioritized sweeping: the on-policy distribution; trajectory sampling: predecessors",
+        "Heuristic search: random pairs",
+        "All three distribute backups uniformly"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Swapped.",
+        "Heuristic search focuses on the current state.",
+        "None is uniform."
+      ],
+      "solution": [
+        "Each is a way of focusing search."
+      ],
+      "explanation": "All can speed planning significantly.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 220."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.9",
+          "printedPages": [
+            220,
+            220
+          ],
+          "pdfPages": [
+            234,
+            234
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q019",
+      "unit": "ch08",
+      "section": "8.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.2"
+        ]
+      },
+      "concepts": [
+        "ch08.dyna-q"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "In Dyna-Q's planning step, from which state–action pairs are simulated transitions started?",
+      "options": [
+        "Only pairs that have actually been experienced, so the model is never asked about unknown pairs",
+        "Any pair, including untried ones",
+        "Only the current state's pairs",
+        "Only pairs leading to the goal"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "That is a Dyna-Q+ change.",
+        "Planning ranges over all previously seen states.",
+        "No such restriction."
+      ],
+      "solution": [
+        "Step (f) of Figure 8.4 picks a previously observed state and an action previously taken in it."
+      ],
+      "explanation": "The deterministic model just returns the last outcome seen.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 199–201."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.2",
+          "printedPages": [
+            199,
+            201
+          ],
+          "pdfPages": [
+            213,
+            215
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q020",
+      "unit": "ch08",
+      "section": "8.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§8.3"
+        ]
+      },
+      "concepts": [
+        "ch08.dyna-q-plus"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "True or false: Dyna-Q+ adds its exploration bonus to the rewards used in planning backups, so the bonus changes the estimated action values.",
+      "answer": true,
+      "solution": [
+        "Planning backups use R + κ√τ."
+      ],
+      "explanation": "Exercise 8.4 asks what happens if the bonus is used only in action selection instead.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 205."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.3",
+          "printedPages": [
+            205,
+            205
+          ],
+          "pdfPages": [
+            219,
+            219
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch08-q021",
+      "unit": "ch08",
+      "section": "8.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch08.q-planning"
+        ]
+      },
+      "concepts": [
+        "ch08.q-planning"
+      ],
+      "type": "mcq",
+      "category": "algorithm-trace",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "In random-sample one-step tabular Q-planning (Figure 8.1), where do the reward $R$ and next state $S'$ used in each backup come from?",
+      "options": [
+        "From a sample model queried with a randomly chosen state and action",
+        "From the agent's latest real transition",
+        "From a full sweep over all next states",
+        "From the greedy policy's trajectory"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Real transitions are what Q-learning uses; Q-planning uses the model.",
+        "That would be a full backup (8.1).",
+        "Pairs are chosen at random, not along trajectories."
+      ],
+      "solution": [
+        "Step 1 picks S and A at random; step 2 sends them to a sample model, which returns R and S′; step 3 applies Q-learning."
+      ],
+      "explanation": "The backup is Q-learning's; only the source of the transition differs.",
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.1",
+          "printedPages": [
+            197,
+            198
+          ],
+          "pdfPages": [
+            211,
+            212
+          ]
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Figure 8.1, printed p. 198."
+      },
+      "reviewed": true
+    }
+  ]
+}

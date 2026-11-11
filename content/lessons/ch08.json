@@ -1,0 +1,376 @@
+{
+  "unit": "ch08",
+  "sections": [
+    {
+      "id": "ch08.s8-1",
+      "section": "8.1",
+      "title": "Models and planning",
+      "concepts": [
+        "ch08.models",
+        "ch08.planning",
+        "ch08.q-planning"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "This chapter joins the two families met so far: methods that need a model (DP, heuristic search) and methods that do not (Monte Carlo, TD). Call the first planning and the second learning. Both compute value functions by backups; they differ in where their experience comes from."
+        },
+        {
+          "layer": "formal",
+          "body": "A **model** predicts how the environment responds to actions. A **distribution model** lists all outcomes with probabilities (what DP uses); a **sample model** draws one outcome (like a blackjack simulator). Both can **simulate experience**.\n\n**Planning** is any computation turning a model into a better policy. In **state-space planning**, the book's kind, it searches the states for an optimal policy; plan-space planning (searching over plans) is set aside. The common structure: model → simulated experience → backups → values → policy. So learning methods can plan: **random-sample one-step tabular Q-planning** (Figure 8.1) picks a random state and action, asks a sample model for $R$ and $S'$, and makes a Q-learning backup. Under Q-learning's conditions it reaches an optimal policy for the model. A second theme: planning in small incremental steps can be interrupted or redirected at any time.",
+          "refs": [
+            "alg.ch08.q-planning"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "On the 47-state maze of Example 8.1, with the maze itself as the sample model, 100 random Q-planning backups leave the greedy policy incomplete; 20,000 produce a policy following a shortest path (14 steps)."
+        },
+        {
+          "layer": "connections",
+          "body": "The draft points to 'Section 15.6' for reinforcement learning within plan-space planning; no such section exists in this draft (flagged)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "printedPages": [
+            195,
+            198
+          ],
+          "pdfPages": [
+            209,
+            212
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.1",
+          "printedPages": [
+            195,
+            198
+          ],
+          "pdfPages": [
+            209,
+            212
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch08.s8-2",
+      "section": "8.2",
+      "title": "Integrating planning, acting, and learning",
+      "concepts": [
+        "ch08.direct-indirect-rl",
+        "ch08.dyna-architecture",
+        "ch08.dyna-q",
+        "ch08.dyna-maze"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "An agent that plans while it acts can use each real experience twice: to improve its values directly, and to improve a model that it then plans with. Dyna puts all of this in one loop, each part in its simplest form."
+        },
+        {
+          "layer": "formal",
+          "body": "Real experience feeds **direct RL** and **model learning**; planning with the model is **indirect RL** (Figure 8.2). Indirect methods use limited experience more fully; direct ones are simpler and free of model bias.\n\n**Dyna** (Figure 8.3): the model generates simulated experience from start points chosen by **search control**, and the same RL method learns from real and simulated experience alike. **Dyna-Q** (Figure 8.4) makes, after each real step: a Q-learning backup; a model entry $Model(S, A) \\leftarrow R, S'$ (assuming determinism); and $n$ Q-planning backups from previously experienced pairs (so the model is never asked about unknown pairs). With $n = 0$ it is Q-learning.",
+          "refs": [
+            "alg.ch08.dyna-q"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Dyna maze (Example 8.1).** 47 states, +1 at G, γ = 0.95, α = 0.1, ε = 0.1. Reproduced over 30 runs: the average episode settles near the 14-step shortest path after about 29 episodes with n = 0, 6 with n = 5 and 3 with n = 50 (the draft: about 25, 5 and 3). Halfway through episode 2, the n = 0 agent has one greedy action (the step into G), the n = 50 agent 18, and 46 by the end of the episode (Figure 8.6). The draft's first episode of 'about 1700 steps' is one run: the expected length of that initial random walk is 868.7 steps, and runs of 1700 or more are common.",
+          "refs": [
+            "ex.ch08.dyna-maze"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Planning runs in the background, so the agent is always reactive and always deliberative. Try both n = 0 and n = 50 in the planning laboratory."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.2",
+          "printedPages": [
+            198,
+            203
+          ],
+          "pdfPages": [
+            212,
+            217
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch08.s8-3",
+      "section": "8.3",
+      "title": "When the model is wrong",
+      "concepts": [
+        "ch08.model-error",
+        "ch08.dyna-q-plus"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "The maze model was empty at first and then only ever correct. Real models are often wrong: too few samples of a stochastic world, imperfect generalisation, or a world that has changed. Then planning computes the wrong policy. Sometimes that exposes the error; sometimes it hides it."
+        },
+        {
+          "layer": "formal",
+          "body": "If the model is **optimistic** (promises more than is possible), the planned policy goes for the promise and discovers it is false: the error corrects itself. If the world has become **better** than the model says, the planned policy has no reason to look, and the error may never be found. This is exploration against exploitation again: exploring means trying actions that improve the model.\n\n**Dyna-Q+** uses a heuristic: for each pair, track the time τ since it was last tried for real, and plan as if its transition paid $R + \\kappa\\sqrt{\\tau}$. Long-untried actions become attractive, and the agent plans whole trips to test them. (It also lets planning use never-tried actions, modelled as staying put with reward 0.)"
+        },
+        {
+          "layer": "example",
+          "body": "**Blocking maze (Example 8.2).** The short path is blocked at step 1000 and a long one opens; agents stall and then recover. **Shortcut maze (Example 8.3).** A shorter path opens at step 3000; Dyna-Q never finds it, Dyna-Q+ does. The draft gives no parameters; with n = 50, α = 1, ε = 0.1, κ = 0.001 (10 runs), Dyna-Q+ leads in both phases on both mazes, and at step 6000 its greedy path uses the shortcut in most runs, Dyna-Q's in few.",
+          "refs": [
+            "ex.ch08.blocking-maze",
+            "ex.ch08.shortcut-maze"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Exercise 8.4 (a laboratory task here) asks whether the bonus is needed in the backups: used only in action selection, it helps on the blocking maze but rarely finds the shortcut, because the agent cannot plan a trip to a distant untried action. Dyna-AC in the draft's figures uses actor–critic learning (§11.1) and is not reproduced."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.3",
+          "printedPages": [
+            203,
+            206
+          ],
+          "pdfPages": [
+            217,
+            220
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch08.s8-4",
+      "section": "8.4",
+      "title": "Prioritized sweeping",
+      "concepts": [
+        "ch08.prioritized-sweeping"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "In the second episode of the maze only the pair leading into G has nonzero value. A random planning backup almost surely moves a zero toward a zero, achieving nothing. Better to work backward from where values have just changed."
+        },
+        {
+          "layer": "formal",
+          "body": "Keep a queue of state–action pairs whose backup would change its value by more than θ, ordered by how big that change would be. Back up the top pair, then compute for each **predecessor** pair (one the model says leads to it) how much it would change, and queue it if above θ (keeping the higher priority if already queued). Changes thus propagate backward until things settle (Figure 8.9). For stochastic environments the model counts transitions and each pair gets a **full backup** over its estimated next states. The weakness: it depends on discrete states and explicit predecessors; with function approximation it is unclear which states a backup affects.",
+          "refs": [
+            "alg.ch08.prioritized-sweeping"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Example 8.4.** On the Dyna maze and the same maze at 3× resolution (423 states), at most 5 backups per real step, α = 1: prioritized sweeping needs over 20 times fewer backups than Dyna-Q before its greedy policy is optimal. The draft (after Peng and Williams) reports 'often 5 to 10'; our factor is larger (flagged on the example). **Example 8.5** (rod maneuvering, 14,400 potential states) was solved by prioritized sweeping; its obstacle layout appears only in the figure, so it is described rather than reproduced.",
+          "refs": [
+            "ex.ch08.prioritized-mazes",
+            "ex.ch08.rod-maneuvering"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Asynchronous DP (§4.5) allowed backups in any order; prioritized sweeping chooses an order on purpose."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.4",
+          "printedPages": [
+            206,
+            209
+          ],
+          "pdfPages": [
+            220,
+            223
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch08.s8-5",
+      "section": "8.5",
+      "title": "Full vs. sample backups",
+      "concepts": [
+        "ch08.full-vs-sample"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Chapter 6 presented sample backups as a substitute for full ones when no distribution model exists. But even with a model, are full backups better per unit of computation?"
+        },
+        {
+          "layer": "formal",
+          "body": "One-step backups differ along three binary dimensions: state or action values, optimal or given policy, full or sample. Seven of the eight combinations are known algorithms (Figure 8.12). For $q_*$ with an estimated model $\\hat p$, the full backup is (8.1) and the sample backup (8.2). They coincide (with α = 1) when only one next state is possible. A full backup is exact given its successors but costs about b sample backups, where b is the number of possible next states. With b equally likely successors with correct values and initial error 1, t sample backups (averaging) leave error $\\sqrt{(b-1)/(bt)}$.",
+          "refs": [
+            "eq.ch08.full-backup-q",
+            "eq.ch08.sample-backup-q"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "With b = 10,000, 100 sample backups (1% of one full backup's cost) already cut the error to 0.1 (Figure 8.13). In the same time a full backup would still be in progress for one pair, while sample backups could improve a hundred pairs. In real problems the successors' values also improve sooner, so the advantage is probably larger."
+        },
+        {
+          "layer": "connections",
+          "body": "Exercise 8.5: a skewed successor distribution changes the comparison. The laboratory draws Figure 8.13's curves from the formula."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.5",
+          "printedPages": [
+            210,
+            213
+          ],
+          "pdfPages": [
+            224,
+            227
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch08.s8-6",
+      "section": "8.6",
+      "title": "Trajectory sampling",
+      "concepts": [
+        "ch08.trajectory-sampling"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Exhaustive DP sweeps give every state equal time, though most states matter little. A chess player studies positions from real games, not random boards."
+        },
+        {
+          "layer": "formal",
+          "body": "Distribute backups by the **on-policy distribution**: simulate trajectories with the current policy and back up the states (or pairs) they visit. This is easy to generate and hard to achieve any other way, since the distribution changes with the policy. The draft's experiment: random tasks with two actions per state, b equally likely next states, a 0.1 chance of termination on every transition, full backups (8.1) either cycling through all pairs (uniform) or along ε-greedy trajectories (on-policy). The measure is the start state's value under the greedy policy. On-policy sampling plans faster at first and more slowly later; the effect is stronger and longer at small b and with more states."
+        },
+        {
+          "layer": "example",
+          "body": "Reproduced with 1000 states (10 tasks; the draft gives no rewards, so we draw them from a standard normal): on-policy is ahead after 500 backups and behind after 5000, for b = 1 and b = 3, with the crossover later for b = 1. With 10,000 states and b = 1 the early advantage is large (6.4 against 2.4 after 6000 backups) but uniform sweeping catches up near 40,000, sooner than the draft's figure suggests (flagged)."
+        },
+        {
+          "layer": "connections",
+          "body": "Exercise 8.6 asks why some early curves are scalloped; Exercise 8.7 (a laboratory task) asks for the 10,000-state experiment with b = 1 and b = 3. Chapter 9 returns to the on-policy distribution with function approximation."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.6",
+          "printedPages": [
+            213,
+            217
+          ],
+          "pdfPages": [
+            227,
+            231
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch08.s8-7",
+      "section": "8.7",
+      "title": "Heuristic search",
+      "concepts": [
+        "ch08.heuristic-search"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Classical AI planning looks ahead from the current state through a tree of possibilities, evaluates the leaves heuristically, backs up toward the root, picks the best move, and throws the backed-up values away."
+        },
+        {
+          "layer": "formal",
+          "body": "The backups in the tree are the max-backups of this book. Greedy action selection is heuristic search of depth one. With a perfect model and an imperfect value function, deeper search usually gives better actions (searching to the episode's end gives optimal ones), at a cost in response time; TD-Gammon searched a few moves ahead with a learned afterstate value function. The deeper lesson is **focus**: computation and memory devoted to the current state and its likely successors. Deep search can be written as one-step backups performed bottom-up (Figure 8.15), so its benefit comes from where backups are concentrated, not from multistep backups as such. Distributing backups using ideas from heuristic search (e.g. favouring pairs near the maximum) was unexplored."
+        },
+        {
+          "layer": "connections",
+          "body": "The draft places TD-Gammon in 'Section 15.1'; it is §14.1 in this draft (flagged). §8.8 (Monte Carlo Tree Search) is only a heading in this draft."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.7",
+          "printedPages": [
+            217,
+            219
+          ],
+          "pdfPages": [
+            231,
+            233
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch08.s8-9",
+      "section": "8.9",
+      "title": "Summary (reading guide)",
+      "concepts": [
+        "ch08.planning",
+        "ch08.dyna-architecture"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**What this section does.** It stresses how close planning and learning are: both estimate the same value functions by many small backups, so they integrate by sharing the value function, and any learning method becomes a planning method when fed simulated experience. Planning, acting and model learning interact in a circle (Figure 8.2), best run asynchronously and in parallel. Dimensions of variation: the distribution of backups (prioritized sweeping backward from changes, heuristic search forward from the current state, trajectory sampling by the on-policy distribution), their size (one-step sample backups being the smallest, possibly best on very large problems) and their depth. Read pp. 220–221, the bibliographical remarks (p. 221) and the exercises (pp. 221–222). Exercise 8.1 does not exist; Exercises 8.4 and 8.7 are laboratory tasks here."
+        },
+        {
+          "layer": "connections",
+          "body": "**Bibliographical pointers.** The planning-and-learning view grew from the authors' work and was influenced by Agre and Chapman, Bertsekas and Tsitsiklis, Singh, and by psychology (latent learning, Tolman). 'Direct' and 'indirect', and 'system identification' for model learning, come from adaptive control. Dyna is Sutton's (1990); prioritized sweeping was developed independently by Moore and Atkeson and by Peng and Williams (1993). §8.5 follows Singh's experiments (1993); for heuristic search see Russell and Norvig, and Korf."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "section": "8.9",
+          "printedPages": [
+            220,
+            221
+          ],
+          "pdfPages": [
+            234,
+            235
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "8",
+          "printedPages": [
+            221,
+            222
+          ],
+          "pdfPages": [
+            235,
+            236
+          ]
+        }
+      ]
+    }
+  ]
+}

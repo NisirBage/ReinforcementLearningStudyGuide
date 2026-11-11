@@ -8,6 +8,7 @@ import { GRID5, RANDOM_WALK_START, RANDOM_WALK_TRUE, cliffWalking, gamblersProbl
 import { batchUpdate, certaintyEquivalence, sampleAverageReturns, type Episode } from "../lib/rl/batch";
 import * as ttt from "../lib/rl/envs/tictactoe";
 import * as tr from "../lib/rl/traces";
+import * as pl from "../lib/rl/planning";
 import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
 import { DEAL_STATE as BJ_DEAL, END as BJ_END, HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
 import { INFINITE_VARIANCE_BEHAVIOUR, INFINITE_VARIANCE_TARGET, importanceRatio, infiniteVarianceMdp, isEstimates, newOffPolicyControl, offPolicyControlEpisode, weightedIncremental } from "../lib/rl/offPolicy";
@@ -1075,6 +1076,186 @@ export const CHECKS: Record<string, Check> = {
       const gaps = m.starts.map((s) => vstar[s] - learned[s]);
       const finishes = m.starts.every((s) => greedyTrajectory(m, st.pi, s).finished);
       return gaps.every((g) => g >= -1e-6) && gaps.slice(0, 3).every((g) => g < 1.5) && gaps.reduce((a, b) => a + b, 0) / gaps.length < 5 && finishes;
+    },
+  },
+  // ----- Chapter 8, Milestone 4J: planning and learning -----
+  "ch08-q008": {
+    kind: "answer", // a Dyna-Q planning backup: Q = 0, R = 0, max_a Q(S′, a) = 0.5, α = 0.1, γ = 0.95; and 1 + n backups per real step for n = 5
+    run: () => [0.1 * (0 + 0.95 * 0.5 - 0), 1 + 5],
+  },
+  "ch08-q010": {
+    kind: "answer", // Dyna-Q+ planning reward R + κ√τ with R = 0, κ = 0.001, τ = 10,000
+    run: () => [0 + 0.001 * Math.sqrt(10_000)],
+  },
+  "ch08-q014": {
+    kind: "answer", // Figure 8.13's error after t = 25 sample backups with b = 100
+    run: () => [pl.sampleBackupError(100, 25)],
+  },
+  "ch08.q-planning": {
+    kind: "fact", // Figure 8.1: random-sample one-step Q-planning with the maze itself as the sample model (α = 0.5, γ = 0.95) finds a greedy policy
+    // that follows a shortest path (14 steps) within 20,000 planning backups, and the greedy policy is not yet complete after 100
+    run: () => {
+      const env = pl.mazeEnv(pl.DYNA_MAZE);
+      const Q = Array.from({ length: env.n }, () => [0, 0, 0, 0]);
+      const rng = makeRng(2);
+      pl.qPlanning(env, Q, 100, 0.5, 0.95, rng);
+      const early = pl.greedyIsOptimal(env, Q);
+      pl.qPlanning(env, Q, 19_900, 0.5, 0.95, rng);
+      return !early && pl.greedyIsOptimal(env, Q);
+    },
+  },
+  "ch08.dyna-maze": {
+    kind: "fact", // Example 8.1, Figure 8.5 (30 runs, α = 0.1, ε = 0.1, γ = 0.95, random tie-breaking): the average episode stays below 20 steps
+    // from about episode 20–35 with n = 0, by episode 8 with n = 5, and by episode 4 with n = 50 (the draft: about 25, 5 and 3); the shortest path is 14
+    run: () => {
+      const env = pl.mazeEnv(pl.DYNA_MAZE);
+      const settle = (n: number) => {
+        const acc = new Array(50).fill(0);
+        for (let r = 0; r < 30; r++) pl.dynaEpisodes(env, { n, alpha: 0.1, gamma: 0.95, epsilon: 0.1 }, 50, makeRng(100 + r)).forEach((x, i) => (acc[i] += x / 30));
+        return acc.findIndex((_, i) => i > 0 && acc.slice(i).every((y) => y < 20)) + 1;
+      };
+      const [s0, s5, s50] = [0, 5, 50].map(settle);
+      return env.openStates === 47 && pl.shortestPath(env) === 14 && s0 >= 20 && s0 <= 35 && s5 <= 8 && s50 <= 4 && s50 < s5 && s5 < s0;
+    },
+  },
+  "ch08.fig8-6": {
+    kind: "fact", // Figure 8.6: halfway through the second episode the nonplanning agent (n = 0) has a greedy action in only one state (the last
+    // step learned), while the n = 50 agent already has one in at least 10 states, and in at least 40 by the end of that episode (seed 7)
+    run: () => {
+      const env = pl.mazeEnv(pl.DYNA_MAZE);
+      const second = (n: number) => {
+        const rng = makeRng(7);
+        const cfg = { n, alpha: 0.1, gamma: 0.95, epsilon: 0.1 };
+        const ag = pl.newDynaAgent(env.n);
+        pl.dynaEpisodes(env, cfg, 1, rng, ag);
+        const counts: number[] = [];
+        let s = env.start;
+        for (;;) {
+          const r = pl.dynaStep(env, ag, s, cfg, rng);
+          counts.push(pl.greedyArrows(ag.Q).filter((x) => x !== null).length);
+          if (r.done) break;
+          s = r.next;
+        }
+        return { half: counts[Math.floor(counts.length / 2)], end: counts[counts.length - 1] };
+      };
+      const a = second(0);
+      const b = second(50);
+      return a.half === 1 && b.half >= 10 && b.end >= 40;
+    },
+  },
+  "ch08.first-episode": {
+    kind: "fact", // Example 8.1: before anything is learned the agent's actions are uniformly random (all values 0, ties broken at random), and the
+    // expected first-episode length is 868.7 steps; the draft's "about 1700" is one run (its seed was held constant), within the walk's wide spread
+    run: () => {
+      const env = pl.mazeEnv(pl.DYNA_MAZE);
+      const e = pl.randomWalkEpisodeLength(env);
+      const rng = makeRng(3);
+      const lens = Array.from({ length: 300 }, () => pl.dynaEpisodes(env, { n: 0, alpha: 0.1, gamma: 0.95, epsilon: 0.1 }, 1, rng)[0]);
+      const mean = lens.reduce((x, y) => x + y, 0) / lens.length;
+      return Math.abs(e - 868.7) < 0.1 && Math.abs(mean - e) < 0.15 * e && lens.filter((x) => x >= 1700).length > 15;
+    },
+  },
+  "ch08.blocking": {
+    kind: "fact", // Example 8.2, Figure 8.7 (our parameters: n = 50, α = 1, ε = 0.1, γ = 0.95, κ = 0.001; 10 runs): Dyna-Q+ is ahead at step 1000 and
+    // further ahead at 3000; after the change both agents find the new path (their cumulative reward rises again), Dyna-Q+ faster
+    run: () => {
+      const cfg = { n: 50, alpha: 1, gamma: 0.95, epsilon: 0.1 };
+      const avg = (extra: object) => {
+        let a = 0;
+        let b = 0;
+        let c = 0;
+        for (let r = 0; r < 10; r++) {
+          const cum = pl.dynaChanging(pl.BLOCKING_MAZE, 1000, 3000, { ...cfg, ...extra }, makeRng(r + 1));
+          a += cum[999] / 10;
+          b += cum[1999] / 10;
+          c += cum[2999] / 10;
+        }
+        return { a, b, c };
+      };
+      const q = avg({});
+      const qp = avg({ kappa: 1e-3 });
+      return qp.a > q.a && qp.c > q.c && q.c > q.b && qp.c - qp.a > q.c - q.a;
+    },
+  },
+  "ch08.shortcut": {
+    kind: "fact", // Example 8.3, Figure 8.8 (same parameters, 10 runs): after the shortcut opens, Dyna-Q's greedy path at step 6000 still takes the long way in
+    // most runs, while Dyna-Q+'s takes the shortcut in most runs; Dyna-Q+ ends with more cumulative reward
+    run: () => {
+      const cfg = { n: 50, alpha: 1, gamma: 0.95, epsilon: 0.1 };
+      const env = pl.mazeEnv(pl.SHORTCUT_MAZE[1]);
+      const short = pl.shortestPath(env);
+      const run = (extra: object) => {
+        let usesShortcut = 0;
+        let total = 0;
+        for (let r = 0; r < 10; r++) {
+          const ag = pl.newDynaAgent(env.n);
+          const cum = pl.dynaChanging(pl.SHORTCUT_MAZE, 3000, 6000, { ...cfg, ...extra }, makeRng(r + 1), ag);
+          total += cum[5999] / 10;
+          if (pl.greedyPathLength(env, ag.Q) === short) usesShortcut++;
+        }
+        return { usesShortcut, total };
+      };
+      const q = run({});
+      const qp = run({ kappa: 1e-3 });
+      return q.usesShortcut <= 3 && qp.usesShortcut >= 7 && qp.total > q.total;
+    },
+  },
+  "ch08.ex8-4": {
+    kind: "fact", // Exercise 8.4 (lab task): with the bonus κ√τ used only in action selection, not in backups, the agent beats Dyna-Q on the blocking
+    // maze (the change is near the path it follows) but, unlike Dyna-Q+, rarely finds the distant shortcut: it cannot plan a trip to try it
+    run: () => {
+      const cfg = { n: 50, alpha: 1, gamma: 0.95, epsilon: 0.1 };
+      let block = 0;
+      let blockQ = 0;
+      for (let r = 0; r < 10; r++) {
+        block += pl.dynaChanging(pl.BLOCKING_MAZE, 1000, 3000, { ...cfg, kappa: 1e-3, bonusIn: "selection" }, makeRng(r + 1))[2999] / 10;
+        blockQ += pl.dynaChanging(pl.BLOCKING_MAZE, 1000, 3000, cfg, makeRng(r + 1))[2999] / 10;
+      }
+      const env = pl.mazeEnv(pl.SHORTCUT_MAZE[1]);
+      const short = pl.shortestPath(env);
+      let found = 0;
+      for (let r = 0; r < 10; r++) {
+        const ag = pl.newDynaAgent(env.n);
+        pl.dynaChanging(pl.SHORTCUT_MAZE, 3000, 6000, { ...cfg, kappa: 1e-3, bonusIn: "selection" }, makeRng(r + 1), ag);
+        if (pl.greedyPathLength(env, ag.Q) === short) found++;
+      }
+      return block > blockQ && found <= 3;
+    },
+  },
+  "ch08.prioritized": {
+    kind: "fact", // Example 8.4: on the Dyna maze and the same maze at 3× resolution (423 states), with at most n = 5 backups per real step and α = 1,
+    // prioritized sweeping needs far fewer backups than Dyna-Q before the greedy policy is optimal (median of 3 runs; factor above 5, here over 20)
+    run: () => {
+      const med = (xs: number[]) => [...xs].sort((a, b) => a - b)[1];
+      return [1, 3].every((k) => {
+        const m = pl.scaleMaze(pl.DYNA_MAZE, k);
+        const cfg = { n: 5, alpha: 1, gamma: 0.95, epsilon: 0.1, theta: 1e-4 };
+        const d = med([1, 2, 3].map((r) => pl.backupsUntilOptimal(m, "dyna-q", cfg, makeRng(r))));
+        const p = med([1, 2, 3].map((r) => pl.backupsUntilOptimal(m, "prioritized", cfg, makeRng(r))));
+        return Number.isFinite(p) && d / p > 5;
+      });
+    },
+  },
+  "ch08.sample-backups": {
+    kind: "fact", // Figure 8.13: with b equally likely successors, t sample backups leave error √((b − 1)/(b t)); for b = 10,000 the error is 0.1 after
+    // only 1% of the b backups a full backup costs, and below 1/√b after b of them; with b = 1 a single sample backup is exact
+    run: () =>
+      close(pl.sampleBackupError(10_000, 100), Math.sqrt(9999 / 1_000_000), 1e-12) &&
+      pl.sampleBackupError(10_000, 100) < 0.1 &&
+      [2, 10, 100, 1000, 10_000].every((b) => pl.sampleBackupError(b, b) < 1 / Math.sqrt(b) && pl.sampleBackupError(b, 0) === 1) &&
+      pl.sampleBackupError(1, 1) === 0,
+  },
+  "ch08.trajectory-sampling": {
+    kind: "fact", // Figure 8.14 (1000 states, 10 random tasks, full backups (8.1), on-policy with ε = 0.1; rewards ours, see the lab): on-policy
+    // distribution is ahead after 500 backups and behind after 5000, for b = 1 and b = 3; with b = 1 it stays ahead longer (still ahead at 1500)
+    run: () => {
+      const curve = (b: number, mode: "uniform" | "on-policy") => {
+        const acc = new Array(11).fill(0);
+        for (let i = 0; i < 10; i++) pl.trajectorySampling(pl.randomTask(1000, b, makeRng(1000 + i)), mode, 5000, 500, makeRng(i)).forEach((x, j) => (acc[j] += x / 10));
+        return acc;
+      };
+      const [u1, o1, u3, o3] = [curve(1, "uniform"), curve(1, "on-policy"), curve(3, "uniform"), curve(3, "on-policy")];
+      return o1[1] > u1[1] && o1[10] < u1[10] && o3[1] > u3[1] && o3[10] < u3[10] && o1[3] > u1[3];
     },
   },
   // ----- Chapter 7, Milestone 4I: eligibility traces -----

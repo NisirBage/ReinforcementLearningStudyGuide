@@ -282,6 +282,7 @@ describe("in the interface", () => {
     expect(row("6")).toHaveTextContent("Covered"); // completed in Milestone 4G
     expect(row("1")).toHaveTextContent("Covered"); // completed in Milestone 4H
     expect(row("7")).toHaveTextContent("Covered"); // completed in Milestone 4I
-    expect(row("8")).toHaveTextContent("Not started");
+    expect(row("8")).toHaveTextContent("Covered"); // completed in Milestone 4J
+    expect(row("9")).toHaveTextContent("Not started");
   });
 });

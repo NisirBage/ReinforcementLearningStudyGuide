@@ -19,6 +19,7 @@ import { PolicyIterationPanel, ValueIterationPanel, model } from "./labs/DpLab";
 import { ExploringStarts, Prediction } from "./labs/McLab";
 import { ControlInspector, TdStepper } from "./labs/TdLab";
 import { PathCredit, TdLambdaStepper } from "./labs/TracesLab";
+import { DynaStepper } from "./labs/PlanningLab";
 import { NotFound } from "./NotFound";
 
 const SA = { kind: "sample-average" } as const;
@@ -44,6 +45,7 @@ export const DEMOS: Record<Explainer["demo"], { note: string; view: () => ReactE
   "q-learning": { note: "Q-learning on cliff walking, one update at a time: the target uses $\\max_a Q(S_{t+1}, a)$, whatever action is taken next.", view: () => <ControlInspector initialMethod="q-learning" /> },
   "td-lambda": { note: "TD(λ) on the random walk, one step at a time: the TD error δ, every state's eligibility trace, and the change it causes; choose the kind of trace, or true on-line TD(λ).", view: () => <TdLambdaStepper /> },
   "sarsa-lambda": { note: "Example 7.2: the action values one episode raises with one-step Sarsa and with traces; declare a move exploratory to see Watkins's Q(λ) cut the traces.", view: () => <PathCredit /> },
+  dyna: { note: "Dyna-Q or prioritized sweeping on the maze of Example 8.1: step, or finish an episode, and watch the greedy policy grow back from the goal through planning.", view: () => <DynaStepper /> },
 };
 
 export function AlgorithmPage() {
