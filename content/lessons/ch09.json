@@ -1,0 +1,314 @@
+{
+  "unit": "ch09",
+  "sections": [
+    {
+      "id": "ch09.s9-1",
+      "section": "9.1",
+      "title": "Value prediction with function approximation",
+      "concepts": [
+        "ch09.generalization",
+        "ch09.backups-as-examples",
+        "ch09.rmse-objective"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Tables run out: with continuous variables or images, almost every state is new. The only hope is to generalize from the states seen to those not seen, which is exactly what supervised learning's function approximation does. So represent $v_\\pi$ not by a table but by $\\hat{v}(s, \\mathbf{w})$ with a weight vector $\\mathbf{w}$ much shorter than the number of states."
+        },
+        {
+          "layer": "formal",
+          "body": "Every prediction method so far is a **backup** $s \\mapsto v$: Monte Carlo $S_t \\mapsto G_t$, TD(0) $S_t \\mapsto R_{t+1} + \\gamma\\hat{v}(S_{t+1}, \\mathbf{w}_t)$, TD(λ) $S_t \\mapsto G^\\lambda_t$, DP $s \\mapsto \\mathbb{E}_\\pi[\\cdots]$. Treat each as a training example. The learner must cope with incrementally arriving data and nonstationary targets (policies change; bootstrapped targets move).\n\nSince errors cannot all be zero, weight them: RMSE(w) (9.1) with a state distribution $d$, normally the distribution of states backed up. The **on-policy distribution** (states as encountered following π) focuses the approximation on states that occur and has the strongest guarantees. The goal: a global optimum $\\mathbf{w}^*$ where possible (linear methods), else a local optimum.",
+          "refs": [
+            "eq.ch09.rmse"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "Whether RMSE is the right goal for control is open (§9.5). Chapter 8 met the on-policy distribution as a way of distributing backups (trajectory sampling)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            225,
+            226
+          ],
+          "pdfPages": [
+            239,
+            240
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.1",
+          "printedPages": [
+            226,
+            229
+          ],
+          "pdfPages": [
+            240,
+            243
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch09.s9-2",
+      "section": "9.2",
+      "title": "Gradient-descent methods",
+      "concepts": [
+        "ch09.gradient-descent",
+        "ch09.gradient-td-lambda"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Nudge the weights after each example in the direction that most reduces that example's squared error. Only a nudge: the aim is a good balance over all states, not perfection on one."
+        },
+        {
+          "layer": "formal",
+          "body": "With the true value as target: (9.2). With a target $V_t$ in its place: (9.3). If $V_t$ is **unbiased** (Monte Carlo's $G_t$) and α decreases as in (2.7), (9.3) converges to a local optimum. With the λ-return (9.4) the target is biased for λ < 1, as are DP targets, so there is no such guarantee, yet bootstrapping works well and has its own results in the linear case. The backward view: TD error (9.6), a trace per weight $\\mathbf{e}_t = \\gamma\\lambda\\mathbf{e}_{t-1} + \\nabla\\hat{v}(S_t, \\mathbf{w}_t)$ (9.7), and $\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha\\delta_t\\mathbf{e}_t$ (9.5); Figure 9.1. The gradients can come from backpropagation in a neural network, or from a linear form (§9.3).",
+          "refs": [
+            "eq.ch09.gradient-true",
+            "eq.ch09.gradient-general",
+            "eq.ch09.gradient-lambda-forward",
+            "eq.ch09.gradient-lambda-backward",
+            "eq.ch09.gradient-td-error",
+            "eq.ch09.gradient-trace",
+            "alg.ch09.gradient-td-lambda"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "With one feature per state, $\\nabla\\hat{v}(S_t)$ is the unit vector of $S_t$ and Figure 9.1 is exactly tabular TD(λ): checked on the 19-state walk, the weights equal the tabular values after every episode (Exercise 9.1). Off-line, (9.5)–(9.7) and (9.4) give identical updates (Exercise 9.4, checked with aggregated features)."
+        },
+        {
+          "layer": "connections",
+          "body": "Exercises 9.1–9.4 relate these equations to the tabular case, to state aggregation and to off-line updating. Try the linear TD(λ) demo in the function-approximation laboratory."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.2",
+          "printedPages": [
+            229,
+            232
+          ],
+          "pdfPages": [
+            243,
+            246
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch09.s9-3",
+      "section": "9.3",
+      "title": "Linear methods",
+      "concepts": [
+        "ch09.linear-methods",
+        "ch09.td-bound",
+        "ch09.coarse-coding",
+        "ch09.tile-coding",
+        "ch09.rbf",
+        "ch09.kanerva-coding",
+        "ch09.state-aggregation"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "Make the value a weighted sum of features of the state. Learning becomes easy to analyse and cheap to run; the art moves into choosing the features."
+        },
+        {
+          "layer": "formal",
+          "body": "$\\hat{v}(s, \\mathbf{w}) = \\mathbf{w}^\\top\\mathbf{x}(s)$ (9.8), so $\\nabla\\hat{v} = \\mathbf{x}(s)$ and there is one optimum. Linear TD(λ) with the on-policy distribution converges to $\\mathbf{w}_\\infty$ with $\\mathrm{RMSE}(\\mathbf{w}_\\infty) \\le \\frac{1-\\gamma\\lambda}{1-\\gamma}\\mathrm{RMSE}(\\mathbf{w}^*)$ (9.9); with other distributions bootstrapping can diverge. Linear forms cannot express interactions (high angular velocity is good or bad depending on the angle), so conjunctions need their own features.\n\n- **Coarse coding:** overlapping binary receptive fields; their size and shape set initial generalization, their number the final acuity.\n- **Tile coding:** fields arranged in offset tilings, one active tile per tiling, so exactly m features are present; α = 1/m gives one-trial learning. Tile shapes direct generalization; hashing saves memory.\n- **Radial basis functions:** graded features $x_i(s) = \\exp(-\\|s - c_i\\|^2 / 2\\sigma_i^2)$, smooth but costlier.\n- **Kanerva coding:** binary features for prototype states, so capacity scales with the number of features, not the dimension.\n- **State aggregation** (Exercise 9.2) is the simplest case: one indicator feature per group.",
+          "refs": [
+            "eq.ch09.linear-value",
+            "eq.ch09.td-bound"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Bound (9.9), computed exactly.** On a continuing 20-state reflecting walk aggregated into 4 groups, with γ = 0.9: TD(0) ends 1.14 times the best RMSE (bound 10), TD(0.9) 1.005 times (bound 1.9), TD(1) at the best. **Example 9.1.** A square wave learned from random examples with 50 interval features of width 0.08, 0.2 or 0.5: after 40 examples the shapes and errors differ a lot (0.33, 0.23, 0.28); after 10,240 they are nearly identical (0.118, 0.120, 0.116). Tile coding with 8 tilings and α = 1/8 makes the trained value exactly the target in one update.",
+          "refs": [
+            "ex.ch09.coarse-coding"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "The bibliographical remarks put this bound in 'Section 9.2' and the summary calls it a mean-squared-error bound (flagged). Exercise 9.6 points to 'Exercise 8.4' for state aggregation; it means Exercise 9.2 (flagged)."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            232,
+            241
+          ],
+          "pdfPages": [
+            246,
+            255
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            253,
+            254
+          ],
+          "pdfPages": [
+            267,
+            268
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch09.s9-4",
+      "section": "9.4",
+      "title": "Control with function approximation",
+      "concepts": [
+        "ch09.approx-control",
+        "ch09.linear-sarsa-lambda",
+        "ch09.linear-q-lambda",
+        "ch09.mountain-car"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "For control, approximate action values and act greedily (or ε-greedily) on them, following GPI as always."
+        },
+        {
+          "layer": "formal",
+          "body": "Approximate $\\hat{q}(s, a, \\mathbf{w}) \\approx q_\\pi$ from examples $S_t, A_t \\mapsto Q_t$ by the action-value form of (9.3); the backward view is gradient-descent Sarsa(λ), $\\delta_t = R_{t+1} + \\gamma\\hat{q}(S_{t+1}, A_{t+1}, \\mathbf{w}_t) - \\hat{q}(S_t, A_t, \\mathbf{w}_t)$, $\\mathbf{e}_t = \\gamma\\lambda\\mathbf{e}_{t-1} + \\nabla\\hat{q}$. For a fixed policy it converges like TD(λ). With a few discrete actions, compute $\\hat{q}$ for each and act ε-greedily. Figures 9.8 (Sarsa(λ)) and 9.9 (Watkins's Q(λ)) do this with binary features. Replacing traces carry over by treating each feature like a state; optionally clear the traces of the actions not taken.",
+          "refs": [
+            "alg.ch09.linear-sarsa-lambda",
+            "alg.ch09.linear-q-lambda"
+          ]
+        },
+        {
+          "layer": "example",
+          "body": "**Mountain car (Example 9.2).** An underpowered car must swing back up the left slope before it can climb out on the right. Reward −1 per step; three actions; ten 9 × 9 tilings with random offsets; Sarsa(λ) with replacing traces, λ = 0.9, ε = 0, α = 0.05; zero initial values are optimistic, so the car explores even without ε. Reproduced: the first 10 episodes average over 400 steps, episodes 91–100 under 80. **Figure 9.11** (five tilings, first 20 episodes): replacing traces stay robust where accumulating traces blow up (λ = 0.9, α = 0.8/5); λ = 1 does much worse than λ = 0.9 at α = 1.2/5 (at smaller α the difference was within the noise). Linear Watkins's Q(λ) also learns the task.",
+          "refs": [
+            "ex.ch09.mountain-car"
+          ]
+        },
+        {
+          "layer": "connections",
+          "body": "The draft writes the one-step target as '$G_{t+1} + \\gamma\\hat{q}$' where the reward $R_{t+1}$ is meant, points to 'Section 7.8' for replacing traces (§7.3 here), and says Figure 9.8 shows the optional clearing although the box does not (flagged). Convergence of this Sarsa control method is unproved; Q-learning with function approximation can diverge."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.4",
+          "printedPages": [
+            241,
+            247
+          ],
+          "pdfPages": [
+            255,
+            261
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch09.s9-5",
+      "section": "9.5",
+      "title": "Should we bootstrap?",
+      "concepts": [
+        "ch09.bootstrapping"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "With function approximation, Monte Carlo (no bootstrapping) is the safe choice: more reliable, lower asymptotic error. Yet practitioners bootstrap. Why?"
+        },
+        {
+          "layer": "formal",
+          "body": "Empirically, bootstrapping methods usually perform much better. Varying λ from 0 to 1 in TD(λ) and Sarsa(λ) on several tasks (Figure 9.12: mountain car, puddle world, a random walk, pole balancing), performance worsens sharply as λ approaches 1, even for RMSE in a prediction task, short of the asymptote where λ = 1 must win. The reason is unclear: bootstrapping may learn faster, or learn something better for control. RMSE may not be the right measure: adding 1000 to every action value ruins it but leaves the optimal policy intact."
+        },
+        {
+          "layer": "example",
+          "body": "In our mountain-car reproduction, with replacing traces and α = 1.2/5, λ = 1 averaged far more steps per episode over the first 20 episodes than λ = 0.9; at α = 0.4/5 the difference was within the noise of 5 runs."
+        },
+        {
+          "layer": "connections",
+          "body": "Chapter 7 reached the same conclusion for tabular methods: move toward Monte Carlo, but not all the way."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.5",
+          "printedPages": [
+            247,
+            249
+          ],
+          "pdfPages": [
+            261,
+            263
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch09.s9-6",
+      "section": "9.6",
+      "title": "Summary (reading guide)",
+      "concepts": [
+        "ch09.generalization",
+        "ch09.linear-methods"
+      ],
+      "layers": [
+        {
+          "layer": "intuition",
+          "body": "**What this section does.** It sums up: generalization is essential, and any supervised function approximator can be used by treating backups as training examples; gradient-descent methods extend all earlier techniques, traces included. Linear methods (RBFs, tile coding, Kanerva coding) are attractive in theory and in practice with good features, and choosing features is a main way of adding prior knowledge. On-policy bootstrapping with linear approximation converges within $\\frac{1-\\gamma\\lambda}{1-\\gamma}$ of the minimum error (the summary says mean-squared error; (9.9) states RMSE, flagged). Bootstrapping is preferred in practice despite weaker guarantees. The off-policy case is postponed to a later chapter (Chapter 10, unwritten in this draft). Read pp. 249–250, the bibliographical remarks (pp. 250–253) and the exercises (pp. 253–254)."
+        },
+        {
+          "layer": "connections",
+          "body": "**Bibliographical pointers.** LMS (Widrow and Hoff, 1960) is the prototypical incremental gradient method; Sutton (1988) began gradient analyses of TD. Convergence of linear TD(λ) for general features: Dayan (1992), then Tsitsiklis and Van Roy (1997), whose bound is (9.9). Coarse coding is Hinton's term; tile coding is Albus's CMAC; RBFs were tied to neural networks by Broomhead and Lowe; Kanerva coding comes from sparse distributed memory. Mountain car follows Moore (1990); the results are Sutton (1996) and Singh and Sutton (1996). Historically, Samuel's checkers player first used function approximation for values; Holland's classifier systems used aggregation evolved by genetic algorithms."
+        }
+      ],
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.6",
+          "printedPages": [
+            249,
+            250
+          ],
+          "pdfPages": [
+            263,
+            264
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            250,
+            254
+          ],
+          "pdfPages": [
+            264,
+            268
+          ]
+        }
+      ]
+    }
+  ]
+}

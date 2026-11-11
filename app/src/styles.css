@@ -515,3 +515,6 @@ pre.code { max-height: 30rem; overflow: auto; padding: 10px 12px; background: va
 /* Planning laboratory (Chapter 8) */
 .maze-grid td { width: 1.7em; height: 1.7em; font-size: 0.8rem; }
 .maze-grid td.wall { background: var(--muted, #888); }
+/* Approximation laboratory (Example 9.2): cost-to-go heat map */
+.heat-grid { border-collapse: collapse; margin: 6px 0; }
+.heat-grid td { width: 10px; height: 10px; padding: 0; background: var(--accent); }

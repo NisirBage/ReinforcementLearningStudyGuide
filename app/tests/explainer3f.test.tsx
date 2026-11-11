@@ -29,7 +29,7 @@ const b = loadBundle();
 
 describe("explainer content", () => {
   test("every algorithm has an explainer with a demonstration, and every text renders its maths", () => {
-    expect(b.algorithms.length).toBe(18); // Milestone 4I added Figures 7.7, 7.10, 7.12 and 7.15; 4J Figures 8.1, 8.4 and 8.9
+    expect(b.algorithms.length).toBe(21); // Milestone 4I added Figures 7.7, 7.10, 7.12 and 7.15; 4J Figures 8.1, 8.4 and 8.9; 4K Figures 9.1, 9.8 and 9.9
     for (const k of DEMO_KEYS) expect(DEMOS[k], k).toBeDefined();
     for (const a of b.algorithms) {
       const x = a.explainer!;

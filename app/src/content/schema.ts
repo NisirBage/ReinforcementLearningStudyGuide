@@ -176,7 +176,7 @@ export interface Equation {
 /** Interactive demonstrations an explainer can embed (implemented in app/src/pages/labs). */
 export const DEMO_KEYS = [
   "bandit-epsilon-greedy", "bandit-ucb", "bandit-gradient", "policy-evaluation", "policy-iteration", "value-iteration",
-  "mc-prediction", "mc-es", "td0", "sarsa", "q-learning", "td-lambda", "sarsa-lambda", "dyna",
+  "mc-prediction", "mc-es", "td0", "sarsa", "q-learning", "td-lambda", "sarsa-lambda", "dyna", "linear-td", "mountain-car",
 ] as const;
 
 /**

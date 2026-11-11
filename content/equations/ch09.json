@@ -1,0 +1,359 @@
+[
+  {
+    "id": "eq.ch09.rmse",
+    "unit": "ch09",
+    "concept": "ch09.rmse-objective",
+    "name": "Root-mean-squared error",
+    "bookLabel": "(9.1)",
+    "tex": "\\mathrm{RMSE}(\\mathbf{w}) = \\sqrt{\\sum_{s\\in\\mathcal{S}} d(s)\\Big[v_\\pi(s) - \\hat{v}(s, \\mathbf{w})\\Big]^2}",
+    "symbols": [
+      {
+        "tex": "d(s)",
+        "meaning": "a distribution over states: how much each state's error matters"
+      },
+      {
+        "tex": "\\hat{v}(s, \\mathbf{w})",
+        "meaning": "the approximate value"
+      }
+    ],
+    "intuition": "Average squared error, weighted by how much each state matters.",
+    "assumptions": [
+      "$d(s) \\ge 0$ and $\\sum_s d(s) = 1$."
+    ],
+    "pitfalls": [
+      "Not necessarily the right goal for control (§9.5)."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.1",
+        "printedPages": [
+          227,
+          227
+        ],
+        "pdfPages": [
+          241,
+          241
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch09.gradient-true",
+    "unit": "ch09",
+    "concept": "ch09.gradient-descent",
+    "name": "Gradient descent on one example's squared error",
+    "bookLabel": "(9.2)",
+    "tex": "\\mathbf{w}_{t+1} = \\mathbf{w}_t - \\tfrac{1}{2}\\alpha\\nabla\\Big[v_\\pi(S_t) - \\hat{v}(S_t, \\mathbf{w}_t)\\Big]^2 = \\mathbf{w}_t + \\alpha\\Big[v_\\pi(S_t) - \\hat{v}(S_t, \\mathbf{w}_t)\\Big]\\nabla\\hat{v}(S_t, \\mathbf{w}_t)",
+    "symbols": [
+      {
+        "tex": "\\nabla",
+        "meaning": "partial derivatives, one per weight"
+      }
+    ],
+    "intuition": "A small step down the gradient of this example's squared error.",
+    "assumptions": [],
+    "derivation": [
+      {
+        "tex": "\\nabla[v_\\pi(S_t) - \\hat{v}(S_t, \\mathbf{w})]^2 = -2[v_\\pi(S_t) - \\hat{v}(S_t, \\mathbf{w})]\\nabla\\hat{v}(S_t, \\mathbf{w})",
+        "why": "Chain rule; the target does not depend on w."
+      }
+    ],
+    "pitfalls": [
+      "Taking the whole step to zero error on each example would not find the balance across states."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          230,
+          230
+        ],
+        "pdfPages": [
+          244,
+          244
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch09.gradient-general",
+    "unit": "ch09",
+    "concept": "ch09.gradient-descent",
+    "name": "General gradient-descent prediction",
+    "bookLabel": "(9.3)",
+    "tex": "\\mathbf{w}_{t+1} = \\mathbf{w}_t + \\alpha\\Big[V_t - \\hat{v}(S_t, \\mathbf{w}_t)\\Big]\\nabla\\hat{v}(S_t, \\mathbf{w}_t)",
+    "symbols": [
+      {
+        "tex": "V_t",
+        "meaning": "the target: an estimate of $v_\\pi(S_t)$"
+      }
+    ],
+    "intuition": "Replace the unknown true value by a target.",
+    "assumptions": [],
+    "significance": "Converges to a local optimum if $\\mathbb{E}[V_t] = v_\\pi(S_t)$ and α decreases as in (2.7), e.g. with Monte Carlo returns.",
+    "pitfalls": [
+      "Bootstrapped targets are biased, so the guarantee does not apply to them."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          230,
+          230
+        ],
+        "pdfPages": [
+          244,
+          244
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch09.gradient-lambda-forward",
+    "unit": "ch09",
+    "concept": "ch09.gradient-td-lambda",
+    "name": "Gradient-descent TD(λ), forward view",
+    "bookLabel": "(9.4)",
+    "tex": "\\mathbf{w}_{t+1} = \\mathbf{w}_t + \\alpha\\Big[G^\\lambda_t - \\hat{v}(S_t, \\mathbf{w}_t)\\Big]\\nabla\\hat{v}(S_t, \\mathbf{w}_t)",
+    "symbols": [
+      {
+        "tex": "G^\\lambda_t",
+        "meaning": "the λ-return"
+      }
+    ],
+    "intuition": "The λ-return as the target of (9.3).",
+    "assumptions": [],
+    "pitfalls": [
+      "For λ < 1 the λ-return is biased, so this is not a true gradient method."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          231,
+          231
+        ],
+        "pdfPages": [
+          245,
+          245
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch09.gradient-lambda-backward",
+    "unit": "ch09",
+    "concept": "ch09.gradient-td-lambda",
+    "name": "Gradient-descent TD(λ), backward view: weights",
+    "bookLabel": "(9.5)",
+    "tex": "\\mathbf{w}_{t+1} = \\mathbf{w}_t + \\alpha\\delta_t\\mathbf{e}_t",
+    "symbols": [
+      {
+        "tex": "\\mathbf{e}_t",
+        "meaning": "the vector of eligibility traces, one per weight"
+      }
+    ],
+    "intuition": "The TD error, spread over the weights in proportion to their traces.",
+    "assumptions": [],
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          231,
+          231
+        ],
+        "pdfPages": [
+          245,
+          245
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch09.gradient-td-error",
+    "unit": "ch09",
+    "concept": "ch09.gradient-td-lambda",
+    "name": "The TD error with an approximator",
+    "bookLabel": "(9.6)",
+    "tex": "\\delta_t = R_{t+1} + \\gamma\\hat{v}(S_{t+1}, \\mathbf{w}_t) - \\hat{v}(S_t, \\mathbf{w}_t)",
+    "symbols": [
+      {
+        "tex": "\\delta_t",
+        "meaning": "the TD error"
+      }
+    ],
+    "intuition": "As before, with v̂ in place of the table.",
+    "assumptions": [],
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          231,
+          231
+        ],
+        "pdfPages": [
+          245,
+          245
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch09.gradient-trace",
+    "unit": "ch09",
+    "concept": "ch09.gradient-td-lambda",
+    "name": "Eligibility trace vector",
+    "bookLabel": "(9.7)",
+    "tex": "\\mathbf{e}_t = \\gamma\\lambda\\mathbf{e}_{t-1} + \\nabla\\hat{v}(S_t, \\mathbf{w}_t), \\quad \\mathbf{e}_0 = \\mathbf{0}",
+    "symbols": [
+      {
+        "tex": "\\nabla\\hat{v}(S_t, \\mathbf{w}_t)",
+        "meaning": "how much each weight affects the current state's value"
+      }
+    ],
+    "intuition": "Weights that recently mattered for the visited states stay eligible.",
+    "assumptions": [],
+    "example": "With one-hot features, $\\nabla\\hat{v}(S_t) $ is the unit vector of $S_t$ and (9.7) is the accumulating trace (7.9): Exercise 9.1.",
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          231,
+          231
+        ],
+        "pdfPages": [
+          245,
+          245
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch09.linear-value",
+    "unit": "ch09",
+    "concept": "ch09.linear-methods",
+    "name": "Linear approximate value",
+    "bookLabel": "(9.8)",
+    "tex": "\\hat{v}(s, \\mathbf{w}) = \\mathbf{w}^\\top\\mathbf{x}(s) = \\sum_{i=1}^{n} w_i x_i(s)",
+    "symbols": [
+      {
+        "tex": "\\mathbf{x}(s)",
+        "meaning": "the feature vector of state s"
+      }
+    ],
+    "intuition": "A weighted sum of features; its gradient is the feature vector.",
+    "assumptions": [],
+    "significance": "$\\nabla\\hat{v}(s, \\mathbf{w}) = \\mathbf{x}(s)$, so (9.3) becomes $\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha[V_t - \\mathbf{w}^\\top\\mathbf{x}(S_t)]\\mathbf{x}(S_t)$.",
+    "pitfalls": [],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          232,
+          232
+        ],
+        "pdfPages": [
+          246,
+          246
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  },
+  {
+    "id": "eq.ch09.td-bound",
+    "unit": "ch09",
+    "concept": "ch09.td-bound",
+    "name": "Asymptotic error bound of linear TD(λ)",
+    "bookLabel": "(9.9)",
+    "tex": "\\mathrm{RMSE}(\\mathbf{w}_\\infty) \\le \\frac{1 - \\gamma\\lambda}{1 - \\gamma}\\,\\mathrm{RMSE}(\\mathbf{w}^*)",
+    "symbols": [
+      {
+        "tex": "\\mathbf{w}_\\infty",
+        "meaning": "the weights linear TD(λ) converges to"
+      },
+      {
+        "tex": "\\mathbf{w}^*",
+        "meaning": "the minimum-RMSE weights"
+      }
+    ],
+    "intuition": "Bootstrapping costs at most this factor in error; λ = 1 costs nothing.",
+    "assumptions": [
+      "Linear approximation, on-policy distribution, discounted continuing task, step size decreasing suitably (Tsitsiklis and Van Roy, 1997)."
+    ],
+    "example": "γ = 0.9, λ = 0: the bound factor is 10; with λ = 0.9 it is 1.9. On a 20-state walk with 4 aggregated groups the actual ratios are only 1.14 and 1.005 (check ch09.bound).",
+    "pitfalls": [
+      "A bound, often far from tight.",
+      "It needs the on-policy distribution; others can diverge."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          233,
+          233
+        ],
+        "pdfPages": [
+          247,
+          247
+        ]
+      }
+    ],
+    "verification": {
+      "method": "page-image",
+      "on": "2026-11-11"
+    }
+  }
+]

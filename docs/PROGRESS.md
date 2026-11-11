@@ -1119,5 +1119,84 @@ The validator reports no problems and no warnings.
 
 `npm run check` passes.
 
-#### Next: Milestone 4K
-Chapter 9 to the coverage criteria.
+### Milestone 4K: Chapter 9 complete (done, 2026-11-11)
+
+**Chapter 9 meets the coverage criteria:**
+- all 6 sections are covered (§9.6 as a reading guide);
+- all 9 numbered equations are present;
+- both examples are covered;
+- all 7 exercises are in the question bank.
+
+The validator reports no problems and no warnings.
+
+**Audit.** The whole chapter was read in the text layer, and (9.1)–(9.9) were checked on the page images. **Flagged:**
+- **p. 241:** the one-step Sarsa target is printed "$G_{t+1} + \gamma\hat{q}$"; it should be $R_{t+1}$.
+- **p. 245:** "Section 7.8" for replacing traces (they are §7.3); clearing the traces of nonselected actions "(see Section 7.8)" (it is in the §7.5 remark); and the claim that Figure 9.8 specifies the optional clearing, which its box does not show.
+- **Bound references:** the bibliographical remarks put the asymptotic bound in "Section 9.2" (it is §9.3), and the summary calls it a mean-squared-error bound while (9.9) bounds the RMSE.
+- **Exercise 9.6** refers to "Exercise 8.4" for state aggregation (it means Exercise 9.2).
+
+**New library code, `lib/rl/approx.ts`:**
+- **Prediction:** linear features (tabular, aggregation); linear gradient-descent TD(λ), on-line and off-line, with its off-line forward view.
+- **The bound (9.9), exactly:** a continuing reflecting walk, its stationary distribution, the minimum-RMSE weights and the TD(λ) fixed point.
+- **Feature constructions:** interval coarse coding and a square wave (Example 9.1); grid tile coding with random offsets.
+- **Mountain car:** the dynamics, linear Sarsa(λ) with binary features (Figure 9.8) and linear Watkins's Q(λ) (Figure 9.9).
+
+**Exact checks (to 1e-12):**
+- **Exercise 9.1:** one-hot linear TD(λ) equals tabular TD(λ).
+- **Exercise 9.2:** state aggregation equals linear gradient descent with group indicators.
+- **Exercise 9.4:** off-line, (9.5)–(9.7) equal (9.4).
+- **Tile coding, α = 1/m:** one-trial learning.
+
+**The bound (9.9):** on a 20-state walk with 4 groups, TD(0) ends 1.14 times the best RMSE (bound 10), TD(0.9) 1.005 times (bound 1.9), TD(1) at the best.
+
+**Reproductions:**
+- **Example 9.1.** The draft only draws the widths; ours are 0.08, 0.2 and 0.5.
+  - After 40 examples the errors differ markedly (0.33, 0.23, 0.28).
+  - After 10,240 they are almost equal (0.118, 0.120, 0.116).
+- **Example 9.2.**
+  - Linear Sarsa(λ) with ten 9 × 9 tilings goes from over 400 steps per episode to under 80 within 100 episodes. The policy at episode 100, run frozen, can still loop from some starts; on-line learning breaks such loops, which the example notes.
+  - Figure 9.11: replacing traces stay robust where accumulating traces blow up (λ = 0.9, α = 0.8/5).
+  - λ = 1 is much worse than λ = 0.9 at α = 1.2/5; at smaller α the difference was within the noise, which the lesson says.
+  - Linear Q(λ) also learns the task.
+
+**Laboratory.** A new function-approximation laboratory with five panels:
+- linear TD(λ) with state aggregation (also the new "linear-td" explainer demo);
+- coarse coding of the square wave;
+- the exact bound table;
+- mountain car with the cost-to-go map (the "mountain-car" demo);
+- the α–λ–trace study, run one setting per timer tick.
+
+**Content:**
+- **17 concepts.**
+- **9 equations.**
+- **3 algorithms with explainers:** Figures 9.1, 9.8 and 9.9.
+- **2 example items.**
+- **6 lessons.**
+- **23 questions:**
+  - the 7 exercises as written answers (4 derivations);
+  - 16 derived from the text, 4 of them numeric with answer checks.
+
+**Checks:** 13 new, 194 in all.
+
+**Test run.** The content checks now take about 45 s of CPU.
+- Run in parallel with the UI tests, they made several UI tests time out, though each passed alone.
+- `tests/checks.test.ts` now runs on its own after the other files, in both the "test" and "check" scripts. Every test still runs, and no timeout was raised.
+- One exam test raced the page's `beforeunload` listener under load; it now retries the dispatch with `waitFor`, with the same assertion.
+
+**Tests:** **33 test files, 2208 tests, all passed.**
+- **New: `ch09-4k` (10).** Features and linear prediction, tile coding, the fixed point, mountain-car dynamics, the laboratory and the Figure 9.1 page, the lessons and equations, coverage and flags.
+- **Updated, because they pinned the previous content:**
+  - question counts 252 → 275 (190 → 206 without written answers);
+  - concept count 124 → 141;
+  - algorithm count 18 → 21;
+  - the written-answer and textbook-exercise lists;
+  - Chapter 9's status in the chapter list.
+
+**Browser review:**
+- every Chapter 9 section, algorithm and example page renders with no KaTeX errors;
+- the laboratory fits at phone width.
+
+`npm run check` passes.
+
+#### Next: Milestone 4L
+Chapter 11 to the coverage criteria (Chapter 10 is unwritten in the draft).

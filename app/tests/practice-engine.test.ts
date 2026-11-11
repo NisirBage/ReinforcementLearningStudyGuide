@@ -27,11 +27,11 @@ describe("the question bank", () => {
     expect(new Set(all.map((q) => q.difficulty))).toEqual(new Set([1, 2, 3, 4]));
     expect(new Set(all.map((q) => q.provenance.kind))).toEqual(new Set(["textbook-exercise", "textbook-derived", "generated", "supplementary"]));
   });
-  test("textbook-exercise questions are exactly the reworded exercises 1.1–1.5, 2.1–2.3, 2.5, 2.6, 3.1–3.6, 3.8–3.21, 4.1–4.4, 4.6–4.8, 4.10, 5.1–5.8, 5.10, 6.1–6.11, 7.1–7.7, 8.2, 8.3, 8.5 and 8.6", () => {
+  test("textbook-exercise questions are exactly the reworded exercises 1.1–1.5, 2.1–2.3, 2.5, 2.6, 3.1–3.6, 3.8–3.21, 4.1–4.4, 4.6–4.8, 4.10, 5.1–5.8, 5.10, 6.1–6.11, 7.1–7.7, 8.2, 8.3, 8.5, 8.6 and 9.1–9.7", () => {
     const ex = all.filter((q) => q.provenance.kind === "textbook-exercise").map((q) => (q.provenance as { exercise: string }).exercise).sort();
     // Exercise 2.4 is a programming exercise, done as a lab task (content/coverage/coverage.json), not a bank question;
     // Exercise 3.7 does not exist in the draft (a placeholder); Exercises 4.5, 4.9 and 5.9 are programming exercises done as lab tasks.
-    expect(ex).toEqual(["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.5", "2.6", "3.1", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15", "3.16", "3.17", "3.18", "3.19", "3.2", "3.20", "3.21", "3.3", "3.4", "3.5", "3.6", "3.8", "3.9", "4.1", "4.10", "4.2", "4.3", "4.4", "4.6", "4.7", "4.8", "5.1", "5.10", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "6.1", "6.10", "6.11", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "6.8", "6.9", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "8.2", "8.3", "8.5", "8.6"]);
+    expect(ex).toEqual(["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.5", "2.6", "3.1", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15", "3.16", "3.17", "3.18", "3.19", "3.2", "3.20", "3.21", "3.3", "3.4", "3.5", "3.6", "3.8", "3.9", "4.1", "4.10", "4.2", "4.3", "4.4", "4.6", "4.7", "4.8", "5.1", "5.10", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "6.1", "6.10", "6.11", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "6.8", "6.9", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "8.2", "8.3", "8.5", "8.6", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7"]);
   });
   test("every self-marked question has a model answer and a rubric adding up to its marks", () => {
     for (const q of all.filter((x) => x.type === "derivation" || x.type === "short-answer")) {
@@ -116,6 +116,7 @@ describe("selection", () => {
       "ch06-q010", "ch06-q011", "ch06-q012", "ch06-q013", "ch06-q014", "ch06-q015", "ch06-q016",
       "ch07-q001", "ch07-q002", "ch07-q003", "ch07-q005", "ch07-q007", "ch07-q006",
       "ch08-q001", "ch08-q002", "ch08-q003", "ch08-q004",
+      "ch09-q001", "ch09-q003", "ch09-q004", "ch09-q002", "ch09-q005", "ch09-q006", "ch09-q007",
     ]); // by section, then file order
     expect(ids({ provenance: ["textbook-exercise"] })).toEqual([
       "ch01-q001", "ch01-q002", "ch01-q003", "ch01-q004", "ch01-q005",
@@ -127,6 +128,7 @@ describe("selection", () => {
       "ch06-q010", "ch06-q009", "ch06-q011", "ch06-q012", "ch06-q013", "ch06-q007", "ch06-q008", "ch06-q014", "ch06-q006", "ch06-q015", "ch06-q016",
       "ch07-q001", "ch07-q002", "ch07-q003", "ch07-q004", "ch07-q005", "ch07-q007", "ch07-q006",
       "ch08-q001", "ch08-q002", "ch08-q003", "ch08-q004",
+      "ch09-q001", "ch09-q003", "ch09-q004", "ch09-q002", "ch09-q005", "ch09-q006", "ch09-q007",
     ]); // §3.3 before §3.7
     expect(ids({ units: ["ch03"], provenance: ["generated"] })).toEqual([]);
   });

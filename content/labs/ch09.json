@@ -1,0 +1,96 @@
+[
+  {
+    "id": "lab.ch09.approximation",
+    "slug": "approximation",
+    "unit": "ch09",
+    "title": "Function-approximation laboratory",
+    "summary": "Linear TD(λ) with state aggregation on the 19-state walk; coarse coding of a square wave (Example 9.1); the asymptotic error of linear TD(λ) against the best possible, computed exactly (9.9); and the mountain-car task with tile coding and linear Sarsa(λ), with its cost-to-go and the α–λ–trace study of Figure 9.11.",
+    "sections": [
+      "9.2",
+      "9.3",
+      "9.4"
+    ],
+    "concepts": [
+      "ch09.gradient-td-lambda",
+      "ch09.coarse-coding",
+      "ch09.tile-coding",
+      "ch09.td-bound",
+      "ch09.linear-sarsa-lambda",
+      "ch09.mountain-car"
+    ],
+    "implementations": [
+      "approx.linearTdLambdaEpisode",
+      "approx.gradientStep",
+      "approx.tdFixedPoint",
+      "approx.coarseCodingRun",
+      "approx.tileCoder",
+      "approx.mcEpisode",
+      "approx.mcQLambdaEpisode",
+      "envs.mountainCar"
+    ],
+    "guide": [
+      "Linear TD(λ): with group size 1 the method is tabular; with larger groups the approximation becomes a staircase that cannot match the straight true line exactly.",
+      "Coarse coding: compare narrow and broad features after 40 examples (very different shapes), then after 10,240 (nearly the same).",
+      "Bound: the ratio of TD(λ)'s error to the best possible is far below (1 − γλ)/(1 − γ); λ = 1 reaches the best exactly; try γ = 0.99.",
+      "Mountain car: train 100 episodes. The steps per episode fall from hundreds to under 100; the cost-to-go shows the spiral the car must follow.",
+      "The α–λ study (slow): accumulating traces fail at larger α with λ = 0.9; replacing traces stay robust."
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          231,
+          232
+        ],
+        "pdfPages": [
+          245,
+          246
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          232,
+          238
+        ],
+        "pdfPages": [
+          246,
+          252
+        ]
+      },
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.4",
+        "printedPages": [
+          241,
+          247
+        ],
+        "pdfPages": [
+          255,
+          261
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch09.mountain-car"
+    },
+    "checks": [
+      "ch09.ex9-1",
+      "ch09.ex9-2",
+      "ch09.ex9-4",
+      "ch09.bound",
+      "ch09.tile-one-trial",
+      "ch09.coarse-coding",
+      "ch09.mountain-car",
+      "ch09.watkins-linear",
+      "ch09.fig9-11"
+    ]
+  }
+]

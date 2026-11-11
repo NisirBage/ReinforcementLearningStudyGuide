@@ -20,6 +20,7 @@ import { ExploringStarts, Prediction } from "./labs/McLab";
 import { ControlInspector, TdStepper } from "./labs/TdLab";
 import { PathCredit, TdLambdaStepper } from "./labs/TracesLab";
 import { DynaStepper } from "./labs/PlanningLab";
+import { LinearTdDemo, MountainCar } from "./labs/ApproxLab";
 import { NotFound } from "./NotFound";
 
 const SA = { kind: "sample-average" } as const;
@@ -46,6 +47,8 @@ export const DEMOS: Record<Explainer["demo"], { note: string; view: () => ReactE
   "td-lambda": { note: "TD(λ) on the random walk, one step at a time: the TD error δ, every state's eligibility trace, and the change it causes; choose the kind of trace, or true on-line TD(λ).", view: () => <TdLambdaStepper /> },
   "sarsa-lambda": { note: "Example 7.2: the action values one episode raises with one-step Sarsa and with traces; declare a move exploratory to see Watkins's Q(λ) cut the traces.", view: () => <PathCredit /> },
   dyna: { note: "Dyna-Q or prioritized sweeping on the maze of Example 8.1: step, or finish an episode, and watch the greedy policy grow back from the goal through planning.", view: () => <DynaStepper /> },
+  "linear-td": { note: "Linear gradient-descent TD(λ) on the 19-state walk with state aggregation: one weight per group of states; run episodes and compare the staircase v̂ with the true values.", view: () => <LinearTdDemo /> },
+  "mountain-car": { note: "Linear Sarsa(λ) with tile coding on the mountain-car task: train episodes and watch the steps per episode fall and the cost-to-go take shape.", view: () => <MountainCar /> },
 };
 
 export function AlgorithmPage() {

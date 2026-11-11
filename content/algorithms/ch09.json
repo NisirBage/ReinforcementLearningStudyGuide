@@ -1,0 +1,323 @@
+[
+  {
+    "id": "alg.ch09.gradient-td-lambda",
+    "unit": "ch09",
+    "concept": "ch09.gradient-td-lambda",
+    "name": "On-line gradient-descent TD(λ)",
+    "bookLabel": "Figure 9.1",
+    "inputs": [
+      "the policy $\\pi$ to evaluate",
+      "a differentiable $\\hat{v}(s, \\mathbf{w})$",
+      "step size $\\alpha$, trace decay $\\lambda$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "Start with $\\mathbf{w}$ as suits the problem, e.g. $\\mathbf{0}$"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "$\\mathbf{e} \\leftarrow \\mathbf{0}$; $S \\leftarrow$ the start state"
+      },
+      {
+        "indent": 1,
+        "text": "repeat until $S'$ is terminal:"
+      },
+      {
+        "indent": 2,
+        "text": "take the action $\\pi$ gives for $S$; see $R$ and $S'$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\delta \\leftarrow R + \\gamma\\hat{v}(S', \\mathbf{w}) - \\hat{v}(S, \\mathbf{w})$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\mathbf{e} \\leftarrow \\gamma\\lambda\\mathbf{e} + \\nabla\\hat{v}(S, \\mathbf{w})$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha\\delta\\mathbf{e}$"
+      },
+      {
+        "indent": 2,
+        "text": "$S \\leftarrow S'$"
+      }
+    ],
+    "output": "$\\hat{v}(\\cdot, \\mathbf{w}) \\approx v_\\pi$",
+    "implementation": "approx.linearTdLambdaEpisode",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          232,
+          232
+        ],
+        "pdfPages": [
+          246,
+          246
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Compared with the text layer of Figure 9.1; checks ch09.ex9-1, ch09.ex9-2 and ch09.ex9-4 confirm its tabular, aggregation and off-line special cases."
+    },
+    "explainer": {
+      "problem": "Estimate $v_\\pi$ when there are too many states for a table, by adjusting a small parameter vector from TD errors.",
+      "equations": [
+        "eq.ch09.gradient-lambda-forward",
+        "eq.ch09.gradient-lambda-backward",
+        "eq.ch09.gradient-td-error",
+        "eq.ch09.gradient-trace",
+        "eq.ch09.linear-value"
+      ],
+      "example": {
+        "text": "With one feature per state it is exactly tabular TD(λ): on the 19-state walk the weights equal the tabular values after every episode (Exercise 9.1).",
+        "check": "ch09.ex9-1"
+      },
+      "demo": "linear-td",
+      "lab": "approximation",
+      "advantages": [
+        "Generalizes: one update changes the values of many states.",
+        "Linear and on-policy: converges, with error within (9.9) of the best."
+      ],
+      "limitations": [
+        "For λ < 1 the target is biased, so it is not a true gradient method.",
+        "With other state distributions it can diverge (Chapter 10, unwritten in this draft)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch07.td-lambda",
+          "point": "Tabular TD(λ) is the case of one-hot features."
+        },
+        {
+          "with": "alg.ch09.linear-sarsa-lambda",
+          "point": "The same update for action values, with action selection added."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch09.linear-sarsa-lambda",
+    "unit": "ch09",
+    "concept": "ch09.linear-sarsa-lambda",
+    "name": "Linear, gradient-descent Sarsa(λ) with binary features",
+    "bookLabel": "Figure 9.8",
+    "inputs": [
+      "binary features (e.g. tile coding)",
+      "step size $\\alpha$, trace decay $\\lambda$, exploration $\\varepsilon$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "$\\mathbf{w}$ and $\\mathbf{e}$ have one component per feature; start with $\\mathbf{w}$ e.g. $\\mathbf{0}$"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "$\\mathbf{e} \\leftarrow \\mathbf{0}$; choose $S$ and $A$ (e.g. ε-greedy); $F_A \\leftarrow$ the features present in $S, A$"
+      },
+      {
+        "indent": 1,
+        "text": "repeat for each step:"
+      },
+      {
+        "indent": 2,
+        "text": "for each $i \\in F_A$: $e_i \\leftarrow e_i + 1$ (accumulating) or $e_i \\leftarrow 1$ (replacing)"
+      },
+      {
+        "indent": 2,
+        "text": "take $A$; see $R$ and $S'$; $\\delta \\leftarrow R - \\sum_{i \\in F_A} w_i$"
+      },
+      {
+        "indent": 2,
+        "text": "if $S'$ is terminal: $\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha\\delta\\mathbf{e}$; next episode"
+      },
+      {
+        "indent": 2,
+        "text": "for each action $a$ in $S'$: $F_a \\leftarrow$ features present in $S', a$; $Q_a \\leftarrow \\sum_{i \\in F_a} w_i$"
+      },
+      {
+        "indent": 2,
+        "text": "$A' \\leftarrow$ ε-greedy from the $Q_a$; $\\delta \\leftarrow \\delta + \\gamma Q_{A'}$"
+      },
+      {
+        "indent": 2,
+        "text": "$\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha\\delta\\mathbf{e}$; $\\mathbf{e} \\leftarrow \\gamma\\lambda\\mathbf{e}$; $S \\leftarrow S'$; $A \\leftarrow A'$"
+      }
+    ],
+    "output": "$\\hat{q}$ and an ε-greedy policy",
+    "implementation": "approx.mcEpisode",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.4",
+        "printedPages": [
+          243,
+          243
+        ],
+        "pdfPages": [
+          257,
+          257
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Compared with the text layer of Figure 9.8; Example 9.2 is reproduced by checks ch09.mountain-car and ch09.fig9-11."
+    },
+    "explainer": {
+      "problem": "On-policy control in a continuous state space: learn approximate action values from binary features and act ε-greedily on them.",
+      "equations": [
+        "eq.ch09.gradient-lambda-backward",
+        "eq.ch09.linear-value"
+      ],
+      "example": {
+        "text": "Mountain car with ten 9 × 9 tilings, replacing traces with clearing, λ = 0.9, ε = 0, α = 0.05: the first 10 episodes average over 400 steps, episodes 91–100 under 80.",
+        "check": "ch09.mountain-car"
+      },
+      "demo": "mountain-car",
+      "lab": "approximation",
+      "advantages": [
+        "Cheap: only the m present features enter each value.",
+        "Solves mountain car within about 100 episodes."
+      ],
+      "limitations": [
+        "No convergence proof for this control method (bibliographical remarks).",
+        "Accumulating traces can blow up at larger α and λ (Figure 9.11)."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch07.sarsa-lambda",
+          "point": "Tabular Sarsa(λ) is the case of one feature per state–action pair."
+        },
+        {
+          "with": "alg.ch09.linear-q-lambda",
+          "point": "Watkins's Q(λ) uses the max and cuts traces after exploratory actions."
+        }
+      ]
+    }
+  },
+  {
+    "id": "alg.ch09.linear-q-lambda",
+    "unit": "ch09",
+    "concept": "ch09.linear-q-lambda",
+    "name": "Linear, gradient-descent Watkins's Q(λ) with binary features",
+    "bookLabel": "Figure 9.9",
+    "inputs": [
+      "binary features",
+      "step size $\\alpha$, trace decay $\\lambda$, exploration $\\varepsilon$"
+    ],
+    "lines": [
+      {
+        "indent": 0,
+        "text": "$\\mathbf{w}$ and $\\mathbf{e}$ have one component per feature; start with $\\mathbf{w}$ e.g. $\\mathbf{0}$"
+      },
+      {
+        "indent": 0,
+        "text": "for each episode:"
+      },
+      {
+        "indent": 1,
+        "text": "$\\mathbf{e} \\leftarrow \\mathbf{0}$; $S \\leftarrow$ the start state"
+      },
+      {
+        "indent": 1,
+        "text": "repeat for each step:"
+      },
+      {
+        "indent": 2,
+        "text": "for each action $a$: $F_a \\leftarrow$ features present in $S, a$; $Q_a \\leftarrow \\sum_{i \\in F_a} w_i$"
+      },
+      {
+        "indent": 2,
+        "text": "$A^* \\leftarrow \\arg\\max_a Q_a$; $A \\leftarrow A^*$ with probability $1 - \\varepsilon$, else a random action"
+      },
+      {
+        "indent": 2,
+        "text": "if $A \\ne A^*$: $\\mathbf{e} \\leftarrow \\mathbf{0}$"
+      },
+      {
+        "indent": 2,
+        "text": "take $A$; see $R$ and $S'$; $\\delta \\leftarrow R - Q_A$"
+      },
+      {
+        "indent": 2,
+        "text": "for each $i \\in F_A$: $e_i \\leftarrow e_i + 1$ (accumulating) or $e_i \\leftarrow 1$ (replacing)"
+      },
+      {
+        "indent": 2,
+        "text": "if $S'$ is terminal: $\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha\\delta\\mathbf{e}$; next episode"
+      },
+      {
+        "indent": 2,
+        "text": "$\\delta \\leftarrow \\delta + \\gamma\\max_a Q_a(S')$; $\\mathbf{w} \\leftarrow \\mathbf{w} + \\alpha\\delta\\mathbf{e}$; $\\mathbf{e} \\leftarrow \\gamma\\lambda\\mathbf{e}$; $S \\leftarrow S'$"
+      }
+    ],
+    "output": "$\\hat{q} \\approx q_*$ (not guaranteed)",
+    "implementation": "approx.mcQLambdaEpisode",
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.4",
+        "printedPages": [
+          244,
+          244
+        ],
+        "pdfPages": [
+          258,
+          258
+        ]
+      }
+    ],
+    "verification": {
+      "method": "text-layer",
+      "on": "2026-11-11",
+      "note": "Compared with the text layer of Figure 9.9; check ch09.watkins-linear confirms it learns the mountain-car task."
+    },
+    "explainer": {
+      "problem": "Off-policy control with linear function approximation: learn about the greedy policy while exploring.",
+      "equations": [
+        "eq.ch09.gradient-lambda-backward",
+        "eq.ch09.linear-value"
+      ],
+      "example": {
+        "text": "On mountain car (ten 9 × 9 tilings, replacing traces, λ = 0.9, α = 0.05, ε = 0.05) episodes 91–100 average under 120 steps, from over 300 at first.",
+        "check": "ch09.watkins-linear"
+      },
+      "demo": "mountain-car",
+      "lab": "approximation",
+      "advantages": [
+        "Learns about the greedy policy while behaving ε-greedily."
+      ],
+      "limitations": [
+        "Q-learning with function approximation is known not to be sound and can diverge (bibliographical remarks).",
+        "Exploratory actions cut the traces."
+      ],
+      "comparisons": [
+        {
+          "with": "alg.ch07.watkins-q-lambda",
+          "point": "The tabular version."
+        },
+        {
+          "with": "alg.ch09.linear-sarsa-lambda",
+          "point": "Sarsa(λ) never cuts traces and bootstraps from the action actually chosen."
+        }
+      ]
+    }
+  }
+]

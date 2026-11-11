@@ -9,6 +9,7 @@ import { batchUpdate, certaintyEquivalence, sampleAverageReturns, type Episode }
 import * as ttt from "../lib/rl/envs/tictactoe";
 import * as tr from "../lib/rl/traces";
 import * as pl from "../lib/rl/planning";
+import * as ap from "../lib/rl/approx";
 import { mcUpdate, newPrediction, runEs, runMcPrediction } from "../lib/rl/mc";
 import { DEAL_STATE as BJ_DEAL, END as BJ_END, HIT as BJ_HIT, STICK as BJ_STICK, bjIndex, bjStartPairs, blackjack, stickOn20 } from "../lib/rl/envs/blackjack";
 import { INFINITE_VARIANCE_BEHAVIOUR, INFINITE_VARIANCE_TARGET, importanceRatio, infiniteVarianceMdp, isEstimates, newOffPolicyControl, offPolicyControlEpisode, weightedIncremental } from "../lib/rl/offPolicy";
@@ -1078,6 +1079,174 @@ export const CHECKS: Record<string, Check> = {
       return gaps.every((g) => g >= -1e-6) && gaps.slice(0, 3).every((g) => g < 1.5) && gaps.reduce((a, b) => a + b, 0) / gaps.length < 5 && finishes;
     },
   },
+  // ----- Chapter 9, Milestone 4K: on-policy approximation -----
+  "ch09-q012": {
+    kind: "answer", // linear gradient step: w = (1, 2), x = (1, 0.5), V = 3, α = 0.1: v̂ before, then the new weights
+    run: () => {
+      const w = [1, 2];
+      const x = [1, 0.5];
+      const before = ap.linearValue(w, x);
+      ap.gradientStep(w, x, 3, 0.1);
+      return [before, w[0], w[1]];
+    },
+  },
+  "ch09-q013": {
+    kind: "answer", // the bound factor (1 − γλ)/(1 − γ) for γ = 0.9 with λ = 0.5 and λ = 1
+    run: () => [(1 - 0.9 * 0.5) / (1 - 0.9), (1 - 0.9 * 1) / (1 - 0.9)],
+  },
+  "ch09-q014": {
+    kind: "answer", // tile coding, m = 8 present binary features, value 2, target 5: value after one step with α = 1/8 and α = 1/80
+    run: () => [1 / 8, 1 / 80].map((a) => {
+      const w = new Array(8).fill(2 / 8);
+      const x = new Array(8).fill(1);
+      ap.gradientStep(w, x, 5, a);
+      return ap.linearValue(w, x);
+    }),
+  },
+  "ch09-q015": {
+    kind: "answer", // RBF feature exp(−‖s − c‖²/2σ²) with s = 1, c = 0, σ = 1
+    run: () => [Math.exp(-(1 ** 2) / 2)],
+  },
+  "ch09.ex9-1": {
+    kind: "fact", // Exercise 9.1: linear gradient-descent TD(λ) (9.5)–(9.7) with one feature per state (x(s) a unit vector) makes exactly the updates
+    // of tabular TD(λ) with accumulating traces (19-state walk, λ = 0.8, α = 0.1, 30 episodes)
+    run: () => {
+      const rng = makeRng(5);
+      const walks = Array.from({ length: 30 }, () => tr.sampleWalk(19, rng));
+      const w = new Array(21).fill(0);
+      const V = new Array(21).fill(0);
+      const f = ap.tabularFeatures(21);
+      for (const wk of walks) {
+        ap.linearTdLambdaEpisode(w, wk, f, 0.8, 0.1, 1);
+        tr.tdLambdaEpisode(V, wk, 0.8, 0.1, 1, "accumulating");
+      }
+      return w.every((x, i) => i === 0 || i === 20 || Math.abs(x - V[i]) < 1e-12);
+    },
+  },
+  "ch09.ex9-2": {
+    kind: "fact", // Exercise 9.2: state aggregation (one table entry per group, updated whenever a member is updated) is the gradient method with one
+    // indicator feature per group: TD(0) on the 19-state walk with groups of 4 gives the same group values both ways (to 1e-12)
+    run: () => {
+      const rng = makeRng(6);
+      const walks = Array.from({ length: 30 }, () => tr.sampleWalk(19, rng));
+      const f = ap.aggregationFeatures(19, 4);
+      const w = new Array(5).fill(0);
+      const table = new Array(5).fill(0);
+      const g = (s: number) => Math.floor((s - 1) / 4);
+      for (const wk of walks) {
+        ap.linearTdLambdaEpisode(w, wk, f, 0, 0.1, 1);
+        const T = wk.rewards.length;
+        for (let t = 0; t < T; t++) {
+          const v2 = t + 1 === T ? 0 : table[g(wk.states[t + 1])];
+          table[g(wk.states[t])] += 0.1 * (wk.rewards[t] + v2 - table[g(wk.states[t])]);
+        }
+      }
+      return w.every((x, i) => Math.abs(x - table[i]) < 1e-12);
+    },
+  },
+  "ch09.ex9-4": {
+    kind: "fact", // Exercise 9.4: off-line, the backward view (9.5)–(9.7) and the forward view (9.4) make identical updates with linear features
+    // (aggregation into groups of 4, λ = 0.7, γ = 0.9, α = 0.05; to 1e-12)
+    run: () => {
+      const rng = makeRng(5);
+      const walks = Array.from({ length: 30 }, () => tr.sampleWalk(19, rng));
+      const f = ap.aggregationFeatures(19, 4);
+      const a = new Array(5).fill(0.1);
+      const b = [...a];
+      for (const wk of walks) {
+        ap.linearTdLambdaEpisode(a, wk, f, 0.7, 0.05, 0.9, "offline");
+        ap.linearLambdaReturnOffline(b, wk, f, 0.7, 0.05, 0.9);
+        if (a.some((x, i) => Math.abs(x - b[i]) > 1e-12)) return false;
+      }
+      return true;
+    },
+  },
+  "ch09.bound": {
+    kind: "fact", // (9.9): on a continuing 20-state reflecting walk with aggregation into 4 groups and the stationary distribution, the TD(λ) fixed point
+    // has RMSE within (1 − γλ)/(1 − γ) of the best possible, for γ = 0.9 and 0.99 and λ = 0, 0.5, 0.9; at λ = 1 it is the best possible; and
+    // smaller λ gives larger error
+    run: () =>
+      [0.9, 0.99].every((g) => {
+        const c = ap.reflectingWalk(20, g);
+        const d = ap.stationary(c.P);
+        const Phi = Array.from({ length: 20 }, (_, s) => ap.aggregationFeatures(20, 5)(s + 1));
+        const best = ap.rmse(c, Phi, ap.bestWeights(c, Phi, d), d);
+        const errs = [0, 0.5, 0.9, 1].map((l) => ap.rmse(c, Phi, ap.tdFixedPoint(c, Phi, d, l), d));
+        return [0, 0.5, 0.9].every((l, i) => errs[i] <= ((1 - g * l) / (1 - g)) * best + 1e-9) && close(errs[3], best, 1e-9) && errs[0] > errs[1] && errs[1] > errs[2] && errs[2] > best;
+      }),
+  },
+  "ch09.tile-one-trial": {
+    kind: "fact", // §9.3: with tile coding (m tilings, one feature present per tiling) and α = 1/m, a single example s ↦ v makes v̂(s, w) = v exactly,
+    // whatever the prior value; with α = 1/(10m) it moves one tenth of the way
+    run: () => {
+      const coder = ap.tileCoder(8, 9, makeRng(3));
+      const w = Array.from({ length: coder.size }, (_, i) => Math.sin(i));
+      const x = new Array(coder.size).fill(0);
+      for (const i of coder.active(0.37, 0.61)) x[i] = 1;
+      const before = ap.linearValue(w, x);
+      const w2 = [...w];
+      ap.gradientStep(w2, x, 5, 1 / (10 * 8));
+      ap.gradientStep(w, x, 5, 1 / 8);
+      return close(ap.linearValue(w, x), 5, 1e-12) && close(ap.linearValue(w2, x), before + (5 - before) / 10, 1e-12);
+    },
+  },
+  "ch09.coarse-coding": {
+    kind: "fact", // Example 9.1, Figure 9.4 (50 interval features, widths 0.08, 0.2, 0.5 of the extent, α = 0.2/m, 20 runs): width strongly affects early learning
+    // (after 40 examples the errors differ by more than 0.05) but hardly the final approximation (after 10,240 examples all within 0.01 of each other)
+    run: () => {
+      const cps = [40, 10240];
+      const errs = [0.08, 0.2, 0.5].map((width) => {
+        const e = [0, 0];
+        for (let r = 0; r < 20; r++) ap.coarseCodingRun(width, 50, cps, makeRng(r)).forEach((o, i) => (e[i] += ap.squareWaveError(width, 50, o.w) / 20));
+        return e;
+      });
+      const early = errs.map((e) => e[0]);
+      const late = errs.map((e) => e[1]);
+      return Math.max(...early) - Math.min(...early) > 0.05 && Math.max(...late) - Math.min(...late) < 0.01;
+    },
+  },
+  "ch09.mountain-car": {
+    kind: "fact", // Example 9.2: linear Sarsa(λ) (Figure 9.8, replacing traces with clearing, ten 9 × 9 tilings, λ = 0.9, ε = 0, α = 0.05 = 0.5/m, γ = 1) solves the
+    // task: in each of 3 runs the first 10 episodes average over 400 steps and episodes 91–100 under 80 (random starts)
+    run: () =>
+      [0, 1, 2].every((r) => {
+        const ag = ap.newMcAgent(10, makeRng(100 + r));
+        const rr = makeRng(r);
+        const st: number[] = [];
+        for (let e = 0; e < 100; e++) st.push(ap.mcEpisode(ag, { alpha: 0.05, lambda: 0.9, epsilon: 0, traces: "replacing", clearOthers: true }, rr));
+        return st.slice(0, 10).reduce((a, b) => a + b) / 10 > 400 && st.slice(90).reduce((a, b) => a + b) / 10 < 80;
+      }),
+  },
+  "ch09.watkins-linear": {
+    kind: "fact", // Figure 9.9: linear Watkins's Q(λ) with binary features (ten 9 × 9 tilings, replacing traces, λ = 0.9, α = 0.05, ε = 0.05) also solves the
+    // mountain-car task: in each of 2 runs episodes 91–100 average under 120 steps, against over 300 for the first 10
+    run: () =>
+      [0, 1].every((r) => {
+        const ag = ap.newMcAgent(10, makeRng(300 + r));
+        const rr = makeRng(r);
+        const st: number[] = [];
+        for (let e = 0; e < 100; e++) st.push(ap.mcQLambdaEpisode(ag, { alpha: 0.05, lambda: 0.9, epsilon: 0.05, traces: "replacing" }, rr));
+        return st.slice(0, 10).reduce((a, b) => a + b) / 10 > 300 && st.slice(90).reduce((a, b) => a + b) / 10 < 120;
+      }),
+  },
+  "ch09.fig9-11": {
+    kind: "fact", // Figure 9.11 (five 9 × 9 tilings, steps per episode over the first 20 episodes, 5 runs; 2 for the slow accumulating case): with λ = 0.9 and α = 0.8/5, replacing traces
+    // stay under 400 steps while accumulating traces blow up (over 2000); with replacing traces at α = 1.2/5, λ = 1 is much worse than λ = 0.9
+    // (at smaller α the difference is within the noise of 5 runs)
+    run: () => {
+      const avg = (traces: "replacing" | "accumulating", lambda: number, a5: number, runs = 5) => {
+        let tot = 0;
+        for (let r = 0; r < runs; r++) {
+          const ag = ap.newMcAgent(5, makeRng(200 + r));
+          const rr = makeRng(r);
+          for (let e = 0; e < 20; e++) tot += ap.mcEpisode(ag, { alpha: a5 / 5, lambda, epsilon: 0, traces, clearOthers: traces === "replacing", maxSteps: 4000 }, rr) / (20 * runs);
+        }
+        return tot;
+      };
+      const rep = avg("replacing", 0.9, 0.8);
+      return rep < 400 && avg("accumulating", 0.9, 0.8, 2) > 2000 && avg("replacing", 1, 1.2) > 1.5 * avg("replacing", 0.9, 1.2);
+    },
+  },
   // ----- Chapter 8, Milestone 4J: planning and learning -----
   "ch08-q008": {
     kind: "answer", // a Dyna-Q planning backup: Q = 0, R = 0, max_a Q(S′, a) = 0.5, α = 0.1, γ = 0.95; and 1 + n backups per real step for n = 5
@@ -1251,7 +1420,7 @@ export const CHECKS: Record<string, Check> = {
     run: () => {
       const curve = (b: number, mode: "uniform" | "on-policy") => {
         const acc = new Array(11).fill(0);
-        for (let i = 0; i < 10; i++) pl.trajectorySampling(pl.randomTask(1000, b, makeRng(1000 + i)), mode, 5000, 500, makeRng(i)).forEach((x, j) => (acc[j] += x / 10));
+        for (let i = 0; i < 10; i++) pl.trajectorySampling(pl.randomTask(1000, b, makeRng(1000 + i)), mode, 5000, 500, makeRng(i), [500, 1500, 5000]).forEach((x, j) => (acc[j] += x / 10));
         return acc;
       };
       const [u1, o1, u3, o3] = [curve(1, "uniform"), curve(1, "on-policy"), curve(3, "uniform"), curve(3, "on-policy")];

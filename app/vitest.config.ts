@@ -14,6 +14,8 @@ export default defineConfig({
     // Setup hooks (beforeAll(preloadAll): every route, the whole content bundle and the search index, built through
     // Vite) get the same limit as tests. Their work grows with the content, and with 27 files in parallel it passed
     // 10 s under load (Milestones 4C and 4E) while finishing in a few seconds alone. No assertion depends on this.
+    // Since Milestone 4K, tests/checks.test.ts (every content check, about 45 s of CPU) runs on its own after the
+    // other files (see the "test" and "check" scripts), so it no longer competes with the UI tests.
     hookTimeout: 30_000,
   },
 });

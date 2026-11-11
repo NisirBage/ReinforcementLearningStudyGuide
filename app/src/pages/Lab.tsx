@@ -15,10 +15,11 @@ import { TdLab } from "./labs/TdLab";
 import { TicTacToeLab } from "./labs/TicTacToeLab";
 import { TracesLab } from "./labs/TracesLab";
 import { PlanningLab } from "./labs/PlanningLab";
+import { ApproxLab } from "./labs/ApproxLab";
 import { NotFound } from "./NotFound";
 import { useProgress } from "../store/ProgressContext";
 
-const BODIES: Record<string, () => ReactElement> = { tictactoe: TicTacToeLab, bandit: BanditLab, mdp: MdpExplorer, bellman: BellmanLab, dp: DpLab, mc: McLab, td: TdLab, traces: TracesLab, planning: PlanningLab };
+const BODIES: Record<string, () => ReactElement> = { tictactoe: TicTacToeLab, bandit: BanditLab, mdp: MdpExplorer, bellman: BellmanLab, dp: DpLab, mc: McLab, td: TdLab, traces: TracesLab, planning: PlanningLab, approximation: ApproxLab };
 
 export function LabHub() {
   const labs = cat.catalog.labs;

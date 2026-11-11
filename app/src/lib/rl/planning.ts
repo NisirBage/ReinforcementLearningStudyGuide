@@ -342,9 +342,11 @@ export function greedyStartValue(task: RandomTask, Q: Float64Array): number {
  * Figure 8.14: the start state's greedy value after every `every` full backups, distributing the backups either by
  * sweeping all state–action pairs in turn ("uniform") or along simulated ε-greedy (ε = 0.1) episodes from the start ("on-policy").
  */
-export function trajectorySampling(task: RandomTask, mode: "uniform" | "on-policy", backups: number, every: number, rng: Rng): number[] {
+export function trajectorySampling(task: RandomTask, mode: "uniform" | "on-policy", backups: number, every: number, rng: Rng, only?: readonly number[]): number[] {
+  // `only`: evaluate just at these backup counts (others NaN), since each evaluation solves for the greedy policy's values.
+  const want = (k: number) => !only || only.includes(k);
   const Q = new Float64Array(task.nStates * 2);
-  const out = [greedyStartValue(task, Q)];
+  const out = [want(0) ? greedyStartValue(task, Q) : NaN];
   let done = 0;
   let sweep = 0;
   let s = 0;
@@ -359,7 +361,7 @@ export function trajectorySampling(task: RandomTask, mode: "uniform" | "on-polic
       s = rng() < 0.1 ? 0 : task.next[s * 2 + a][Math.floor(rng() * task.b)]; // ending the episode restarts at the start
     }
     done++;
-    if (done % every === 0) out.push(greedyStartValue(task, Q));
+    if (done % every === 0) out.push(want(done) ? greedyStartValue(task, Q) : NaN);
   }
   return out;
 }

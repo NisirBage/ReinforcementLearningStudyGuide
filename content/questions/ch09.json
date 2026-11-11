@@ -1,0 +1,1368 @@
+{
+  "unit": "ch09",
+  "questions": [
+    {
+      "id": "ch09-q001",
+      "unit": "ch09",
+      "section": "9.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "9.1"
+      },
+      "concepts": [
+        "ch09.gradient-td-lambda",
+        "ch07.td-lambda"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 9.1: prove that tabular TD(λ) is one instance of the gradient-descent TD(λ) defined by (9.5)–(9.7).",
+      "answer": "Take one weight per state and the features $\\mathbf{x}(s) = \\mathbf{1}_s$ (the unit vector for s), so $\\hat{v}(s, \\mathbf{w}) = w_s$: the weights are the table. Then $\\nabla\\hat{v}(S_t, \\mathbf{w}) = \\mathbf{1}_{S_t}$, so (9.7) gives $e_t(s) = \\gamma\\lambda e_{t-1}(s) + \\mathbb{1}[s = S_t]$, which is (7.8)–(7.9): decay all traces and add 1 for the visited state. (9.6) is (7.10) with $V = \\mathbf{w}$, and (9.5) componentwise is $w_s \\leftarrow w_s + \\alpha\\delta_t e_t(s)$, which is (7.11). So tabular TD(λ) with accumulating traces is gradient TD(λ) with one-hot features.",
+      "solution": [
+        "Choose the features that make $\\hat{v}$ a table.",
+        "Compute the gradient of $\\hat{v}$ for those features."
+      ],
+      "explanation": "Checked numerically: on the 19-state walk the two methods agree to 1e-12 (check ch09.ex9-1).",
+      "rubric": [
+        {
+          "point": "One-hot features: $\\hat{v}(s, \\mathbf{w}) = w_s$",
+          "marks": 1
+        },
+        {
+          "point": "Gradient is the unit vector, so (9.7) becomes the accumulating trace and (9.5)–(9.6) the tabular update",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 9.1, printed p. 253; equations (9.5)–(9.7), printed p. 231."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.2",
+          "printedPages": [
+            229,
+            232
+          ],
+          "pdfPages": [
+            243,
+            246
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            253,
+            254
+          ],
+          "pdfPages": [
+            267,
+            268
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q002",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "9.2"
+      },
+      "concepts": [
+        "ch09.state-aggregation",
+        "ch09.gradient-descent"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 9.2: state aggregation groups states, with one table entry per group that is read and updated whenever a member state is involved. Show that it is one instance of a gradient method like (9.4).",
+      "answer": "Let there be one weight per group and the feature vector $\\mathbf{x}(s)$ have a 1 in the component of s's group and 0 elsewhere. Then $\\hat{v}(s, \\mathbf{w}) = w_{g(s)}$ (reading the group's entry), and $\\nabla\\hat{v}(s, \\mathbf{w}) = \\mathbf{x}(s)$. So (9.4) changes only $w_{g(S_t)}$, by $\\alpha[G^\\lambda_t - w_{g(S_t)}]$: exactly updating the group's entry toward the target. State aggregation is linear gradient descent with indicator features of the groups.",
+      "solution": [
+        "Pick the features that make $\\hat{v}(s)$ equal to s's group entry."
+      ],
+      "explanation": "Checked numerically for TD(0) on the 19-state walk with groups of 4 (check ch09.ex9-2).",
+      "rubric": [
+        {
+          "point": "Indicator feature per group; $\\hat{v}(s) = w_{g(s)}$",
+          "marks": 1
+        },
+        {
+          "point": "Gradient is that indicator, so only the group's weight moves toward the target",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 9.2, printed pp. 253–254."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            232,
+            241
+          ],
+          "pdfPages": [
+            246,
+            255
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            253,
+            254
+          ],
+          "pdfPages": [
+            267,
+            268
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q003",
+      "unit": "ch09",
+      "section": "9.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "9.3"
+      },
+      "concepts": [
+        "ch09.gradient-td-lambda",
+        "ch07.online-offline"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 3,
+      "marks": 3,
+      "stem": "Exercise 9.3: the section's equations describe on-line gradient-descent TD(λ). Give the off-line version. Express the weights after an episode, $\\mathbf{w}'$, through the weights $\\mathbf{w}$ held fixed during it, starting from a forward-view equation such as (9.4).",
+      "answer": "Off-line, $\\mathbf{w}$ is held fixed during the episode and the increments are summed: $\\mathbf{w}' = \\mathbf{w} + \\alpha\\sum_{t=0}^{T-1}\\big[G^\\lambda_t(\\mathbf{w}) - \\hat{v}(S_t, \\mathbf{w})\\big]\\nabla\\hat{v}(S_t, \\mathbf{w})$, where the λ-returns are computed with the fixed $\\mathbf{w}$ (their n-step corrections use $\\hat{v}(S_{t+n}, \\mathbf{w})$). The backward-view equivalent: $\\delta_t = R_{t+1} + \\gamma\\hat{v}(S_{t+1}, \\mathbf{w}) - \\hat{v}(S_t, \\mathbf{w})$, $\\mathbf{e}_t = \\gamma\\lambda\\mathbf{e}_{t-1} + \\nabla\\hat{v}(S_t, \\mathbf{w})$, and $\\mathbf{w}' = \\mathbf{w} + \\alpha\\sum_t \\delta_t\\mathbf{e}_t$.",
+      "solution": [
+        "Hold w fixed through the episode, as in (7.4).",
+        "Sum the forward-view increments."
+      ],
+      "explanation": "The laboratory's implementation has an off-line mode that does exactly this.",
+      "rubric": [
+        {
+          "point": "w fixed during the episode; λ-returns and gradients evaluated with it",
+          "marks": 1
+        },
+        {
+          "point": "w′ = w + α Σ_t [G^λ_t − v̂(S_t, w)] ∇v̂(S_t, w)",
+          "marks": 1
+        },
+        {
+          "point": "Equivalent backward form with summed δ_t e_t",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 9.3, printed p. 254."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.2",
+          "printedPages": [
+            229,
+            232
+          ],
+          "pdfPages": [
+            243,
+            246
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            253,
+            254
+          ],
+          "pdfPages": [
+            267,
+            268
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q004",
+      "unit": "ch09",
+      "section": "9.2",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "9.4"
+      },
+      "concepts": [
+        "ch09.gradient-td-lambda"
+      ],
+      "type": "derivation",
+      "category": "derivation",
+      "difficulty": 4,
+      "marks": 4,
+      "stem": "Exercise 9.4: with off-line updating, prove that (9.5)–(9.7) give exactly the same updates as (9.4).",
+      "answer": "With w fixed through the episode write $\\hat{v}_t = \\hat{v}(S_t, \\mathbf{w})$ and $\\mathbf{g}_t = \\nabla\\hat{v}(S_t, \\mathbf{w})$. The λ-return error telescopes into TD errors: $G^\\lambda_t - \\hat{v}_t = \\sum_{k=t}^{T-1}(\\gamma\\lambda)^{k-t}\\delta_k$ (from the recursion $G^\\lambda_t = R_{t+1} + \\gamma[(1-\\lambda)\\hat{v}_{t+1} + \\lambda G^\\lambda_{t+1}]$). The forward-view total is $\\sum_t\\alpha[G^\\lambda_t - \\hat{v}_t]\\mathbf{g}_t = \\alpha\\sum_t\\sum_{k\\ge t}(\\gamma\\lambda)^{k-t}\\delta_k\\mathbf{g}_t = \\alpha\\sum_k\\delta_k\\sum_{t\\le k}(\\gamma\\lambda)^{k-t}\\mathbf{g}_t$, swapping the sums. The inner sum is $\\mathbf{e}_k$ by (9.7) with $\\mathbf{e}_{-1} = \\mathbf{0}$. So the total equals $\\alpha\\sum_k\\delta_k\\mathbf{e}_k$, the sum of the (9.5) increments.",
+      "solution": [
+        "Write the λ-return error as a discounted sum of TD errors.",
+        "Exchange the order of summation."
+      ],
+      "explanation": "The same argument as for the tabular equivalence in §7.4, with gradients in place of indicator vectors; checked numerically (check ch09.ex9-4).",
+      "rubric": [
+        {
+          "point": "λ-return error as Σ (γλ)^{k−t} δ_k with w fixed",
+          "marks": 2
+        },
+        {
+          "point": "Exchange of sums gives Σ δ_k e_k with the trace (9.7)",
+          "marks": 2
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 9.4, printed p. 254."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.2",
+          "printedPages": [
+            229,
+            232
+          ],
+          "pdfPages": [
+            243,
+            246
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            253,
+            254
+          ],
+          "pdfPages": [
+            267,
+            268
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q005",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "9.5"
+      },
+      "concepts": [
+        "ch09.linear-methods"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Exercise 9.5: how can the linear framework express the tabular case?",
+      "answer": "Use one feature per state, $x_i(s) = 1$ if $s$ is the i-th state and 0 otherwise. Then $\\hat{v}(s, \\mathbf{w}) = \\mathbf{w}^\\top\\mathbf{x}(s) = w_s$, the gradient is the unit vector, and every linear gradient method updates only the visited state's weight: the table.",
+      "solution": [
+        "How many features, and what values, make $\\mathbf{w}^\\top\\mathbf{x}(s)$ a table lookup?"
+      ],
+      "explanation": "The linear framework contains the tabular one as the case of non-overlapping one-state features.",
+      "rubric": [
+        {
+          "point": "One indicator feature per state, so v̂(s) = w_s",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 9.5, printed p. 254."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            232,
+            241
+          ],
+          "pdfPages": [
+            246,
+            255
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            253,
+            254
+          ],
+          "pdfPages": [
+            267,
+            268
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q006",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "9.6"
+      },
+      "concepts": [
+        "ch09.state-aggregation",
+        "ch09.linear-methods"
+      ],
+      "type": "short-answer",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "Exercise 9.6: how could we reproduce state aggregation within the linear framework? (The draft points to 'Exercise 8.4' for state aggregation; it is defined in Exercise 9.2.)",
+      "answer": "Use one feature per group: $x_g(s) = 1$ if s is in group g, else 0. Each state then has exactly one present feature, $\\hat{v}(s, \\mathbf{w}) = w_{g(s)}$, and gradient updates change only the group's weight.",
+      "solution": [
+        "Make the features indicators of groups rather than of single states."
+      ],
+      "explanation": "Tabular is the special case of groups of one.",
+      "rubric": [
+        {
+          "point": "One indicator feature per group; each state activates exactly its group's feature",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 9.6, printed p. 254."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            232,
+            241
+          ],
+          "pdfPages": [
+            246,
+            255
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            253,
+            254
+          ],
+          "pdfPages": [
+            267,
+            268
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q007",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-exercise",
+        "exercise": "9.7"
+      },
+      "concepts": [
+        "ch09.tile-coding"
+      ],
+      "type": "short-answer",
+      "category": "analytical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "Exercise 9.7: suppose one of two state dimensions is believed more likely to affect the value function, so that generalization should be mainly across the other dimension rather than along this one. What kind of tilings could exploit this prior knowledge?",
+      "answer": "Use stripe tilings (as in Figure 9.6b): tiles that are long along the dimension that matters little and narrow across the one that matters. Each tile then spans a wide range of the unimportant variable, so learning generalizes along it, while distinguishing finely between values of the important variable. Several offset stripe tilings (possibly with some ordinary grid tilings for interactions) give resolution in the important dimension; in higher dimensions this amounts to ignoring the unimportant dimension in some tilings.",
+      "solution": [
+        "Recall how the shape of the tiles controls the direction of generalization (Figure 9.6)."
+      ],
+      "explanation": "Tile shape sets the direction of generalization; tile count the resolution.",
+      "rubric": [
+        {
+          "point": "Elongated/stripe tiles: long along the less important dimension, narrow across the important one",
+          "marks": 1
+        },
+        {
+          "point": "Explains the resulting generalization and discrimination",
+          "marks": 1
+        }
+      ],
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Exercise 9.7, printed p. 254; Figure 9.6, printed p. 239."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            232,
+            241
+          ],
+          "pdfPages": [
+            246,
+            255
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            253,
+            254
+          ],
+          "pdfPages": [
+            267,
+            268
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q008",
+      "unit": "ch09",
+      "section": "9.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§9.1"
+        ]
+      },
+      "concepts": [
+        "ch09.backups-as-examples"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "Why are not all supervised function approximation methods well suited to reinforcement learning, according to §9.1?",
+      "options": [
+        "Many assume a static training set used in several passes, while RL needs on-line learning from incremental data with nonstationary targets",
+        "They cannot represent value functions",
+        "They need the true values of every state",
+        "They only work with discrete states"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Any function can in principle be represented.",
+        "They use the given targets, whatever their source.",
+        "Many handle continuous inputs."
+      ],
+      "solution": [
+        "Policies change during GPI, and bootstrapped targets move as the estimates change."
+      ],
+      "explanation": "Methods that cannot handle nonstationarity are less suitable.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 227."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.1",
+          "printedPages": [
+            227,
+            227
+          ],
+          "pdfPages": [
+            241,
+            241
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q009",
+      "unit": "ch09",
+      "section": "9.1",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch09.rmse"
+        ]
+      },
+      "concepts": [
+        "ch09.rmse-objective"
+      ],
+      "type": "mcq",
+      "category": "definition",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "What is the on-policy distribution in §9.1?",
+      "options": [
+        "The frequency with which states are encountered while interacting with the environment following π",
+        "The uniform distribution over all states",
+        "The distribution of terminal states",
+        "The distribution that minimizes RMSE"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "That gives uniform error over the state set.",
+        "Not this.",
+        "d is chosen first; RMSE is then minimized under it."
+      ],
+      "solution": [
+        "Monte Carlo and TD naturally back up states in this distribution."
+      ],
+      "explanation": "It has the strongest convergence results.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 228."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.1",
+          "printedPages": [
+            228,
+            228
+          ],
+          "pdfPages": [
+            242,
+            242
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q010",
+      "unit": "ch09",
+      "section": "9.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch09.gradient-general"
+        ]
+      },
+      "concepts": [
+        "ch09.gradient-descent"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "True or false: if the target $V_t$ in (9.3) is an unbiased estimate of $v_\\pi(S_t)$, such as the Monte Carlo return, and α decreases according to (2.7), gradient descent converges to a local optimum.",
+      "answer": true,
+      "solution": [
+        "This is the guarantee stated for (9.3); the Monte Carlo target $G_t$ is unbiased by definition."
+      ],
+      "explanation": "Bootstrapped targets (λ < 1, DP) are biased, so they lack this guarantee.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 230–231."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.2",
+          "printedPages": [
+            230,
+            231
+          ],
+          "pdfPages": [
+            244,
+            245
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q011",
+      "unit": "ch09",
+      "section": "9.2",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch09.gradient-td-lambda"
+        ]
+      },
+      "concepts": [
+        "ch09.gradient-td-lambda"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In gradient-descent TD(λ) (Figure 9.1), what is the eligibility trace?",
+      "options": [
+        "A vector with one component per weight: $\\mathbf{e} \\leftarrow \\gamma\\lambda\\mathbf{e} + \\nabla\\hat{v}(S, \\mathbf{w})$",
+        "A single number for the current state",
+        "One component per state, as in Chapter 7",
+        "The vector of recent TD errors"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "It is a vector.",
+        "With function approximation, traces belong to weights, not states.",
+        "δ is a scalar; e records gradients."
+      ],
+      "solution": [
+        "(9.7): decay, then add the gradient of the current state's value."
+      ],
+      "explanation": "With one-hot features it reduces to the per-state trace.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 231–232."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.2",
+          "printedPages": [
+            231,
+            232
+          ],
+          "pdfPages": [
+            245,
+            246
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q012",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch09.linear-value",
+          "eq.ch09.gradient-general"
+        ]
+      },
+      "concepts": [
+        "ch09.linear-methods",
+        "ch09.gradient-descent"
+      ],
+      "type": "multi-numeric",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 3,
+      "stem": "A linear approximator has $\\mathbf{w} = (1, 2)$ and, for the state $S_t$, features $\\mathbf{x}(S_t) = (1, 0.5)$. The target is $V_t = 3$ and α = 0.1. Give $\\hat{v}(S_t, \\mathbf{w})$ before the update and the two new weights.",
+      "parts": [
+        {
+          "label": "v̂ before",
+          "answer": 2,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "new w1",
+          "answer": 1.1,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "new w2",
+          "answer": 2.05,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "$\\hat{v} = 1 \\cdot 1 + 2 \\cdot 0.5 = 2$.",
+        "The gradient is $\\mathbf{x}(S_t)$; the error is $3 - 2 = 1$.",
+        "$\\mathbf{w} \\leftarrow (1, 2) + 0.1 \\cdot 1 \\cdot (1, 0.5) = (1.1, 2.05)$."
+      ],
+      "explanation": "Each weight moves in proportion to its feature's value.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch09-q012"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.2",
+          "printedPages": [
+            230,
+            231
+          ],
+          "pdfPages": [
+            244,
+            245
+          ]
+        },
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            232,
+            232
+          ],
+          "pdfPages": [
+            246,
+            246
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q013",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "eq.ch09.td-bound"
+        ]
+      },
+      "concepts": [
+        "ch09.td-bound"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 2,
+      "stem": "What factor does the bound (9.9) allow between the RMSE of linear TD(λ)'s limit and the minimum RMSE when γ = 0.9 and λ = 0.5? And when λ = 1?",
+      "parts": [
+        {
+          "label": "λ = 0.5",
+          "answer": 5.5,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "λ = 1",
+          "answer": 1,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "$(1 - \\gamma\\lambda)/(1 - \\gamma) = (1 - 0.45)/0.1 = 5.5$.",
+        "With λ = 1: $(1 - 0.9)/0.1 = 1$."
+      ],
+      "explanation": "The bound loosens as λ falls; actual ratios are often much smaller (1.06 for λ = 0.5 in check ch09.bound).",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch09-q013"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            233,
+            233
+          ],
+          "pdfPages": [
+            247,
+            247
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q014",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§9.3"
+        ]
+      },
+      "concepts": [
+        "ch09.tile-coding"
+      ],
+      "type": "multi-numeric",
+      "category": "numerical",
+      "difficulty": 2,
+      "marks": 2,
+      "stem": "With tile coding using m = 8 tilings, a state's current value is 2 and an example says its value should be 5. What is the state's value after one gradient update with α = 1/8? With α = 1/80?",
+      "parts": [
+        {
+          "label": "α = 1/m",
+          "answer": 5,
+          "tolerance": 0.0001
+        },
+        {
+          "label": "α = 1/(10m)",
+          "answer": 2.3,
+          "tolerance": 0.0001
+        }
+      ],
+      "solution": [
+        "Exactly m = 8 features are present, each with feature value 1, so the update adds α·(5 − 2) to each of 8 weights and changes the value by 8α·3.",
+        "α = 1/8: the change is 3, so the value becomes 5 (one-trial learning).",
+        "α = 1/80: the change is 0.3, so 2.3."
+      ],
+      "explanation": "Tile coding makes the step size easy to set.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch09-q014"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            236,
+            236
+          ],
+          "pdfPages": [
+            250,
+            250
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q015",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§9.3"
+        ]
+      },
+      "concepts": [
+        "ch09.rbf"
+      ],
+      "type": "numeric",
+      "category": "numerical",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "A radial basis feature has centre $c = 0$ and width $\\sigma = 1$. What is its value $x(s) = \\exp(-\\|s - c\\|^2 / 2\\sigma^2)$ for $s = 1$? Give three decimals.",
+      "parts": [
+        {
+          "label": "x(1)",
+          "answer": 0.607,
+          "tolerance": 0.001
+        }
+      ],
+      "solution": [
+        "$\\exp(-1/2) \\approx 0.607$."
+      ],
+      "explanation": "RBF features take values in [0, 1], unlike binary features.",
+      "verification": {
+        "method": "computed",
+        "on": "2026-11-11",
+        "check": "ch09-q015"
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            238,
+            239
+          ],
+          "pdfPages": [
+            252,
+            253
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q016",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch09.coarse-coding"
+        ]
+      },
+      "concepts": [
+        "ch09.coarse-coding"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In Example 9.1, what did the width of the coarse-coding features affect?",
+      "options": [
+        "Mainly early generalization; the final approximation was affected only slightly",
+        "Mainly the final accuracy",
+        "Neither",
+        "Only the speed of computation"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: acuity is set more by the number of features.",
+        "The final functions were similar.",
+        "Early on the effect was strong.",
+        "Width changes what is learned early."
+      ],
+      "solution": [
+        "Broad features spread each example widely at first; narrow ones learn bumpily; with many examples the results converge."
+      ],
+      "explanation": "Receptive-field shape matters for generalization, little for asymptotic quality.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 235–236."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            235,
+            236
+          ],
+          "pdfPages": [
+            249,
+            250
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q017",
+      "unit": "ch09",
+      "section": "9.3",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§9.3"
+        ]
+      },
+      "concepts": [
+        "ch09.kanerva-coding"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "What problem is Kanerva coding meant to address?",
+      "options": [
+        "The exponential growth of tile coding and RBF networks with the number of dimensions",
+        "The bias of bootstrapped targets",
+        "Divergence of off-policy methods",
+        "The need for a model"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct: its capacity depends on the number of prototype features, not on dimension.",
+        "Not this.",
+        "Not this.",
+        "Not this."
+      ],
+      "solution": [
+        "Complexity of the target function, not dimensionality, should set the resources needed."
+      ],
+      "explanation": "Prototype features with, e.g., Hamming distance.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 240–241."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.3",
+          "printedPages": [
+            240,
+            241
+          ],
+          "pdfPages": [
+            254,
+            255
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q018",
+      "unit": "ch09",
+      "section": "9.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch09.linear-sarsa-lambda"
+        ]
+      },
+      "concepts": [
+        "ch09.linear-sarsa-lambda"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "How are replacing traces extended to linear function approximation with binary features in §9.4?",
+      "options": [
+        "Treat each feature as if it were a state: when a present feature is encountered its trace is set to 1 instead of incremented",
+        "They cannot be used with function approximation at all",
+        "Reset the whole trace vector at every step",
+        "Use one trace per state"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "The draft gives this extension.",
+        "That would remove eligibility entirely.",
+        "There are no per-state traces with function approximation."
+      ],
+      "solution": [
+        "There is no single trace per state, only per weight; binary features let each be treated like a state."
+      ],
+      "explanation": "Optionally, the traces of the features of the actions not taken are also cleared.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 245."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.4",
+          "printedPages": [
+            245,
+            245
+          ],
+          "pdfPages": [
+            259,
+            259
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q019",
+      "unit": "ch09",
+      "section": "9.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "alg.ch09.linear-q-lambda"
+        ]
+      },
+      "concepts": [
+        "ch09.linear-q-lambda"
+      ],
+      "type": "mcq",
+      "category": "algorithm-trace",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In the linear Watkins's Q(λ) of Figure 9.9, when are all the traces set to zero?",
+      "options": [
+        "When the action taken is not the greedy action A*",
+        "At every step",
+        "When the TD error is negative",
+        "Only at the end of the episode"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Only after exploratory actions.",
+        "Not this.",
+        "Traces are also cleared after exploratory actions within the episode."
+      ],
+      "solution": [
+        "Experience after a nongreedy action does not bear on the greedy policy."
+      ],
+      "explanation": "As in the tabular algorithm of Figure 7.15.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 244."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.4",
+          "printedPages": [
+            244,
+            244
+          ],
+          "pdfPages": [
+            258,
+            258
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q020",
+      "unit": "ch09",
+      "section": "9.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "ex.ch09.mountain-car"
+        ]
+      },
+      "concepts": [
+        "ch09.mountain-car",
+        "ch09.linear-sarsa-lambda"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "In Example 9.2, why did the Sarsa(λ) agent explore extensively even though ε = 0?",
+      "options": [
+        "The initial action values of 0 were optimistic (all true values are negative), so visited states looked worse than unexplored ones",
+        "Tile coding adds random noise to actions",
+        "The step size was very large",
+        "The car's dynamics are random"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Tile coding is deterministic once the offsets are fixed.",
+        "α = 0.05 is small.",
+        "The dynamics are deterministic."
+      ],
+      "solution": [
+        "Rewards of −1 per step make every visited state look worse than the unrealistic expectation of 0, driving the agent elsewhere."
+      ],
+      "explanation": "Optimistic initial values (Chapter 2) at work.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 246."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.4",
+          "printedPages": [
+            246,
+            246
+          ],
+          "pdfPages": [
+            260,
+            260
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q021",
+      "unit": "ch09",
+      "section": "9.5",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§9.5"
+        ]
+      },
+      "concepts": [
+        "ch09.bootstrapping"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "What does §9.5 conclude about bootstrapping with function approximation?",
+      "options": [
+        "Nonbootstrapping methods have better guarantees and asymptotic error, yet bootstrapping usually performs much better in practice, for reasons not yet clear",
+        "Bootstrapping always reaches lower RMSE",
+        "Bootstrapping should never be used with function approximation",
+        "λ = 1 performs best in all the draft's examples"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Asymptotically λ = 1 has lower RMSE.",
+        "It is the method of choice in practice.",
+        "Performance worsened as λ approached 1 in Figure 9.12."
+      ],
+      "solution": [
+        "Figure 9.12: performance degrades sharply as λ → 1 across several tasks."
+      ],
+      "explanation": "RMSE may not be the best goal for control.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed pp. 247–249."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.5",
+          "printedPages": [
+            247,
+            249
+          ],
+          "pdfPages": [
+            261,
+            263
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q022",
+      "unit": "ch09",
+      "section": "9.6",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§9.6"
+        ]
+      },
+      "concepts": [
+        "ch09.linear-methods"
+      ],
+      "type": "mcq",
+      "category": "conceptual",
+      "difficulty": 1,
+      "marks": 1,
+      "stem": "According to the summary, what is a principal way of building prior domain knowledge to a reinforcement learning system?",
+      "options": [
+        "Choosing the features",
+        "Choosing the discount rate",
+        "Using Monte Carlo targets",
+        "Using a decreasing step size"
+      ],
+      "answer": 0,
+      "optionNotes": [
+        "Correct.",
+        "Not the summary's point.",
+        "Not the summary's point.",
+        "Not the summary's point."
+      ],
+      "solution": [
+        "Features decide what generalizes to what."
+      ],
+      "explanation": "Linear methods work well in practice when given appropriate features.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Printed p. 249."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "section": "9.6",
+          "printedPages": [
+            249,
+            249
+          ],
+          "pdfPages": [
+            263,
+            263
+          ]
+        }
+      ],
+      "reviewed": true
+    },
+    {
+      "id": "ch09-q023",
+      "unit": "ch09",
+      "section": "9.4",
+      "provenance": {
+        "kind": "textbook-derived",
+        "basis": [
+          "§9.4"
+        ]
+      },
+      "concepts": [
+        "ch09.linear-q-lambda",
+        "ch09.approx-control"
+      ],
+      "type": "true-false",
+      "category": "conceptual",
+      "difficulty": 2,
+      "marks": 1,
+      "stem": "True or false: according to the draft's bibliographical remarks, the Q-learning control method with function approximation is known not to be sound and can diverge on some problems.",
+      "answer": true,
+      "solution": [
+        "The remarks for §9.4 say so; convergence of the Sarsa control method has not been proved either."
+      ],
+      "explanation": "Off-policy learning with function approximation is the subject of the unwritten Chapter 10.",
+      "verification": {
+        "method": "text-layer",
+        "on": "2026-11-11",
+        "note": "Bibliographical remarks for §9.4, printed pp. 251–252."
+      },
+      "sources": [
+        {
+          "kind": "textbook",
+          "chapter": "9",
+          "printedPages": [
+            251,
+            252
+          ],
+          "pdfPages": [
+            265,
+            266
+          ]
+        }
+      ],
+      "reviewed": true
+    }
+  ]
+}

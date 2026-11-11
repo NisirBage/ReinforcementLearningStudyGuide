@@ -283,3 +283,9 @@ The service worker activates a new version at once and deletes the old version's
 - **A larger or shorter-lived effect than the draft reports is flagged as a replication discrepancy,** not hidden. This applies to prioritized sweeping's factor and to the duration of the on-policy advantage.
 - **Single-run numbers in the draft are compared with their distribution.** Example 8.1's "about 1700 steps" first episode is one run; the check computes the exact expected length (868.7) and shows such runs are common.
 - **Heavy laboratory runs are split across timer ticks** so the page stays responsive.
+
+## D-052: Function approximation checked exactly where possible (Accepted, 2026-11-11)
+- **The bound (9.9) is checked by computing the TD(λ) fixed point exactly,** not by long simulations. The fixed point solves Φ⊤D(I − γλP)⁻¹[(I − γP)Φw − r] = 0 on a small continuing chain with its stationary distribution.
+- **The draft's special-case exercises (9.1, 9.2, 9.4) are checked as identities** to 1e-12.
+- **Choices the draft leaves to figures are stated in the lab and on the examples:** Example 9.1's feature widths and square wave, and mountain car's random tile offsets.
+- **The content-check test file runs alone, after the other test files.** Its CPU load had made UI tests time out in parallel. Splitting the run keeps every test and every limit unchanged.

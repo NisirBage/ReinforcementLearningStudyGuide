@@ -1,0 +1,83 @@
+[
+  {
+    "id": "ex.ch09.coarse-coding",
+    "unit": "ch09",
+    "concepts": [
+      "ch09.coarse-coding"
+    ],
+    "title": "Coarseness of coarse coding",
+    "bookLabel": "Example 9.1",
+    "summary": "A one-dimensional square wave learned by linear gradient descent (9.3) on interval features, about 50 of them over the function's extent, with narrow, medium and broad intervals; training points uniform at random; α = 0.2/m (Figure 9.4). The draft only draws the widths and the wave; we use widths 0.08, 0.2 and 0.5 of the extent and a wave equal to 1 on its middle third.",
+    "facts": [
+      {
+        "claim": "Feature width strongly affects early learning (errors after 40 examples differ by more than 0.05) but hardly the final approximation (after 10,240 examples all within 0.01).",
+        "check": "ch09.coarse-coding"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          235,
+          236
+        ],
+        "pdfPages": [
+          249,
+          250
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch09.coarse-coding"
+    }
+  },
+  {
+    "id": "ex.ch09.mountain-car",
+    "unit": "ch09",
+    "concepts": [
+      "ch09.mountain-car",
+      "ch09.linear-sarsa-lambda"
+    ],
+    "title": "Mountain–car task",
+    "bookLabel": "Example 9.2",
+    "summary": "The draft's dynamics and setup: v ← bound(v + 0.001A − 0.0025 cos 3p), p ← bound(p + v), with −1.2 ≤ p ≤ 0.5 and −0.07 ≤ v ≤ 0.07, velocity reset at the left bound, random starts; ten 9 × 9 tilings with random offsets; Sarsa(λ) of Figure 9.8 with replacing traces and clearing, λ = 0.9, ε = 0, α = 0.05. Optimistic zero initial values drive exploration. The policy at episode 100, frozen and run without learning, can still loop from some starts; learning on-line breaks such loops, so the claim concerns the learning episodes.",
+    "facts": [
+      {
+        "claim": "Linear Sarsa(λ) learns the task within 100 episodes: the first 10 episodes average over 400 steps, episodes 91–100 under 80.",
+        "check": "ch09.mountain-car"
+      },
+      {
+        "claim": "Figure 9.11: replacing traces stay robust where accumulating traces blow up (λ = 0.9, α = 0.8/5), and λ = 1 is much worse than λ = 0.9 at α = 1.2/5.",
+        "check": "ch09.fig9-11"
+      },
+      {
+        "claim": "Linear Watkins's Q(λ) (Figure 9.9) also learns the task.",
+        "check": "ch09.watkins-linear"
+      }
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.4",
+        "printedPages": [
+          245,
+          247
+        ],
+        "pdfPages": [
+          259,
+          261
+        ]
+      }
+    ],
+    "verification": {
+      "method": "computed",
+      "on": "2026-11-11",
+      "check": "ch09.mountain-car"
+    }
+  }
+]

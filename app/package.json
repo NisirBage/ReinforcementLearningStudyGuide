@@ -8,10 +8,10 @@
     "validate": "tsx ../tools/validate_content.ts",
     "overlap": "python -I ../tools/check_overlap.py --n 9",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --exclude tests/checks.test.ts && vitest run tests/checks.test.ts",
     "build": "npm run validate && npm run typecheck && vite build && tsx ../tools/check_dist_privacy.ts",
     "preview": "vite preview",
-    "check": "npm run validate && tsx ../tools/coverage_report.ts --check && npm run typecheck && vitest run && npm run overlap && vite build && tsx ../tools/check_dist_privacy.ts",
+    "check": "npm run validate && tsx ../tools/coverage_report.ts --check && npm run typecheck && vitest run --exclude tests/checks.test.ts && vitest run tests/checks.test.ts && npm run overlap && vite build && tsx ../tools/check_dist_privacy.ts",
     "coverage": "tsx ../tools/coverage_report.ts",
     "inventory": "python -I ../tools/build_inventory.py"
   },

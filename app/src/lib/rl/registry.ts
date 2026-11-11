@@ -13,6 +13,7 @@ import * as td from "./td";
 import * as ttt from "./envs/tictactoe";
 import * as traces from "./traces";
 import * as planning from "./planning";
+import * as approx from "./approx";
 import * as batch from "./batch";
 import * as dp from "./dp";
 import * as mdp from "./mdp";
@@ -71,6 +72,14 @@ export const IMPLEMENTATIONS = {
   "planning.trajectorySampling": planning.trajectorySampling, // Figure 8.14
   "planning.sampleBackupError": planning.sampleBackupError, // Figure 8.13
   "envs.dynaMaze": planning.mazeEnv, // the mazes of Examples 8.1-8.4
+  "approx.linearTdLambdaEpisode": approx.linearTdLambdaEpisode, // gradient-descent TD(lambda), Figure 9.1, (9.5)-(9.7)
+  "approx.gradientStep": approx.gradientStep, // (9.3) with a linear approximator (9.8)
+  "approx.tdFixedPoint": approx.tdFixedPoint, // the TD(lambda) fixed point behind the bound (9.9)
+  "approx.coarseCodingRun": approx.coarseCodingRun, // Example 9.1
+  "approx.tileCoder": approx.tileCoder, // grid tilings, Figure 9.5
+  "approx.mcEpisode": approx.mcEpisode, // linear Sarsa(lambda) with binary features, Figure 9.8, Example 9.2
+  "approx.mcQLambdaEpisode": approx.mcQLambdaEpisode, // linear Watkins's Q(lambda) with binary features, Figure 9.9
+  "envs.mountainCar": approx.mcStep, // Example 9.2
   "envs.windyGridworld": examples.windyGridworld, // Example 6.5
   "batch.batchUpdate": batch.batchUpdate, // batch TD(0) and batch constant-α MC (§6.3, Examples 6.3–6.4)
   "batch.certaintyEquivalence": batch.certaintyEquivalence, // the certainty-equivalence estimate (§6.3)

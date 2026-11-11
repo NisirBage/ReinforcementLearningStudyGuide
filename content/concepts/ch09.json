@@ -1,0 +1,615 @@
+[
+  {
+    "id": "ch09.generalization",
+    "unit": "ch09",
+    "title": "Generalization and function approximation",
+    "kind": "idea",
+    "summary": "Tables cannot scale: most states of a large or continuous task are never seen exactly, so experience must generalize to unseen states. The tool is function approximation, a form of supervised learning: take examples of the desired function and build an approximation of all of it. Existing supervised methods can be borrowed.",
+    "prereqs": [
+      "ch03.tabular-approximation",
+      "ch01.rl-vs-supervised"
+    ],
+    "related": [
+      "ch09.backups-as-examples"
+    ],
+    "keywords": [
+      "generalization",
+      "function approximation",
+      "supervised learning"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "printedPages": [
+          225,
+          226
+        ],
+        "pdfPages": [
+          239,
+          240
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.backups-as-examples",
+    "unit": "ch09",
+    "title": "Backups as training examples",
+    "kind": "idea",
+    "summary": "Write a backup as s ↦ v: state s should have a value more like v (St ↦ Gt for Monte Carlo, St ↦ Rt+1 + γv̂(St+1, w) for TD(0), St ↦ Gλt for TD(λ)). Each backup becomes a training example for a parameterized v̂(s, w) with far fewer parameters than states, so changing w for one state changes many. Suitable learners must work on-line, from incrementally arriving data, with nonstationary targets.",
+    "prereqs": [
+      "ch09.generalization",
+      "ch06.td-prediction"
+    ],
+    "related": [
+      "ch09.gradient-descent"
+    ],
+    "keywords": [
+      "backup",
+      "training example",
+      "parameter vector",
+      "nonstationary targets"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.1",
+        "printedPages": [
+          226,
+          227
+        ],
+        "pdfPages": [
+          240,
+          241
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.rmse-objective",
+    "unit": "ch09",
+    "title": "The RMSE objective and the on-policy distribution",
+    "kind": "definition",
+    "summary": "With fewer parameters than states, errors cannot all be zero, so a distribution d over states says which errors matter: RMSE(w) = √(Σ d(s)[vπ(s) − v̂(s, w)]²) (9.1). Usually d is also the distribution of states backed up; the on-policy distribution (states as visited when following π) is the natural choice and has the strongest convergence results. The ideal is a global optimum; complex approximators may reach only a local one, or diverge.",
+    "prereqs": [
+      "ch09.backups-as-examples"
+    ],
+    "related": [
+      "ch08.trajectory-sampling"
+    ],
+    "keywords": [
+      "RMSE",
+      "distribution d",
+      "on-policy distribution",
+      "global optimum",
+      "local optimum"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.1",
+        "printedPages": [
+          227,
+          228
+        ],
+        "pdfPages": [
+          241,
+          242
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.gradient-descent",
+    "unit": "ch09",
+    "title": "Gradient-descent prediction",
+    "kind": "algorithm",
+    "summary": "Adjust w after each example a small step down the gradient of its squared error: w ← w + α[vπ(St) − v̂(St, w)]∇v̂(St, w) (9.2). With a target Vt in place of the unknown vπ(St) this is the general method (9.3). If Vt is unbiased (the Monte Carlo return Gt) and α decreases as in (2.7), it converges to a local optimum. Small steps, because the goal is a balance across states, not zero error on each example.",
+    "prereqs": [
+      "ch09.rmse-objective"
+    ],
+    "related": [
+      "ch09.gradient-td-lambda"
+    ],
+    "keywords": [
+      "gradient descent",
+      "step size",
+      "unbiased target",
+      "Monte Carlo"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          229,
+          231
+        ],
+        "pdfPages": [
+          243,
+          245
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.gradient-td-lambda",
+    "unit": "ch09",
+    "title": "Gradient-descent TD(λ)",
+    "kind": "algorithm",
+    "summary": "Use the λ-return as the target in (9.3), giving the forward view (9.4); its backward view keeps a trace per weight: et = γλet−1 + ∇v̂(St, wt) (9.7), δt as usual (9.6), w ← w + αδtet (9.5), Figure 9.1. For λ < 1 the target is biased, so the method is not a true gradient method and need not reach a local optimum, but bootstrapping methods often work very well, and in the linear on-policy case have their own guarantee (9.9).",
+    "prereqs": [
+      "ch09.gradient-descent",
+      "ch07.td-lambda"
+    ],
+    "related": [
+      "ch09.td-bound"
+    ],
+    "keywords": [
+      "gradient TD(λ)",
+      "eligibility trace vector",
+      "Figure 9.1",
+      "bootstrapping"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.2",
+        "printedPages": [
+          231,
+          232
+        ],
+        "pdfPages": [
+          245,
+          246
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.linear-methods",
+    "unit": "ch09",
+    "title": "Linear methods",
+    "kind": "definition",
+    "summary": "v̂(s, w) = w⊤x(s) = Σi wi xi(s) (9.8), for a feature vector x(s); then ∇v̂(s, w) = x(s) and there is a single optimum (or a set of equally good ones), so any method that converges to a local optimum reaches the global one. Linear methods are the most favourable for analysis and, with good features, very efficient. They cannot represent interactions between features, so conjunctions must be added as features.",
+    "prereqs": [
+      "ch09.gradient-descent"
+    ],
+    "related": [
+      "ch09.coarse-coding"
+    ],
+    "keywords": [
+      "linear",
+      "feature vector",
+      "features",
+      "conjunctions"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          232,
+          234
+        ],
+        "pdfPages": [
+          246,
+          248
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.td-bound",
+    "unit": "ch09",
+    "title": "The asymptotic error bound of linear TD(λ)",
+    "kind": "theorem",
+    "summary": "Linear gradient-descent TD(λ), with the on-policy distribution and α decreasing suitably, converges, not to the minimum-error w* but to a nearby w∞ with RMSE(w∞) ≤ (1 − γλ)/(1 − γ) RMSE(w*) (9.9) (Tsitsiklis and Van Roy, 1997, for discounted continuing tasks). As λ → 1 the bound tends to the minimum. The on-policy distribution is critical: with other distributions bootstrapping methods may diverge.",
+    "prereqs": [
+      "ch09.gradient-td-lambda",
+      "ch09.linear-methods"
+    ],
+    "related": [
+      "ch09.bootstrapping"
+    ],
+    "keywords": [
+      "error bound",
+      "Tsitsiklis and Van Roy",
+      "convergence",
+      "on-policy distribution"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          233,
+          233
+        ],
+        "pdfPages": [
+          247,
+          247
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "The bibliographical remarks (p. 251) attribute to Tsitsiklis and Van Roy the asymptotic error bound, placing it in 'Section 9.2'; the bound is (9.9) in §9.3. The summary (p. 249) calls it a bound on the 'mean-squared error', while (9.9) bounds the RMSE.",
+        "suggestion": "Read 'Section 9.3' and 'root-mean-squared error'."
+      }
+    ]
+  },
+  {
+    "id": "ch09.coarse-coding",
+    "unit": "ch09",
+    "title": "Coarse coding",
+    "kind": "definition",
+    "summary": "Binary features with overlapping receptive fields (circles, intervals): a feature is 1 when the state lies in its field. Training at one state changes the values of all states sharing its fields, the more so the more fields they share. The size and shape of the fields set how far, and in which directions, learning generalizes at first; the number of features sets the final acuity (Example 9.1).",
+    "prereqs": [
+      "ch09.linear-methods"
+    ],
+    "related": [
+      "ch09.tile-coding"
+    ],
+    "keywords": [
+      "coarse coding",
+      "receptive field",
+      "binary feature",
+      "Figure 9.2",
+      "Example 9.1"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          234,
+          236
+        ],
+        "pdfPages": [
+          248,
+          250
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.tile-coding",
+    "unit": "ch09",
+    "title": "Tile coding",
+    "kind": "definition",
+    "summary": "Coarse coding with the receptive fields grouped into partitions (tilings) of the input space, each tile a binary feature, so exactly one feature per tiling is present: m features in all, which makes the value a sum of m weights and the step size easy to set (α = 1/m gives one-trial learning; α = 1/(10m) moves a tenth of the way). Tilings are offset from each other; their shapes control generalization (stripes, diagonals), their number the resolution; hashing collapses large tilings into far fewer tiles.",
+    "prereqs": [
+      "ch09.coarse-coding"
+    ],
+    "related": [
+      "ch09.mountain-car"
+    ],
+    "keywords": [
+      "tile coding",
+      "tiling",
+      "CMAC",
+      "hashing",
+      "Figure 9.5"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          236,
+          238
+        ],
+        "pdfPages": [
+          250,
+          252
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.rbf",
+    "unit": "ch09",
+    "title": "Radial basis functions",
+    "kind": "definition",
+    "summary": "Continuous-valued features: xi(s) = exp(−‖s − ci‖²/(2σi²)), a bell-shaped response around a centre ci with width σi. A linear approximator with these features (an RBF network) gives smooth, differentiable approximations; adapting the centres and widths too makes it nonlinear. The costs: more computation and more manual tuning.",
+    "prereqs": [
+      "ch09.coarse-coding"
+    ],
+    "related": [
+      "ch09.tile-coding"
+    ],
+    "keywords": [
+      "radial basis function",
+      "RBF network",
+      "Gaussian",
+      "Figure 9.7"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          238,
+          239
+        ],
+        "pdfPages": [
+          252,
+          253
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.kanerva-coding",
+    "unit": "ch09",
+    "title": "Kanerva coding",
+    "kind": "idea",
+    "summary": "Tile coding and RBFs grow exponentially with the number of dimensions. What should matter is the complexity of the target function, not the dimension. Kanerva coding uses binary features for prototype states (e.g. chosen at random), present when the state is close to the prototype by a measure such as Hamming distance, so its capacity depends only on the number of features.",
+    "prereqs": [
+      "ch09.linear-methods"
+    ],
+    "related": [
+      "ch09.tile-coding"
+    ],
+    "keywords": [
+      "Kanerva coding",
+      "prototypes",
+      "Hamming distance",
+      "dimensionality"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.3",
+        "printedPages": [
+          240,
+          241
+        ],
+        "pdfPages": [
+          254,
+          255
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.state-aggregation",
+    "unit": "ch09",
+    "title": "State aggregation",
+    "kind": "definition",
+    "summary": "The simplest generalizing approximation: group the states, keep one value per group, read and update the group's value whenever one of its states is involved. It is a linear method with one indicator feature per group (Exercises 9.2 and 9.6), and the tabular case is aggregation into singletons (Exercise 9.5).",
+    "prereqs": [
+      "ch09.linear-methods"
+    ],
+    "related": [
+      "ch09.coarse-coding"
+    ],
+    "keywords": [
+      "state aggregation",
+      "groups",
+      "indicator features",
+      "Exercise 9.2"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "printedPages": [
+          253,
+          254
+        ],
+        "pdfPages": [
+          267,
+          268
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "Exercise 9.6 (p. 254) refers to 'the state aggregation case (see Exercise 8.4)'. Exercise 8.4 is about the exploration bonus; state aggregation is defined in Exercise 9.2.",
+        "suggestion": "Read 'see Exercise 9.2'."
+      }
+    ]
+  },
+  {
+    "id": "ch09.approx-control",
+    "unit": "ch09",
+    "title": "Control with function approximation",
+    "kind": "idea",
+    "summary": "Approximate action values q̂(s, a, w) ≈ qπ with examples St, At ↦ Qt, update by gradient descent, and in the backward view get gradient-descent Sarsa(λ). For a fixed policy it converges like TD(λ), with the same kind of bound. With a small discrete action set, act ε-greedily with respect to q̂ (on-policy), or learn the greedy policy off-policy. Continuous or very large action sets remain an open problem in the draft.",
+    "prereqs": [
+      "ch09.gradient-td-lambda",
+      "ch07.sarsa-lambda"
+    ],
+    "related": [
+      "ch09.linear-sarsa-lambda"
+    ],
+    "keywords": [
+      "action values",
+      "q̂",
+      "GPI",
+      "gradient-descent Sarsa(λ)"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.4",
+        "printedPages": [
+          241,
+          242
+        ],
+        "pdfPages": [
+          255,
+          256
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 241 gives the one-step Sarsa-style target as '$G_{t+1} + \\gamma\\hat{q}(S_{t+1}, A_{t+1}, \\mathbf{w}_t)$'; the first term should be the reward $R_{t+1}$, as in the TD error just below.",
+        "suggestion": "$R_{t+1} + \\gamma\\hat{q}(S_{t+1}, A_{t+1}, \\mathbf{w}_t)$"
+      }
+    ]
+  },
+  {
+    "id": "ch09.linear-sarsa-lambda",
+    "unit": "ch09",
+    "title": "Linear Sarsa(λ) with binary features",
+    "kind": "algorithm",
+    "summary": "Figure 9.8: for state S and action A, find the present features FA; raise their traces (accumulating +1, or replacing: set to 1); take A and see R, S′; δ = R − ΣFA wi; if S′ is terminal update and stop, else compute Qa for each action in S′, choose A′ ε-greedily, add γQA′ to δ, and update w ← w + αδe, e ← γλe. With replacing traces each feature is treated as if it were a state; optionally the traces of the actions not taken in S are cleared.",
+    "prereqs": [
+      "ch09.approx-control"
+    ],
+    "related": [
+      "ch09.linear-q-lambda"
+    ],
+    "keywords": [
+      "linear Sarsa(λ)",
+      "binary features",
+      "replacing traces",
+      "Figure 9.8"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.4",
+        "printedPages": [
+          242,
+          245
+        ],
+        "pdfPages": [
+          256,
+          259
+        ]
+      }
+    ],
+    "flags": [
+      {
+        "type": "suspected-typo",
+        "note": "p. 245 refers to replacing traces as 'Section 7.8' (they are §7.3) and to clearing the traces of nonselected actions '(see Section 7.8)' (it is mentioned in the bibliographical remark for §7.5). It also says Figure 9.8 specifies the optional clearing, but the box only shows accumulating and replacing increments.",
+        "suggestion": "§7.3 for replacing traces; the clearing step is: before setting the selected action's features to 1, set to 0 the traces of the features of the other actions in S."
+      }
+    ]
+  },
+  {
+    "id": "ch09.linear-q-lambda",
+    "unit": "ch09",
+    "title": "Linear Watkins's Q(λ) with binary features",
+    "kind": "algorithm",
+    "summary": "Figure 9.9: in each state compute Qa for every action, find A* = argmax, take A* with probability 1 − ε or else a random action, and clear all traces if A ≠ A*; then as in Sarsa(λ) but the TD error uses maxa Q(S′, a). Off-policy: it learns about the greedy policy. The draft notes Q-learning with function approximation is known not to be sound and can diverge.",
+    "prereqs": [
+      "ch09.linear-sarsa-lambda",
+      "ch07.watkins-q-lambda"
+    ],
+    "related": [
+      "ch09.approx-control"
+    ],
+    "keywords": [
+      "Watkins's Q(λ)",
+      "linear",
+      "off-policy",
+      "Figure 9.9"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.4",
+        "printedPages": [
+          242,
+          244
+        ],
+        "pdfPages": [
+          256,
+          258
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.mountain-car",
+    "unit": "ch09",
+    "title": "The mountain-car task",
+    "kind": "example",
+    "summary": "Example 9.2: drive an underpowered car out of a valley; gravity beats the engine, so the car must first back up the opposite slope. Reward −1 per step; three actions; simplified physics on position and velocity. Ten 9 × 9 tilings with random offsets code the state; linear Sarsa(λ) with replacing traces (λ = 0.9, ε = 0, α = 0.05) learns a near-optimal policy within about 100 episodes, exploring because its zero initial values are optimistic.",
+    "prereqs": [
+      "ch09.linear-sarsa-lambda",
+      "ch09.tile-coding"
+    ],
+    "related": [
+      "ch02.optimistic-initial-values"
+    ],
+    "keywords": [
+      "mountain car",
+      "Example 9.2",
+      "Figure 9.10",
+      "Figure 9.11",
+      "cost-to-go"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.4",
+        "printedPages": [
+          245,
+          247
+        ],
+        "pdfPages": [
+          259,
+          261
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch09.bootstrapping",
+    "unit": "ch09",
+    "title": "Should we bootstrap?",
+    "kind": "idea",
+    "summary": "Nonbootstrapping methods (λ = 1) are more reliable with function approximation and reach lower asymptotic error even on-policy, yet in practice bootstrapping usually performs much better: in the draft's collected results (Figure 9.12) performance worsens sharply as λ approaches 1. Why is unclear; RMSE may not be the right goal (adding 1000 to every action value ruins RMSE but not the policy).",
+    "prereqs": [
+      "ch09.td-bound"
+    ],
+    "related": [
+      "ch07.eligibility-traces"
+    ],
+    "keywords": [
+      "bootstrapping",
+      "λ = 1",
+      "Figure 9.12"
+    ],
+    "sources": [
+      {
+        "kind": "textbook",
+        "chapter": "9",
+        "section": "9.5",
+        "printedPages": [
+          247,
+          249
+        ],
+        "pdfPages": [
+          261,
+          263
+        ]
+      }
+    ]
+  }
+]

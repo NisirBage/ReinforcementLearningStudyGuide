@@ -65,9 +65,9 @@ describe("mock exam setup", () => {
     await ready();
     await go(screen.getByRole("link", { name: /Mock exams/ }));
     expect(await ready()).toHaveTextContent("Mock exams");
-    expect(screen.getByText(/^190 questions available/)).toBeInTheDocument(); // 252 core minus 62 written (Milestone 4J added 21 and 4)
+    expect(screen.getByText(/^206 questions available/)).toBeInTheDocument(); // 275 core minus 69 written (Milestone 4K added 23 and 7)
     await user.click(screen.getByLabelText(/Include written answers/));
-    expect(screen.getByText(/^252 questions available/)).toBeInTheDocument();
+    expect(screen.getByText(/^275 questions available/)).toBeInTheDocument();
     // Starting from the form: Chapter 4, Beginner, written answers off again: 7 questions since Milestone 4E.
     await user.click(screen.getByLabelText(/Include written answers/));
     await user.click(screen.getByLabelText(/Chapter 4: Dynamic Programming/));
@@ -214,9 +214,13 @@ describe("taking an exam", () => {
 
   test("closing or reloading the tab during an exam asks first", async () => {
     await openSeeded(memoryStore(), testClock().now);
-    const ev = new Event("beforeunload", { cancelable: true });
-    const prevent = vi.spyOn(ev, "preventDefault");
-    window.dispatchEvent(ev);
-    expect(prevent).toHaveBeenCalled();
+    // The listener is attached in an effect, which under a loaded parallel run can land just after the page renders;
+    // waitFor retries the dispatch until it is in place, and still fails if the warning never appears.
+    await waitFor(() => {
+      const ev = new Event("beforeunload", { cancelable: true });
+      const prevent = vi.spyOn(ev, "preventDefault");
+      window.dispatchEvent(ev);
+      expect(prevent).toHaveBeenCalled();
+    });
   });
 });
